@@ -42,6 +42,17 @@ void Console::update()
         SDL_UpdateWindowSurface(this->window);
 }
 
+void Console::fillRect(int x, int y, int width, int height, int r, int g, int b)
+{
+	SDL_Rect rect;
+	rect.x = x*2*8;
+	rect.y = y*2*8;
+	rect.w = width*2*8;
+	rect.h = height*2*8;
+	
+	SDL_FillRect(this->window_surface, &rect, SDL_MapRGBA(this->window_surface->format, b, g, r, 0xFF));
+}
+
 // puts a 3x3 "pixel" on screen at the given x, y with the given r, g, b
 // will need update() called after to display any pixels that were created
 // the switch resolution is 1280x720, but the "pixels" used by this grid are 426x240
@@ -51,19 +62,13 @@ void Console::putAPixel(int x, int y, int r, int g, int b)
 	x *= 2;
 	y *= 2;
 
-	int ax, ay, az;
-	for (ax=0; ax<2; ax++)
-		for (ay=0; ay<2; ay++)
-			for (az=0; az<2; az++)
-			{
-				SDL_Rect rect;
-				rect.x = x*1.5;
-				rect.y = y*1.5;
-				rect.w = 3;
-				rect.h = 3;
+	SDL_Rect rect;
+	rect.x = x;
+	rect.y = y;
+	rect.w = 2;
+	rect.h = 2;
 
-				SDL_FillRect(this->window_surface, &rect, SDL_MapRGBA(this->window_surface->format, b, g, r, 0xFF));
-			}
+	SDL_FillRect(this->window_surface, &rect, SDL_MapRGBA(this->window_surface->format, b, g, r, 0xFF));
 }
 
 // draws a string using our bitmap font (below) at the given xi, yi
@@ -96,7 +101,7 @@ void Console::drawColorString(int xi, int yi, const char* string, int r, int g, 
 			for (x=0; x < 8; x++) {
 				for (y=0; y < 8; y++) {
 					if (bitmap[x] & 1 << y)
-						this->putAPixel(xi+y+i*8, yi+x, r, g, b);
+						this->putAPixel(xi+y+i*8, yi+x, b, g, r);
 				}
 			}
 		}
@@ -171,7 +176,7 @@ char font[128][8] = {
     { 0x06, 0x06, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00},   // U+0027 (')
     { 0x18, 0x0C, 0x06, 0x06, 0x06, 0x0C, 0x18, 0x00},   // U+0028 (()
     { 0x06, 0x0C, 0x18, 0x18, 0x18, 0x0C, 0x06, 0x00},   // U+0029 ())
-    { 0x00, 0x66, 0x3C, 0xFF, 0x3C, 0x66, 0x00, 0x00},   // U+002A (*)
+    { 0x00, 0x66, 0x3C, 0x7F, 0x3C, 0x66, 0x00, 0x00},   // U+002A (*)
     { 0x00, 0x0C, 0x0C, 0x3F, 0x0C, 0x0C, 0x00, 0x00},   // U+002B (+)
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x0C, 0x0C, 0x06},   // U+002C (,)
     { 0x00, 0x00, 0x00, 0x3F, 0x00, 0x00, 0x00, 0x00},   // U+002D (-)
@@ -224,7 +229,7 @@ char font[128][8] = {
     { 0x03, 0x06, 0x0C, 0x18, 0x30, 0x60, 0x40, 0x00},   // U+005C (\)
     { 0x1E, 0x18, 0x18, 0x18, 0x18, 0x18, 0x1E, 0x00},   // U+005D (])
     { 0x08, 0x1C, 0x36, 0x63, 0x00, 0x00, 0x00, 0x00},   // U+005E (^)
-    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF},   // U+005F (_)
+    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7F},   // U+005F (_)
     { 0x0C, 0x0C, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00},   // U+0060 (`)
     { 0x00, 0x00, 0x1E, 0x30, 0x3E, 0x33, 0x6E, 0x00},   // U+0061 (a)
     { 0x07, 0x06, 0x06, 0x3E, 0x66, 0x66, 0x3B, 0x00},   // U+0062 (b)

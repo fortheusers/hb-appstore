@@ -1,0 +1,2 @@
+build:
+	g++ *.cpp -lsdl2 ./libs/get/src/*.cpp  -std=gnu++11 -I ./libs/get/src/libs/rapidjson/include -I /usr/local/include -lm -lz -lminizip -lcurl
