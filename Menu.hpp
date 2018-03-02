@@ -12,6 +12,7 @@ public:
 	Menu(Console* console, std::vector<Package*> packages);
 	void display();			// display the menu as it's set up
 	void moveCursor(int diff);	// move the cursor position up (-1) or down (1)
+	void advanceScreen();		// change the active screen to the next one
 	
 private:
 	int offset;		// the offset of "scroll" along the current menu page

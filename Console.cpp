@@ -34,12 +34,12 @@ void Console::close()
 
 void Console::background(int r, int g, int b)
 {
-	SDL_FillRect(this->window_surface, NULL, SDL_MapRGBA(this->window_surface->format, b, g, r, 0xFF));
+	SDL_FillRect(this->window_surface, NULL, SDL_MapRGBA(this->window_surface->format, r, g, b, 0xFF));
 }
 
 void Console::update()
 {
-        SDL_UpdateWindowSurface(this->window);
+	SDL_UpdateWindowSurface(this->window);
 }
 
 void Console::fillRect(int x, int y, int width, int height, int r, int g, int b)
@@ -68,7 +68,7 @@ void Console::putAPixel(int x, int y, int r, int g, int b)
 	rect.w = 2;
 	rect.h = 2;
 
-	SDL_FillRect(this->window_surface, &rect, SDL_MapRGBA(this->window_surface->format, b, g, r, 0xFF));
+//	SDL_FillRect(this->window_surface, &rect, SDL_MapRGBA(this->window_surface->format, b, g, r, 0xFF));
 }
 
 // draws a string using our bitmap font (below) at the given xi, yi
@@ -107,7 +107,7 @@ void Console::drawColorString(int xi, int yi, const char* string, int r, int g, 
 		}
 	}
 	
-	this->update();
+//	this->update();
 }
 
 

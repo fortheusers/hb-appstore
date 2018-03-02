@@ -11,9 +11,9 @@ public:
 	void drawString(int xi, int yi, const char* string);
 	void drawColorString(int xi, int yi, const char* string, int r, int g, int b);
 	void close();
+	void update();
 	
 private:
-	void update();
 	
 	// SDL graphics variables
 	SDL_Window* window;
