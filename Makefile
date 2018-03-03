@@ -1,30 +1,196 @@
-ifeq ($(strip $(LIBTRANSISTOR_HOME)),)
-$(error "Please set LIBTRANSISTOR_HOME in your environment. export LIBTRANSISTOR_HOME=<path to libtransistor>")
+GET		:= ./libs/get/src
+RAPIDJSON	:= ./libs/get/src/libs/rapidjson/include
+MINIZIP         := ./libs/get/src/libs/minizip
+
+#---------------------------------------------------------------------------------
+.SUFFIXES:
+#---------------------------------------------------------------------------------
+
+ifeq ($(strip $(DEVKITA64)),)
+$(error "Please set DEVKITA64 in your environment. export DEVKITA64=<path to>DEVKITA64")
 endif
 
-PROGRAM := appstore
-OBJ := main.o Console.o Menu.o libs/get/src/Package.o libs/get/src/Utils.o Input.o libs/get/src/Repo.o libs/get/src/Get.o libs/get/src/Zip.o stub.o
+TOPDIR ?= $(CURDIR)
+include $(DEVKITPRO)/libnx/switch_rules
 
-include $(LIBTRANSISTOR_HOME)/libtransistor.mk
+#---------------------------------------------------------------------------------
+# TARGET is the name of the output
+# BUILD is the directory where object files & intermediate files will be placed
+# SOURCES is a list of directories containing source code
+# DATA is a list of directories containing data files
+# INCLUDES is a list of directories containing header files
+# EXEFS_SRC is the optional input directory containing data copied into exefs, if anything this normally should only contain "main.npdm".
+# 
+# NO_ICON: if set to anything, do not use icon.
+# NO_NACP: if set to anything, no .nacp file is generated.
+# APP_TITLE is the name of the app stored in the .nacp file (Optional)
+# APP_AUTHOR is the author of the app stored in the .nacp file (Optional)
+# APP_VERSION is the version of the app stored in the .nacp file (Optional)
+# APP_TITLEID is the titleID of the app stored in the .nacp file (Optional)
+# ICON is the filename of the icon (.jpg), relative to the project folder.
+#   If not set, it attempts to use one of the following (in this order):
+#     - <Project name>.jpg
+#     - icon.jpgK
+#     - <libnx folder>/default_icon.jpg
+#---------------------------------------------------------------------------------
+TARGET		:=	appstore
+BUILD		:=	build
+SOURCES		:=	. $(GET) $(MINIZIP)
+INCLUDES	:=	. $(RAPIDJSON) $(MINIZIP)
+#DATA		:=	data
+EXEFS_SRC	:=	exefs_src
 
-RAPIDJSON := -I ./libs/get/src/libs/rapidjson/include
-MINIZIP_O :=  libs/get/src/libs/zlib/contrib/minizip/inflate.o \
-			libs/get/src/libs/zlib/contrib/minizip/inftrees.o \
-			libs/get/src/libs/zlib/contrib/minizip/inffast.o \
-			libs/get/src/libs/zlib/contrib/minizip/crc32.o \
-			libs/get/src/libs/zlib/contrib/minizip/deflate.o \
-			libs/get/src/libs/zlib/contrib/minizip/trees.o \
-			libs/get/src/libs/zlib/contrib/minizip/adler32.o \
-			libs/get/src/libs/zlib/contrib/minizip/zutil.o \
-			libs/get/src/libs/zlib/contrib/minizip/zip.o \
-			libs/get/src/libs/zlib/contrib/minizip/ioapi.o \
-			libs/get/src/libs/zlib/contrib/minizip/unzip.o
-OBJ := $(OBJ) $(MINIZIP_O)
+APP_TITLE	:= App Store
+APP_AUTHOR 	:= VGMoose
+APP_VERSION 	:= 0.5
+ICON		:= icon.jpg
+#APP_TITLEID := is the titleID of the app stored in the .nacp file (Optional)
 
-all: $(PROGRAM).nro
+#---------------------------------------------------------------------------------
+# options for code generation
+#---------------------------------------------------------------------------------
+ARCH	:=	-march=armv8-a -mtp=soft -fPIE
 
-$(PROGRAM).nro.so: ${OBJ} $(LIBTRANSITOR_NRO_LIB) $(LIBTRANSISTOR_COMMON_LIBS)
-	$(LD) $(LD_FLAGS) -o $@ ${OBJ} $(LIBTRANSISTOR_NRO_LDFLAGS)
+CFLAGS	:=	-g -Wall -O2 \
+			-ffast-math \
+			$(ARCH) $(DEFINES)
 
+CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DNOSTYLUS
+
+
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11 
+
+ASFLAGS	:=	-g $(ARCH)
+LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
+
+LIBS	:= -lSDL_gfx -lSDL_image -lSDL -lz -lcurl -lnx -lm
+
+#---------------------------------------------------------------------------------
+# list of directories containing libraries, this must be the top level containing
+# include and lib
+#---------------------------------------------------------------------------------
+LIBDIRS	:= $(PORTLIBS) $(LIBNX)
+
+
+#---------------------------------------------------------------------------------
+# no real need to edit anything past this point unless you need to add additional
+# rules for different file extensions
+#---------------------------------------------------------------------------------
+ifneq ($(BUILD),$(notdir $(CURDIR)))
+#---------------------------------------------------------------------------------
+
+export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export TOPDIR	:=	$(CURDIR)
+
+export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
+			$(foreach dir,$(DATA),$(CURDIR)/$(dir))
+
+export DEPSDIR	:=	$(CURDIR)/$(BUILD)
+
+CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
+BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+
+#---------------------------------------------------------------------------------
+# use CXX for linking C++ projects, CC for standard C
+#---------------------------------------------------------------------------------
+ifeq ($(strip $(CPPFILES)),)
+#---------------------------------------------------------------------------------
+	export LD	:=	$(CC)
+#---------------------------------------------------------------------------------
+else
+#---------------------------------------------------------------------------------
+	export LD	:=	$(CXX)
+#---------------------------------------------------------------------------------
+endif
+#---------------------------------------------------------------------------------
+
+export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
+			$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+
+export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
+			$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+			$(foreach dir,$(LIBDIRS),-I$(dir)/include/SDL) \
+			-I$(CURDIR)/$(BUILD)
+
+export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
+
+export BUILD_EXEFS_SRC := $(TOPDIR)/$(EXEFS_SRC)
+
+ifeq ($(strip $(ICON)),)
+	icons := $(wildcard *.jpg)
+	ifneq (,$(findstring $(TARGET).jpg,$(icons)))
+		export APP_ICON := $(TOPDIR)/$(TARGET).jpg
+	else
+		ifneq (,$(findstring icon.jpg,$(icons)))
+			export APP_ICON := $(TOPDIR)/icon.jpg
+		endif
+	endif
+else
+	export APP_ICON := $(TOPDIR)/$(ICON)
+endif
+
+ifeq ($(strip $(NO_ICON)),)
+	export NROFLAGS += --icon=$(APP_ICON)
+endif
+
+ifeq ($(strip $(NO_NACP)),)
+	export NROFLAGS += --nacp=$(CURDIR)/$(TARGET).nacp
+endif
+
+ifneq ($(APP_TITLEID),)
+	export NACPFLAGS += --titleid=$(APP_TITLEID)
+endif
+
+.PHONY: $(BUILD) clean all
+
+#---------------------------------------------------------------------------------
+all: $(BUILD)
+
+$(BUILD):
+	@[ -d $@ ] || mkdir -p $@
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+
+#---------------------------------------------------------------------------------
 clean:
-	rm -rf *.o *.nso *.nro *.so
+	@echo clean ...
+	@rm -fr $(BUILD) $(TARGET).pfs0 $(TARGET).nso $(TARGET).nro $(TARGET).nacp $(TARGET).elf
+
+
+#---------------------------------------------------------------------------------
+else
+.PHONY:	all
+
+DEPENDS	:=	$(OFILES:.o=.d)
+
+#---------------------------------------------------------------------------------
+# main targets
+#---------------------------------------------------------------------------------
+all	:	$(OUTPUT).pfs0 $(OUTPUT).nro
+
+$(OUTPUT).pfs0	:	$(OUTPUT).nso
+
+$(OUTPUT).nso	:	$(OUTPUT).elf
+
+ifeq ($(strip $(NO_NACP)),)
+$(OUTPUT).nro	:	$(OUTPUT).elf $(OUTPUT).nacp
+else
+$(OUTPUT).nro	:	$(OUTPUT).elf
+endif
+
+$(OUTPUT).elf	:	$(OFILES)
+
+#---------------------------------------------------------------------------------
+# you need a rule like this for each extension you use as binary data
+#---------------------------------------------------------------------------------
+%.bin.o	:	%.bin
+#---------------------------------------------------------------------------------
+	@echo $(notdir $<)
+	@$(bin2o)
+
+-include $(DEPENDS)
+
+#---------------------------------------------------------------------------------------
+endif
+#---------------------------------------------------------------------------------------

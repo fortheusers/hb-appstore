@@ -1,2 +1,14 @@
-build:
-	g++ *.cpp -lsdl2 ./libs/get/src/*.cpp  -std=gnu++11 -I ./libs/get/src/libs/rapidjson/include -I /usr/local/include -lm -lz -lminizip -lcurl
+GET :=		libs/get/src
+RAPIDJSON :=	libs/get/src/libs/rapidjson/include
+MINIZIP :=	libs/get/src/libs/minizip
+
+MINIZIP_O := zip.o ioapi.o unzip.o
+
+all:
+	gcc -c $(MINIZIP)/*.c
+	g++ -std=gnu++11 *.cpp -lSDL -lSDLmain ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.exe
+
+macos:
+	g++ -std=gnu++11 *.cpp -lSDL -lSDLmain -framework Cocoa ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.exe
+clean:
+	rm *.o *.bin

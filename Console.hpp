@@ -1,4 +1,4 @@
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 class Console
 {
@@ -16,7 +16,6 @@ public:
 private:
 	
 	// SDL graphics variables
-	SDL_Window* window;
 	SDL_Surface* window_surface;
 };
 

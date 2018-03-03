@@ -4,7 +4,7 @@
 #define BUTTON_UP		0b00000100
 #define BUTTON_DOWN		0b00001000
 
-#define BUTTON_MINUS	0b00010000
+#define BUTTON_X		0b00010000
 #define BUTTON_PLUS		0b00100000
 
 #define BUTTON_A		0b01000000
@@ -27,14 +27,7 @@
 #define JOYPAD_L2		0x0100
 
 
-#if defined(LINUX) || defined(__APPLE__)
-	#include <SDL2/SDL.h>
-#else // switch
-extern "C"
-{
-	#include<libtransistor/hid.h>
-}
-#endif
+#include <SDL/SDL.h>
 
 class Input
 {
@@ -44,10 +37,6 @@ public:
 	void updateButtons();
 	bool held(char b);
 	char btns_h;
-#if defined(LINUX) || defined(__APPLE__)
-#else // switch
-	void readInputInternal(hid_controller_state_entry_t ent);
-#endif
 
 private:
 	float lstick_x;

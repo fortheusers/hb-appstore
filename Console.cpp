@@ -8,17 +8,8 @@ Console::Console()
 	}
 
 	printf("initialized SDL\n");
-	
-	this->window = SDL_CreateWindow("n/a", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_WINDOW_SHOWN);
-	if(this->window == NULL) {
-		printf("window could not be created: %s\n", SDL_GetError());
-		return;
-	}
 
-	printf("created window\n");
-	
-	this->window_surface = SDL_GetWindowSurface(this->window);
-
+	this->window_surface = SDL_SetVideoMode(1280,720, 16, 0 /*SDL_FULLSCREEN*/);
 	printf("got window surface\n");
 	
 	// make background black
@@ -28,7 +19,6 @@ Console::Console()
 void Console::close()
 {
 	SDL_Delay(1);
-	SDL_DestroyWindow(this->window);
 	SDL_Quit();
 }
 
@@ -39,7 +29,7 @@ void Console::background(int r, int g, int b)
 
 void Console::update()
 {
-	SDL_UpdateWindowSurface(this->window);
+	SDL_Flip(this->window_surface);
 }
 
 void Console::fillRect(int x, int y, int width, int height, int r, int g, int b)
@@ -68,7 +58,7 @@ void Console::putAPixel(int x, int y, int r, int g, int b)
 	rect.w = 2;
 	rect.h = 2;
 
-//	SDL_FillRect(this->window_surface, &rect, SDL_MapRGBA(this->window_surface->format, b, g, r, 0xFF));
+	SDL_FillRect(this->window_surface, &rect, SDL_MapRGBA(this->window_surface->format, b, g, r, 0xFF));
 }
 
 // draws a string using our bitmap font (below) at the given xi, yi
