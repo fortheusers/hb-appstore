@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 		menu->display();
 		SDL_Delay(16);
 
-		// updeate pressed buttons in input object
+		// update pressed buttons in input object
 		input->updateButtons();
 		
 		// if we're on the install screen, perform an install
@@ -58,7 +58,11 @@ int main(int argc, char *argv[])
 			menu->screen = REMOVING;
 		
 		// if plus is pressed, exit
-		if (input->held(BUTTON_PLUS))
+		if (input->held(BUTTON_MINUS))
+			running = false;
+		
+		// if B is pressed on the splash screen, exit
+		if (menu->screen == SPLASH && input->held(BUTTON_B))
 			running = false;
 		
 		// move cursor up or down depending on input

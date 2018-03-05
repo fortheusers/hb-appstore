@@ -25,7 +25,7 @@ void Menu::display()
 	{
 		console->drawString(9, 21, "Homebrew App Store (Preview!)");
 		console->drawColorString(9, 26, "thanks to:", 0xcc, 0xcc, 0xcc);
-		console->drawColorString(15, 27, "vgmoose, pwsincd, rw-r-r_0644, zarklord, kgsws", 0xcc, 0xcc, 0xcc);
+		console->drawColorString(15, 27, "vgmoose, pwsincd, rw-r-r_0644, zarklord", 0xcc, 0xcc, 0xcc);
 		console->drawColorString(9, 32, "Press [A] to continue", 0xff, 0xff, 0x00);
 	}
 	
@@ -76,6 +76,13 @@ void Menu::display()
 	
 	if (this->screen == INSTALL_SCREEN)
 	{
+		if (this->position < 0 || this->position > get->packages.size())
+		{
+			// invalid selection, go back a screen
+			this->screen--;
+			return;
+		}
+		
 		// currently selected package
 		Package* cur = get->packages[this->position];
 		

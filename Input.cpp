@@ -29,7 +29,7 @@ void Input::updateButtons()
 		this->btns_h |= ((event.key.keysym.sym == SDLK_DOWN)?		BUTTON_DOWN : 0);
 		this->btns_h |= ((event.key.keysym.sym == SDLK_LEFT)?		BUTTON_LEFT : 0);
 		this->btns_h |= ((event.key.keysym.sym == SDLK_RIGHT)?		BUTTON_RIGHT : 0);
-		this->btns_h |= ((event.key.keysym.sym == SDLK_PLUS || event.key.keysym.sym == SDLK_RETURN)?		BUTTON_PLUS : 0);
+		this->btns_h |= ((event.key.keysym.sym == SDLK_MINUS|| event.key.keysym.sym == SDLK_RETURN)?		BUTTON_MINUS : 0);
 		this->btns_h |= ((event.key.keysym.sym == SDLK_x)?			BUTTON_X : 0);
 	}
 }
