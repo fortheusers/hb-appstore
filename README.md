@@ -22,7 +22,5 @@ There's a separate makefile for building the SDL1.2 app for PC. It requires libs
 make -f Makefile.pc
 ```
 
-
-
 ### License
 This software is licensed under the GPLv3.

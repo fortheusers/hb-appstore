@@ -2,9 +2,13 @@
 #include "Input.hpp"
 #include "libs/get/src/Utils.hpp"
 #include "libs/get/src/Get.hpp"
+//#include <switch.h>
 
 int main(int argc, char *argv[])
 {
+//	consoleDebugInit(debugDevice_SVC);
+//	stdout = stderr; // for yuzu
+
 	// initialize text console
 	Console* console = new Console();
 	
@@ -57,13 +61,13 @@ int main(int argc, char *argv[])
 		if (menu->screen == INSTALL_SCREEN && input->held(BUTTON_X))
 			menu->screen = REMOVING;
 		
-		// if plus is pressed, exit
-		if (input->held(BUTTON_MINUS))
-			running = false;
-		
-		// if B is pressed on the splash screen, exit
-		if (menu->screen == SPLASH && input->held(BUTTON_B))
-			running = false;
+//		// if minus is pressed, exit
+//		if (input->held(BUTTON_MINUS))
+//			running = false;
+//
+//		// if B is pressed on the splash screen, exit
+//		if (menu->screen == SPLASH && input->held(BUTTON_B))
+//			running = false;
 		
 		// move cursor up or down depending on input
 		menu->moveCursor(-1*(input->held(BUTTON_UP)) + (input->held(BUTTON_DOWN)));
