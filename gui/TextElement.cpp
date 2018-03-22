@@ -13,7 +13,6 @@ void TextElement::render(Element* parent)
 	SDL_Rect textLocation = { 0, 0, 0, 0 };
 	
 	SDL_BlitSurface(this->textSurface, NULL, parent->window_surface, &textLocation);
-
 }
 
 SDL_Surface* TextElement::renderText(std::string& message, int size)

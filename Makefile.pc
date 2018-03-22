@@ -6,10 +6,10 @@ MINIZIP_O := zip.o ioapi.o unzip.o
 
 all:
 	gcc -c $(MINIZIP)/*.c
-	g++ -std=gnu++11 *.cpp -lSDL -lSDLmain ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.exe  -fstack-protector-all
+	g++ -g -std=gnu++11 *.cpp -lSDL -lSDLmain -lSDL_image -lSDL_ttf ./console/*.cpp ./gui/*.cpp ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.exe  -fstack-protector-all
 
 macos:
 	gcc -c $(MINIZIP)/*.c
-	g++ -g -std=gnu++11 *.cpp -lSDL -lSDLmain -lSDL_ttf -framework Cocoa ./console/*.cpp ./gui/*.cpp ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.exe  -fstack-protector-all
+	g++ -g -std=gnu++11 *.cpp -lSDL -lSDLmain -lSDL_image -lSDL_ttf -framework Cocoa ./console/*.cpp ./gui/*.cpp ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.exe  -fstack-protector-all
 clean:
 	rm *.o *.bin

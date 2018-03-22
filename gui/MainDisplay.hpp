@@ -1,5 +1,6 @@
 #include "Element.hpp"
 #include "TextElement.hpp"
+#include "ImageElement.hpp"
 
 class MainDisplay : public Element
 {

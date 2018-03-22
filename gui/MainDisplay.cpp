@@ -12,15 +12,22 @@ MainDisplay::MainDisplay()
 		return;
 	}
 	
+	int imgFlags = IMG_INIT_PNG;
+	if( !( IMG_Init( imgFlags ) & imgFlags ) )
+	{
+		printf("SDL image init failed: %s\n", SDL_GetError());
+		return;
+	}
+	
 	printf("initialized SDL\n");
 	
 	this->window_surface = SDL_SetVideoMode(1280,720, 16, 0 /*SDL_FULLSCREEN*/);
 	printf("got window surface\n");
 	
 	// create the first two elements (icon and app title)
-//	ImageElement* icon = new ImageElement("icon.png");
-//	icon->position(0.35, 0.5);
-//	this->elements.push(icon);
+	ImageElement* icon = new ImageElement("res/icon.png");
+	icon->position(0.35, 0.5);
+	this->elements.push_back(icon);
 	
 	TextElement* title = new TextElement("Switch appstore", 26);
 	title->position(0.4, 0.5);
