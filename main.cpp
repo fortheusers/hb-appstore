@@ -1,5 +1,10 @@
-#include "Menu.hpp"
-#include "Input.hpp"
+#if defined(NOGUI)
+	#include "console/Menu.hpp"
+	#include "console/Input.hpp"
+#else
+	#include "gui/MainDisplay.hpp"
+#endif
+
 #include "libs/get/src/Utils.hpp"
 #include "libs/get/src/Get.hpp"
 //#include <switch.h>
@@ -9,75 +14,35 @@ int main(int argc, char *argv[])
 //	consoleDebugInit(debugDevice_SVC);
 //	stdout = stderr; // for yuzu
 
-	// initialize text console
-	Console* console = new Console();
-	
-	init_networking();
-	
-	// create "get" object with default repo
-	Get* get = new Get("./.get/", "http://switchbru.com/appstore");
-	Input* input = new Input();
-	
-	// create main menu object
-	Menu* menu = new Menu(console, get);
+#if defined(NOGUI)
+	// if NOGUI variable defined, use the console's main method
+	int console_main(void);
+	return console_main();
+#else
+	// initialize main title screen
+	MainDisplay* display = new MainDisplay();
 	
 	bool running = true;
-		
-	while(running)
+	while (running)
 	{
-		console->background(42, 37, 39);
+		// get an event
+		SDL_Event event;
+		SDL_PollEvent(&event);
 		
-		// show the current menu screen
-		menu->display();
+		// wait 16ms
 		SDL_Delay(16);
-
-		// update pressed buttons in input object
-		input->updateButtons();
 		
-		// if we're on the install screen, perform an install
-		if (menu->screen == INSTALLING || menu->screen == REMOVING)
-		{
-			Package* target = get->packages[menu->position];
-			
-			// install package
-			bool succeeded = false;
-			
-			if (menu->screen == INSTALLING)
-				succeeded = get->install(target);
-			else if (menu->screen == REMOVING)
-				succeeded = get->remove(target);
-			
-			// change screen accordingly
-			if (succeeded)
-				menu->screen = INSTALL_SUCCESS;
-			else
-				menu->screen = INSTALL_FAILED;
-		}
+		// process the inputs of the supplied event
+		display->processInput(&event);
 		
-		// send either A or B to the menu object, if held
-		if (input->held(BUTTON_A) || input->held(BUTTON_B))
-			menu->advanceScreen(input->held(BUTTON_A));
+		// draw the display
+		display->render();
 		
-		if (menu->screen == INSTALL_SCREEN && input->held(BUTTON_X))
-			menu->screen = REMOVING;
-		
-//		// if minus is pressed, exit
-//		if (input->held(BUTTON_MINUS))
-//			running = false;
-//
-//		// if B is pressed on the splash screen, exit
-//		if (menu->screen == SPLASH && input->held(BUTTON_B))
-//			running = false;
-		
-		// move cursor up or down depending on input
-		menu->moveCursor(-1*(input->held(BUTTON_UP)) + (input->held(BUTTON_DOWN)));
-		
-		// move page PAGE_SIZE forward/backward depending on input
-		menu->moveCursor(-1*PAGE_SIZE*input->held(BUTTON_LEFT) + PAGE_SIZE*input->held(BUTTON_RIGHT));
+		// quit on enter/start
+		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
+			running = false;
 	}
 	
-	console->close();
-	input->close();
-
 	return 0;
+#endif
 }

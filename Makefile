@@ -35,7 +35,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	appstore
 BUILD		:=	build
-SOURCES		:=	. $(GET) $(MINIZIP)
+SOURCES		:=	. $(GET) $(MINIZIP) console gui
 INCLUDES	:=	. $(RAPIDJSON) $(MINIZIP)
 #DATA		:=	data
 EXEFS_SRC	:=	exefs_src
@@ -55,7 +55,7 @@ CFLAGS	:=	-g -Wall -O2 \
 			-ffast-math \
 			$(ARCH) $(DEFINES)
 
-CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DNOSTYLUS -DUSE_FILE32API
+CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DNOSTYLUS -DUSE_FILE32API -DNOGUI
 
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11 
@@ -63,7 +63,7 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lSDL_gfx -lSDL_image -lSDL -lz -lnx -lm	#-lcurl
+LIBS	:= -lSDL_gfx -lSDL_image -lSDL -lz -lnx -lm	
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

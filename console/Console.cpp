@@ -13,7 +13,7 @@ Console::Console()
 	printf("got window surface\n");
 	
 	// make background black
-	this->background(0x00, 0x00, 0x00);
+	this->background(0x42, 0x45, 0x48);
 }
 
 void Console::close()
