@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 		display->processInput(&event);
 		
 		// draw the display
-		display->render();
+		display->render(NULL);
 		
 		// quit on enter/start
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)

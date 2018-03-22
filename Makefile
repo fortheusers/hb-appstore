@@ -43,7 +43,7 @@ EXEFS_SRC	:=	exefs_src
 APP_TITLE	:= hb App Store
 APP_AUTHOR 	:= vgmoose
 APP_VERSION 	:= 0.7
-ICON		:= icon.jpg
+ICON		:= res/icon.jpg
 #APP_TITLEID := is the titleID of the app stored in the .nacp file (Optional)
 
 #---------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ CFLAGS	:=	-g -Wall -O2 \
 			-ffast-math \
 			$(ARCH) $(DEFINES)
 
-CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DNOSTYLUS -DUSE_FILE32API -DNOGUI
+CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DNOSTYLUS -DUSE_FILE32API
 
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11 
@@ -63,7 +63,7 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lSDL_gfx -lSDL_image -lSDL -lz -lnx -lm	
+LIBS	:= -lSDL_ttf -lfreetype -lpng -lSDL_gfx -lSDL_image -lSDL -lz -lnx -lm	
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
