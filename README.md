@@ -1,6 +1,22 @@
 ## Switch App Store
 A graphical frontend to the [get package manager](https://github.com/vgmoose/get) for downloading and managing homebrew on the Nintendo Switch. This is a successor to the [Wii U Homebrew App Store](https://github.com/vgmoose/hbas).
 
+### Usage
+To run this program, a 3.0.0 firmware Nintendo Switch with access to hbmenu is required (currently requires an sd card).
+
+You should already have setup and ran HBL once before, [according to these instructions](https://switchbrew.github.io/nx-hbl/).
+
+#### Quick summary
+- download latest [appstore.nro](https://github.com/vgmoose/appstorenx/releases) to `sd:/switch/appstore/appstore.nro`
+- download latest [hbmenu.nro](https://github.com/switchbrew/nx-hbmenu/releases/latest) to `sd:/hbmenu.nro`
+- put the SD card (recommended formatted FAT32) in the Switch
+- set the DNS server as `104.236.106.125` and try to connect to Internet
+   - click "Install" if you've never ran HBL before (only have to do it once, should crash with error `2000-1337`)
+   - click "Run" to activate the HBL exploit (will prompt a popup to exit when done)
+- go to the home menu, and then go to "Album" to start hbmenu
+- run "hb App Store" from within hbmenu
+   - when you're done hit home to exit (and album again to go back to hbmenu)
+
 ### Building
 Setup devkita64 and libnx [using the installer](http://switchbrew.org/index.php?title=Setting_up_Development_Environment), and then set up SDL1.2 and the portlibs according to the [instructions here](https://gbatemp.net/threads/sdl-1-2-15-for-switch-libnx-based.497412/). Currently, this project uses the zlib and libcurl portlibs.
 
