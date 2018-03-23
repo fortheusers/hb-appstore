@@ -1,9 +1,14 @@
 #include "TextElement.hpp"
 
-TextElement::TextElement(const char* text, int size)
+TextElement::TextElement(const char* text, int size, SDL_Color* color)
 {
 	this->text = new std::string(text);
 	this->size = size;
+	
+	if (color == NULL)
+		this->color = {0xff, 0xff, 0xff};
+	else
+		this->color = *color;
 	
 	this->textSurface = this->renderText(*(this->text), size);
 }
@@ -21,9 +26,7 @@ SDL_Surface* TextElement::renderText(std::string& message, int size)
 {
 	TTF_Font *font = TTF_OpenFont("./res/productsans.ttf", size);
 	
-	SDL_Color color = {0xff, 0xff, 0xff};
-	
-	SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
+	SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), this->color);
 	
 	//	SDL_FreeSurface(surf);
 	TTF_CloseFont(font);

@@ -3,15 +3,18 @@
 #include "ImageElement.hpp"
 #include "ProgressBar.hpp"
 #include "Sidebar.hpp"
+#include "AppList.hpp"
 
 class MainDisplay : public Element
 {
 public:
-	MainDisplay();
+	MainDisplay(Get* get);
 	bool process(SDL_Event* event);
 	void render(Element* parent);
 	void background(int r, int g, int b);
 	void update();
+	
+	Get* get;
 	
 private:
 	bool showingSplash = true;

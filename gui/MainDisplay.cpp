@@ -1,7 +1,9 @@
 #include "MainDisplay.hpp"
 
-MainDisplay::MainDisplay()
+MainDisplay::MainDisplay(Get* get)
 {
+	this->get = get;
+	
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		printf("SDL init failed: %s\n", SDL_GetError());
 		return;
@@ -55,9 +57,9 @@ bool MainDisplay::process(SDL_Event* event)
 		this->count++;
 		
 		// should be a progress bar
-		((ProgressBar*)this->elements[0])->percent = (this->count / 50.0f);
+		((ProgressBar*)this->elements[0])->percent = (this->count / 25.0f);
 		
-		if (this->count == 51)	//TODO: replace with sum of apps*2
+		if (this->count == 26)	//TODO: replace with sum of apps*2
 		{
 			// remove the splash screen elements
 			this->wipeElements();
@@ -65,6 +67,8 @@ bool MainDisplay::process(SDL_Event* event)
 			// add in the sidebar, footer, and main app listing
 			Sidebar* sidebar = new Sidebar();
 			this->elements.push_back(sidebar);
+			AppList* applist = new AppList(this->get);
+			this->elements.push_back(applist);
 			
 			this->showingSplash = false;
 		}

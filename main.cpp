@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	Get* get = new Get("./.get/", "http://switchbru.com/appstore");
 
 	// initialize main title screen
-	MainDisplay* display = new MainDisplay();
+	MainDisplay* display = new MainDisplay(get);
 	
 	bool running = true;
 	while (running)

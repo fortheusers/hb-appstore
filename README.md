@@ -29,7 +29,7 @@ make
 
 If all goes well, `appstore.nro` should be sitting in the current directory.
 
-* (as of 3/22 the portlibs repo is gone-- the portlibs are undergoing reorganization. In the meantime, the old version is [here](git@github.com:vgmoose/Switch_portlibs.git).) 
+*(as of 3/22 the portlibs repo is gone-- the portlibs are undergoing reorganization. In the meantime, the old version is [here](https://github.com/vgmoose/Switch_portlibs.git).) 
 
 ### Maintaining a repo
 See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for setting up a repository. Everything is designed to be statically hosted. If there's no repo provided in the `repos.json` config file, then it will generate a default one pointing to [switchbru.com/appstore](http://switchbru.com/appstore/).
@@ -41,7 +41,7 @@ make -f Makefile.pc
 ```
 
 ### Building the text-only version
-The GUI version of this app is in progress, see [https://github.com/vgmoose/appstorenx/issues/1](#1) for details. In the mean time, editing either of the makefiles to include a `-DNOGUI` argument should build the old text-version that was used in the preview.
+The GUI version of this app is in progress, see [#1](https://github.com/vgmoose/appstorenx/issues/1) for details. In the mean time, editing either of the makefiles to include a `-DNOGUI` argument should build the old text-version that was used in the preview.
 
 ### License
 This software is licensed under the GPLv3.
