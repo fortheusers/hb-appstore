@@ -47,16 +47,26 @@ MainDisplay::MainDisplay()
 	this->elements.push_back(title);
 }
 
-bool MainDisplay::processInput(SDL_Event* event)
+bool MainDisplay::process(SDL_Event* event)
 {
 	if (this->showingSplash)
 	{
-		// push A to dismiss splash screen
-		if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_a)
+		// update the counter (TODO: replace with fetching app icons/screen previews)
+		this->count++;
+		
+		// should be a progress bar
+		((ProgressBar*)this->elements[0])->percent = (this->count / 50.0f);
+		
+		if (this->count == 51)	//TODO: replace with sum of apps*2
 		{
+			// remove the splash screen elements
+			this->wipeElements();
+			
+			// add in the sidebar, footer, and main app listing
+			Sidebar* sidebar = new Sidebar();
+			this->elements.push_back(sidebar);
+			
 			this->showingSplash = false;
-			
-			
 		}
 	}
 	else

@@ -41,11 +41,6 @@ void ProgressBar::render(Element* parent)
 	
 	// draw right "circle" (rounded part of bar, and ending)
 	filledCircleColor(parent->window_surface, x + width*this->percent, y, 5, blue);
-	
-	
-	// draw right "circle" (rounded part of bar)
-//	Draw_FillCircle(parent->window_surface,
-//					x, y, 5,
-//					blue);
+
 }
 

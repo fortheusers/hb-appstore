@@ -1,5 +1,6 @@
 #include <string>
 #include "Element.hpp"
+#pragma once
 
 class TextElement : public Element
 {

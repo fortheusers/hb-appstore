@@ -13,3 +13,8 @@ void ImageElement::render(Element* parent)
 	
 	SDL_BlitSurface(this->imgSurface, NULL, parent->window_surface, &imgLocation);
 }
+
+void ImageElement::resize(int width, int height)
+{
+	// TODO: when moving to SDL2, do a resize here
+}

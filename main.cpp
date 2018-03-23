@@ -19,6 +19,10 @@ int main(int argc, char *argv[])
 	int console_main(void);
 	return console_main();
 #else
+	
+	// create main get object
+	Get* get = new Get("./.get/", "http://switchbru.com/appstore");
+
 	// initialize main title screen
 	MainDisplay* display = new MainDisplay();
 	
@@ -33,7 +37,7 @@ int main(int argc, char *argv[])
 		SDL_Delay(16);
 		
 		// process the inputs of the supplied event
-		display->processInput(&event);
+		display->process(&event);
 		
 		// draw the display
 		display->render(NULL);

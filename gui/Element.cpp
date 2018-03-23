@@ -1,6 +1,6 @@
 #include "Element.hpp"
 
-bool Element::processInput(SDL_Event* event)
+bool Element::process(SDL_Event* event)
 {
 	
 	
@@ -20,4 +20,15 @@ void Element::position(int x, int y)
 {
 	this->x = x;
 	this->y = y;
+}
+
+void Element::wipeElements()
+{
+	for (int x=0; x<this->elements.size(); x++)
+	{
+		Element* elem = this->elements[x];
+		delete elem;
+	}
+	
+	this->elements.clear();
 }

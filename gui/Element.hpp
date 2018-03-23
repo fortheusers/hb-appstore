@@ -8,7 +8,7 @@ class Element
 {
 public:
 	// process any input that is received for this element
-	virtual bool processInput(SDL_Event* event);
+	virtual bool process(SDL_Event* event);
 	
 	// display the current state of the display
 	virtual void render(Element* parent);
@@ -18,6 +18,9 @@ public:
 	
 	// position the element (x and y are percents of the screen)
 	void position(int x, int y);
+	
+	// remove all elements and free their memory
+	void wipeElements();
 	
 	// SDL main graphics variables
 	SDL_Surface* window_surface;
