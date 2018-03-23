@@ -7,7 +7,9 @@ ImageElement::ImageElement(const char* path)
 
 void ImageElement::render(Element* parent)
 {
-	SDL_Rect textLocation = { 0, 0, 0, 0 };
+	SDL_Rect imgLocation;
+	imgLocation.x = this->x + parent->x;
+	imgLocation.y = this->y + parent->y;
 	
-	SDL_BlitSurface(this->imgSurface, NULL, parent->window_surface, &textLocation);
+	SDL_BlitSurface(this->imgSurface, NULL, parent->window_surface, &imgLocation);
 }

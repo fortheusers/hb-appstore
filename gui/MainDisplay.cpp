@@ -21,16 +21,29 @@ MainDisplay::MainDisplay()
 	
 	printf("initialized SDL\n");
 	
-	this->window_surface = SDL_SetVideoMode(1280,720, 16, 0 /*SDL_FULLSCREEN*/);
+	int height = 720;
+	int width = 1280;
+	
+	this->window_surface = SDL_SetVideoMode(width, height, 16, 0 /*SDL_FULLSCREEN*/);
 	printf("got window surface\n");
+	
+	// the progress bar
+	ProgressBar* pbar = new ProgressBar();
+	pbar->position(401, 380);
+	this->elements.push_back(pbar);
+	
+	// the text above the progress bar
+//	TextElement* pbar_text = new TextElement("Updating App Info...", 17);
+//	pbar_text->position(550, 365);
+//	this->elements.push_back(pbar_text);
 	
 	// create the first two elements (icon and app title)
 	ImageElement* icon = new ImageElement("res/icon.png");
-	icon->position(0.35, 0.5);
+	icon->position(410, 250);
 	this->elements.push_back(icon);
 	
-	TextElement* title = new TextElement("Switch appstore", 26);
-	title->position(0.4, 0.5);
+	TextElement* title = new TextElement("Switch appstore", 50);
+	title->position(485, 255);
 	this->elements.push_back(title);
 }
 

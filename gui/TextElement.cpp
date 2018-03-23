@@ -10,22 +10,21 @@ TextElement::TextElement(const char* text, int size)
 
 void TextElement::render(Element* parent)
 {
-	SDL_Rect textLocation = { 0, 0, 0, 0 };
+	SDL_Rect textLocation;
+	textLocation.x = this->x + parent->x;
+	textLocation.y = this->y + parent->y;
 	
 	SDL_BlitSurface(this->textSurface, NULL, parent->window_surface, &textLocation);
 }
 
 SDL_Surface* TextElement::renderText(std::string& message, int size)
 {
-	//Open the font
 	TTF_Font *font = TTF_OpenFont("./res/productsans.ttf", size);
 	
-	//returns, then load that surface into a texture
 	SDL_Color color = {0xff, 0xff, 0xff};
 	
 	SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
 	
-	//Clean up the surface and font
 	//	SDL_FreeSurface(surf);
 	TTF_CloseFont(font);
 	

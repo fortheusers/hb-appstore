@@ -16,6 +16,8 @@ void Element::render(Element* parent)
 	}
 }
 
-void Element::position(float x, float y)
+void Element::position(int x, int y)
 {
+	this->x = x;
+	this->y = y;
 }

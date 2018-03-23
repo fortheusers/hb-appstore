@@ -1,6 +1,7 @@
 #include "Element.hpp"
 #include "TextElement.hpp"
 #include "ImageElement.hpp"
+#include "ProgressBar.hpp"
 
 class MainDisplay : public Element
 {

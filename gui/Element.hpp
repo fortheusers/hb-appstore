@@ -17,13 +17,13 @@ public:
 	std::vector<Element*> elements;
 	
 	// position the element (x and y are percents of the screen)
-	void position(float x, float y);
+	void position(int x, int y);
 	
 	// SDL main graphics variables
 	SDL_Surface* window_surface;
 	
 	typedef Element super;
 	
-	int x;
-	int y;
+	int x = 0;
+	int y = 0;
 };
