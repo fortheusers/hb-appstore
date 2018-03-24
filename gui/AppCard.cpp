@@ -40,7 +40,9 @@ void AppCard::update()
 	this->elements.push_back(author);
 	
 	// download status icon
-	// TODO: this
+	ImageElement* statusicon = new ImageElement(("res/" + std::string(package->statusString()) + ".png").c_str());
+	statusicon->position(this->x + 12, this->y + 170);
+	this->elements.push_back(statusicon);
 }
 
 void AppCard::render(Element* parent)
