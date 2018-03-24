@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 	return console_main();
 #else
 	init_networking();
-
+	
 	// create main get object
 	Get* get = new Get("./.get/", "http://switchbru.com/appstore");
 

@@ -42,3 +42,12 @@ void AppCard::update()
 	// download status icon
 	// TODO: this
 }
+
+void AppCard::render(Element* parent)
+{
+	// TODO: don't render this card if it's going to be offscreen anyway according to the parent (AppList)
+//	if (((AppList*)parent)->scrollOffset)
+	
+	// render all the subelements of this card
+	super::render(parent);
+}

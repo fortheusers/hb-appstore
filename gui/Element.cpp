@@ -2,7 +2,9 @@
 
 bool Element::process(SDL_Event* event)
 {
-	
+	// call process on subelements
+	for (int x=0; x<this->elements.size(); x++)
+		this->elements[x]->process(event);
 	
 	return false;
 }

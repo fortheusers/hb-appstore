@@ -16,6 +16,8 @@ public:
 	
 	Get* get;
 	
+	bool touchMode = true;
+	
 private:
 	bool showingSplash = true;
 	int count = 0;

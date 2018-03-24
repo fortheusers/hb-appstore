@@ -7,6 +7,7 @@ class AppCard: public Element
 public:
 	AppCard(Package* package);
 	void update();
+	void render(Element* parent);
 	
 	Package* package;
 };

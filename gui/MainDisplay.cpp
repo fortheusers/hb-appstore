@@ -75,6 +75,8 @@ bool MainDisplay::process(SDL_Event* event)
 	}
 	else
 	{
+		// keep processing child elements
+		super::process(event);
 	}
 	
 	return false;

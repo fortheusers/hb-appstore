@@ -25,6 +25,12 @@ public:
 	// SDL main graphics variables
 	SDL_Surface* window_surface;
 	
+	// whether or not this element is currently being dragged
+	bool dragging = false;
+	
+	// the last Y coordinate of the mouse (from a drag probably)
+	int lastMouseY = 0;
+	
 	typedef Element super;
 	
 	int x = 0;
