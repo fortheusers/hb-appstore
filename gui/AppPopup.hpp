@@ -8,4 +8,7 @@ public:
 	AppPopup(Package* package);
 	bool process(SDL_Event* event);
 	void render(Element* parent);
+	
+	bool operating = false;
+	Package* package;
 };

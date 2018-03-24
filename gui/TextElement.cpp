@@ -14,7 +14,7 @@ TextElement::TextElement(const char* text, int size, SDL_Color* color)
 }
 
 void TextElement::render(Element* parent)
-{
+{	
 	SDL_Rect textLocation;
 	textLocation.x = this->x + parent->x;
 	textLocation.y = this->y + parent->y;
