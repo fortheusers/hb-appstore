@@ -3,7 +3,7 @@
 
 AppList::AppList(Get* get)
 {
-	this->x = 410 + 40;
+	this->x = 400;
 	
 	// the main get instance that contains repo info and stuff
 	this->get = get;
@@ -23,8 +23,8 @@ bool AppList::process()
 void AppList::render(Element* parent)
 {
 	// draw a white background, 870 wide
-	SDL_Rect dimens = { 0, 0, 870, 720 };
-	dimens.x = this->x;
+	SDL_Rect dimens = { 0, 0, 920, 720 };
+	dimens.x = this->x - 35;
 	
 	SDL_FillRect(parent->window_surface, &dimens, SDL_MapRGBA(parent->window_surface->format, 0xFF, 0xFF, 0xFF, 0xFF));
 	this->window_surface = parent->window_surface;
@@ -40,6 +40,12 @@ void AppList::update()
 	// total apps we're interested in so far
 	int count = 0;
 	
+	// the title of this category
+	SDL_Color black = { 0, 0, 0, 0xff };
+	TextElement* category = new TextElement("All Apps", 28, &black);
+	category->position(20, 90);
+	this->elements.push_back(category);
+	
 	for (int x=0; x<get->packages.size(); x++)
 	{
 		// if we're on all categories, or this package matches the current category
@@ -48,7 +54,7 @@ void AppList::update()
 			AppCard* card = new AppCard(get->packages[x]);
 			
 			// position at proper x, y coordinates (TODO: out of bounds for screen -> don't draw)
-			card->position(10 + (x%3)*265, 50 + 250*(x/3));
+			card->position(10 + (x%3)*265, 130 + 210*(x/3));
 			card->update();
 			
 			this->elements.push_back(card);

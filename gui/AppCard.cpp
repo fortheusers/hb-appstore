@@ -14,29 +14,29 @@ void AppCard::update()
 	icon->position(this->x + 10, this->y + 10);
 	this->elements.push_back(icon);
 	
-	int size = 17;
+	int size = 13;
 	
-	SDL_Color gray = { 40, 40, 40, 0xff };
+	SDL_Color gray = { 80, 80, 80, 0xff };
 	SDL_Color black = { 0, 0, 0, 0xff };
 	
 	// version
-	TextElement* version = new TextElement(package->version.c_str(), size, &gray);
-	version->position(this->x + 30, this->y + 175);
+	TextElement* version = new TextElement(("v. " + package->version).c_str(), size, &gray);
+	version->position(this->x + 50, this->y + 170);
 	this->elements.push_back(version);
-	
+
 	// status string
 	TextElement* status = new TextElement(package->statusString(), size, &gray);
-	status->position(this->x + 30, this->y + 190);
+	status->position(this->x + 50, this->y + 185);
 	this->elements.push_back(status);
 	
 	// app name
-	TextElement* appname = new TextElement(package->title.c_str(), size, &black);
-	appname->position(this->x + 200, this->y + 175);
+	TextElement* appname = new TextElement(package->title.c_str(), size+3, &black);
+	appname->position(this->x + 255 - appname->textSurface->w, this->y + 165);
 	this->elements.push_back(appname);
 	
 	// author
 	TextElement* author = new TextElement(package->author.c_str(), size, &gray);
-	author->position(this->x + 200, this->y + 190);
+	author->position(this->x + 255 - author->textSurface->w, this->y + 185);
 	this->elements.push_back(author);
 	
 	// download status icon
