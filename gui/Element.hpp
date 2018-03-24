@@ -23,13 +23,16 @@ public:
 	void wipeElements();
 	
 	// SDL main graphics variables
-	SDL_Surface* window_surface;
+	SDL_Surface* window_surface = NULL;
 	
 	// whether or not this element is currently being dragged
 	bool dragging = false;
 	
 	// the last Y coordinate of the mouse (from a drag probably)
 	int lastMouseY = 0;
+	
+	// the parent element (can sometimes be null if it isn't set)
+	Element* parent = NULL;
 	
 	typedef Element super;
 	

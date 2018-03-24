@@ -27,6 +27,12 @@ MainDisplay::MainDisplay(Get* get)
 	int width = 1280;
 	
 	this->window_surface = SDL_SetVideoMode(width, height, 16, 0 /*SDL_FULLSCREEN*/);
+	
+	#if defined(SWITCH)
+		// hide cursor for switch
+		SDL_ShowCursor(0);
+	#endif
+	
 	printf("got window surface\n");
 	
 	// the progress bar

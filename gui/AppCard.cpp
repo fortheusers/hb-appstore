@@ -1,8 +1,13 @@
 #include "AppCard.hpp"
+#include "AppList.hpp"
 
 AppCard::AppCard(Package* package)
 {
 	this->package = package;
+	
+	// fixed width+height of one app card
+	this->width = 265;
+	this->height = 205;
 }
 
 void AppCard::update()
@@ -41,15 +46,58 @@ void AppCard::update()
 	
 	// download status icon
 	ImageElement* statusicon = new ImageElement(("res/" + std::string(package->statusString()) + ".png").c_str());
-	statusicon->position(this->x + 12, this->y + 170);
+	statusicon->position(this->x + 14, this->y + 170);
 	this->elements.push_back(statusicon);
 }
 
 void AppCard::render(Element* parent)
 {
+	// grab and store the parent while we have it, and if we need it
+	if (this->parent == NULL)
+		this->parent = parent;
+	
 	// TODO: don't render this card if it's going to be offscreen anyway according to the parent (AppList)
 //	if (((AppList*)parent)->scrollOffset)
 	
 	// render all the subelements of this card
 	super::render(parent);
+}
+
+bool AppCard::process(SDL_Event* event)
+{
+	if (event->type == SDL_MOUSEBUTTONDOWN)
+	{
+		// mouse pushed down, set variable
+		this->dragging = true;
+		this->lastMouseY = event->motion.y;
+	}
+	// mouse is up
+	else if (event->type == SDL_MOUSEBUTTONUP)
+	{
+		// check if we haven't drifted too far from the starting variable (treshold: 40)
+		if (this->dragging && abs(event->motion.y - this->lastMouseY) < 40 && this->parent)
+		{
+			// check that this click is in the right coordinates for this square
+			// and that a subscreen isn't already being shown
+			if (event->motion.x >= this->parent->x + this->x &&
+				event->motion.x <= this->parent->x + this->x + this->width &&
+				event->motion.y >= this->parent->y + this->y &&
+				event->motion.y <= this->parent->y + this->y + this->height &&
+				!((AppList*)this->parent)->subscreen)
+			{
+				// received a click on this app, add a subscreen under the parent
+				// (parent of AppCard should be AppList)
+				AppPopup* popup = new AppPopup(this->package);
+				this->parent->elements.push_back(popup);
+				
+				// set the subscreen variable too, to acces it easier
+				((AppList*)this->parent)->subscreen = popup;
+			}
+		}
+		
+		// release mouse
+		this->dragging = false;
+	}
+	
+	return false;
 }

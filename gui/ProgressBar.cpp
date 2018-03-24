@@ -1,16 +1,20 @@
 #include "ProgressBar.hpp"
 #include <SDL/SDL_gfxPrimitives.h>
 
+ProgressBar::ProgressBar()
+{
+	// total width of full progress bar
+	this->width = 450;
+	this->color = 0x56c1dfff;
+}
+
 void ProgressBar::render(Element* parent)
 {
 	SDL_Rect location;
 	int x = this->x + parent->x;
 	int y = this->y + parent->y;
-		
-	// total width of full progress bar
-	int width = 450;
 	
-	int blue = 0x56c1dfff;
+	int blue = this->color;
 	int gray = 0x989898ff;
 	int blue2 = SDL_MapRGB(parent->window_surface->format, 0x56, 0xc1, 0xdf);
 	int gray2 = SDL_MapRGB(parent->window_surface->format, 0x98, 0x98, 0x98);
@@ -25,7 +29,7 @@ void ProgressBar::render(Element* parent)
 	SDL_FillRect(parent->window_surface, &gray_rect, gray2);
 	
 	// draw ending "circle"
-	filledCircleColor(parent->window_surface, x + 450, y, 5, gray);
+	filledCircleColor(parent->window_surface, x + this->width, y, 5, gray);
 	
 	// draw left "circle" (rounded part of bar)
 	filledCircleColor(parent->window_surface, x, y, 5, blue);
