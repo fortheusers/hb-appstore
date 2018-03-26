@@ -4,6 +4,7 @@
 #include "ProgressBar.hpp"
 #include "Sidebar.hpp"
 #include "AppList.hpp"
+#include <unordered_map>
 
 class MainDisplay : public Element
 {
@@ -14,14 +15,14 @@ public:
 	void background(int r, int g, int b);
 	void update();
 	
-	Get* get;
+	Get* get = NULL;
+	
+	// a map of all surfaces that have been displayed
+	static std::unordered_map<std::string, SDL_Surface> cache;
 	
 	bool touchMode = true;
 	
 private:
 	bool showingSplash = true;
 	int count = 0;
-	
-//	// visible GUI child elements of this element
-//	std::vector<Element*> elements;
 };

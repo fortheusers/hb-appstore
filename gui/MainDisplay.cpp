@@ -1,5 +1,7 @@
 #include "MainDisplay.hpp"
 
+std::unordered_map<std::string, SDL_Surface> MainDisplay::cache;
+
 MainDisplay::MainDisplay(Get* get)
 {
 	this->get = get;
@@ -57,15 +59,21 @@ MainDisplay::MainDisplay(Get* get)
 
 bool MainDisplay::process(SDL_Event* event)
 {
+	// if we're on the splash/loading screen, we need to fetch icons+screenshots from the remote repo
+	// and load them into our surface cache with the pkg_name+version as the key
+	
 	if (this->showingSplash)
 	{
 		// update the counter (TODO: replace with fetching app icons/screen previews)
 		this->count++;
 		
 		// should be a progress bar
-		((ProgressBar*)this->elements[0])->percent = (this->count / 25.0f);
+		((ProgressBar*)this->elements[0])->percent = (this->count / ((float)this->get->packages.size()));
 		
-		if (this->count == 26)	//TODO: replace with sum of apps*2
+		// get the package whose icon+screen to process
+		
+		
+		if (this->count == this->get->packages.size())	//TODO: replace with sum of apps*2
 		{
 			// remove the splash screen elements
 			this->wipeElements();

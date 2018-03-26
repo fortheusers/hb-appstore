@@ -1,4 +1,4 @@
-#include "TextElement.hpp"
+#include "MainDisplay.hpp"
 
 TextElement::TextElement(const char* text, int size, SDL_Color* color)
 {
@@ -24,12 +24,23 @@ void TextElement::render(Element* parent)
 
 SDL_Surface* TextElement::renderText(std::string& message, int size)
 {
+	std::string key = message + std::to_string(size);
+	
+	// try to find it in the cache first
+	if (MainDisplay::cache.count(key))
+		return &MainDisplay::cache[key];
+	
+	// not found, make/render it
+	
 	TTF_Font *font = TTF_OpenFont("./res/productsans.ttf", size);
 	
 	SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), this->color);
 	
 	//	SDL_FreeSurface(surf);
 	TTF_CloseFont(font);
+	
+	// save it to the cache for later
+	MainDisplay::cache[key] = *surf;
 	
 	return surf;
 }

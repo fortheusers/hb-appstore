@@ -11,12 +11,12 @@ public:
 	void render(Element* parent);
 	void update();
 	
-	Get* get;
-	const char* category;
+	Get* get = NULL;
+	const char* category = "*";
 	
 	// how much time is left in an elastic-type flick/scroll
 	// set by the last distance traveled in a scroll, and counts down every frame
-	int elasticCounter;
+	int elasticCounter = 0;
 	
 	// the currently displayed subscreen (NULL otherwise)
 	AppPopup* subscreen = NULL;
