@@ -1,10 +1,13 @@
 #include "MainDisplay.hpp"
-
-std::unordered_map<std::string, SDL_Surface> MainDisplay::cache;
+#include "AppCard.hpp"
+#include "../libs/get/src/Utils.hpp"
 
 MainDisplay::MainDisplay(Get* get)
 {
 	this->get = get;
+	
+	// populate image cache with any local version info if it exists
+	this->imageCache = new ImageCache(get->tmp_path);
 	
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		printf("SDL init failed: %s\n", SDL_GetError());
@@ -68,13 +71,50 @@ bool MainDisplay::process(SDL_Event* event)
 		this->count++;
 		
 		// should be a progress bar
-		((ProgressBar*)this->elements[0])->percent = (this->count / ((float)this->get->packages.size()));
+		if (this->get->packages.size() != 1)
+			((ProgressBar*)this->elements[0])->percent = (this->count / ((float)this->get->packages.size()-1));
 		
 		// get the package whose icon+screen to process
+		Package* current = this->get->packages[this->count - 1];
 		
+		// the path to the cache location of the icon and screen for this pkg_name and version number
+		std::string key_path = imageCache->cache_path + current->pkg_name;
 		
-		if (this->count == this->get->packages.size())	//TODO: replace with sum of apps*2
+		// check if this package exists in our cache, but the version doesn't match
+		// (if (it's not in the cache) OR (it's in the cache but the version doesn't match)
+		if (this->imageCache->version_cache.count(current->pkg_name) == 0 ||
+			(this->imageCache->version_cache.count(current->pkg_name) &&
+			 this->imageCache->version_cache[current->pkg_name] != current->version))
 		{
+			// the version in our cache doesn't match the one that will be on the server
+			// so we need to download the images now
+			mkdir(key_path.c_str(), 0700);
+			
+			bool success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/icon.png", key_path + "/icon.png");
+			if (!success) // manually add defualt icon to cache if downloading failed
+				cp("res/default.png", (key_path + "/icon.png").c_str());
+			
+			success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/screen.png", key_path + "/screen.png");
+			if (!success)
+				cp("res/noscreen.png", (key_path + "/screen.png").c_str());
+
+			// add these versions to the version map
+			this->imageCache->version_cache[current->pkg_name] = current->version;
+		}
+		
+		// whether we just downloaded it or it was already there from the cache, load this image element into our memory cache
+		// (making an AppCard and calling update() will do this, even if we don't intend to do anything with it yet)
+		AppCard a(current);
+		a.update();
+		
+		// write the version we just got to the cache as well so that we can know whether or not we need to up date it next time
+		
+		// are we done processing all packages
+		if (this->count == this->get->packages.size())
+		{
+			// write whatever we have in the icon version cache to a file
+			this->imageCache->writeVersionCache();
+			
 			// remove the splash screen elements
 			this->wipeElements();
 			

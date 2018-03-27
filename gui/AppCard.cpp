@@ -1,5 +1,6 @@
 #include "AppCard.hpp"
 #include "AppList.hpp"
+#include "ImageCache.hpp"
 
 AppCard::AppCard(Package* package)
 {
@@ -14,8 +15,8 @@ void AppCard::update()
 {
 	// create the layout of the app card (all relative)
 	
-	// icon (TODO: look up cached image from load)
-	ImageElement* icon = new ImageElement("res/default.png");
+	// icon, and look up cached image to load
+	ImageElement* icon = new ImageElement((ImageCache::cache_path + this->package->pkg_name + "/icon.png").c_str());
 	icon->position(this->x + 10, this->y + 10);
 	this->elements.push_back(icon);
 	

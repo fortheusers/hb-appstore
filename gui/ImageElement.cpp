@@ -5,9 +5,9 @@ ImageElement::ImageElement(const char* path)
 	std::string key = std::string(path);
 	
 	// try to find it in the cache first
-	if (MainDisplay::cache.count(key))
+	if (ImageCache::cache.count(key))
 	{
-		this->imgSurface = &MainDisplay::cache[key];
+		this->imgSurface = &ImageCache::cache[key];
 		return;
 	}
 	
@@ -19,7 +19,8 @@ ImageElement::ImageElement(const char* path)
 	this->imgSurface = IMG_Load( path );
 	
 	// add to cache for next time
-	MainDisplay::cache[key] = *(this->imgSurface);
+	if (this->imgSurface != NULL)
+		ImageCache::cache[key] = *(this->imgSurface);
 }
 
 void ImageElement::render(Element* parent)

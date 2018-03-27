@@ -1,6 +1,7 @@
 #include "AppList.hpp"
 #include "ProgressBar.hpp"
 #include "../libs/get/src/Get.hpp"
+#include "ImageCache.hpp"
 
 AppPopup::AppPopup(Package* package)
 {
@@ -55,7 +56,8 @@ AppPopup::AppPopup(Package* package)
 	this->elements.push_back(title);
 	
 	// TODO: replace with actual screen shot from cache
-	ImageElement* screen = new ImageElement("res/noscreen.png");
+	ImageElement* screen = new ImageElement((ImageCache::cache_path + this->package->pkg_name + "/screen.png").c_str());
+
 	screen->position(469, 160);
 	this->elements.push_back(screen);
 	

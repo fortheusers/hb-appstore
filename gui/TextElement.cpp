@@ -27,8 +27,8 @@ SDL_Surface* TextElement::renderText(std::string& message, int size)
 	std::string key = message + std::to_string(size);
 	
 	// try to find it in the cache first
-	if (MainDisplay::cache.count(key))
-		return &MainDisplay::cache[key];
+	if (ImageCache::cache.count(key))
+		return &ImageCache::cache[key];
 	
 	// not found, make/render it
 	
@@ -40,7 +40,7 @@ SDL_Surface* TextElement::renderText(std::string& message, int size)
 	TTF_CloseFont(font);
 	
 	// save it to the cache for later
-	MainDisplay::cache[key] = *surf;
+	ImageCache::cache[key] = *surf;
 	
 	return surf;
 }

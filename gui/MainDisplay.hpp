@@ -4,6 +4,7 @@
 #include "ProgressBar.hpp"
 #include "Sidebar.hpp"
 #include "AppList.hpp"
+#include "ImageCache.hpp"
 #include <unordered_map>
 
 class MainDisplay : public Element
@@ -16,9 +17,7 @@ public:
 	void update();
 	
 	Get* get = NULL;
-	
-	// a map of all surfaces that have been displayed
-	static std::unordered_map<std::string, SDL_Surface> cache;
+	ImageCache* imageCache = NULL;
 	
 	bool touchMode = true;
 	
