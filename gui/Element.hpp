@@ -1,6 +1,6 @@
 #include <vector>
 #include <SDL/SDL.h>
-#include <SDL/SDL_TTF.h>
+#include <SDL/SDL_ttf.h>
 
 #pragma once
 

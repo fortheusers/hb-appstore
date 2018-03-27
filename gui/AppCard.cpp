@@ -18,6 +18,7 @@ void AppCard::update()
 	// icon, and look up cached image to load
 	ImageElement* icon = new ImageElement((ImageCache::cache_path + this->package->pkg_name + "/icon.png").c_str());
 	icon->position(this->x + 10, this->y + 10);
+	icon->resize(256, 150);
 	this->elements.push_back(icon);
 	
 	int size = 13;

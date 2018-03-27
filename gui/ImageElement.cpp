@@ -1,8 +1,10 @@
 #include "MainDisplay.hpp"
+#include <SDL/SDL_rotozoom.h>
 
 ImageElement::ImageElement(const char* path)
 {
 	std::string key = std::string(path);
+	this->path = path;
 	
 	// try to find it in the cache first
 	if (ImageCache::cache.count(key))
@@ -34,5 +36,13 @@ void ImageElement::render(Element* parent)
 
 void ImageElement::resize(int width, int height)
 {
-	// TODO: when moving to SDL2, do a resize here
+	if (width == this->imgSurface->w && height == this->imgSurface->h)
+		return;		// already the right size
+	
+	SDL_Surface* delme = this->imgSurface;
+
+	this->imgSurface = rotozoomSurfaceXY(this->imgSurface, 0, ((double)width)/this->imgSurface->w, ((double)height)/this->imgSurface->h, 1);
+
+	// delete the old surface, and update the cache
+	ImageCache::cache[this->path] = *(this->imgSurface);
 }

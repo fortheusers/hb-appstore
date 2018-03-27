@@ -22,6 +22,12 @@ bool AppList::process(SDL_Event* event)
 	// only process any events for AppList if there's no subscreen
 	if (this->subscreen == NULL)
 	{
+		// process some joycon input events
+		if (event->type == SDL_KEYDOWN)
+		{
+//			if (event->key.keysym.sym == SDLK_UP)
+		}
+			
 		if (event->type == SDL_MOUSEBUTTONDOWN)
 		{
 			// saw mouse down so set it in our element object

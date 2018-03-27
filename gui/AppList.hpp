@@ -20,4 +20,5 @@ public:
 	
 	// the currently displayed subscreen (NULL otherwise)
 	AppPopup* subscreen = NULL;
+		
 };

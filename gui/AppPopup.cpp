@@ -57,8 +57,8 @@ AppPopup::AppPopup(Package* package)
 	
 	// TODO: replace with actual screen shot from cache
 	ImageElement* screen = new ImageElement((ImageCache::cache_path + this->package->pkg_name + "/screen.png").c_str());
-
 	screen->position(469, 160);
+	screen->resize(727, 178);
 	this->elements.push_back(screen);
 	
 	// app+package+author info:
@@ -77,7 +77,6 @@ AppPopup::AppPopup(Package* package)
 	TextElement* version = new TextElement(package->version.c_str(), 17, &gray);
 	version->position(550, 395);
 	this->elements.push_back(version);
-	
 	
 }
 

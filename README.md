@@ -18,7 +18,7 @@ You should already have setup and ran HBL once before, [according to these instr
    - when you're done hit home to exit (and album again to go back to hbmenu)
 
 ### Building
-Setup devkitA64 and libnx [using the installer](http://switchbrew.org/index.php?title=Setting_up_Development_Environment), and then set up SDL1.2 and the portlibs according to the [instructions here](https://gbatemp.net/threads/sdl-1-2-15-for-switch-libnx-based.497412/)* Currently, this project uses the zlib and freetype portlibs.
+Setup devkitA64 and libnx [using the installer](http://switchbrew.org/index.php?title=Setting_up_Development_Environment), and then set up SDL1.2 according to the [instructions here](https://gbatemp.net/threads/sdl-1-2-15-for-switch-libnx-based.497412/)* Currently, this project also uses the zlib and freetype portlibs, which can be installed from [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702).
 
 Once it's all setup, recursively clone the repo and run make:
 ```
@@ -28,8 +28,6 @@ make
 ```
 
 If all goes well, `appstore.nro` should be sitting in the current directory.
-
-*(as of 3/22 the portlibs repo is gone-- the portlibs are undergoing reorganization. In the meantime, the old version is [here](https://github.com/vgmoose/Switch_portlibs.git).) 
 
 ### Maintaining a repo
 See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for setting up a repository. Everything is designed to be statically hosted. If there's no repo provided in the `repos.json` config file, then it will generate a default one pointing to [switchbru.com/appstore](http://switchbru.com/appstore/).
