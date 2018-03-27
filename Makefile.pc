@@ -6,7 +6,7 @@ MINIZIP_O := zip.o ioapi.o unzip.o
 
 all:
 	gcc -c $(MINIZIP)/*.c
-	g++ -g -std=gnu++11 *.cpp ./console/*.cpp ./gui/*.cpp -lSDL -lSDLmain -lSDL_image -lSDL_ttf ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.bin -fstack-protector-all -DNOCURL
+	g++ -g -std=gnu++11 *.cpp ./console/*.cpp ./gui/*.cpp -lSDL -lSDLmain -lSDL_image -lSDL_ttf -lSDL_gfx ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.bin -fstack-protector-all -DNOCURL
 
 macos:
 	gcc -c $(MINIZIP)/*.c
