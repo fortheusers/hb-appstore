@@ -1,3 +1,6 @@
+#ifndef APPPOPUP_H_
+#define APPPOPUP_H_
+
 #include "TextElement.hpp"
 #include "ImageElement.hpp"
 #include "../libs/get/src/Package.hpp"
@@ -12,3 +15,5 @@ public:
 	bool operating = false;
 	Package* package;
 };
+
+#endif

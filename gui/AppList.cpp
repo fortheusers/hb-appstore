@@ -1,7 +1,7 @@
 #include "AppList.hpp"
 #include "AppCard.hpp"
 
-AppList::AppList(Get* get)
+AppList::AppList(Get* get, Sidebar* sidebar)
 {
 	this->x = 400;
 	
@@ -11,7 +11,8 @@ AppList::AppList(Get* get)
 	// the main get instance that contains repo info and stuff
 	this->get = get;
 	
-	this->category = "*";
+	// the sidebar, which will store the currently selected category info
+	this->sidebar = sidebar;
 	
 	// update current app listing
 	update();
@@ -30,6 +31,10 @@ bool AppList::process(SDL_Event* event)
 			
 		if (event->type == SDL_MOUSEBUTTONDOWN)
 		{
+			// make sure that the mouse down's X coordinate is over the app list (not sidebar)
+			if (event->motion.x < this->x)
+				return false;
+			
 			// saw mouse down so set it in our element object
 			this->dragging = true;
 			this->lastMouseY = event->motion.y;
@@ -102,27 +107,37 @@ void AppList::update()
 	// total apps we're interested in so far
 	int count = 0;
 	
-	// the title of this category
-	SDL_Color black = { 0, 0, 0, 0xff };
-	TextElement* category = new TextElement("All Apps", 28, &black);
-	category->position(20, 90);
-	this->elements.push_back(category);
+	// the current category value from the sidebar
+	std::string curCategoryValue = this->sidebar->currentCatValue();
 	
 	for (int x=0; x<get->packages.size(); x++)
 	{
 		// if we're on all categories, or this package matches the current category
-//		if (this->category == "*" || get->packages[x]->category == this->category)
-//		{
+		if (curCategoryValue == "*" || curCategoryValue == get->packages[x]->category)
+		{
 			AppCard* card = new AppCard(get->packages[x]);
-			
-			// position at proper x, y coordinates (TODO: out of bounds for screen -> don't draw)
-			card->position(10 + (x%3)*265, 130 + 210*(x/3));
-			card->update();
 			
 			this->elements.push_back(card);
 			
 			// we drew an app, so increase the displayed app counter
 			count ++;
-//		}
+		}
 	}
+	
+	// position the filtered app card list
+	for (int x=0; x<this->elements.size(); x++)
+	{
+		// every element after the first should be an app card (we just added them)
+		AppCard* card = (AppCard*) elements[x];
+		
+		// position at proper x, y coordinates
+		card->position(10 + (x%3)*265, 130 + 210*(x/3));
+		card->update();
+	}
+	
+	// the title of this category (from the sidebar)
+	SDL_Color black = { 0, 0, 0, 0xff };
+	TextElement* category = new TextElement(this->sidebar->currentCatName().c_str(), 28, &black);
+	category->position(20, 90);
+	this->elements.push_back(category);
 }

@@ -1,18 +1,19 @@
 #include "TextElement.hpp"
 #include "ImageElement.hpp"
 #include "AppPopup.hpp"
+#include "Sidebar.hpp"
 #include "../libs/get/src/Get.hpp"
 
 class AppList : public Element
 {
 public:
-	AppList(Get* get);
+	AppList(Get* get, Sidebar* sidebar);
 	bool process(SDL_Event* event);
 	void render(Element* parent);
 	void update();
 	
 	Get* get = NULL;
-	const char* category = "*";
+	Sidebar* sidebar = NULL;
 	
 	// how much time is left in an elastic-type flick/scroll
 	// set by the last distance traveled in a scroll, and counts down every frame
