@@ -94,6 +94,7 @@ bool AppCard::process(SDL_Event* event)
 				
 				// set the subscreen variable too, to acces it easier
 				((AppList*)this->parent)->subscreen = popup;
+				AppPopup::frontmostPopup = popup;
 			}
 		}
 		

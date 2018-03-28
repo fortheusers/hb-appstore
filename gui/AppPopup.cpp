@@ -1,7 +1,9 @@
 #include "AppList.hpp"
-#include "ProgressBar.hpp"
 #include "../libs/get/src/Get.hpp"
+#include "../libs/get/src/Utils.hpp"
 #include "ImageCache.hpp"
+
+AppPopup* AppPopup::frontmostPopup = NULL;
 
 AppPopup::AppPopup(Package* package)
 {
@@ -13,13 +15,6 @@ AppPopup::AppPopup(Package* package)
 	ImageElement* popup = new ImageElement("res/popup.png");
 	popup->position(469, 109);
 	this->elements.push_back(popup);
-	
-	// progress bar, element 2
-	ProgressBar* pbar = new ProgressBar();
-	pbar->position(580, 450);
-	pbar->color = 0xff0000ff;
-	pbar->width = 500;
-	this->elements.push_back(pbar);
 	
 	SDL_Color red = {0xFF, 0x00, 0x00, 0xff};
 	SDL_Color gray = {0x50, 0x50, 0x50, 0xff};
@@ -102,6 +97,7 @@ bool AppPopup::process(SDL_Event* event)
 		int mx = event->motion.x;
 		int my = event->motion.y;
 		
+		// install/remove button pressed
 		if (mx >= x &&
 			mx <= x + w &&
 			my >= y &&
@@ -109,9 +105,15 @@ bool AppPopup::process(SDL_Event* event)
 		{
 			this->operating = true;
 			
+			// add a progress bar to the screen to be drawn
+			this->pbar = new ProgressBar();
+			pbar->position(580, 495);
+			pbar->color = 0xff0000ff;
+			pbar->width = 500;
+			this->elements.push_back(pbar);
+			
 			// setup progress bar callback
-			// TODO: this
-//			this->package->progresssCallback =
+			networking_callback = AppPopup::updateCurrentlyDisplayedPopup;
 			
 			// install or remove this package based on the package status
 			if (this->package->status == INSTALLED)
@@ -122,12 +124,14 @@ bool AppPopup::process(SDL_Event* event)
 			// refresh the screen
 			this->wipeElements();
 			((AppList*)this->parent)->subscreen = NULL;
+			AppPopup::frontmostPopup = NULL;
 			
 			((AppList*)this->parent)->update();
 			
 			this->operating = false;
 		}
 		
+		// close button pressed
 		if (mx >= x2 &&
 			mx <= x2 + w &&
 			my >= y &&
@@ -165,5 +169,32 @@ void AppPopup::render(Element* parent)
 		// go through every subelement and run render
 		// (use "this" instead of "parent" to be absolute)
 		this->elements[x]->render(this);
+	}
+}
+
+void AppPopup::updateCurrentlyDisplayedPopup(float amount)
+{
+	AppPopup* popup = AppPopup::frontmostPopup;
+	
+	// update the amount
+	if (popup != NULL)
+	{
+		if (popup->pbar != NULL)
+			popup->pbar->percent = amount;
+		
+		// force render the element right here (and it's progress bar too)
+		if (popup->parent != NULL && popup->parent->parent != NULL)
+			popup->parent->parent->render(NULL);
+		
+		// force update the main screen
+		if (popup->window_surface != NULL)
+		{
+			SDL_Flip(popup->window_surface);
+			
+			// must call poll event here to allow SDL to redraw the screen
+			SDL_Event event;
+			SDL_PollEvent(&event);
+		}
+		
 	}
 }

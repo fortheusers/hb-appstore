@@ -14,6 +14,7 @@ public:
 	
 	Get* get = NULL;
 	Sidebar* sidebar = NULL;
+	int highlighted = 1;
 	
 	// how much time is left in an elastic-type flick/scroll
 	// set by the last distance traveled in a scroll, and counts down every frame
@@ -21,5 +22,5 @@ public:
 	
 	// the currently displayed subscreen (NULL otherwise)
 	AppPopup* subscreen = NULL;
-		
+	
 };

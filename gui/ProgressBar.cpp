@@ -16,7 +16,7 @@ void ProgressBar::render(Element* parent)
 	
 	int blue = this->color;
 	int gray = 0x989898ff;
-	int blue2 = SDL_MapRGB(parent->window_surface->format, 0x56, 0xc1, 0xdf);
+	int blue2 = SDL_MapRGB(parent->window_surface->format, (blue >> 24) & 0xff, (blue >> 16) & 0xff, (blue >> 8) & 0xff);
 	int gray2 = SDL_MapRGB(parent->window_surface->format, 0x98, 0x98, 0x98);
 	
 	// draw full grayed out bar first

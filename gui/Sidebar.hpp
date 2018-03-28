@@ -14,6 +14,7 @@ public:
 	std::string currentCatValue();
 	
 	AppList* appList = NULL;
+	int highlighted = -1;
 	
 	void render(Element* parent);
 	bool process(SDL_Event* event);

@@ -1,7 +1,6 @@
 #include "Element.hpp"
 #include "TextElement.hpp"
 #include "ImageElement.hpp"
-#include "ProgressBar.hpp"
 #include "AppList.hpp"
 #include "ImageCache.hpp"
 #include <unordered_map>

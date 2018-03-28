@@ -1,5 +1,6 @@
 #include "AppList.hpp"
 #include "AppCard.hpp"
+#include <SDL/SDL_gfxPrimitives.h>
 
 AppList::AppList(Get* get, Sidebar* sidebar)
 {
@@ -31,6 +32,8 @@ bool AppList::process(SDL_Event* event)
 			
 		if (event->type == SDL_MOUSEBUTTONDOWN)
 		{
+			this->highlighted = -1;
+
 			// make sure that the mouse down's X coordinate is over the app list (not sidebar)
 			if (event->motion.x < this->x)
 				return false;
@@ -89,6 +92,9 @@ bool AppList::process(SDL_Event* event)
 
 void AppList::render(Element* parent)
 {
+	if (this->parent == NULL)
+		this->parent = parent;
+	
 	// draw a white background, 870 wide
 	SDL_Rect dimens = { 0, 0, 920, 720 };
 	dimens.x = this->x - 35;
@@ -97,6 +103,15 @@ void AppList::render(Element* parent)
 	this->window_surface = parent->window_surface;
 	
 	super::render(this);
+	
+	// draw the cursor at the highlighted position, if appropriate
+	if (this->highlighted >= 0)
+	{
+		int x = this->x + 15 + (this->highlighted%3)*265;		// TODO: extract into formula method
+		int y = this->y + 135 + 210*(this->highlighted/3);
+		
+		rectangleRGBA(parent->window_surface, x, y, x + 265, y + 205, 0xff, 0x00, 0xff, 0xff);
+	}
 }
 
 void AppList::update()
@@ -131,7 +146,7 @@ void AppList::update()
 		AppCard* card = (AppCard*) elements[x];
 		
 		// position at proper x, y coordinates
-		card->position(10 + (x%3)*265, 130 + 210*(x/3));
+		card->position(10 + (x%3)*265, 130 + 210*(x/3));		// TODO: extract formula into method (see above)
 		card->update();
 	}
 	

@@ -8,5 +8,6 @@ public:
 	float percent = 0;
 	
 	int color;
+	
 	int width = 0;
 };
