@@ -1,4 +1,4 @@
-## Switch App Store
+## Switch Homebrew App Store ![travis](https://travis-ci.org/vgmoose/appstorenx.svg?branch=master)
 A graphical frontend to the [get package manager](https://github.com/vgmoose/get) for downloading and managing homebrew on the Nintendo Switch. This is a successor to the [Wii U Homebrew App Store](https://github.com/vgmoose/hbas).
 
 ### Usage
