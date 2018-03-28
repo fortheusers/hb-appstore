@@ -7,7 +7,8 @@ To run this program, a 3.0.0 firmware Nintendo Switch with access to hbmenu is r
 You should already have setup and ran HBL once before, [according to these instructions](https://switchbrew.github.io/nx-hbl/).
 
 #### Quick summary
-- download latest [appstore.nro](https://github.com/vgmoose/appstorenx/releases) to `sd:/switch/appstore/appstore.nro`
+- download latest [appstore folder](https://github.com/vgmoose/appstorenx/releases) to `sd:/switch/appstore/`
+   - make sure that the `res` folder is next to `appstore.nro` inside of the `appstore` folder
 - download latest [hbmenu.nro](https://github.com/switchbrew/nx-hbmenu/releases/latest) to `sd:/hbmenu.nro`
 - put the SD card (recommended formatted FAT32) in the Switch
 - set the DNS server as `104.236.106.125` and try to connect to Internet
@@ -33,8 +34,11 @@ If all goes well, `appstore.nro` should be sitting in the current directory.
 See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for setting up a repository. Everything is designed to be statically hosted. If there's no repo provided in the `repos.json` config file, then it will generate a default one pointing to [switchbru.com/appstore](http://switchbru.com/appstore/).
 
 ### Building for PC
-There's a separate makefile for building the SDL1.2 app for PC. It requires libsdl, libcurl, and zlib installed.
+There's a separate makefile for building the SDL1.2 app for PC. It requires libsdl, libcurl, and zlib installed. Below instructions are for Ubuntu, but should be similar on other platforms:
 ```
+sudo apt-get install libsdl1.2-dev libsdl-ttf2.0-dev libsdl-image1.2-dev libsdl-gfx1.2-dev zlib1g-dev gcc g++ git
+git clone --recursive https://github.com/vgmoose/appstorenx.git
+cd appstorenx
 make -f Makefile.pc
 ```
 

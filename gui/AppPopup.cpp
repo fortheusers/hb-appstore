@@ -83,15 +83,17 @@ AppPopup::AppPopup(Package* package)
 bool AppPopup::process(SDL_Event* event)
 {
 	// don't process any keystrokes if an operation is in progress
-	if (operating)
+	if (this->operating)
 		return false;
 	
 	// we need to detect if they hit download/update/remove or close
 	// (this is not a great way to do this)
-	if (event->type == SDL_MOUSEBUTTONUP)
+	if (event->type == SDL_MOUSEBUTTONUP && this->dragging)
 	{
 		if (this->parent == NULL)
 			return false;
+		
+		this->dragging = false;
 		
 		int x = 570, y = 465;
 		int x2 = 950;
@@ -143,6 +145,9 @@ bool AppPopup::process(SDL_Event* event)
 			}
 		}
 	}
+	
+	if (event->type == SDL_MOUSEBUTTONDOWN)
+		this->dragging = true;
 	
 	return false;
 }
