@@ -167,18 +167,38 @@ void AppList::update()
 	// remove any old elements
 	this->wipeElements();
 	
+	// quickly create a vector of "sorted" apps
+	// (they must be sorted by UPDATE -> INSTALLED -> GET)
+	// TODO: sort this a better way, and also don't use 3 distinct for loops
+	std::vector<Package*> sorted;
+	
+	// update
+	for (int x=0; x<get->packages.size(); x++)
+		if (get->packages[x]->status == UPDATE)
+			sorted.push_back(get->packages[x]);
+	
+	// installed
+	for (int x=0; x<get->packages.size(); x++)
+		if (get->packages[x]->status == INSTALLED)
+			sorted.push_back(get->packages[x]);
+	
+	// get
+	for (int x=0; x<get->packages.size(); x++)
+		if (get->packages[x]->status == GET)
+			sorted.push_back(get->packages[x]);
+	
 	// total apps we're interested in so far
 	int count = 0;
 	
 	// the current category value from the sidebar
 	std::string curCategoryValue = this->sidebar->currentCatValue();
 	
-	for (int x=0; x<get->packages.size(); x++)
+	for (int x=0; x<sorted.size(); x++)
 	{
 		// if we're on all categories, or this package matches the current category
-		if (curCategoryValue == "*" || curCategoryValue == get->packages[x]->category)
+		if (curCategoryValue == "*" || curCategoryValue == sorted[x]->category)
 		{
-			AppCard* card = new AppCard(get->packages[x]);
+			AppCard* card = new AppCard(sorted[x]);
 			card->index = count;
 			
 			this->elements.push_back(card);
