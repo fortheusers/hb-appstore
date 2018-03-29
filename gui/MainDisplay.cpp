@@ -106,6 +106,7 @@ bool MainDisplay::process(SDL_Event* event)
 		// (making an AppCard and calling update() will do this, even if we don't intend to do anything with it yet)
 		AppCard a(current);
 		a.update();
+		AppPopup b(current);
 		
 		// write the version we just got to the cache as well so that we can know whether or not we need to up date it next time
 		

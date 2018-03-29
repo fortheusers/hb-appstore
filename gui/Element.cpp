@@ -24,6 +24,11 @@ void Element::position(int x, int y)
 	this->y = y;
 }
 
+void Element::hide()
+{
+	this->hidden = true;
+}
+
 void Element::wipeElements()
 {
 	for (int x=0; x<this->elements.size(); x++)

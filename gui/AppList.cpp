@@ -25,14 +25,62 @@ bool AppList::process(SDL_Event* event)
 	if (this->subscreen == NULL)
 	{
 		// process some joycon input events
-		if (event->type == SDL_KEYDOWN)
+		if (event->type == SDL_KEYUP)
 		{
-//			if (event->key.keysym.sym == SDLK_UP)
+			if (event->key.keysym.sym == SDLK_UP || event->key.keysym.sym == SDLK_DOWN ||
+				event->key.keysym.sym == SDLK_LEFT || event->key.keysym.sym == SDLK_RIGHT ||
+				event->key.keysym.sym == SDLK_a || event->key.keysym.sym == SDLK_b)
+			{
+				// if we were in touch mode, draw the cursor in the applist
+				// and reset our position
+				if (this->touchMode)
+				{
+					this->touchMode = false;
+					this->highlighted = 0;
+					this->y = 0;		// reset scroll TODO: maintain scroll when switching back from touch mode
+					return false;
+				}
+				
+				// touchmode is false, but our highlight value is negative
+				// (do nothing, let sidebar update our highlight value)
+				if (this->highlighted < 0) return false;
+				
+				// if we got a LEFT key while on the left most edge already, transfer to categories
+				if (this->highlighted%3==0 && event->key.keysym.sym == SDLK_LEFT)
+				{
+					this->highlighted = -1;
+					this->sidebar->highlighted = 0;
+					return false;
+				}
+				
+				// similarly, prevent a RIGHT from wrapping to the next line
+				if (this->highlighted%3==2 && event->key.keysym.sym == SDLK_RIGHT) return false;
+				
+				// adjust the cursor by 1 for left or right
+				this->highlighted += -1*(event->key.keysym.sym == SDLK_LEFT) + (event->key.keysym.sym == SDLK_RIGHT);
+				
+				// adjust it by 3 for up and down
+				this->highlighted += -3*(event->key.keysym.sym == SDLK_UP) + 3*(event->key.keysym.sym == SDLK_DOWN);
+				
+				// don't let the cursor go out of bounds
+				if (this->highlighted < 0) this->highlighted = 0;
+				if (this->highlighted >= this->totalCount) this->highlighted = this->totalCount-1;
+				
+				// if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
+				// TODO: make it so that the cursor can go to the top of the screen
+				if (this->highlighted >= 6)
+					this->y = -1*((this->highlighted-6)/3)*210 - 60;
+				else
+					this->y = 0;		// at the top of the screen
+				
+			}
 		}
 			
 		if (event->type == SDL_MOUSEBUTTONDOWN)
 		{
+			// got a touch, so let's enter touchmode
 			this->highlighted = -1;
+			this->touchMode = true;
 
 			// make sure that the mouse down's X coordinate is over the app list (not sidebar)
 			if (event->motion.x < this->x)
@@ -102,8 +150,6 @@ void AppList::render(Element* parent)
 	SDL_FillRect(parent->window_surface, &dimens, SDL_MapRGBA(parent->window_surface->format, 0xFF, 0xFF, 0xFF, 0xFF));
 	this->window_surface = parent->window_surface;
 	
-	super::render(this);
-	
 	// draw the cursor at the highlighted position, if appropriate
 	if (this->highlighted >= 0)
 	{
@@ -112,6 +158,8 @@ void AppList::render(Element* parent)
 		
 		rectangleRGBA(parent->window_surface, x, y, x + 265, y + 205, 0xff, 0x00, 0xff, 0xff);
 	}
+	
+	super::render(this);
 }
 
 void AppList::update()
@@ -131,6 +179,7 @@ void AppList::update()
 		if (curCategoryValue == "*" || curCategoryValue == get->packages[x]->category)
 		{
 			AppCard* card = new AppCard(get->packages[x]);
+			card->index = count;
 			
 			this->elements.push_back(card);
 			
@@ -138,6 +187,8 @@ void AppList::update()
 			count ++;
 		}
 	}
+	
+	this->totalCount = count;
 	
 	// position the filtered app card list
 	for (int x=0; x<this->elements.size(); x++)

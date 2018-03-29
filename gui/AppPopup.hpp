@@ -16,6 +16,7 @@ public:
 	bool operating = false;
 	Package* package;
 	ProgressBar* pbar = NULL;
+	int highlighted = -1;
 	
 	// the callback method to update the currently displayed pop up (and variables it needs)
 	static void updateCurrentlyDisplayedPopup(float amount);

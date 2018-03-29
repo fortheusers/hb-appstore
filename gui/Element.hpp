@@ -13,6 +13,9 @@ public:
 	// display the current state of the display
 	virtual void render(Element* parent);
 	
+	// hide the element
+	void hide();
+	
 	// visible GUI child elements of this element
 	std::vector<Element*> elements;
 	
@@ -33,6 +36,9 @@ public:
 	
 	// the parent element (can sometimes be null if it isn't set)
 	Element* parent = NULL;
+	
+	// whether this element should skip rendering or not
+	bool hidden = false;
 	
 	typedef Element super;
 	

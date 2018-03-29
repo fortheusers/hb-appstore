@@ -13,5 +13,8 @@ public:
 	Package* package;
 	int width = 0;
 	int height = 0;
+	
+	// the number of which package this is in the list
+	int index;
 };
 

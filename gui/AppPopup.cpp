@@ -2,6 +2,7 @@
 #include "../libs/get/src/Get.hpp"
 #include "../libs/get/src/Utils.hpp"
 #include "ImageCache.hpp"
+#include <SDL/SDL_gfxPrimitives.h>
 
 AppPopup* AppPopup::frontmostPopup = NULL;
 
@@ -9,9 +10,11 @@ AppPopup::AppPopup(Package* package)
 {
 	this->package = package;
 	
+	// background (element 0)
 	ImageElement* shade = new ImageElement("res/shade.png");
 	this->elements.push_back(shade);
 	
+	// popup card (element 1)
 	ImageElement* popup = new ImageElement("res/popup.png");
 	popup->position(469, 109);
 	this->elements.push_back(popup);
@@ -36,12 +39,12 @@ AppPopup::AppPopup(Package* package)
 			action = "?";
 	}
 	
-	// download/update/remove button (3)
+	// download/update/remove button (2)
 	TextElement* download = new TextElement(action, 25, &red);
 	download->position(608, 480);
 	this->elements.push_back(download);
 	
-	// close button (4)
+	// close button (3)
 	TextElement* close = new TextElement("Close", 25, &red);
 	close->position(993, 480);
 	this->elements.push_back(close);
@@ -81,9 +84,18 @@ bool AppPopup::process(SDL_Event* event)
 	if (this->operating)
 		return false;
 	
+	if (this->highlighted >=0 && event->type == SDL_KEYDOWN)
+	{
+		// update the highlight feature depending on left/right input
+		if (event->key.keysym.sym == SDLK_LEFT)  this->highlighted = 0;
+		if (event->key.keysym.sym == SDLK_RIGHT) this->highlighted = 1;
+	}
+	
 	// we need to detect if they hit download/update/remove or close
 	// (this is not a great way to do this)
-	if (event->type == SDL_MOUSEBUTTONUP && this->dragging)
+	// ((or A button was pressed))
+	if ((event->type == SDL_MOUSEBUTTONUP && this->dragging) ||
+		(event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_a))
 	{
 		if (this->parent == NULL)
 			return false;
@@ -92,18 +104,22 @@ bool AppPopup::process(SDL_Event* event)
 		
 		int x = 570, y = 465;
 		int x2 = 950;
-		int w = 130, h = 55;
+		int w = 160, h = 55;
 		
 		int mx = event->motion.x;
 		int my = event->motion.y;
 		
 		// install/remove button pressed
-		if (mx >= x &&
+		// (or we saw an A button pressed, and the first element is highlighted) (or just B)
+		if ((mx >= x &&
 			mx <= x + w &&
 			my >= y &&
-			my <= y + h)
+			my <= y + h) ||
+			(event->type == SDL_KEYDOWN && ((event->key.keysym.sym == SDLK_a && this->highlighted == 0) || event->key.keysym.sym == SDLK_b)))
 		{
 			this->operating = true;
+			event->key.keysym.sym = SDLK_z;
+			this->highlighted = -1;
 			
 			// add a progress bar to the screen to be drawn
 			this->pbar = new ProgressBar();
@@ -111,6 +127,10 @@ bool AppPopup::process(SDL_Event* event)
 			pbar->color = 0xff0000ff;
 			pbar->width = 500;
 			this->elements.push_back(pbar);
+			
+			// hide the two specific elements for the download/install/remove and close buttons
+			this->elements[2]->hide();
+			this->elements[3]->hide();
 			
 			// setup progress bar callback
 			networking_callback = AppPopup::updateCurrentlyDisplayedPopup;
@@ -132,10 +152,11 @@ bool AppPopup::process(SDL_Event* event)
 		}
 		
 		// close button pressed
-		if (mx >= x2 &&
+		if ((mx >= x2 &&
 			mx <= x2 + w &&
 			my >= y &&
-			my <= y + h)
+			my <= y + h) ||
+			(event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_a && this->highlighted == 1))
 		{
 			// remove elements on this pop up
 			this->wipeElements();
@@ -169,6 +190,18 @@ void AppPopup::render(Element* parent)
 		// go through every subelement and run render
 		// (use "this" instead of "parent" to be absolute)
 		this->elements[x]->render(this);
+	}
+		
+	// draw the currently selected symbol, if appropriate
+	if (this->highlighted >= 0)
+	{
+		int x = 570 + (this->highlighted)*380, y = 465;		// TODO: extract into formula (logic matches same check below in process)
+		int w = 160, h = 55;
+		
+		if (this->package->status == GET && this->highlighted == 0)
+			w += 25;
+		
+		rectangleRGBA(parent->window_surface, x, y, x + w, y + h, 0xff, 0x00, 0xff, 0xff);
 	}
 }
 

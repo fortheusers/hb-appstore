@@ -16,9 +16,7 @@ public:
 	
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;
-	
-	bool touchMode = true;
-	
+		
 private:
 	bool showingSplash = true;
 	int count = 0;
