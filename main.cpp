@@ -46,6 +46,9 @@ int main(int argc, char *argv[])
 		// quit on enter/start
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
 			running = false;
+		
+		if (event.type == SDL_KEYDOWN)
+			SDL_Delay(32); // wait for a bit if we saw key input
 	}
 	
 	return 0;

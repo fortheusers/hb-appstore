@@ -25,8 +25,8 @@ bool AppList::process(SDL_Event* event)
 	if (this->subscreen == NULL)
 	{
 		// process some joycon input events
-		if (event->type == SDL_KEYUP)
-		{
+		if (event->type == SDL_KEYDOWN)
+		{			
 			if (event->key.keysym.sym == SDLK_UP || event->key.keysym.sym == SDLK_DOWN ||
 				event->key.keysym.sym == SDLK_LEFT || event->key.keysym.sym == SDLK_RIGHT ||
 				event->key.keysym.sym == SDLK_a || event->key.keysym.sym == SDLK_b)

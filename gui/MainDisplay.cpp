@@ -106,7 +106,7 @@ bool MainDisplay::process(SDL_Event* event)
 		// (making an AppCard and calling update() will do this, even if we don't intend to do anything with it yet)
 		AppCard a(current);
 		a.update();
-		AppPopup b(current);
+//		AppPopup b(current);		TODO: uncomment this line when the switch gets hardware rendering, it speeds up clicking on specific apps
 		
 		// write the version we just got to the cache as well so that we can know whether or not we need to up date it next time
 		
