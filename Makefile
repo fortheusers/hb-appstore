@@ -6,8 +6,8 @@ MINIZIP         := ./libs/get/src/libs/minizip
 .SUFFIXES:
 #---------------------------------------------------------------------------------
 
-ifeq ($(strip $(DEVKITA64)),)
-$(error "Please set DEVKITA64 in your environment. export DEVKITA64=<path to>DEVKITA64")
+ifeq ($(strip $(DEVKITPRO)),)
+$(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to devkitPro>")
 endif
 
 TOPDIR ?= $(CURDIR)
