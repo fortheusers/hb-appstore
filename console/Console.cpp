@@ -1,7 +1,7 @@
 #include "Console.hpp"
 
 Console::Console()
-{	
+{
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		printf("SDL init failed: %s\n", SDL_GetError());
 		return;
@@ -9,9 +9,10 @@ Console::Console()
 
 	printf("initialized SDL\n");
 
-	this->window_surface = SDL_SetVideoMode(1280,720, 16, 0 /*SDL_FULLSCREEN*/);
-	printf("got window surface\n");
-	
+	this->window = SDL_CreateWindow("n/a", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_WINDOW_SHOWN);
+	printf("created window\n");
+	this->window_surface = SDL_GetWindowSurface(this->window);
+
 	// make background black
 	this->background(0x42, 0x45, 0x48);
 }
@@ -29,7 +30,7 @@ void Console::background(int r, int g, int b)
 
 void Console::update()
 {
-	SDL_Flip(this->window_surface);
+	SDL_UpdateWindowSurface(this->window);
 }
 
 void Console::fillRect(int x, int y, int width, int height, int r, int g, int b)
@@ -39,7 +40,7 @@ void Console::fillRect(int x, int y, int width, int height, int r, int g, int b)
 	rect.y = y*2*8;
 	rect.w = width*2*8;
 	rect.h = height*2*8;
-	
+
 	SDL_FillRect(this->window_surface, &rect, SDL_MapRGBA(this->window_surface->format, b, g, r, 0xFF));
 }
 
@@ -73,16 +74,16 @@ void Console::drawColorString(int xi, int yi, const char* string, int r, int g, 
 {
 	// for every character in the string, if it's within range, render it at the current position
 	// and move over 8 characters
-	
+
 	xi *= 8;
 	yi *= 8;
-	
+
 	char next = -1;
 	int i = 0;
 	while (next != '\0')
 	{
 		next = string[i++];
-		
+
 		// actually draw this char pixel by pixel, if it's within range
 		if (next >= 0)
 		{
@@ -96,17 +97,17 @@ void Console::drawColorString(int xi, int yi, const char* string, int r, int g, 
 			}
 		}
 	}
-	
+
 //	this->update();
 }
 
 
-/** 
+/**
  * 8x8 monochrome bitmap fonts for rendering
  * Author: Daniel Hepper <daniel@hepper.net>
- * 
+ *
  * License: Public Domain
- * 
+ *
  * Based on:
  * // Summary: font8x8.h
  * // 8x8 monochrome bitmap fonts for rendering
@@ -117,7 +118,7 @@ void Console::drawColorString(int xi, int yi, const char* string, int r, int g, 
  * //
  * // License:
  * //     Public Domain
- * 
+ *
  * Fetched from: http://dimensionalrift.homelinux.net/combuster/mos3/?p=viewsource&file=/modules/gfx/font8_8.asm
  **/
 
