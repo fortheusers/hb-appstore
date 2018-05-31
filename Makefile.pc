@@ -12,5 +12,9 @@ macos:
 	gcc -c $(MINIZIP)/*.c
 	g++ -g -std=gnu++11 *.cpp -lSDL2 -lSDL2main -lSDL_gfx -lSDL2_image -lSDL2_ttf -framework Cocoa ./console/*.cpp ./gui/*.cpp ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.exe -fstack-protector-all -DNOCURL
 
+sdl2:
+	gcc -c $(MINIZIP)/*.c
+	g++ -g -std=gnu++11 *.cpp -lSDL2 -lSDL2main -lSDL2_gfx -lSDL2_image -lSDL2_ttf -framework Cocoa ./console/*.cpp ./gui/*.cpp ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.exe -fstack-protector-all -DNOCURL -DSDL2
+
 clean:
 	rm *.o *.bin

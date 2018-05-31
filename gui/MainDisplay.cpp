@@ -74,7 +74,14 @@ bool MainDisplay::process(SDL_Event* event)
 		// should be a progress bar
 		if (this->get->packages.size() != 1)
 			((ProgressBar*)this->elements[0])->percent = (this->count / ((float)this->get->packages.size()-1));
-
+		
+		// no packages, prevent crash TODO: display offline in bottom bar
+		if (this->get->packages.size() == 0)
+		{
+			((ProgressBar*)this->elements[0])->percent = 0;
+			return false;
+		}
+		
 		// get the package whose icon+screen to process
 		Package* current = this->get->packages[this->count - 1];
 
