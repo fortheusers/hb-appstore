@@ -15,7 +15,7 @@ void ProgressBar::render(Element* parent)
 	int y = this->y + parent->y;
 
 	int blue = this->color;
-	int gray = 0x989898ff;
+//	int gray = 0x989898ff;
 
 	// draw full grayed out bar first
 	SDL_Rect gray_rect;
@@ -28,10 +28,10 @@ void ProgressBar::render(Element* parent)
 	SDL_RenderFillRect(parent->renderer, &gray_rect);
 
 	// draw ending "circle"
-	filledCircleColor(parent->renderer, x + this->width, y, 5, gray);
-
+	filledCircleRGBA(parent->renderer, x + this->width, y, 5, 0x98, 0x98, 0x98, 0xff);
+	
 	// draw left "circle" (rounded part of bar)
-	filledCircleColor(parent->renderer, x, y, 5, blue);
+	filledCircleRGBA(parent->renderer, x, y, 5, 0x56, 0xc1, 0xdf, 0xff);
 
 	// draw blue progress bar so far
 	SDL_Rect blue_rect;
@@ -40,10 +40,10 @@ void ProgressBar::render(Element* parent)
 	blue_rect.w = width*this->percent;
 	blue_rect.h = 9;
 
-	SDL_SetRenderDrawColor(parent->renderer, (blue >> 24) & 0xff, (blue >> 16) & 0xff, (blue >> 8) & 0xff, 0xff);	// blue2
+	SDL_SetRenderDrawColor(parent->renderer, 0x56, 0xc1, 0xdf, 0xff);	// blue2
 	SDL_RenderFillRect(parent->renderer, &blue_rect);
 
 	// draw right "circle" (rounded part of bar, and ending)
-	filledCircleColor(parent->renderer, x + width*this->percent, y, 5, blue);
+	filledCircleRGBA(parent->renderer, x + width*this->percent, y, 5, 0x56, 0xc1, 0xdf, 0xff);
 
 }

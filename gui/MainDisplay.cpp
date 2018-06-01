@@ -33,8 +33,11 @@ MainDisplay::MainDisplay(Get* get)
 	int height = 720;
 	int width = 1280;
 
-	this->window = SDL_CreateWindow("n/a", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
-	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_TARGETTEXTURE);
+	this->window = SDL_CreateWindow("AppStore NX", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
+	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+	
+	//Detach the texture
+	SDL_SetRenderTarget(this->renderer, NULL);
 	
 	MainDisplay::mainRenderer = this->renderer;
 
@@ -170,5 +173,6 @@ void MainDisplay::background(int r, int g, int b)
 
 void MainDisplay::update()
 {
-	SDL_UpdateWindowSurface(this->window);
+//	SDL_UpdateWindowSurface(this->window);
+	SDL_RenderPresent(this->renderer);
 }

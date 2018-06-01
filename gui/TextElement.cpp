@@ -22,7 +22,7 @@ void TextElement::render(Element* parent)
 	textLocation.x = this->x + parent->x;
 	textLocation.y = this->y + parent->y;
 	
-	SDL_RenderCopy(parent->renderer, this->textSurface, NULL, &textLocation);
+	SDL_RenderCopy(MainDisplay::mainRenderer, this->textSurface, NULL, &textLocation);
 }
 
 SDL_Texture* TextElement::renderText(std::string& message, int size)
@@ -39,6 +39,7 @@ SDL_Texture* TextElement::renderText(std::string& message, int size)
 	
 	SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), this->color);
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(MainDisplay::mainRenderer, surf);
+	SDL_FreeSurface(surf);
 	
 	//	SDL_FreeSurface(surf);
 	TTF_CloseFont(font);
