@@ -21,13 +21,12 @@ A quick summary of how to run it on 3.0.0 is also included below. For newer firm
    - when you're done hit home to exit (and album again to go back to hbmenu)
 
 ### Building with libnx
-1. Install [devkitA64](http://switchbrew.org/index.php?title=Setting_up_Development_Environment)
-2. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
-3. Install needed Switch dependencies via dkp-pacman:
+1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
+3. Install devkitA64 and needed Switch dependencies via dkp-pacman:
 ```
-sudo dkp-pacman -S libnx switch-bzip2 switch-curl switch-freetype switch-libjpeg-turbo switch-sdl2 switch-sdl2_gfx switch-sdl2_image switch-sdl2_ttf switch-zlib
+sudo dkp-pacman -S devkitA64 libnx switch-tools switch-curl switch-bzip2 switch-curl switch-freetype switch-libjpeg-turbo switch-sdl2 switch-sdl2_gfx switch-sdl2_image switch-sdl2_ttf switch-zlib switch-libpng
 ```
-4. Once it's all setup, recursively clone the repo and run make:
+3. Once it's all setup, recursively clone the repo and run make:
 ```
 git clone --recursive https://github.com/vgmoose/appstorenx.git
 cd appstorenx

@@ -105,7 +105,8 @@ void Sidebar::render(Element* parent)
 	SDL_Rect dimens = { 0, 0, 400, 60 };
 	dimens.y = 150+this->curCategory*70 - 15;		// TODO: extract formula into method
 
-	SDL_FillRect(parent->window_surface, &dimens, SDL_MapRGBA(parent->window_surface->format, 0x67, 0x6a, 0x6d, 0xFF));
+	SDL_SetRenderDrawColor(parent->renderer, 0x67, 0x6a, 0x6d, 0xFF);
+	SDL_RenderFillRect(parent->renderer, &dimens);
 
 	// draw the selected category, if one should be highlighted
 	if (this->highlighted >= 0)

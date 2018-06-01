@@ -2,6 +2,8 @@
 #include "AppCard.hpp"
 #include "../libs/get/src/Utils.hpp"
 
+SDL_Renderer* MainDisplay::mainRenderer = NULL;
+
 MainDisplay::MainDisplay(Get* get)
 {
 	this->get = get;
@@ -33,6 +35,8 @@ MainDisplay::MainDisplay(Get* get)
 
 	this->window = SDL_CreateWindow("n/a", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
 	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_TARGETTEXTURE);
+	
+	MainDisplay::mainRenderer = this->renderer;
 
 	#if defined(SWITCH)
 		// hide cursor for switch
@@ -160,7 +164,8 @@ void MainDisplay::render(Element* parent)
 
 void MainDisplay::background(int r, int g, int b)
 {
-	SDL_FillRect(this->window_surface, NULL, SDL_MapRGBA(this->window_surface->format, r, g, b, 0xFF));
+	SDL_SetRenderDrawColor(this->renderer, r, g, b, 0xFF);
+	SDL_RenderFillRect(this->renderer, NULL);
 }
 
 void MainDisplay::update()

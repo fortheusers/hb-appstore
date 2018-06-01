@@ -8,7 +8,7 @@ public:
 	ImageElement(const char* path);
 	void render(Element* parent);
 
-	SDL_Surface* imgSurface = NULL;
+	SDL_Texture* imgSurface = NULL;
 	const char* path;
 
 	void resize(int width, int height);

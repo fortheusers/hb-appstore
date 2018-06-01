@@ -64,8 +64,10 @@ AppPopup::AppPopup(Package* package)
 	title2->position(550, 345);
 	this->elements.push_back(title2);
 
+	int w, h;
+	SDL_QueryTexture(title2->textSurface, NULL, NULL, &w, &h);
 	TextElement* author = new TextElement(("- " + package->author).c_str(), 20, &gray);
-	author->position(550 + title2->textSurface->w + 5, 345);
+	author->position(550 + w + 5, 345);
 	this->elements.push_back(author);
 
 	TextElement* subtitle = new TextElement(package->short_desc.c_str(), 20, &gray);
@@ -179,8 +181,8 @@ bool AppPopup::process(SDL_Event* event)
 
 void AppPopup::render(Element* parent)
 {
-	if (this->window_surface == NULL)
-		this->window_surface = parent->window_surface;
+	if (this->renderer == NULL)
+		this->renderer = parent->renderer;
 
 	if (this->parent == NULL)
 		this->parent = parent;
@@ -220,9 +222,9 @@ void AppPopup::updateCurrentlyDisplayedPopup(float amount)
 			popup->parent->parent->render(NULL);
 
 		// force update the main screen
-		if (popup->window_surface != NULL)
+		if (popup->renderer != NULL)
 		{
-			SDL_blit(popup->window_surface);
+			SDL_blit(popup->renderer);
 
 			// must call poll event here to allow SDL to redraw the screen
 			SDL_Event event;

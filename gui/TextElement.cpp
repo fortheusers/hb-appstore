@@ -22,28 +22,29 @@ void TextElement::render(Element* parent)
 	textLocation.x = this->x + parent->x;
 	textLocation.y = this->y + parent->y;
 	
-	SDL_BlitSurface(this->textSurface, NULL, parent->window_surface, &textLocation);
+	SDL_RenderCopy(parent->renderer, this->textSurface, NULL, &textLocation);
 }
 
-SDL_Surface* TextElement::renderText(std::string& message, int size)
+SDL_Texture* TextElement::renderText(std::string& message, int size)
 {
 	std::string key = message + std::to_string(size);
 	
 	// try to find it in the cache first
 	if (ImageCache::cache.count(key))
-		return &ImageCache::cache[key];
+		return ImageCache::cache[key];
 	
 	// not found, make/render it
 	
 	TTF_Font *font = TTF_OpenFont("./res/productsans.ttf", size);
 	
 	SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), this->color);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(MainDisplay::mainRenderer, surf);
 	
 	//	SDL_FreeSurface(surf);
 	TTF_CloseFont(font);
 	
 	// save it to the cache for later
-	ImageCache::cache[key] = *surf;
+	ImageCache::cache[key] = texture;
 	
-	return surf;
+	return texture;
 }

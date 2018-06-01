@@ -147,8 +147,8 @@ void AppList::render(Element* parent)
 	SDL_Rect dimens = { 0, 0, 920, 720 };
 	dimens.x = this->x - 35;
 
-	SDL_FillRect(parent->renderer, &dimens, SDL_MapRGBA(parent->window_surface->format, 0xFF, 0xFF, 0xFF, 0xFF));
-	this->window_surface = parent->window_surface;
+	SDL_SetRenderDrawColor(parent->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderFillRect(parent->renderer, &dimens);
 	this->renderer = parent->renderer;
 
 	// draw the cursor at the highlighted position, if appropriate

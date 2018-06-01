@@ -37,13 +37,16 @@ void AppCard::update()
 	this->elements.push_back(status);
 	
 	// app name
+	int w, h;
 	TextElement* appname = new TextElement(package->title.c_str(), size+3, &black);
-	appname->position(this->x + 255 - appname->textSurface->w, this->y + 165);
+	SDL_QueryTexture(appname->textSurface, NULL, NULL, &w, &h);
+	appname->position(this->x + 255 - w, this->y + 165);
 	this->elements.push_back(appname);
 	
 	// author
 	TextElement* author = new TextElement(package->author.c_str(), size, &gray);
-	author->position(this->x + 255 - author->textSurface->w, this->y + 185);
+	SDL_QueryTexture(author->textSurface, NULL, NULL, &w, &h);
+	author->position(this->x + 255 - w, this->y + 185);
 	this->elements.push_back(author);
 	
 	// download status icon

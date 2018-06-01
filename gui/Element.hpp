@@ -26,7 +26,6 @@ public:
 	void wipeElements();
 
 	// SDL main graphics variables
-	SDL_Surface* window_surface = NULL;
 	SDL_Window* window = NULL;
 	SDL_Renderer* renderer = NULL;
 
