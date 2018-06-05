@@ -2,7 +2,7 @@
 A graphical frontend to the [get package manager](https://github.com/vgmoose/get) for downloading and managing homebrew on the Nintendo Switch. This is a successor to the [Wii U Homebrew App Store](https://github.com/vgmoose/hbas).
 
 ### Usage
-To run this program, a 3.0.0 firmware Nintendo Switch with access to hbmenu is required (currently requires an sd card).
+To run this program, a 3.0.0+ firmware Nintendo Switch with access to hbmenu is required (currently requires an sd card).
 
 You should already have setup and ran HBL once before, [according to these instructions](https://switchbrew.github.io/nx-hbl/).
 
