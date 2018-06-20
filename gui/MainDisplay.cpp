@@ -35,10 +35,10 @@ MainDisplay::MainDisplay(Get* get)
 
 	this->window = SDL_CreateWindow("AppStore NX", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
 	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-	
+
 	//Detach the texture
 	SDL_SetRenderTarget(this->renderer, NULL);
-	
+
 	MainDisplay::mainRenderer = this->renderer;
 
 	#if defined(SWITCH)
@@ -81,14 +81,14 @@ bool MainDisplay::process(SDL_Event* event)
 		// should be a progress bar
 		if (this->get->packages.size() != 1)
 			((ProgressBar*)this->elements[0])->percent = (this->count / ((float)this->get->packages.size()-1));
-		
+
 		// no packages, prevent crash TODO: display offline in bottom bar
 		if (this->get->packages.size() == 0)
 		{
 			((ProgressBar*)this->elements[0])->percent = 0;
 			return false;
 		}
-		
+
 		// get the package whose icon+screen to process
 		Package* current = this->get->packages[this->count - 1];
 

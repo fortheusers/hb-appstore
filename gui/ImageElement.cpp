@@ -18,7 +18,13 @@ ImageElement::ImageElement(const char* path)
 	if (this->imgSurface != NULL)
 		SDL_DestroyTexture(this->imgSurface);
 
-	this->imgSurface = IMG_LoadTexture(this->renderer, path );
+	SDL_Surface* surface = IMG_Load(path);
+	this->imgSurface = SDL_CreateTextureFromSurface(MainDisplay::mainRenderer, surface);
+
+	this->width = 100; //surface->w;
+	this->height = 100; //surface->h;
+
+	SDL_FreeSurface(surface);
 
 	// add to cache for next time
 	if (this->imgSurface != NULL)
@@ -30,22 +36,14 @@ void ImageElement::render(Element* parent)
 	SDL_Rect imgLocation;
 	imgLocation.x = this->x + parent->x;
 	imgLocation.y = this->y + parent->y;
+	imgLocation.w = this->width;
+	imgLocation.h = this->height;
 
-	SDL_RenderCopy(parent->renderer, this->imgSurface, NULL, &imgLocation);
+	SDL_RenderCopy(MainDisplay::mainRenderer, this->imgSurface, NULL, &imgLocation);
 }
 
 void ImageElement::resize(int width, int height)
 {
-	int w, h;
-	SDL_QueryTexture(this->imgSurface, NULL, NULL, &w, &h);
-	
-	if (width == w && height == h)
-		return;		// already the right size
-
-	SDL_Texture* delme = this->imgSurface;
-
-//    this->imgSurface = rotozoomSurfaceXY(this->imgSurface, 0, ((double)width)/this->imgSurface->w, ((double)height)/this->imgSurface->h, 1);
-
-	// delete the old surface, and update the cache
-	ImageCache::cache[this->path] = (this->imgSurface);
+	this->width = width;
+	this->height = height;
 }

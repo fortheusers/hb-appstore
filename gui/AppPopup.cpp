@@ -12,11 +12,13 @@ AppPopup::AppPopup(Package* package)
 
 	// background (element 0)
 	ImageElement* shade = new ImageElement("res/shade.png");
+	shade->resize(1280, 720);
 	this->elements.push_back(shade);
 
 	// popup card (element 1)
 	ImageElement* popup = new ImageElement("res/popup.png");
 	popup->position(469, 109);
+	popup->resize(727, 422);
 	this->elements.push_back(popup);
 
 	SDL_Color red = {0xFF, 0x00, 0x00, 0xff};

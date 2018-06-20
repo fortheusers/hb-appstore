@@ -9,6 +9,9 @@ public:
 	void render(Element* parent);
 	SDL_Texture* renderText(std::string& message, int size);
 
+
+	int width, height;
+
 	SDL_Texture* textSurface;
 	SDL_Color color;
 

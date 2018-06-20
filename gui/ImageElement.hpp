@@ -11,5 +11,7 @@ public:
 	SDL_Texture* imgSurface = NULL;
 	const char* path;
 
+	int width, height;
+
 	void resize(int width, int height);
 };
