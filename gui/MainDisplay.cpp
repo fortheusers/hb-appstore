@@ -61,6 +61,7 @@ MainDisplay::MainDisplay(Get* get)
 	// create the first two elements (icon and app title)
 	ImageElement* icon = new ImageElement("res/icon.png");
 	icon->position(410, 250);
+	icon->resize(70, 70);
 	this->elements.push_back(icon);
 
 	TextElement* title = new TextElement("Switch appstore", 50);
