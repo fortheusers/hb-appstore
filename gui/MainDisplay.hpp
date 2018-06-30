@@ -14,6 +14,8 @@ public:
 	void background(int r, int g, int b);
 	void update();
 	
+	static SDL_Renderer* mainRenderer;
+	
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;
 		

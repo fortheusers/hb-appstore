@@ -1,4 +1,4 @@
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 class Console
 {
@@ -12,11 +12,12 @@ public:
 	void drawColorString(int xi, int yi, const char* string, int r, int g, int b);
 	void close();
 	void update();
-	
+
 private:
-	
+
 	// SDL graphics variables
 	SDL_Surface* window_surface;
+	SDL_Window* window;
 };
 
 void sleep(int s);

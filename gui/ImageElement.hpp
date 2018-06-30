@@ -1,5 +1,5 @@
 #include "Element.hpp"
-#include <SDL/SDL_image.h>
+#include <SDL2/SDL_image.h>
 #pragma once
 
 class ImageElement : public Element
@@ -7,10 +7,11 @@ class ImageElement : public Element
 public:
 	ImageElement(const char* path);
 	void render(Element* parent);
-	
-	SDL_Surface* imgSurface = NULL;
+
+	SDL_Texture* imgSurface = NULL;
 	const char* path;
-	
+
+	int width, height;
+
 	void resize(int width, int height);
 };
-

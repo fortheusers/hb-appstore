@@ -20,29 +20,29 @@ int main(int argc, char *argv[])
 	return console_main();
 #else
 	init_networking();
-	
+
 	// create main get object
 	Get* get = new Get("./.get/", "http://switchbru.com/appstore");
 
 	// initialize main title screen
 	MainDisplay* display = new MainDisplay(get);
-	
+
 	bool running = true;
 	while (running)
 	{
 		// get an event
 		SDL_Event event;
 		SDL_PollEvent(&event);
-		
+
 		// wait 16ms
 		SDL_Delay(16);
-		
+
 		// process the inputs of the supplied event
 		display->process(&event);
-		
+
 		// draw the display
 		display->render(NULL);
-		
+
 		// quit on enter/start
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
 			running = false;
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 		if (event.type == SDL_KEYDOWN)
 			SDL_Delay(32); // wait for a bit if we saw key input
 	}
-	
+
 	return 0;
 #endif
 }
