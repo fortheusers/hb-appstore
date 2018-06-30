@@ -3,20 +3,16 @@ A graphical frontend to the [get package manager](https://github.com/vgmoose/get
 
 ### Usage
 To run this program, a Nintendo Switch with access to the Homebrew Menu is required (currently requires an sd card).
-- [3.0.0 hbmenu instructions](https://switchbrew.github.io/nx-hbl/) -
-- [4.x-5.x hbmenu instructions](https://gbatemp.net/threads/switch-hacking-101-how-to-launch-the-homebrew-menu-on-4-x-5-x.504012/)
+- [1.x-5.x hbmenu instructions](https://gbatemp.net/threads/switch-hacking-101-how-to-launch-the-homebrew-menu-on-4-x-5-x.504012/)
+- [older 3.0.0 hbmenu instructions](https://switchbrew.github.io/nx-hbl/) -
 
-A quick summary of how to run it on 3.0.0 is also included below. For newer firmwares, see the link to the 4.x-5.x instructions above.
+A quick summary of how to run it, provided you can get to hbmenu, is also included below. For newer firmwares, see the link to the 4.x-5.x instructions above.
 
-#### Quick summary (3.0.0)
+#### Quick summary
 - download latest [appstore folder](https://github.com/vgmoose/appstorenx/releases) to `sd:/switch/appstore/`
    - make sure that the `res` folder is next to `appstore.nro` inside of the `appstore` folder
 - download latest [hbmenu.nro](https://github.com/switchbrew/nx-hbmenu/releases/latest) to `sd:/hbmenu.nro`
-- put the SD card (recommended formatted FAT32) in the Switch
-- set the DNS server as `104.236.106.125` and try to connect to Internet
-   - click "Install" if you've never ran HBL before (only have to do it once, should crash with error `2000-1337`)
-   - click "Run" to activate the HBL exploit (will prompt a popup to exit when done)
-- go to the home menu, and then go to "Album" to start hbmenu
+- put the SD card (recommended formatted FAT32) in the Switch, and enter hbmenu (see instructions above)
 - run "hb App Store" from within hbmenu
    - when you're done hit home to exit (and album again to go back to hbmenu)
 
@@ -43,14 +39,11 @@ A new project called [Barkeep](https://github.com/vgmoose/barkeep) is being work
 ### Building for PC
 There's a separate makefile for building the SDL1.2 app for PC. It requires libsdl, libcurl, and zlib installed. Below instructions are for Ubuntu, but should be similar on other platforms:
 ```
-sudo apt-get install libsdl1.2-dev libsdl-ttf2.0-dev libsdl-image1.2-dev libsdl-gfx1.2-dev zlib1g-dev gcc g++ git
+sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++ git
 git clone --recursive https://github.com/vgmoose/appstorenx.git
 cd appstorenx
 make -f Makefile.pc
 ```
-
-### Building the text-only version
-The GUI version of this app is in progress, see [#1](https://github.com/vgmoose/appstorenx/issues/1) for details. In the mean time, editing either of the makefiles to include a `-DNOGUI` argument should build the old text-version that was used in the preview.
 
 ### License
 This software is licensed under the GPLv3.
