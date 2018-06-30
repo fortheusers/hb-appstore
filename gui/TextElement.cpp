@@ -44,6 +44,10 @@ SDL_Texture* TextElement::renderText(std::string& message, int size)
 
 	TTF_Font *font = TTF_OpenFont("./res/opensans.ttf", size);
 
+	// font couldn't load, don't render anything
+	if (!font)
+		return NULL;
+
 	SDL_Surface* surf = TTF_RenderText_Blended(font, message.c_str(), this->color);
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(MainDisplay::mainRenderer, surf);
 

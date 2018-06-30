@@ -12,7 +12,7 @@ public:
 
 	int width, height;
 
-	SDL_Texture* textSurface;
+	SDL_Texture* textSurface = NULL;
 	SDL_Color color;
 
 private:

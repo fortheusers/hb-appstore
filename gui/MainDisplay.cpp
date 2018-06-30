@@ -33,8 +33,8 @@ MainDisplay::MainDisplay(Get* get)
 	int height = 720;
 	int width = 1280;
 
-	this->window = SDL_CreateWindow("AppStore NX", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
-	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+	this->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
+	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_SOFTWARE);
 
 	//Detach the texture
 	SDL_SetRenderTarget(this->renderer, NULL);
@@ -123,7 +123,7 @@ bool MainDisplay::process(SDL_Event* event)
 		AppCard a(current);
 		a.update();
 //		AppPopup b(current);		TODO: uncomment this line when the switch gets hardware rendering, it speeds up clicking on specific apps
-		
+
 		// write the version we just got to the cache as well so that we can know whether or not we need to up date it next time
 
 		// are we done processing all packages

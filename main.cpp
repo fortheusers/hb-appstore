@@ -7,7 +7,10 @@
 
 #include "libs/get/src/Utils.hpp"
 #include "libs/get/src/Get.hpp"
-//#include <switch.h>
+
+#if defined(SWITCH)
+	#include <switch.h>
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -20,6 +23,10 @@ int main(int argc, char *argv[])
 	return console_main();
 #else
 	init_networking();
+
+	#if defined(SWITCH)
+		socketInitializeDefault();
+	#endif
 
 	// create main get object
 	Get* get = new Get("./.get/", "http://switchbru.com/appstore");
@@ -46,10 +53,23 @@ int main(int argc, char *argv[])
 		// quit on enter/start
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
 			running = false;
-		
+
 		if (event.type == SDL_KEYDOWN)
 			SDL_Delay(32); // wait for a bit if we saw key input
 	}
+
+	IMG_Quit();
+	TTF_Quit();
+
+	SDL_Delay(10);
+	SDL_DestroyWindow(display->window);
+
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	SDL_Quit();
+
+	#if defined(SWITCH)
+		socketExit();
+	#endif
 
 	return 0;
 #endif
