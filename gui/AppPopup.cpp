@@ -82,24 +82,24 @@ AppPopup::AppPopup(Package* package)
 
 }
 
-bool AppPopup::process(SDL_Event* event)
+bool AppPopup::process(InputEvents* event)
 {
 	// don't process any keystrokes if an operation is in progress
 	if (this->operating)
 		return false;
 
-	if (this->highlighted >=0 && event->type == SDL_KEYDOWN)
+	if (this->highlighted >=0 && event->isKeyDown())
 	{
 		// update the highlight feature depending on left/right input
-		if (event->key.keysym.sym == SDLK_LEFT)  this->highlighted = 0;
-		if (event->key.keysym.sym == SDLK_RIGHT) this->highlighted = 1;
+		if (event->held(LEFT_BUTTON))  this->highlighted = 0;
+		if (event->held(RIGHT_BUTTON)) this->highlighted = 1;
 	}
 
 	// we need to detect if they hit download/update/remove or close
 	// (this is not a great way to do this)
 	// ((or A button was pressed))
-	if ((event->type == SDL_MOUSEBUTTONUP && this->dragging) ||
-		(event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_a))
+	if ((event->isKeyUp() && this->dragging) ||
+		(event->isKeyDown() && event->held(A_BUTTON)))
 	{
 		if (this->parent == NULL)
 			return false;
@@ -110,8 +110,8 @@ bool AppPopup::process(SDL_Event* event)
 		int x2 = 950;
 		int w = 160, h = 55;
 
-		int mx = event->motion.x;
-		int my = event->motion.y;
+		int mx = event->xPos;
+		int my = event->yPos;
 
 		// install/remove button pressed
 		// (or we saw an A button pressed, and the first element is highlighted) (or just B)
@@ -119,10 +119,11 @@ bool AppPopup::process(SDL_Event* event)
 			mx <= x + w &&
 			my >= y &&
 			my <= y + h) ||
-			(event->type == SDL_KEYDOWN && ((event->key.keysym.sym == SDLK_a && this->highlighted == 0) || event->key.keysym.sym == SDLK_b)))
+			(event->isKeyDown() && ((event->held(A_BUTTON) && this->highlighted == 0) || event->held(B_BUTTON))))
 		{
 			this->operating = true;
-			event->key.keysym.sym = SDLK_z;
+			// event->key.keysym.sym = SDLK_z;
+			event->update();
 			this->highlighted = -1;
 
 			// add a progress bar to the screen to be drawn
@@ -160,7 +161,7 @@ bool AppPopup::process(SDL_Event* event)
 			mx <= x2 + w &&
 			my >= y &&
 			my <= y + h) ||
-			(event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_a && this->highlighted == 1))
+			(event->isKeyDown() && event->held(A_BUTTON) && this->highlighted == 1))
 		{
 			// remove elements on this pop up
 			this->wipeElements();
@@ -175,7 +176,7 @@ bool AppPopup::process(SDL_Event* event)
 		}
 	}
 
-	if (event->type == SDL_MOUSEBUTTONDOWN)
+	if (event->isKeyDown())
 		this->dragging = true;
 
 	return false;

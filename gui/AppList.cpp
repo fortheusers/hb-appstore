@@ -19,17 +19,15 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	update();
 }
 
-bool AppList::process(SDL_Event* event)
+bool AppList::process(InputEvents* event)
 {
 	// only process any events for AppList if there's no subscreen
 	if (this->subscreen == NULL)
 	{
 		// process some joycon input events
-		if (event->type == SDL_KEYDOWN)
-		{			
-			if (event->key.keysym.sym == SDLK_UP || event->key.keysym.sym == SDLK_DOWN ||
-				event->key.keysym.sym == SDLK_LEFT || event->key.keysym.sym == SDLK_RIGHT ||
-				event->key.keysym.sym == SDLK_a || event->key.keysym.sym == SDLK_b)
+		if (event->isKeyDown())
+		{
+			if (event->held(A_BUTTON | B_BUTTON | UP_BUTTON | DOWN_BUTTON | LEFT_BUTTON | RIGHT_BUTTON))
 			{
 				// if we were in touch mode, draw the cursor in the applist
 				// and reset our position
@@ -46,7 +44,7 @@ bool AppList::process(SDL_Event* event)
 				if (this->highlighted < 0) return false;
 
 				// if we got a LEFT key while on the left most edge already, transfer to categories
-				if (this->highlighted%3==0 && event->key.keysym.sym == SDLK_LEFT)
+				if (this->highlighted%3==0 && event->held(SDLK_LEFT))
 				{
 					this->highlighted = -1;
 					this->sidebar->highlighted = 0;
@@ -54,13 +52,13 @@ bool AppList::process(SDL_Event* event)
 				}
 
 				// similarly, prevent a RIGHT from wrapping to the next line
-				if (this->highlighted%3==2 && event->key.keysym.sym == SDLK_RIGHT) return false;
+				if (this->highlighted%3==2 && event->held(SDLK_RIGHT)) return false;
 
 				// adjust the cursor by 1 for left or right
-				this->highlighted += -1*(event->key.keysym.sym == SDLK_LEFT) + (event->key.keysym.sym == SDLK_RIGHT);
+				this->highlighted += -1*(event->held(SDLK_LEFT)) + (event->held(SDLK_RIGHT));
 
 				// adjust it by 3 for up and down
-				this->highlighted += -3*(event->key.keysym.sym == SDLK_UP) + 3*(event->key.keysym.sym == SDLK_DOWN);
+				this->highlighted += -3*(event->held(SDLK_UP)) + 3*(event->held(SDLK_DOWN));
 
 				// don't let the cursor go out of bounds
 				if (this->highlighted < 0) this->highlighted = 0;
@@ -76,34 +74,34 @@ bool AppList::process(SDL_Event* event)
 			}
 		}
 
-		if (event->type == SDL_MOUSEBUTTONDOWN)
+		if (event->isTouchDown())
 		{
 			// got a touch, so let's enter touchmode
 			this->highlighted = -1;
 			this->touchMode = true;
 
 			// make sure that the mouse down's X coordinate is over the app list (not sidebar)
-			if (event->motion.x < this->x)
+			if (event->xPos < this->x)
 				return false;
 
 			// saw mouse down so set it in our element object
 			this->dragging = true;
-			this->lastMouseY = event->motion.y;
+			this->lastMouseY = event->yPos;
 		}
 		// drag event for scrolling up or down
-		else if (event->type == SDL_MOUSEMOTION)
+		else if (event->isTouchDrag())
 		{
 			if (this->dragging)
 			{
-				int distance = event->motion.y - this->lastMouseY;
+				int distance = event->yPos - this->lastMouseY;
 				this->y += distance;
-				this->lastMouseY = event->motion.y;
+				this->lastMouseY = event->yPos;
 
 				// use the last distance as the rubber band value
 				this->elasticCounter = distance;
 			}
 		}
-		else if (event->type == SDL_MOUSEBUTTONUP)
+		else if (event->isTouchUp())
 		{
 			// mouse up, no more mouse down (TODO: fire selected event here)
 			this->dragging = false;

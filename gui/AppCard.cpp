@@ -69,35 +69,32 @@ void AppCard::render(Element* parent)
 	super::render(parent);
 }
 
-bool AppCard::process(SDL_Event* event)
+bool AppCard::process(InputEvents* event)
 {
 	if (this->parent == NULL)
 		return false;
 
-	if (event->type == SDL_MOUSEBUTTONDOWN)
+	if (event->isTouchDown())
 	{
 		// mouse pushed down, set variable
 		this->dragging = true;
-		this->lastMouseY = event->motion.y;
+		this->lastMouseY = event->yPos;
 	}
 	// mouse is up, or A is pressed
 	// (if it's A that's being pressed, make sure that our index matches the highlighted value)
-	else if (event->type == SDL_MOUSEBUTTONUP ||
-			(event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_a && ((AppList*)parent)->highlighted == this->index))
+	else if (event->isTouchUp() ||
+			(event->isKeyDown() && event->held(A_BUTTON) && ((AppList*)parent)->highlighted == this->index))
 	{
 		// check if we haven't drifted too far from the starting variable (treshold: 40)
 		// (or it's a key event, just let it through)
-		if ((this->dragging && abs(event->motion.y - this->lastMouseY) < 40 && this->parent)
-			|| event->type == SDL_KEYDOWN)
+		if ((this->dragging && abs(event->yPos - this->lastMouseY) < 40 && this->parent)
+			|| event->isKeyDown())
 		{
 			// check that this click is in the right coordinates for this square
 			// and that a subscreen isn't already being shown
 			// (and also let the A press through)
-			if (((event->motion.x >= this->parent->x + this->x &&
-				event->motion.x <= this->parent->x + this->x + this->width &&
-				event->motion.y >= this->parent->y + this->y &&
-				event->motion.y <= this->parent->y + this->y + this->height) ||
-				event->key.keysym.sym == SDLK_a) &&
+			if (((event->touchIn(this->parent->x + this->x, this->width, this->parent->y + this->y, this->height)) ||
+				event->held(A_BUTTON)) &&
 				!((AppList*)this->parent)->subscreen)
 			{
 				// received a click on this app, add a subscreen under the parent
