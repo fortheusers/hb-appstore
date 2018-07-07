@@ -33,10 +33,7 @@ public:
   bool isKeyDown();
   bool isKeyUp();
 
-  SDL_Keycode keyCode = NULL;
-  // SDL_Con
-
-  void* actionable = NULL;
+  SDL_Keycode keyCode;
 
   int yPos = 0, xPos = 0;
 
