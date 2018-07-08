@@ -69,7 +69,7 @@ MainDisplay::MainDisplay(Get* get)
 	this->elements.push_back(title);
 }
 
-bool MainDisplay::process(SDL_Event* event)
+bool MainDisplay::process(InputEvents* event)
 {
 	// if we're on the splash/loading screen, we need to fetch icons+screenshots from the remote repo
 	// and load them into our surface cache with the pkg_name+version as the key

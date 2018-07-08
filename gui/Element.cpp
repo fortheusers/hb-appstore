@@ -1,11 +1,11 @@
 #include "Element.hpp"
 
-bool Element::process(SDL_Event* event)
+bool Element::process(InputEvents* event)
 {
 	// call process on subelements
 	for (int x=0; x<this->elements.size(); x++)
 		this->elements[x]->process(event);
-	
+
 	return false;
 }
 
@@ -36,6 +36,6 @@ void Element::wipeElements()
 		Element* elem = this->elements[x];
 		delete elem;
 	}
-	
+
 	this->elements.clear();
 }

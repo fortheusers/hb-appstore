@@ -1,6 +1,7 @@
 #include <vector>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include "InputEvents.hpp"
 
 #pragma once
 
@@ -8,7 +9,7 @@ class Element
 {
 public:
 	// process any input that is received for this element
-	virtual bool process(SDL_Event* event);
+	virtual bool process(InputEvents* event);
 
 	// display the current state of the display
 	virtual void render(Element* parent);

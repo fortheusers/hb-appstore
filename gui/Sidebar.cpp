@@ -31,27 +31,27 @@ Sidebar::Sidebar()
 	}
 }
 
-bool Sidebar::process(SDL_Event* event)
+bool Sidebar::process(InputEvents* event)
 {
 	// process some joycon input events
-	if (event->type == SDL_KEYDOWN)
+	if (event->isKeyDown())
 	{
 		// if highlighted isn't set, don't do anything (applist will set it)
 		if (this->highlighted < 0)
 			return false;
 
 		// if we got a RIGHT key, send it back to the applist
-		if (event->key.keysym.sym == SDLK_RIGHT)
+		if (event->held(SDLK_RIGHT))
 		{
 			this->highlighted = -1;
 			this->appList->highlighted = 0;
 			this->appList->y = 0;		// reset scroll TODO: maintain scroll when switching between sidebar and app list
-			event->key.keysym.sym = SDLK_z;
+			event->update();
 			return false;
 		}
 
 		// adjust the cursor by 1 for up or down
-		this->highlighted += -1*(event->key.keysym.sym == SDLK_UP) + (event->key.keysym.sym == SDLK_DOWN);
+		this->highlighted += -1*(event->held(UP_BUTTON)) + (event->held(DOWN_BUTTON));
 
 		// don't let the cursor go out of bounds
 		if (this->highlighted < 0) this->highlighted = 0;
@@ -59,7 +59,7 @@ bool Sidebar::process(SDL_Event* event)
 	}
 
 	// saw click down, set dragging state
-	if (event->type == SDL_MOUSEBUTTONDOWN)
+	if (event->isTouchDown())
 	{
 		this->dragging = true;
 		this->highlighted = -1;
@@ -68,8 +68,8 @@ bool Sidebar::process(SDL_Event* event)
 
 	// detect if a click is on one of the sidebar elements
 	// (or we saw the A button be pressed)
-	if ((event->type == SDL_MOUSEBUTTONUP && this->dragging) ||
-		(event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_a ))
+	if ((event->isKeyUp() && this->dragging) ||
+		(event->isKeyDown() && event->held(A_BUTTON)))
 	{
 		this->dragging = false;
 
@@ -77,11 +77,8 @@ bool Sidebar::process(SDL_Event* event)
 		for (int x=0; x<TOTAL_CATS; x++)
 		{
 			int xc = 0, yc = 150+x*70 - 15, width = 400, height = 60;		// TODO: extract formula into method (same as below)
-			if ((event->motion.x >= xc &&
-				event->motion.x < xc + width &&
-				event->motion.y >= yc &&
-				event->motion.y < yc + height) ||
-				(event->key.keysym.sym == SDLK_a && this->highlighted == x))
+			if ((event->touchIn(xc, width, yc, height) ||
+				(event->held(A_BUTTON)) && this->highlighted == x))
 			{
 				// saw touchup on a category, adjust active category
 				this->curCategory = x;
