@@ -18,7 +18,7 @@ public:
   bool held(int buttons);
 
   // whether or not a touch is detected within the specified rect in this cycle
-  bool touchIn(int x, int y, int width, int height);
+  bool touchIn(int x, int width, int y, int height);
 
   // wait for a cycle (currently just hardcoded to 16ms, should dynamically adapt using the clock)
   void delay();

@@ -41,7 +41,7 @@ bool Sidebar::process(InputEvents* event)
 			return false;
 
 		// if we got a RIGHT key, send it back to the applist
-		if (event->held(SDLK_RIGHT))
+		if (event->held(RIGHT_BUTTON))
 		{
 			this->highlighted = -1;
 			this->appList->highlighted = 0;
@@ -68,7 +68,7 @@ bool Sidebar::process(InputEvents* event)
 
 	// detect if a click is on one of the sidebar elements
 	// (or we saw the A button be pressed)
-	if ((event->isKeyUp() && this->dragging) ||
+	if ((event->isTouchUp() && this->dragging) ||
 		(event->isKeyDown() && event->held(A_BUTTON)))
 	{
 		this->dragging = false;
@@ -77,8 +77,8 @@ bool Sidebar::process(InputEvents* event)
 		for (int x=0; x<TOTAL_CATS; x++)
 		{
 			int xc = 0, yc = 150+x*70 - 15, width = 400, height = 60;		// TODO: extract formula into method (same as below)
-			if ((event->touchIn(xc, width, yc, height) ||
-				(event->held(A_BUTTON)) && this->highlighted == x))
+			if (event->touchIn(xc, yc, width, height) ||
+				(event->held(A_BUTTON) && this->highlighted == x))
 			{
 				// saw touchup on a category, adjust active category
 				this->curCategory = x;

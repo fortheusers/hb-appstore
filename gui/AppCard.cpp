@@ -93,7 +93,7 @@ bool AppCard::process(InputEvents* event)
 			// check that this click is in the right coordinates for this square
 			// and that a subscreen isn't already being shown
 			// (and also let the A press through)
-			if (((event->touchIn(this->parent->x + this->x, this->width, this->parent->y + this->y, this->height)) ||
+			if (((event->touchIn(this->parent->x + this->x, this->parent->y + this->y, this->width, this->height)) ||
 				event->held(A_BUTTON)) &&
 				!((AppList*)this->parent)->subscreen)
 			{

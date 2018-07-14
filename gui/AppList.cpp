@@ -44,7 +44,7 @@ bool AppList::process(InputEvents* event)
 				if (this->highlighted < 0) return false;
 
 				// if we got a LEFT key while on the left most edge already, transfer to categories
-				if (this->highlighted%3==0 && event->held(SDLK_LEFT))
+				if (this->highlighted%3==0 && event->held(LEFT_BUTTON))
 				{
 					this->highlighted = -1;
 					this->sidebar->highlighted = 0;
@@ -52,13 +52,13 @@ bool AppList::process(InputEvents* event)
 				}
 
 				// similarly, prevent a RIGHT from wrapping to the next line
-				if (this->highlighted%3==2 && event->held(SDLK_RIGHT)) return false;
+				if (this->highlighted%3==2 && event->held(RIGHT_BUTTON)) return false;
 
 				// adjust the cursor by 1 for left or right
-				this->highlighted += -1*(event->held(SDLK_LEFT)) + (event->held(SDLK_RIGHT));
+				this->highlighted += -1*(event->held(LEFT_BUTTON)) + (event->held(RIGHT_BUTTON));
 
 				// adjust it by 3 for up and down
-				this->highlighted += -3*(event->held(SDLK_UP)) + 3*(event->held(SDLK_DOWN));
+				this->highlighted += -3*(event->held(UP_BUTTON)) + 3*(event->held(DOWN_BUTTON));
 
 				// don't let the cursor go out of bounds
 				if (this->highlighted < 0) this->highlighted = 0;

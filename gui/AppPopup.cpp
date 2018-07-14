@@ -98,7 +98,7 @@ bool AppPopup::process(InputEvents* event)
 	// we need to detect if they hit download/update/remove or close
 	// (this is not a great way to do this)
 	// ((or A button was pressed))
-	if ((event->isKeyUp() && this->dragging) ||
+	if ((event->isTouchUp() && this->dragging) ||
 		(event->isKeyDown() && event->held(A_BUTTON)))
 	{
 		if (this->parent == NULL)
@@ -110,15 +110,9 @@ bool AppPopup::process(InputEvents* event)
 		int x2 = 950;
 		int w = 160, h = 55;
 
-		int mx = event->xPos;
-		int my = event->yPos;
-
 		// install/remove button pressed
 		// (or we saw an A button pressed, and the first element is highlighted) (or just B)
-		if ((mx >= x &&
-			mx <= x + w &&
-			my >= y &&
-			my <= y + h) ||
+		if (event->touchIn(x, y, w, h) ||
 			(event->isKeyDown() && ((event->held(A_BUTTON) && this->highlighted == 0) || event->held(B_BUTTON))))
 		{
 			this->operating = true;
@@ -157,10 +151,7 @@ bool AppPopup::process(InputEvents* event)
 		}
 
 		// close button pressed
-		if ((mx >= x2 &&
-			mx <= x2 + w &&
-			my >= y &&
-			my <= y + h) ||
+		if (event->touchIn(x2, y, w, h) ||
 			(event->isKeyDown() && event->held(A_BUTTON) && this->highlighted == 1))
 		{
 			// remove elements on this pop up
@@ -176,7 +167,7 @@ bool AppPopup::process(InputEvents* event)
 		}
 	}
 
-	if (event->isKeyDown())
+	if (event->isTouchDown())
 		this->dragging = true;
 
 	return false;
