@@ -18,8 +18,8 @@ Sidebar::Sidebar()
 	this->elements.push_back(logo);
 
 	// create title for logo, top left
-	TextElement* title = new TextElement("Switch appstore", 27);
-	title->position(90, 50);
+	TextElement* title = new TextElement("Homebrew App Store", 22);
+	title->position(90, 52);
 	this->elements.push_back(title);
 
 	// for every entry in cat names, create a text element

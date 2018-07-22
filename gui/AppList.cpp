@@ -171,31 +171,38 @@ void AppList::update()
 	// TODO: sort this a better way, and also don't use 3 distinct for loops
 	std::vector<Package*> sorted;
 
+	// the current category value from the sidebar
+	std::string curCategoryValue = this->sidebar->currentCatValue();
+
+	// all packages TODO: move some of this filtering logic into main get library
+	std::vector<Package*> packages = get->packages;
+
+	// if it's a search, do a search query through get rather than using all packages
+	if (curCategoryValue == "_search")
+		packages = get->search(this->sidebar->searchQuery);
+
 	// update
-	for (int x=0; x<get->packages.size(); x++)
-		if (get->packages[x]->status == UPDATE)
-			sorted.push_back(get->packages[x]);
+	for (int x=0; x<packages.size(); x++)
+		if (packages[x]->status == UPDATE)
+			sorted.push_back(packages[x]);
 
 	// installed
-	for (int x=0; x<get->packages.size(); x++)
-		if (get->packages[x]->status == INSTALLED)
-			sorted.push_back(get->packages[x]);
+	for (int x=0; x<packages.size(); x++)
+		if (packages[x]->status == INSTALLED)
+			sorted.push_back(packages[x]);
 
 	// get
-	for (int x=0; x<get->packages.size(); x++)
-		if (get->packages[x]->status == GET)
-			sorted.push_back(get->packages[x]);
+	for (int x=0; x<packages.size(); x++)
+		if (packages[x]->status == GET)
+			sorted.push_back(packages[x]);
 
 	// total apps we're interested in so far
 	int count = 0;
 
-	// the current category value from the sidebar
-	std::string curCategoryValue = this->sidebar->currentCatValue();
-
 	for (int x=0; x<sorted.size(); x++)
 	{
-		// if we're on all categories, or this package matches the current category
-		if (curCategoryValue == "*" || curCategoryValue == sorted[x]->category)
+		// if we're on all categories, or this package matches the current category (or it's a search (prefiltered))
+		if (curCategoryValue == "*" || curCategoryValue == sorted[x]->category || curCategoryValue == "_search")
 		{
 			AppCard* card = new AppCard(sorted[x]);
 			card->index = count;

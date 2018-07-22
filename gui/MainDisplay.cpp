@@ -60,12 +60,12 @@ MainDisplay::MainDisplay(Get* get)
 
 	// create the first two elements (icon and app title)
 	ImageElement* icon = new ImageElement("res/icon.png");
-	icon->position(410, 250);
+	icon->position(330, 255);
 	icon->resize(70, 70);
 	this->elements.push_back(icon);
 
-	TextElement* title = new TextElement("Switch appstore", 50);
-	title->position(485, 255);
+	TextElement* title = new TextElement("Homebrew App Store", 50);
+	title->position(415, 255);
 	this->elements.push_back(title);
 }
 
