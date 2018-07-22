@@ -5,9 +5,9 @@
 class TextElement : public Element
 {
 public:
-	TextElement(const char* text, int size, SDL_Color* color = 0);
+	TextElement(const char* text, int size, SDL_Color* color = 0, bool monospaced = false);
 	void render(Element* parent);
-	SDL_Texture* renderText(std::string& message, int size);
+	SDL_Texture* renderText(std::string& message, int size, bool monospaced);
 
 
 	int width, height;

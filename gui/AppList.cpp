@@ -1,5 +1,6 @@
 #include "AppList.hpp"
 #include "AppCard.hpp"
+#include "Keyboard.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 AppList::AppList(Get* get, Sidebar* sidebar)
@@ -232,4 +233,11 @@ void AppList::update()
 	TextElement* category = new TextElement(this->sidebar->currentCatName().c_str(), 28, &black);
 	category->position(20, 90);
 	this->elements.push_back(category);
+
+	// if it's a search, add a keyboard
+	if (curCategoryValue == "_search")
+	{
+		Keyboard* keyboard = new Keyboard();
+		this->elements.push_back(keyboard);
+	}
 }

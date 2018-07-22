@@ -1,6 +1,6 @@
 #include "MainDisplay.hpp"
 
-TextElement::TextElement(const char* text, int size, SDL_Color* color)
+TextElement::TextElement(const char* text, int size, SDL_Color* color, bool monospaced)
 {
 	this->text = new std::string(text);
 	this->size = size;
@@ -10,7 +10,7 @@ TextElement::TextElement(const char* text, int size, SDL_Color* color)
 	else
 		this->color = *color;
 
-	this->textSurface = this->renderText(*(this->text), size);
+	this->textSurface = this->renderText(*(this->text), size, monospaced);
 }
 
 void TextElement::render(Element* parent)
@@ -32,17 +32,23 @@ void TextElement::render(Element* parent)
 
 }
 
-SDL_Texture* TextElement::renderText(std::string& message, int size)
+SDL_Texture* TextElement::renderText(std::string& message, int size, bool monospaced)
 {
 	std::string key = message + std::to_string(size);
 
 	// try to find it in the cache first
-	if (ImageCache::cache.count(key))
-		return ImageCache::cache[key];
+	// TODO: fix cache?
+	// if (ImageCache::cache.count(key))
+	// 	return ImageCache::cache[key];
 
 	// not found, make/render it
 
-	TTF_Font *font = TTF_OpenFont("./res/opensans.ttf", size);
+	TTF_Font* font;
+
+	if (monospaced)
+		font = TTF_OpenFont("./res/mono.ttf", size);
+	else
+		font = TTF_OpenFont("./res/opensans.ttf", size);
 
 	// font couldn't load, don't render anything
 	if (!font)
