@@ -23,7 +23,7 @@ void InputEvents::update()
   }
   else if (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP)
   {
-    // this->keyCode = event.jbutton.which;
+    this->keyCode = event.jbutton.which;
   }
   else if (this->type == SDL_MOUSEMOTION || this->type == SDL_MOUSEBUTTONUP || this->type == SDL_MOUSEBUTTONDOWN)
   {
@@ -34,8 +34,8 @@ void InputEvents::update()
   }
   else if (this->type == SDL_FINGERMOTION || this->type == SDL_FINGERUP || this->type == SDL_FINGERDOWN)
   {
-    // this->yPos = event.tfinger.y;
-    // this->xPos = event.tfinger.x;
+    this->yPos = event.tfinger.y * 720;
+    this->xPos = event.tfinger.x * 1280;
   }
 }
 
@@ -70,27 +70,27 @@ bool InputEvents::touchIn(int x, int y, int width, int height)
 
 bool InputEvents::isTouchDown()
 {
-  return this->type == SDL_MOUSEBUTTONDOWN;// || this->type == SDL_FINGERDOWN;
+  return this->type == SDL_MOUSEBUTTONDOWN || this->type == SDL_FINGERDOWN;
 }
 
 bool InputEvents::isTouchDrag()
 {
-  return this->type == SDL_MOUSEMOTION;// || this->type == SDL_FINGERMOTION;
+  return this->type == SDL_MOUSEMOTION || this->type == SDL_FINGERMOTION;
 }
 
 bool InputEvents::isTouchUp()
 {
-  return this->type == SDL_MOUSEBUTTONUP;// || this->type == SDL_FINGERUP;
+  return this->type == SDL_MOUSEBUTTONUP || this->type == SDL_FINGERUP;
 }
 
 bool InputEvents::isKeyDown()
 {
-  return this->type == SDL_KEYDOWN;// || this->type == SDL_JOYBUTTONDOWN;
+  return this->type == SDL_KEYDOWN || this->type == SDL_JOYBUTTONDOWN;
 }
 
 bool InputEvents::isKeyUp()
 {
-  return this->type == SDL_KEYUP;// || this->type == SDL_JOYBUTTONUP;
+  return this->type == SDL_KEYUP || this->type == SDL_JOYBUTTONUP;
 }
 
 void InputEvents::delay()

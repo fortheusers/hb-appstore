@@ -11,7 +11,7 @@ MainDisplay::MainDisplay(Get* get)
 	// populate image cache with any local version info if it exists
 	this->imageCache = new ImageCache(get->tmp_path);
 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
 		printf("SDL init failed: %s\n", SDL_GetError());
 		return;
 	}
@@ -45,6 +45,14 @@ MainDisplay::MainDisplay(Get* get)
 		// hide cursor for switch
 		SDL_ShowCursor(0);
 	#endif
+
+	for (int i = 0; i < 2; i++) {
+		if (SDL_JoystickOpen(i) == NULL) {
+				printf("SDL_JoystickOpen: %s\n", SDL_GetError());
+				SDL_Quit();
+				return;
+		}
+	}
 
 	printf("got window surface\n");
 
