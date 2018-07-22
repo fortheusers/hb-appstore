@@ -24,10 +24,6 @@ int main(int argc, char *argv[])
 #else
 	init_networking();
 
-	#if defined(SWITCH)
-		socketInitializeDefault();
-	#endif
-
 	// create main get object
 	Get* get = new Get("./.get/", "http://switchbru.com/appstore");
 
