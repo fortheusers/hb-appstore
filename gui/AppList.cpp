@@ -230,14 +230,21 @@ void AppList::update()
 
 	// the title of this category (from the sidebar)
 	SDL_Color black = { 0, 0, 0, 0xff };
-	TextElement* category = new TextElement(this->sidebar->currentCatName().c_str(), 28, &black);
-	category->position(20, 90);
-	this->elements.push_back(category);
+	TextElement* category;
 
 	// if it's a search, add a keyboard
 	if (curCategoryValue == "_search")
 	{
-		Keyboard* keyboard = new Keyboard();
+		Keyboard* keyboard = new Keyboard(this);
 		this->elements.push_back(keyboard);
+
+		category = new TextElement((std::string("Search: \"") + this->sidebar->searchQuery + "\"").c_str(), 28, &black);
 	}
+	else
+	{
+		category = new TextElement(this->sidebar->currentCatName().c_str(), 28, &black);
+	}
+
+	category->position(20, 90);
+	this->elements.push_back(category);
 }

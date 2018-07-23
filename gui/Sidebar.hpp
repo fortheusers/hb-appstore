@@ -13,7 +13,7 @@ public:
 	std::string currentCatName();
 	std::string currentCatValue();
 
-	std::string searchQuery = "vgmoose";
+	std::string searchQuery = "";
 
 	AppList* appList = NULL;
 	int highlighted = -1;
