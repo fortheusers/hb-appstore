@@ -2,6 +2,7 @@
 #include "ImageElement.hpp"
 #include "AppPopup.hpp"
 #include "Sidebar.hpp"
+#include "InertiaScroll.hpp"
 #include "../libs/get/src/Get.hpp"
 
 class AppList : public Element
@@ -20,10 +21,6 @@ public:
 
 	// the total number of apps displayed in this list
 	int totalCount = 0;
-
-	// how much time is left in an elastic-type flick/scroll
-	// set by the last distance traveled in a scroll, and counts down every frame
-	int elasticCounter = 0;
 
 	// the currently displayed subscreen (NULL otherwise)
 	AppPopup* subscreen = NULL;

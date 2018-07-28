@@ -1,6 +1,6 @@
 #include "MainDisplay.hpp"
 
-TextElement::TextElement(const char* text, int size, SDL_Color* color, bool monospaced)
+TextElement::TextElement(const char* text, int size, SDL_Color* color, bool monospaced, int wrapped_width)
 {
 	this->text = new std::string(text);
 	this->size = size;
@@ -10,7 +10,7 @@ TextElement::TextElement(const char* text, int size, SDL_Color* color, bool mono
 	else
 		this->color = *color;
 
-	this->textSurface = this->renderText(*(this->text), size, monospaced);
+	this->textSurface = this->renderText(*(this->text), size, monospaced, wrapped_width);
 }
 
 void TextElement::render(Element* parent)
@@ -32,7 +32,7 @@ void TextElement::render(Element* parent)
 
 }
 
-SDL_Texture* TextElement::renderText(std::string& message, int size, bool monospaced)
+SDL_Texture* TextElement::renderText(std::string& message, int size, bool monospaced, int wrapped_width)
 {
 	std::string key = message + std::to_string(size);
 
@@ -54,7 +54,12 @@ SDL_Texture* TextElement::renderText(std::string& message, int size, bool monosp
 	if (!font)
 		return NULL;
 
-	SDL_Surface* surf = TTF_RenderText_Blended(font, message.c_str(), this->color);
+	SDL_Surface* surf;
+	if (wrapped_width == 0)
+		surf = TTF_RenderText_Blended(font, message.c_str(), this->color);
+	else
+		surf = TTF_RenderText_Blended_Wrapped(font, message.c_str(), this->color, wrapped_width);
+
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(MainDisplay::mainRenderer, surf);
 
 	this->width = surf->w;

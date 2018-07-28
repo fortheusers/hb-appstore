@@ -41,11 +41,6 @@ MainDisplay::MainDisplay(Get* get)
 
 	MainDisplay::mainRenderer = this->renderer;
 
-	#if defined(SWITCH)
-		// hide cursor for switch
-		SDL_ShowCursor(0);
-	#endif
-
 	for (int i = 0; i < SDL_NumJoysticks(); i++) {
 		if (SDL_JoystickOpen(i) == NULL) {
 				printf("SDL_JoystickOpen: %s\n", SDL_GetError());

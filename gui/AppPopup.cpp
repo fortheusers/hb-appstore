@@ -51,6 +51,11 @@ AppPopup::AppPopup(Package* package)
 	close->position(993, 480);
 	this->elements.push_back(close);
 
+	// more info button (4)
+	TextElement* moreInfo = new TextElement("More Info", 20, &red);
+	moreInfo->position(1025, 345);
+	this->elements.push_back(moreInfo);
+
 	TextElement* title = new TextElement(package->title.c_str(), 30, &black);
 	title->position(480, 116);
 	this->elements.push_back(title);
@@ -61,24 +66,33 @@ AppPopup::AppPopup(Package* package)
 	screen->resize(727, 178);
 	this->elements.push_back(screen);
 
+	int MARGIN = 525;
+
 	// app+package+author info:
 	TextElement* title2 = new TextElement(package->title.c_str(), 20, &black);
-	title2->position(550, 345);
+	title2->position(MARGIN, 345);
 	this->elements.push_back(title2);
 
 	int w, h;
 	SDL_QueryTexture(title2->textSurface, NULL, NULL, &w, &h);
 	TextElement* author = new TextElement(("- " + package->author).c_str(), 20, &gray);
-	author->position(550 + w + 5, 345);
+	author->position(MARGIN + w + 5, 345);
 	this->elements.push_back(author);
 
 	TextElement* subtitle = new TextElement(package->short_desc.c_str(), 20, &gray);
-	subtitle->position(550, 370);
+	subtitle->position(MARGIN, 370);
 	this->elements.push_back(subtitle);
 
 	TextElement* version = new TextElement(package->version.c_str(), 17, &gray);
-	version->position(550, 395);
+	version->position(MARGIN, 395);
 	this->elements.push_back(version);
+
+
+
+	// the main description (wrapped text)
+	// TextElement* details = new TextElement(package->long_desc.c_str(), 14, &black, false, 700);
+	// details->position(500, 230);
+	// this->elements.push_back(details);
 
 }
 
@@ -87,6 +101,10 @@ bool AppPopup::process(InputEvents* event)
 	// don't process any keystrokes if an operation is in progress
 	if (this->operating)
 		return false;
+
+	// don't process if displaying details view
+	if (this->subscreen != NULL)
+		return this->subscreen->process(event);
 
 	if (this->highlighted >=0 && event->isKeyDown())
 	{
@@ -165,6 +183,12 @@ bool AppPopup::process(InputEvents* event)
 				((AppList*)this->parent)->update();
 			}
 		}
+
+		if (event->touchIn(x2+60, y-110, 100, h))
+		{
+			// show the more info screen
+			this->subscreen = new DetailsPopup(&this->package->long_desc);
+		}
 	}
 
 	if (event->isTouchDown())
@@ -199,6 +223,10 @@ void AppPopup::render(Element* parent)
 
 		rectangleRGBA(parent->renderer, x, y, x + w, y + h, 0xff, 0x00, 0xff, 0xff);
 	}
+
+	// draw details view if it exists
+	if (this->subscreen != NULL)
+		this->subscreen->render(this);
 }
 
 void AppPopup::updateCurrentlyDisplayedPopup(float amount)

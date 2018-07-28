@@ -4,6 +4,7 @@
 #include "TextElement.hpp"
 #include "ImageElement.hpp"
 #include "ProgressBar.hpp"
+#include "DetailsPopup.hpp"
 #include "../libs/get/src/Package.hpp"
 
 class AppPopup : public Element
@@ -17,6 +18,8 @@ public:
 	Package* package;
 	ProgressBar* pbar = NULL;
 	int highlighted = -1;
+
+	DetailsPopup* subscreen = NULL;
 
 	// the callback method to update the currently displayed pop up (and variables it needs)
 	static void updateCurrentlyDisplayedPopup(float amount);

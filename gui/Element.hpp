@@ -42,6 +42,10 @@ public:
 	// whether this element should skip rendering or not
 	bool hidden = false;
 
+	// how much time is left in an elastic-type flick/scroll
+	// set by the last distance traveled in a scroll, and counts down every frame
+	int elasticCounter = 0;
+
 	typedef Element super;
 
 	int x = 0;
