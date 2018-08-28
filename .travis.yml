@@ -3,7 +3,7 @@ sudo: required
 matrix:
   include:
     - os: linux
-      dist: trusty
+      dist: xenial
 addons:
   apt:
     packages:
@@ -12,5 +12,5 @@ addons:
       - libsdl2-gfx-dev
       - libsdl2-ttf-dev
       - zlib1g-dev
-  
+
 script: make -f Makefile.pc

@@ -229,9 +229,13 @@ void AppPopup::render(Element* parent)
 		this->subscreen->render(this);
 }
 
-void AppPopup::updateCurrentlyDisplayedPopup(float amount)
+int AppPopup::updateCurrentlyDisplayedPopup(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
 {
 	AppPopup* popup = AppPopup::frontmostPopup;
+    
+    if (dltotal == 0) dltotal = 1;
+    
+    double amount = dlnow / dltotal;
 
 	// update the amount
 	if (popup != NULL)
@@ -254,4 +258,6 @@ void AppPopup::updateCurrentlyDisplayedPopup(float amount)
 		}
 
 	}
+    
+    return 0;
 }

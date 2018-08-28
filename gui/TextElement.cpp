@@ -11,6 +11,11 @@ TextElement::TextElement(const char* text, int size, SDL_Color* color, bool mono
 		this->color = *color;
 
 	this->textSurface = this->renderText(*(this->text), size, monospaced, wrapped_width);
+    
+    int w, h;
+    SDL_QueryTexture(this->textSurface, NULL, NULL, &w, &h);
+    this->width = w;
+    this->height = h;
 }
 
 void TextElement::render(Element* parent)
@@ -37,9 +42,8 @@ SDL_Texture* TextElement::renderText(std::string& message, int size, bool monosp
 	std::string key = message + std::to_string(size);
 
 	// try to find it in the cache first
-	// TODO: fix cache?
-	// if (ImageCache::cache.count(key))
-	// 	return ImageCache::cache[key];
+    if (ImageCache::cache.count(key))
+         return ImageCache::cache[key];
 
 	// not found, make/render it
 
@@ -61,10 +65,7 @@ SDL_Texture* TextElement::renderText(std::string& message, int size, bool monosp
 		surf = TTF_RenderText_Blended_Wrapped(font, message.c_str(), this->color, wrapped_width);
 
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(MainDisplay::mainRenderer, surf);
-
-	this->width = surf->w;
-	this->height = surf->h;
-	SDL_FreeSurface(surf);
+    SDL_FreeSurface(surf);
 
 	//	SDL_FreeSurface(surf);
 	TTF_CloseFont(font);
