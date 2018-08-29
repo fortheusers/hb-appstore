@@ -18,6 +18,7 @@ public:
 
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;
+    bool error = false;
 
 private:
 	bool showingSplash = true;

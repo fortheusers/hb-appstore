@@ -12,23 +12,23 @@ MainDisplay::MainDisplay(Get* get)
 	this->imageCache = new ImageCache(get->tmp_path);
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
-		printf("SDL init failed: %s\n", SDL_GetError());
+//        printf("SDL init failed: %s\n", SDL_GetError());
 		return;
 	}
 
 	if (TTF_Init() < 0) {
-		printf("SDL ttf init failed: %s\n", SDL_GetError());
+//        printf("SDL ttf init failed: %s\n", SDL_GetError());
 		return;
 	}
 
 	int imgFlags = IMG_INIT_PNG;
 	if( !( IMG_Init( imgFlags ) & imgFlags ) )
 	{
-		printf("SDL image init failed: %s\n", SDL_GetError());
+//        printf("SDL image init failed: %s\n", SDL_GetError());
 		return;
 	}
 
-	printf("initialized SDL\n");
+//    printf("initialized SDL\n");
 
 	int height = 720;
 	int width = 1280;
@@ -48,12 +48,20 @@ MainDisplay::MainDisplay(Get* get)
 				return;
 		}
 	}
-
-	printf("got window surface\n");
+    
+    // go through all repos and if one has an error, set the error flag
+    bool atLeastOneEnabled = false;
+    for (auto repo : this->get->repos)
+    {
+        this->error = this->error || !repo->loaded;
+        atLeastOneEnabled = atLeastOneEnabled || repo->enabled;
+    }
+    
+    this->error = this->error || !atLeastOneEnabled;
 
 	// the progress bar
 	ProgressBar* pbar = new ProgressBar();
-	pbar->position(401, 380);
+	pbar->position(401, 380 - this->error*290);
 	this->elements.push_back(pbar);
 
 	// the text above the progress bar
@@ -63,13 +71,28 @@ MainDisplay::MainDisplay(Get* get)
 
 	// create the first two elements (icon and app title)
 	ImageElement* icon = new ImageElement("res/icon.png");
-	icon->position(330, 255);
-	icon->resize(70, 70);
+	icon->position(330 + this->error*140, 255 - this->error*230);
+	icon->resize(70 - this->error*35, 70 - this->error*35);
 	this->elements.push_back(icon);
 
-	TextElement* title = new TextElement("Homebrew App Store", 50);
-	title->position(415, 255);
+	TextElement* title = new TextElement("Homebrew App Store", 50 - this->error*25);
+	title->position(415 + this->error*100, 255 - this->error*230);
 	this->elements.push_back(title);
+    
+    if (this->error)
+    {
+        std::string troubleshootingText = "No enabled repos found, check ./get/repos.json\nMake sure repo has at least one package";
+        if (atLeastOneEnabled)
+            troubleshootingText = std::string("Perform a connection test in the Switch System Settings\nEnsure DNS isn't blocking: ") + this->get->repos[0]->url;
+        
+        TextElement* errorMessage = new TextElement("Couldn't connect to the Internet!", 40);
+        errorMessage->position(345, 305);
+        this->elements.push_back(errorMessage);
+        
+        TextElement* troubleshooting = new TextElement((std::string("Troubleshooting:\n") + troubleshootingText).c_str(), 20, NULL, false, 600);
+        troubleshooting->position(380, 585);
+        this->elements.push_back(troubleshooting);
+    }
 }
 
 bool MainDisplay::process(InputEvents* event)
@@ -89,7 +112,7 @@ bool MainDisplay::process(InputEvents* event)
 		// no packages, prevent crash TODO: display offline in bottom bar
 		if (this->get->packages.size() == 0)
 		{
-			((ProgressBar*)this->elements[0])->percent = 0;
+			((ProgressBar*)this->elements[0])->percent = -1;
 			return false;
 		}
 

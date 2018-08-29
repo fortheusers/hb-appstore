@@ -10,6 +10,9 @@ ProgressBar::ProgressBar()
 
 void ProgressBar::render(Element* parent)
 {
+    if (this->percent < 0)
+        return;
+    
 	SDL_Rect location;
 	int x = this->x + parent->x;
 	int y = this->y + parent->y;
