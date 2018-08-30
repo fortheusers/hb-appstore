@@ -3,7 +3,7 @@
 
 class AppList;
 
-#define TOTAL_CATS 7
+#define TOTAL_CATS 8
 
 class Sidebar : public Element
 {
@@ -25,7 +25,7 @@ public:
 	int curCategory = 1;		// 1 is all apps
 
 	// list of human-readable category titles and short names from the json
-	const char* cat_names[TOTAL_CATS] = {"Search", "All Apps", "Games", "Emulators", "Tools", "Loaders", "Concepts"};
-	const char* cat_value[TOTAL_CATS] = {"_search", "*", "game", "emu", "tool", "loader", "concept"};
+	const char* cat_names[TOTAL_CATS] = {"Search", "All Apps", "Games", "Emulators", "Tools", "Modules", "Loaders", "Concepts"};
+	const char* cat_value[TOTAL_CATS] = {"_search", "*", "game", "emu", "tool", "module", "loader", "concept"};
 
 };
