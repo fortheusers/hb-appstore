@@ -1,6 +1,6 @@
 #include "TextElement.hpp"
 #include "ImageElement.hpp"
-#include "AppPopup.hpp"
+#include "AppDetails.hpp"
 #include "Sidebar.hpp"
 #include "InertiaScroll.hpp"
 #include "../libs/get/src/Get.hpp"
@@ -21,8 +21,5 @@ public:
 
 	// the total number of apps displayed in this list
 	int totalCount = 0;
-
-	// the currently displayed subscreen (NULL otherwise)
-	AppPopup* subscreen = NULL;
 
 };

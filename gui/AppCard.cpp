@@ -1,6 +1,5 @@
 #include "AppCard.hpp"
-#include "AppList.hpp"
-#include "ImageCache.hpp"
+#include "MainDisplay.hpp"
 
 AppCard::AppCard(Package* package)
 {
@@ -95,19 +94,14 @@ bool AppCard::process(InputEvents* event)
 			// (and also let the A press through)
 			if (((event->touchIn(this->parent->x + this->x, this->parent->y + this->y, this->width, this->height)) ||
 				event->held(A_BUTTON)) &&
-				!((AppList*)this->parent)->subscreen)
+                !MainDisplay::subscreen)
 			{
 				// received a click on this app, add a subscreen under the parent
 				// (parent of AppCard should be AppList)
-				AppPopup* popup = new AppPopup(this->package);
+                MainDisplay::subscreen = new AppDetails(this->package);
 				AppList* appList = ((AppList*)this->parent);
 				if (!appList->touchMode)
-					popup->highlighted = 0;		// show cursor if we're not in touch mode
-				this->parent->elements.push_back(popup);
-
-				// set the subscreen variable too, to acces it easier
-				appList->subscreen = popup;
-				AppPopup::frontmostPopup = popup;
+                    ((AppDetails*)MainDisplay::subscreen)->highlighted = 0;		// show cursor if we're not in touch mode
 			}
 		}
 

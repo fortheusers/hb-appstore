@@ -25,6 +25,9 @@ public:
 
 	// remove all elements and free their memory
 	void wipeElements();
+    
+    // the scale of the element (and its subelements!)
+    float scale = 1.0f;
 
 	// SDL main graphics variables
 	SDL_Window* window = NULL;

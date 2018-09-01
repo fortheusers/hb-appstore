@@ -3,6 +3,7 @@
 #include "../libs/get/src/Utils.hpp"
 
 SDL_Renderer* MainDisplay::mainRenderer = NULL;
+Element* MainDisplay::subscreen = NULL;
 
 MainDisplay::MainDisplay(Get* get)
 {
@@ -136,9 +137,9 @@ bool MainDisplay::process(InputEvents* event)
 			if (!success) // manually add defualt icon to cache if downloading failed
 				cp("res/default.png", (key_path + "/icon.png").c_str());
 
-			success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/screen.png", key_path + "/screen.png");
-			if (!success)
-				cp("res/noscreen.png", (key_path + "/screen.png").c_str());
+//            success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/screen.png", key_path + "/screen.png");
+//            if (!success)
+//                cp("res/noscreen.png", (key_path + "/screen.png").c_str());
 
 			// add these versions to the version map
 			this->imageCache->version_cache[current->pkg_name] = current->version;
@@ -148,7 +149,6 @@ bool MainDisplay::process(InputEvents* event)
 		// (making an AppCard and calling update() will do this, even if we don't intend to do anything with it yet)
 		AppCard a(current);
 		a.update();
-//		AppPopup b(current);		TODO: uncomment this line when the switch gets hardware rendering, it speeds up clicking on specific apps
 
 		// write the version we just got to the cache as well so that we can know whether or not we need to up date it next time
 
@@ -182,6 +182,13 @@ bool MainDisplay::process(InputEvents* event)
 
 void MainDisplay::render(Element* parent)
 {
+    if (MainDisplay::subscreen)
+    {
+        MainDisplay::subscreen->render(this);
+        this->update();
+        return;
+    }
+    
 	// set the background color
 	background(0x42, 0x45, 0x48);
 

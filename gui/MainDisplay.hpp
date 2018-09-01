@@ -15,6 +15,7 @@ public:
 	void update();
 
 	static SDL_Renderer* mainRenderer;
+    static Element* subscreen;
 
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;

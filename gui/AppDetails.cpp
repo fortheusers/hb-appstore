@@ -1,12 +1,10 @@
-#include "AppList.hpp"
+#include "AppDetails.hpp"
 #include "../libs/get/src/Get.hpp"
 #include "../libs/get/src/Utils.hpp"
-#include "ImageCache.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include "MainDisplay.hpp"
 
-AppPopup* AppPopup::frontmostPopup = NULL;
-
-AppPopup::AppPopup(Package* package)
+AppDetails::AppDetails(Package* package)
 {
 	this->package = package;
 
@@ -96,15 +94,11 @@ AppPopup::AppPopup(Package* package)
 
 }
 
-bool AppPopup::process(InputEvents* event)
+bool AppDetails::process(InputEvents* event)
 {
 	// don't process any keystrokes if an operation is in progress
 	if (this->operating)
 		return false;
-
-	// don't process if displaying details view
-	if (this->subscreen != NULL)
-		return this->subscreen->process(event);
 
 	if (this->highlighted >=0 && event->isKeyDown())
 	{
@@ -150,20 +144,17 @@ bool AppPopup::process(InputEvents* event)
 			this->elements[3]->hide();
 
 			// setup progress bar callback
-			networking_callback = AppPopup::updateCurrentlyDisplayedPopup;
+			networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
 
 			// install or remove this package based on the package status
-			if (this->package->status == INSTALLED)
-				((AppList*)this->parent)->get->remove(this->package);
-			else
-				((AppList*)this->parent)->get->install(this->package);
+//            if (this->package->status == INSTALLED)
+//                appList->get->remove(this->package);
+//            else
+//                appList->get->install(this->package);
 
 			// refresh the screen
 			this->wipeElements();
-			((AppList*)this->parent)->subscreen = NULL;
-			AppPopup::frontmostPopup = NULL;
-
-			((AppList*)this->parent)->update();
+			MainDisplay::subscreen = NULL;
 
 			this->operating = false;
 		}
@@ -179,15 +170,8 @@ bool AppPopup::process(InputEvents* event)
 			if (this->parent)
 			{
 				// refresh the screen
-				((AppList*)this->parent)->subscreen = NULL;
-				((AppList*)this->parent)->update();
+				MainDisplay::subscreen = NULL;
 			}
-		}
-
-		if (event->touchIn(x2+60, y-110, 100, h))
-		{
-			// show the more info screen
-			this->subscreen = new DetailsPopup(&this->package->long_desc);
 		}
 	}
 
@@ -197,7 +181,7 @@ bool AppPopup::process(InputEvents* event)
 	return false;
 }
 
-void AppPopup::render(Element* parent)
+void AppDetails::render(Element* parent)
 {
 	if (this->renderer == NULL)
 		this->renderer = parent->renderer;
@@ -223,19 +207,15 @@ void AppPopup::render(Element* parent)
 
 		rectangleRGBA(parent->renderer, x, y, x + w, y + h, 0xff, 0x00, 0xff, 0xff);
 	}
-
-	// draw details view if it exists
-	if (this->subscreen != NULL)
-		this->subscreen->render(this);
 }
 
-int AppPopup::updateCurrentlyDisplayedPopup(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
-{
-	AppPopup* popup = AppPopup::frontmostPopup;
-    
+int AppDetails::updateCurrentlyDisplayedPopup(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
+{    
     if (dltotal == 0) dltotal = 1;
     
     double amount = dlnow / dltotal;
+    
+    AppDetails* popup = (AppDetails*)MainDisplay::subscreen;
 
 	// update the amount
 	if (popup != NULL)

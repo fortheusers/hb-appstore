@@ -12,7 +12,7 @@ Sidebar::Sidebar()
 	// there's no back color to the sidebar, as the background is already the right color
 
 	// create image in top left
-	ImageElement* logo = new ImageElement("res/icon_small.png");
+	ImageElement* logo = new ImageElement("res/icon.png");
 	logo->resize(35, 35);
 	logo->position(50, 50);
 	this->elements.push_back(logo);

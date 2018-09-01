@@ -22,68 +22,64 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 
 bool AppList::process(InputEvents* event)
 {
-	// only process any events for AppList if there's no subscreen
-	if (this->subscreen == NULL)
-	{
-		// process some joycon input events
-		if (event->isKeyDown())
-		{
-			if (event->held(A_BUTTON | B_BUTTON | UP_BUTTON | DOWN_BUTTON | LEFT_BUTTON | RIGHT_BUTTON))
-			{
-				// if we were in touch mode, draw the cursor in the applist
-				// and reset our position
-				if (this->touchMode)
-				{
-					this->touchMode = false;
-					this->highlighted = 0;
-					this->y = 0;		// reset scroll TODO: maintain scroll when switching back from touch mode
-					return false;
-				}
+    // process some joycon input events
+    if (event->isKeyDown())
+    {
+        if (event->held(A_BUTTON | B_BUTTON | UP_BUTTON | DOWN_BUTTON | LEFT_BUTTON | RIGHT_BUTTON))
+        {
+            // if we were in touch mode, draw the cursor in the applist
+            // and reset our position
+            if (this->touchMode)
+            {
+                this->touchMode = false;
+                this->highlighted = 0;
+                this->y = 0;		// reset scroll TODO: maintain scroll when switching back from touch mode
+                return false;
+            }
 
-				// touchmode is false, but our highlight value is negative
-				// (do nothing, let sidebar update our highlight value)
-				if (this->highlighted < 0) return false;
+            // touchmode is false, but our highlight value is negative
+            // (do nothing, let sidebar update our highlight value)
+            if (this->highlighted < 0) return false;
 
-				// if we got a LEFT key while on the left most edge already, transfer to categories
-				if (this->highlighted%3==0 && event->held(LEFT_BUTTON))
-				{
-					this->highlighted = -1;
-					this->sidebar->highlighted = 0;
-					return false;
-				}
+            // if we got a LEFT key while on the left most edge already, transfer to categories
+            if (this->highlighted%3==0 && event->held(LEFT_BUTTON))
+            {
+                this->highlighted = -1;
+                this->sidebar->highlighted = 0;
+                return false;
+            }
 
-				// similarly, prevent a RIGHT from wrapping to the next line
-				if (this->highlighted%3==2 && event->held(RIGHT_BUTTON)) return false;
+            // similarly, prevent a RIGHT from wrapping to the next line
+            if (this->highlighted%3==2 && event->held(RIGHT_BUTTON)) return false;
 
-				// adjust the cursor by 1 for left or right
-				this->highlighted += -1*(event->held(LEFT_BUTTON)) + (event->held(RIGHT_BUTTON));
+            // adjust the cursor by 1 for left or right
+            this->highlighted += -1*(event->held(LEFT_BUTTON)) + (event->held(RIGHT_BUTTON));
 
-				// adjust it by 3 for up and down
-				this->highlighted += -3*(event->held(UP_BUTTON)) + 3*(event->held(DOWN_BUTTON));
+            // adjust it by 3 for up and down
+            this->highlighted += -3*(event->held(UP_BUTTON)) + 3*(event->held(DOWN_BUTTON));
 
-				// don't let the cursor go out of bounds
-				if (this->highlighted < 0) this->highlighted = 0;
-				if (this->highlighted >= this->totalCount) this->highlighted = this->totalCount-1;
+            // don't let the cursor go out of bounds
+            if (this->highlighted < 0) this->highlighted = 0;
+            if (this->highlighted >= this->totalCount) this->highlighted = this->totalCount-1;
 
-				// if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
-				// TODO: make it so that the cursor can go to the top of the screen
-				if (this->highlighted >= 6)
-					this->y = -1*((this->highlighted-6)/3)*210 - 60;
-				else
-					this->y = 0;		// at the top of the screen
+            // if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
+            // TODO: make it so that the cursor can go to the top of the screen
+            if (this->highlighted >= 6)
+                this->y = -1*((this->highlighted-6)/3)*210 - 60;
+            else
+                this->y = 0;		// at the top of the screen
 
-			}
-		}
-		if (event->isTouchDown())
-	  {
-			// got a touch, so let's enter touchmode
-			this->highlighted = -1;
-			this->touchMode = true;
-		}
+        }
+    }
+    if (event->isTouchDown())
+  {
+        // got a touch, so let's enter touchmode
+        this->highlighted = -1;
+        this->touchMode = true;
+    }
 
-		// perform inertia scrolling for this element
-		InertiaScroll::handle(this, event);
-	}
+    // perform inertia scrolling for this element
+    InertiaScroll::handle(this, event);
 
 	super::process(event);
 
