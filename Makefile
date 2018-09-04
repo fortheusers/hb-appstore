@@ -55,7 +55,7 @@ CFLAGS	:=	-g -Wall -O2 \
 			-ffast-math \
 			$(ARCH) $(DEFINES)
 
-CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DNOSTYLUS -DUSE_FILE32API
+CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DUSE_FILE32API -DNOSTYLUS
 
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
