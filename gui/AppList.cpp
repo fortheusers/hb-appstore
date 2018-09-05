@@ -102,8 +102,8 @@ void AppList::render(Element* parent)
 	// draw the cursor at the highlighted position, if appropriate
 	if (this->highlighted >= 0)
 	{
-		int x = this->x + 15 + (this->highlighted%3)*265;		// TODO: extract into formula method
-		int y = this->y + 135 + 210*(this->highlighted/3);
+		int x = this->x + 25 + (this->highlighted%3)*265;		// TODO: extract into formula method
+		int y = this->y + 145 + 210*(this->highlighted/3);
 
 		rectangleRGBA(parent->renderer, x, y, x + 265, y + 205, 0xff, 0x00, 0xff, 0xff);
 	}
@@ -173,7 +173,7 @@ void AppList::update()
 		AppCard* card = (AppCard*) elements[x];
 
 		// position at proper x, y coordinates
-		card->position(10 + (x%3)*265, 130 + 210*(x/3));		// TODO: extract formula into method (see above)
+		card->position(20 + (x%3)*265, 140 + 210*(x/3));		// TODO: extract formula into method (see above)
 		card->update();
 	}
 

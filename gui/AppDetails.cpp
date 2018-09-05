@@ -8,17 +8,6 @@ AppDetails::AppDetails(Package* package)
 {
 	this->package = package;
 
-	// background (element 0)
-	ImageElement* shade = new ImageElement("res/shade.png");
-	shade->resize(1280, 720);
-	this->elements.push_back(shade);
-
-	// popup card (element 1)
-	ImageElement* popup = new ImageElement("res/popup.png");
-	popup->position(469, 109);
-	popup->resize(727, 422);
-	this->elements.push_back(popup);
-
 	SDL_Color red = {0xFF, 0x00, 0x00, 0xff};
 	SDL_Color gray = {0x50, 0x50, 0x50, 0xff};
 	SDL_Color black = {0x00, 0x00, 0x00, 0xff};
@@ -185,16 +174,9 @@ void AppDetails::render(Element* parent)
 {
 	if (this->renderer == NULL)
 		this->renderer = parent->renderer;
-
-	if (this->parent == NULL)
-		this->parent = parent;
-
-	for (int x=0; x<this->elements.size(); x++)
-	{
-		// go through every subelement and run render
-		// (use "this" instead of "parent" to be absolute)
-		this->elements[x]->render(this);
-	}
+    
+    // draw all elements
+    super::render(this);
 
 	// draw the currently selected symbol, if appropriate
 	if (this->highlighted >= 0)

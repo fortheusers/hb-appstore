@@ -182,15 +182,15 @@ bool MainDisplay::process(InputEvents* event)
 
 void MainDisplay::render(Element* parent)
 {
+    // set the background color
+    MainDisplay::background(0x42, 0x45, 0x48);
+    
     if (MainDisplay::subscreen)
     {
         MainDisplay::subscreen->render(this);
         this->update();
         return;
     }
-    
-	// set the background color
-	background(0x42, 0x45, 0x48);
 
 	// render the rest of the subelements
 	super::render(this);

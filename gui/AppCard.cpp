@@ -6,8 +6,10 @@ AppCard::AppCard(Package* package)
 	this->package = package;
 
 	// fixed width+height of one app card
-	this->width = 265;
-	this->height = 205;
+	this->width = 256;
+	this->height = 195;
+    
+    this->touchable = true;
 }
 
 void AppCard::update()
@@ -16,7 +18,7 @@ void AppCard::update()
 
 	// icon, and look up cached image to load
 	ImageElement* icon = new ImageElement((ImageCache::cache_path + this->package->pkg_name + "/icon.png").c_str());
-	icon->position(this->x + 10, this->y + 10);
+	icon->position(this->x, this->y);
 	icon->resize(256, 150);
 	this->elements.push_back(icon);
 
@@ -27,30 +29,30 @@ void AppCard::update()
 
 	// version
 	TextElement* version = new TextElement(("v. " + package->version).c_str(), size, &gray);
-	version->position(this->x + 50, this->y + 170);
+	version->position(this->x + 40, this->y + 160);
 	this->elements.push_back(version);
 
 	// status string
 	TextElement* status = new TextElement(package->statusString(), size, &gray);
-	status->position(this->x + 50, this->y + 185);
+	status->position(this->x + 40, this->y + 175);
 	this->elements.push_back(status);
 
 	// app name
 	int w, h;
 	TextElement* appname = new TextElement(package->title.c_str(), size+3, &black);
 	SDL_QueryTexture(appname->textSurface, NULL, NULL, &w, &h);
-	appname->position(this->x + 255 - w, this->y + 165);
+	appname->position(this->x + 245 - w, this->y + 155);
 	this->elements.push_back(appname);
 
 	// author
 	TextElement* author = new TextElement(package->author.c_str(), size, &gray);
 	SDL_QueryTexture(author->textSurface, NULL, NULL, &w, &h);
-	author->position(this->x + 255 - w, this->y + 185);
+	author->position(this->x + 245 - w, this->y + 175);
 	this->elements.push_back(author);
 
 	// download status icon
 	ImageElement* statusicon = new ImageElement(("res/" + std::string(package->statusString()) + ".png").c_str());
-	statusicon->position(this->x + 14, this->y + 170);
+	statusicon->position(this->x + 4, this->y + 160);
 	statusicon->resize(30, 30);
 	this->elements.push_back(statusicon);
 }
@@ -72,27 +74,35 @@ bool AppCard::process(InputEvents* event)
 {
 	if (this->parent == NULL)
 		return false;
-
-	if (event->isTouchDown())
+    
+    this->xOff = this->parent->x;
+    this->yOff = this->parent->y;
+    
+	if (this->onTouchDown(event))
 	{
 		// mouse pushed down, set variable
 		this->dragging = true;
 		this->lastMouseY = event->yPos;
+        this->lastMouseX = event->xPos;
 	}
+    else if (event->isTouchDrag())
+    {
+        // we've dragged out of the icon, invalidate the click by invoking onTouchUp early
+        // check if we haven't drifted too far from the starting variable (treshold: 40)
+        if (this->dragging && (abs(event->yPos - this->lastMouseY) >= 40 || abs(event->xPos - this->lastMouseX) >= 40)) // TODO: extract into formula
+            this->elasticCounter = 0;
+    }
 	// mouse is up, or A is pressed
 	// (if it's A that's being pressed, make sure that our index matches the highlighted value)
-	else if (event->isTouchUp() ||
-			(event->isKeyDown() && event->held(A_BUTTON) && ((AppList*)parent)->highlighted == this->index))
+	else if (this->onTouchUp(event))
 	{
-		// check if we haven't drifted too far from the starting variable (treshold: 40)
-		// (or it's a key event, just let it through)
-		if ((this->dragging && abs(event->yPos - this->lastMouseY) < 40 && this->parent)
-			|| event->isKeyDown())
+        // ensure we were dragging first (originally checked the treshold above here, but now that actively invalidates it)
+		if (this->dragging)
 		{
 			// check that this click is in the right coordinates for this square
 			// and that a subscreen isn't already being shown
 			// (and also let the A press through)
-			if (((event->touchIn(this->parent->x + this->x, this->parent->y + this->y, this->width, this->height)) ||
+			if (((event->touchIn(this->xOff + this->x, this->yOff + this->y, this->width, this->height)) ||
 				event->held(A_BUTTON)) &&
                 !MainDisplay::subscreen)
 			{
