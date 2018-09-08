@@ -20,11 +20,8 @@ public:
   // whether or not a touch is detected within the specified rect in this cycle
   bool touchIn(int x, int width, int y, int height);
 
-  // wait for a cycle (currently just hardcoded to 16ms, should dynamically adapt using the clock)
-  void delay();
-
   // update which buttons are pressed
-  void update();
+  bool update();
 
   // whether or not the current event is one of a few known ones
   bool isTouchDown();
@@ -36,6 +33,7 @@ public:
   SDL_Keycode keyCode;
 
   int yPos = 0, xPos = 0;
+    bool noop = false;
 
 private:
   Uint32 type;

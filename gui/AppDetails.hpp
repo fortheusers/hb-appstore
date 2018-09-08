@@ -6,16 +6,19 @@
 #include "ProgressBar.hpp"
 #include "DetailsPopup.hpp"
 #include "../libs/get/src/Package.hpp"
+#include "../libs/get/src/Get.hpp"
+
 
 class AppDetails : public Element
 {
 public:
-	AppDetails(Package* package);
+	AppDetails(Package* package, Get* get);
 	bool process(InputEvents* event);
 	void render(Element* parent);
     
 	bool operating = false;
 	Package* package;
+    Get* get;
 	ProgressBar* pbar = NULL;
 	int highlighted = -1;
     

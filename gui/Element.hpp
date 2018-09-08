@@ -3,6 +3,10 @@
 #include <SDL2/SDL_ttf.h>
 #include "InputEvents.hpp"
 
+#define DEEP_HIGHLIGHT 200
+#define HIGHLIGHT 100
+#define NO_HIGHLIGHT 0
+
 #pragma once
 
 class Element
@@ -42,6 +46,9 @@ public:
 
 	// whether or not this element is currently being dragged
 	bool dragging = false;
+    
+    // whether or not this element needs the screen redrawn next time it's processed
+    bool needsRedraw = false;
 //
 //    // can be used for highlighting the selected element
 //    int animationCounter = 0;

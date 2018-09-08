@@ -1,17 +1,20 @@
 #include "InertiaScroll.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 
-void InertiaScroll::handle(Element* elem, InputEvents* event)
+bool InertiaScroll::handle(Element* elem, InputEvents* event)
 {
+    bool ret = false;
+    
   if (event->isTouchDown())
   {
     // make sure that the mouse down's X coordinate is over the app list (not sidebar)
     if (event->xPos < elem->x)
-      return;
+      return false;
 
     // saw mouse down so set it in our element object
     elem->dragging = true;
     elem->lastMouseY = event->yPos;
+      ret |= true;
   }
   // drag event for scrolling up or down
   else if (event->isTouchDrag())
@@ -24,6 +27,8 @@ void InertiaScroll::handle(Element* elem, InputEvents* event)
 
       // use the last distance as the rubber band value
       elem->elasticCounter = distance;
+        
+      ret |= true;
     }
   }
   else if (event->isTouchUp())
@@ -36,6 +41,8 @@ void InertiaScroll::handle(Element* elem, InputEvents* event)
     // TODO: account for max number of apps too (prevent scrolling down forever)
     if (elem->y > 0)
       elem->y = 0;
+      
+    ret |= true;
   }
 
   // if mouse is up, and there's some elastic counter left, burn out remaining elastic value
@@ -53,5 +60,9 @@ void InertiaScroll::handle(Element* elem, InputEvents* event)
     // TODO: same problem as above todo, also extract into method?
     if (elem->y > 0)
       elem->y = 0;
+    
+      ret |= true;
   }
+    
+    return ret;
 }

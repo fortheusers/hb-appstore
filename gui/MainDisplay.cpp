@@ -50,6 +50,9 @@ MainDisplay::MainDisplay(Get* get)
 		}
 	}
     
+    // set up the SDL needsRender event
+    this->needsRender.type = SDL_USEREVENT;
+    
     // go through all repos and if one has an error, set the error flag
     bool atLeastOneEnabled = false;
     for (auto repo : this->get->repos)
@@ -101,7 +104,7 @@ bool MainDisplay::process(InputEvents* event)
 	// if we're on the splash/loading screen, we need to fetch icons+screenshots from the remote repo
 	// and load them into our surface cache with the pkg_name+version as the key
 
-	if (this->showingSplash)
+	if (this->showingSplash && event->noop)
 	{
 		// update the counter (TODO: replace with fetching app icons/screen previews)
 		this->count++;
@@ -136,10 +139,7 @@ bool MainDisplay::process(InputEvents* event)
 			bool success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/icon.png", key_path + "/icon.png");
 			if (!success) // manually add defualt icon to cache if downloading failed
 				cp("res/default.png", (key_path + "/icon.png").c_str());
-
-//            success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/screen.png", key_path + "/screen.png");
-//            if (!success)
-//                cp("res/noscreen.png", (key_path + "/screen.png").c_str());
+            // TODO: generate a custom icon for this version with a color and name
 
 			// add these versions to the version map
 			this->imageCache->version_cache[current->pkg_name] = current->version;
@@ -169,12 +169,15 @@ bool MainDisplay::process(InputEvents* event)
 			sidebar->appList = applist;
 
 			this->showingSplash = false;
+            this->needsRedraw = true;
 		}
+        
+        return true;
 	}
 	else
 	{
 		// keep processing child elements
-		super::process(event);
+		return super::process(event);
 	}
 
 	return false;
@@ -207,6 +210,14 @@ void MainDisplay::background(int r, int g, int b)
 
 void MainDisplay::update()
 {
-//	SDL_UpdateWindowSurface(this->window);
-	SDL_RenderPresent(this->renderer);
+    // never exceed 60fps because there's no point
+    
+    int now = SDL_GetTicks();
+    int diff = now - this->lastFrameTime;
+
+    if (diff < 16)
+        return;
+
+    SDL_RenderPresent(this->renderer);
+    this->lastFrameTime = now;
 }

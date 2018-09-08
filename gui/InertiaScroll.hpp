@@ -3,5 +3,5 @@
 class InertiaScroll : public Element
 {
 public:
-	static void handle(Element* element, InputEvents* event);
+	static bool handle(Element* element, InputEvents* event);
 };

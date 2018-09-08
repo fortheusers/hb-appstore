@@ -20,6 +20,9 @@ public:
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;
     bool error = false;
+    
+    int lastFrameTime = 99;
+    SDL_Event needsRender;
 
 private:
 	bool showingSplash = true;

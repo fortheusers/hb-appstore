@@ -22,6 +22,8 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 
 bool AppList::process(InputEvents* event)
 {
+    bool ret = false;
+    
     // process some joycon input events
     if (event->isKeyDown())
     {
@@ -34,19 +36,24 @@ bool AppList::process(InputEvents* event)
                 this->touchMode = false;
                 this->highlighted = 0;
                 this->y = 0;		// reset scroll TODO: maintain scroll when switching back from touch mode
-                return false;
+                return true;
             }
 
             // touchmode is false, but our highlight value is negative
             // (do nothing, let sidebar update our highlight value)
             if (this->highlighted < 0) return false;
+            
+            // look up whatever is currently chosen as the highlighted position
+            // and remove its highlight
+            if (this->elements[this->highlighted])
+                this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
 
             // if we got a LEFT key while on the left most edge already, transfer to categories
             if (this->highlighted%3==0 && event->held(LEFT_BUTTON))
             {
                 this->highlighted = -1;
                 this->sidebar->highlighted = 0;
-                return false;
+                return true;
             }
 
             // similarly, prevent a RIGHT from wrapping to the next line
@@ -69,21 +76,23 @@ bool AppList::process(InputEvents* event)
             else
                 this->y = 0;		// at the top of the screen
 
+            if (this->elements[this->highlighted])
+                this->elements[this->highlighted]->elasticCounter = HIGHLIGHT;
         }
     }
     if (event->isTouchDown())
-  {
+    {
         // got a touch, so let's enter touchmode
         this->highlighted = -1;
         this->touchMode = true;
     }
 
     // perform inertia scrolling for this element
-    InertiaScroll::handle(this, event);
+    ret |= InertiaScroll::handle(this, event);
+    
+	ret |= super::process(event);
 
-	super::process(event);
-
-	return true;
+	return ret;
 }
 
 void AppList::render(Element* parent)
@@ -98,15 +107,6 @@ void AppList::render(Element* parent)
 	SDL_SetRenderDrawColor(parent->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderFillRect(parent->renderer, &dimens);
 	this->renderer = parent->renderer;
-
-	// draw the cursor at the highlighted position, if appropriate
-	if (this->highlighted >= 0)
-	{
-		int x = this->x + 25 + (this->highlighted%3)*265;		// TODO: extract into formula method
-		int y = this->y + 145 + 210*(this->highlighted/3);
-
-		rectangleRGBA(parent->renderer, x, y, x + 265, y + 205, 0xff, 0x00, 0xff, 0xff);
-	}
 
 	super::render(this);
 }
@@ -173,7 +173,7 @@ void AppList::update()
 		AppCard* card = (AppCard*) elements[x];
 
 		// position at proper x, y coordinates
-		card->position(20 + (x%3)*265, 140 + 210*(x/3));		// TODO: extract formula into method (see above)
+		card->position(25 + (x%3)*265, 145 + 210*(x/3));		// TODO: extract formula into method (see above)
 		card->update();
 	}
 

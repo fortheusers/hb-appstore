@@ -47,7 +47,7 @@ bool Sidebar::process(InputEvents* event)
 			this->appList->highlighted = 0;
 			this->appList->y = 0;		// reset scroll TODO: maintain scroll when switching between sidebar and app list
 			event->update();
-			return false;
+			return true;
 		}
 
 		// adjust the cursor by 1 for up or down
@@ -63,7 +63,7 @@ bool Sidebar::process(InputEvents* event)
 	{
 		this->dragging = true;
 		this->highlighted = -1;
-		return false;
+		return true;
 	}
 
 	// detect if a click is on one of the sidebar elements
@@ -91,6 +91,8 @@ bool Sidebar::process(InputEvents* event)
 				}
 			}
 		}
+        
+        return true;
 	}
 
 	return false;

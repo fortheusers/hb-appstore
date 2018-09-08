@@ -89,8 +89,8 @@ bool AppCard::process(InputEvents* event)
     {
         // we've dragged out of the icon, invalidate the click by invoking onTouchUp early
         // check if we haven't drifted too far from the starting variable (treshold: 40)
-        if (this->dragging && (abs(event->yPos - this->lastMouseY) >= 40 || abs(event->xPos - this->lastMouseX) >= 40)) // TODO: extract into formula
-            this->elasticCounter = 0;
+        if (this->dragging && (abs(event->yPos - this->lastMouseY) >= 40 || abs(event->xPos - this->lastMouseX) >= 40))
+            this->elasticCounter = NO_HIGHLIGHT;
     }
 	// mouse is up, or A is pressed
 	// (if it's A that's being pressed, make sure that our index matches the highlighted value)
@@ -108,8 +108,8 @@ bool AppCard::process(InputEvents* event)
 			{
 				// received a click on this app, add a subscreen under the parent
 				// (parent of AppCard should be AppList)
-                MainDisplay::subscreen = new AppDetails(this->package);
-				AppList* appList = ((AppList*)this->parent);
+                AppList* appList = ((AppList*)this->parent);
+                MainDisplay::subscreen = new AppDetails(this->package, appList->get);
 				if (!appList->touchMode)
                     ((AppDetails*)MainDisplay::subscreen)->highlighted = 0;		// show cursor if we're not in touch mode
 			}

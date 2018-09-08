@@ -4,9 +4,10 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include "MainDisplay.hpp"
 
-AppDetails::AppDetails(Package* package)
+AppDetails::AppDetails(Package* package, Get* get)
 {
 	this->package = package;
+    this->get = get;
 
 	SDL_Color red = {0xFF, 0x00, 0x00, 0xff};
 	SDL_Color gray = {0x50, 0x50, 0x50, 0xff};
@@ -136,10 +137,10 @@ bool AppDetails::process(InputEvents* event)
 			networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
 
 			// install or remove this package based on the package status
-//            if (this->package->status == INSTALLED)
-//                appList->get->remove(this->package);
-//            else
-//                appList->get->install(this->package);
+            if (this->package->status == INSTALLED)
+                get->remove(this->package);
+            else
+                get->install(this->package);
 
 			// refresh the screen
 			this->wipeElements();
