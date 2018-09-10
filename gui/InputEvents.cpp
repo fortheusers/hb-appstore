@@ -1,9 +1,9 @@
 #include "InputEvents.hpp"
 
-int TOTAL_BUTTONS = 7;
-SDL_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN };
-SDL_GameControllerButton pad_buttons[] = { SDL_CONTROLLER_BUTTON_A, SDL_CONTROLLER_BUTTON_B, SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_CONTROLLER_BUTTON_DPAD_DOWN, SDL_CONTROLLER_BUTTON_DPAD_LEFT, SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDL_CONTROLLER_BUTTON_START };
-char ie_buttons[] = { A_BUTTON, B_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON };
+int TOTAL_BUTTONS = 11;
+SDL_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE};
+SDL_GameControllerButton pad_buttons[] = { SDL_CONTROLLER_BUTTON_A, SDL_CONTROLLER_BUTTON_B, SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_CONTROLLER_BUTTON_DPAD_DOWN, SDL_CONTROLLER_BUTTON_DPAD_LEFT, SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDL_CONTROLLER_BUTTON_START, SDL_CONTROLLER_BUTTON_LEFTSHOULDER, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, SDL_CONTROLLER_BUTTON_GUIDE, SDL_CONTROLLER_BUTTON_BACK };
+unsigned char ie_buttons[] = { A_BUTTON, B_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, Z_BUTTON, SELECT_BUTTON };
 
 bool InputEvents::update()
 {
@@ -66,6 +66,23 @@ bool InputEvents::held(int buttons)
   }
 
   return false;
+}
+
+//bool InputEvents::held(int buttons)
+//{
+//    // held is the same as held internal, except it works with a timer
+//    // will return true for 1. a press down event or 2. 128ms after that
+//    // and then
+//}
+
+bool InputEvents::pressed(int buttons)
+{
+    return isKeyDown() && held(buttons);
+}
+
+bool InputEvents::released(int buttons)
+{
+    return isKeyUp() && held(buttons);
 }
 
 bool InputEvents::touchIn(int x, int y, int width, int height)

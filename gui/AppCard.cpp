@@ -78,6 +78,8 @@ bool AppCard::process(InputEvents* event)
     this->xOff = this->parent->x;
     this->yOff = this->parent->y;
     
+    bool ret = false;
+    
 	if (this->onTouchDown(event))
 	{
 		// mouse pushed down, set variable
@@ -112,6 +114,7 @@ bool AppCard::process(InputEvents* event)
                 MainDisplay::subscreen = new AppDetails(this->package, appList->get);
 				if (!appList->touchMode)
                     ((AppDetails*)MainDisplay::subscreen)->highlighted = 0;		// show cursor if we're not in touch mode
+                ret |= true;
 			}
 		}
 
@@ -119,5 +122,5 @@ bool AppCard::process(InputEvents* event)
 		this->dragging = false;
 	}
 
-	return false;
+	return ret;
 }

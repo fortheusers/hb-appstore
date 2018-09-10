@@ -24,7 +24,7 @@ bool AppList::process(InputEvents* event)
 {
     bool ret = false;
     
-    if (event->held(B_BUTTON))
+    if (event->pressed(Z_BUTTON))
     {
         R = (R==3)? 4 : 3;
         this->x = 400 - 260*(R-3);
@@ -65,7 +65,7 @@ bool AppList::process(InputEvents* event)
             }
 
             // similarly, prevent a RIGHT from wrapping to the next line
-            if (this->highlighted%R==2 && event->held(RIGHT_BUTTON)) return false;
+            if (this->highlighted%R==(R-1) && event->held(RIGHT_BUTTON)) return false;
 
             // adjust the cursor by 1 for left or right
             this->highlighted += -1*(event->held(LEFT_BUTTON)) + (event->held(RIGHT_BUTTON));

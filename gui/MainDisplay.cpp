@@ -176,6 +176,8 @@ bool MainDisplay::process(InputEvents* event)
 	}
 	else
 	{
+        if (MainDisplay::subscreen)
+            return MainDisplay::subscreen->process(event);
 		// keep processing child elements
 		return super::process(event);
 	}
@@ -187,6 +189,7 @@ void MainDisplay::render(Element* parent)
 {
     // set the background color
     MainDisplay::background(0x42, 0x45, 0x48);
+//    MainDisplay::background(0x60, 0x7d, 0x8b);
     
     if (MainDisplay::subscreen)
     {
@@ -212,12 +215,12 @@ void MainDisplay::update()
 {
     // never exceed 60fps because there's no point
     
-    int now = SDL_GetTicks();
-    int diff = now - this->lastFrameTime;
-
-    if (diff < 16)
-        return;
+//    int now = SDL_GetTicks();
+//    int diff = now - this->lastFrameTime;
+//
+//    if (diff < 16)
+//        return;
 
     SDL_RenderPresent(this->renderer);
-    this->lastFrameTime = now;
+//    this->lastFrameTime = now;
 }

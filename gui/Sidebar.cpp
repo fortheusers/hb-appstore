@@ -13,20 +13,29 @@ Sidebar::Sidebar()
 
 	// create image in top left
 	ImageElement* logo = new ImageElement("res/icon.png");
-	logo->resize(35, 35);
-	logo->position(50, 50);
+	logo->resize(40, 40);
+	logo->position(30, 50);
 	this->elements.push_back(logo);
 
 	// create title for logo, top left
 	TextElement* title = new TextElement("Homebrew App Store", 22);
-	title->position(90, 52);
+	title->position(105, 45);
 	this->elements.push_back(title);
+    TextElement* subtitle = new TextElement("GPLv3 License", 18);
+    subtitle->position(105, 75);
+    this->elements.push_back(subtitle);
+
 
 	// for every entry in cat names, create a text element
 	for (int x=0; x<TOTAL_CATS; x++)
 	{
+        ImageElement* icon = new ImageElement((std::string("res/") + cat_value[x] + ".png").c_str());
+        icon->resize(40, 40);
+        icon->position(30, 150+x*70 - 5);
+        this->elements.push_back(icon);
+        
 		TextElement* category = new TextElement(cat_names[x], 25);
-		category->position(50, 150+x*70);
+		category->position(105, 150+x*70);
 		this->elements.push_back(category);
 	}
 }
