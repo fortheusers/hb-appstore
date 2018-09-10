@@ -1,9 +1,10 @@
-#include "InertiaScroll.hpp"
+#include "ListElement.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 
-bool InertiaScroll::handle(Element* elem, InputEvents* event)
+bool ListElement::handleInertiaScroll(InputEvents* event)
 {
     bool ret = false;
+    ListElement* elem = this;
     
   if (event->isTouchDown())
   {
@@ -14,6 +15,8 @@ bool InertiaScroll::handle(Element* elem, InputEvents* event)
     // saw mouse down so set it in our element object
     elem->dragging = true;
     elem->lastMouseY = event->yPos;
+      elem->initialTouchDown = event->yPos;
+      
       ret |= true;
   }
   // drag event for scrolling up or down
@@ -21,6 +24,12 @@ bool InertiaScroll::handle(Element* elem, InputEvents* event)
   {
     if (elem->dragging)
     {
+        // prevent scrolling until we exceed a treshold distance in the Y direction
+        if (this->initialTouchDown >= 0 && (abs(event->yPos - this->initialTouchDown) < 10))
+            return false;
+
+        this->initialTouchDown = -1;
+        
       int distance = event->yPos - elem->lastMouseY;
       elem->y += distance;
       elem->lastMouseY = event->yPos;

@@ -176,6 +176,12 @@ void AppDetails::render(Element* parent)
 	if (this->renderer == NULL)
 		this->renderer = parent->renderer;
     
+    // draw white background
+    SDL_Rect dimens = { 0, 0, 920, 720 };
+    
+    SDL_SetRenderDrawColor(parent->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_RenderFillRect(parent->renderer, &dimens);
+    
     // draw all elements
     super::render(this);
 

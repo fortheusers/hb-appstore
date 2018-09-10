@@ -1,11 +1,12 @@
 #include "TextElement.hpp"
 #include "ImageElement.hpp"
+#include "ListElement.hpp"
 
 class AppList;
 
 #define TOTAL_CATS 8
 
-class Sidebar : public Element
+class Sidebar : public ListElement
 {
 public:
 	Sidebar();
@@ -16,7 +17,6 @@ public:
 	std::string searchQuery = "";
 
 	AppList* appList = NULL;
-	int highlighted = -1;
 
 	void render(Element* parent);
 	bool process(InputEvents* event);

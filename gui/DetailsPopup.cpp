@@ -1,6 +1,5 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include "DetailsPopup.hpp"
-#include "InertiaScroll.hpp"
 
 DetailsPopup::DetailsPopup(std::string* details_text)
 {
@@ -20,7 +19,7 @@ DetailsPopup::DetailsPopup(std::string* details_text)
 
 bool DetailsPopup::process(InputEvents* event)
 {
-	InertiaScroll::handle(this->elements[1], event);
+//    InertiaScroll::handle(this->elements[1], event);
 	return false;
 }
 

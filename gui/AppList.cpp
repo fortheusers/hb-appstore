@@ -5,7 +5,7 @@
 
 AppList::AppList(Get* get, Sidebar* sidebar)
 {
-	this->x = 400;
+    this->x = 400 - 260*(R-3);
 
 	// the offset of how far along scroll'd we are
 	this->y = 0;
@@ -23,6 +23,14 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 bool AppList::process(InputEvents* event)
 {
     bool ret = false;
+    
+    if (event->held(B_BUTTON))
+    {
+        R = (R==3)? 4 : 3;
+        this->x = 400 - 260*(R-3);
+        update();
+        return true;
+    }
     
     // process some joycon input events
     if (event->isKeyDown())
@@ -49,7 +57,7 @@ bool AppList::process(InputEvents* event)
                 this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
 
             // if we got a LEFT key while on the left most edge already, transfer to categories
-            if (this->highlighted%3==0 && event->held(LEFT_BUTTON))
+            if (this->highlighted%R==0 && event->held(LEFT_BUTTON))
             {
                 this->highlighted = -1;
                 this->sidebar->highlighted = 0;
@@ -57,13 +65,13 @@ bool AppList::process(InputEvents* event)
             }
 
             // similarly, prevent a RIGHT from wrapping to the next line
-            if (this->highlighted%3==2 && event->held(RIGHT_BUTTON)) return false;
+            if (this->highlighted%R==2 && event->held(RIGHT_BUTTON)) return false;
 
             // adjust the cursor by 1 for left or right
             this->highlighted += -1*(event->held(LEFT_BUTTON)) + (event->held(RIGHT_BUTTON));
 
-            // adjust it by 3 for up and down
-            this->highlighted += -3*(event->held(UP_BUTTON)) + 3*(event->held(DOWN_BUTTON));
+            // adjust it by R for up and down
+            this->highlighted += -1*R*(event->held(UP_BUTTON)) + R*(event->held(DOWN_BUTTON));
 
             // don't let the cursor go out of bounds
             if (this->highlighted < 0) this->highlighted = 0;
@@ -71,8 +79,8 @@ bool AppList::process(InputEvents* event)
 
             // if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
             // TODO: make it so that the cursor can go to the top of the screen
-            if (this->highlighted >= 6)
-                this->y = -1*((this->highlighted-6)/3)*210 - 60;
+            if (this->highlighted >= R*2)
+                this->y = -1*((this->highlighted-R*2)/R)*210 - 60;
             else
                 this->y = 0;		// at the top of the screen
 
@@ -88,7 +96,7 @@ bool AppList::process(InputEvents* event)
     }
 
     // perform inertia scrolling for this element
-    ret |= InertiaScroll::handle(this, event);
+    ret |= this->handleInertiaScroll(event);
     
 	ret |= super::process(event);
 
@@ -101,7 +109,7 @@ void AppList::render(Element* parent)
 		this->parent = parent;
 
 	// draw a white background, 870 wide
-	SDL_Rect dimens = { 0, 0, 920, 720 };
+	SDL_Rect dimens = { 0, 0, 920 + 260*(R-3), 720 };
 	dimens.x = this->x - 35;
 
 	SDL_SetRenderDrawColor(parent->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -148,7 +156,7 @@ void AppList::update()
 
 	// total apps we're interested in so far
 	int count = 0;
-
+    
 	for (int x=0; x<sorted.size(); x++)
 	{
 		// if we're on all categories, or this package matches the current category (or it's a search (prefiltered))
@@ -173,7 +181,7 @@ void AppList::update()
 		AppCard* card = (AppCard*) elements[x];
 
 		// position at proper x, y coordinates
-		card->position(25 + (x%3)*265, 145 + 210*(x/3));		// TODO: extract formula into method (see above)
+		card->position(25 + (x%R)*265, 145 + 210*(x/R));		// TODO: extract formula into method (see above)
 		card->update();
 	}
 
