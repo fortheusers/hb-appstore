@@ -111,7 +111,7 @@ bool AppCard::process(InputEvents* event)
 				// received a click on this app, add a subscreen under the parent
 				// (parent of AppCard should be AppList)
                 AppList* appList = ((AppList*)this->parent);
-                MainDisplay::subscreen = new AppDetails(this->package, appList->get);
+                MainDisplay::subscreen = new AppDetails(this->package, appList);
 				if (!appList->touchMode)
                     ((AppDetails*)MainDisplay::subscreen)->highlighted = 0;		// show cursor if we're not in touch mode
                 ret |= true;

@@ -106,9 +106,6 @@ bool MainDisplay::process(InputEvents* event)
 
 	if (this->showingSplash && event->noop)
 	{
-		// update the counter (TODO: replace with fetching app icons/screen previews)
-		this->count++;
-
 		// should be a progress bar
 		if (this->get->packages.size() != 1)
 			((ProgressBar*)this->elements[0])->percent = (this->count / ((float)this->get->packages.size()-1));
@@ -117,8 +114,12 @@ bool MainDisplay::process(InputEvents* event)
 		if (this->get->packages.size() == 0)
 		{
 			((ProgressBar*)this->elements[0])->percent = -1;
-			return false;
+            this->showingSplash = false;
+            return true;
 		}
+        
+        // update the counter (TODO: replace with fetching app icons/screen previews)
+        this->count++;
 
 		// get the package whose icon+screen to process
 		Package* current = this->get->packages[this->count - 1];

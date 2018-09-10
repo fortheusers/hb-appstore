@@ -5,6 +5,7 @@
 class AppList;
 
 #define TOTAL_CATS 8
+#pragma once
 
 class Sidebar : public ListElement
 {

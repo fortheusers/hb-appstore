@@ -5,10 +5,11 @@
 #include <sstream>
 #include "MainDisplay.hpp"
 
-AppDetails::AppDetails(Package* package, Get* get)
+AppDetails::AppDetails(Package* package, AppList* appList)
 {
 	this->package = package;
-    this->get = get;
+    this->get = appList->get;
+    this->appList = appList;
 
 	SDL_Color red = {0xFF, 0x00, 0x00, 0xff};
 	SDL_Color gray = {0x50, 0x50, 0x50, 0xff};
@@ -149,6 +150,7 @@ bool AppDetails::process(InputEvents* event)
 			MainDisplay::subscreen = NULL;
 
 			this->operating = false;
+            this->appList->update();
             return true;
 		}
 
