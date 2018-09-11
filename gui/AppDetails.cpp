@@ -43,20 +43,24 @@ AppDetails::AppDetails(Package* package, AppList* appList)
     this->elements.push_back(cancel);
 
 
+    // the scrollable portion of the app details page
+    AppDetailsContent* content = new AppDetailsContent();
+    this->elements.push_back(content);
+    
 	TextElement* title = new TextElement(package->title.c_str(), 35, &black);
 	title->position(20, 20);
-	this->elements.push_back(title);
+	content->elements.push_back(title);
 
 	int MARGIN = 525;
 
 	TextElement* title2 = new TextElement(package->author.c_str(), 27, &gray);
 	title2->position(20, 80);
-	this->elements.push_back(title2);
+	content->elements.push_back(title2);
 
 	// the main description (wrapped text)
      TextElement* details = new TextElement(package->long_desc.c_str(), 20, &black, false, 700);
      details->position(150, 230);
-     this->elements.push_back(details);
+     content->elements.push_back(details);
     
     
     // lots of details that we know about the package
@@ -124,12 +128,13 @@ bool AppDetails::process(InputEvents* event)
 			// event->key.keysym.sym = SDLK_z;
 			event->update();
 			this->highlighted = -1;
-
+            
 			// add a progress bar to the screen to be drawn
 			this->pbar = new ProgressBar();
-			pbar->position(580, 495);
+            pbar->width = 740;
+			pbar->position(1280/2 - this->pbar->width/2, 720/2 - 5);
 			pbar->color = 0xff0000ff;
-			pbar->width = 500;
+            pbar->dimBg = true;
 			this->elements.push_back(pbar);
 
 			// hide the two specific elements for the download/install/remove and close buttons
@@ -173,7 +178,7 @@ bool AppDetails::process(InputEvents* event)
 	if (event->isTouchDown())
 		this->dragging = true;
 
-	return false;
+    return super::process(event);
 }
 
 void AppDetails::render(Element* parent)
@@ -236,4 +241,19 @@ int AppDetails::updateCurrentlyDisplayedPopup(void *clientp, double dltotal, dou
 	}
     
     return 0;
+}
+
+void AppDetailsContent::render(Element* parent)
+{
+    if (this->parent == NULL)
+        this->parent = parent;
+    
+    this->renderer = parent->renderer;
+    
+    super::render(this);
+}
+
+bool AppDetailsContent::process(InputEvents* event)
+{
+    return ListElement::process(event);
 }

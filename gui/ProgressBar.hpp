@@ -8,6 +8,7 @@ public:
 	float percent = 0;
 	
 	int color;
-	
+    bool dimBg = false;
+    
 	int width = 0;
 };

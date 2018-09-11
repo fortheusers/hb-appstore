@@ -1,6 +1,18 @@
 #include "ListElement.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 
+bool ListElement::process(InputEvents* event)
+{
+    bool ret = false;
+    
+    // perform inertia scrolling for this element
+    ret |= this->handleInertiaScroll(event);
+    
+    ret |= super::process(event);
+    
+    return ret;
+}
+
 bool ListElement::handleInertiaScroll(InputEvents* event)
 {
     bool ret = false;

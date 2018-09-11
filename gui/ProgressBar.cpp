@@ -13,12 +13,24 @@ void ProgressBar::render(Element* parent)
     if (this->percent < 0)
         return;
     
+    if (dimBg)
+    {
+        // draw a big dim layer around the entire window before drawing this progress bar
+        SDL_Rect dim = { 0, 0, 1280, 720 };
+        
+        SDL_SetRenderDrawBlendMode(parent->renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawColor(parent->renderer, 0x00, 0x00, 0x00, 0xbb);
+        SDL_RenderFillRect(parent->renderer, &dim);
+    }
+    
 	SDL_Rect location;
 	int x = this->x + parent->x;
 	int y = this->y + parent->y;
 
 	int blue = this->color;
 //	int gray = 0x989898ff;
+    
+    
 
 	// draw full grayed out bar first
 	SDL_Rect gray_rect;

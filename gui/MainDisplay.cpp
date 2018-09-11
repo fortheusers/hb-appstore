@@ -165,6 +165,7 @@ bool MainDisplay::process(InputEvents* event)
 			// add in the sidebar, footer, and main app listing
 			Sidebar* sidebar = new Sidebar();
 			this->elements.push_back(sidebar);
+            
 			AppList* applist = new AppList(this->get, sidebar);
 			this->elements.push_back(applist);
 			sidebar->appList = applist;

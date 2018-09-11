@@ -4,6 +4,7 @@
 #include "TextElement.hpp"
 #include "ImageElement.hpp"
 #include "ProgressBar.hpp"
+#include "ListElement.hpp"
 #include "../libs/get/src/Package.hpp"
 #include "../libs/get/src/Get.hpp"
 
@@ -25,6 +26,12 @@ public:
     
 	// the callback method to update the currently displayed pop up (and variables it needs)
     static int updateCurrentlyDisplayedPopup(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
+};
+
+class AppDetailsContent : public ListElement
+{
+    bool process(InputEvents* event);
+    void render(Element* parent);
 };
 
 #endif

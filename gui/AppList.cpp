@@ -94,11 +94,8 @@ bool AppList::process(InputEvents* event)
         this->highlighted = -1;
         this->touchMode = true;
     }
-
-    // perform inertia scrolling for this element
-    ret |= this->handleInertiaScroll(event);
     
-	ret |= super::process(event);
+	ret |= ListElement::process(event);
 
 	return ret;
 }
