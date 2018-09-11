@@ -58,7 +58,7 @@ CFLAGS	:=	-g -Wall -O2 \
 CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DUSE_FILE32API -DNOSTYLUS
 
 
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++14
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)

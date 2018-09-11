@@ -37,7 +37,7 @@ See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for se
 A new project called [Barkeep](https://github.com/vgmoose/barkeep) is being worked on to allow this to be done without using a simple script.
 
 ### Building for PC
-There's a separate makefile for building the SDL1.2 app for PC. It requires libsdl, libcurl, and zlib installed. Below instructions are for Ubuntu, but should be similar on other platforms:
+There's a separate makefile for building the SDL2 app for PC. It requires libsdl, libcurl, and zlib installed. Below instructions are for Ubuntu, but should be similar on other platforms:
 ```
 sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++ git
 git clone --recursive https://github.com/vgmoose/appstorenx.git

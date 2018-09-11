@@ -6,11 +6,11 @@ MINIZIP_O := zip.o ioapi.o unzip.o
 
 all:
 	gcc -c $(MINIZIP)/*.c
-	g++ -g -std=gnu++11 *.cpp ./console/*.cpp ./gui/*.cpp -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.bin -fstack-protector-all
+	g++ -g -std=gnu++14 *.cpp ./console/*.cpp ./gui/*.cpp -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.bin -fstack-protector-all
 
 macos:
 	gcc -c $(MINIZIP)/*.c
-	g++ -g -std=gnu++11 *.cpp -lSDL2 -lSDL2main -lSDL2_gfx -lSDL2_image -lSDL2_ttf -framework Cocoa ./console/*.cpp ./gui/*.cpp ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.exe -fstack-protector-all -O0 
+	g++ -g -std=gnu++14 *.cpp -lSDL2 -lSDL2main -lSDL2_gfx -lSDL2_image -lSDL2_ttf -framework Cocoa ./console/*.cpp ./gui/*.cpp ./libs/get/src/*.cpp $(MINIZIP_O) -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.exe -fstack-protector-all -O0 
 
 clean:
 	rm *.o *.bin
