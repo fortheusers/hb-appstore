@@ -33,14 +33,19 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 		default:
 			action = "?";
 	}
+    
+    // TODO: show current app status somewhere
 
 	// download/update/remove button (2)
-    TextElement* download = new TextElement((std::string("(A) ") + action).c_str(), 30, &white);
-	download->position(970, 570);
+    
+    Button* download = new Button(action, "A", true, 30);
+	download->position(970, 550);
+    download->action = std::bind(&AppDetails::proceed, this);
 	this->elements.push_back(download);
     
-    TextElement* cancel = new TextElement("(B) Cancel", 30, &white);
+    Button* cancel = new Button("Cancel", "B", true, 30, download->width);
     cancel->position(970, 630);
+    cancel->action = std::bind(&AppDetails::back, this);
     this->elements.push_back(cancel);
 
 
@@ -59,6 +64,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
     Button* reportIssue = new Button("Report Issue", "Y");
     reportIssue->position(920 - MARGIN - reportIssue->width, 45);
     moreByAuthor->position(reportIssue->x - 20 - moreByAuthor->width, 45);
+    moreByAuthor->action = std::bind(&AppDetails::moreByAuthor, this);
     content->elements.push_back(reportIssue);
     content->elements.push_back(moreByAuthor);
     
@@ -102,6 +108,34 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 
 }
 
+// TODO: make one push event function to bind instead of X separeate ones
+void AppDetails::proceed()
+{
+    SDL_Event sdlevent;
+    sdlevent.type = SDL_KEYDOWN;
+    sdlevent.key.keysym.sym = SDLK_a;
+    SDL_PushEvent(&sdlevent);
+}
+
+void AppDetails::back()
+{
+    SDL_Event sdlevent;
+    sdlevent.type = SDL_KEYDOWN;
+    sdlevent.key.keysym.sym = SDLK_b;
+    SDL_PushEvent(&sdlevent);
+}
+
+void AppDetails::moreByAuthor()
+{
+    const char* author = this->package->author.c_str();
+    appList->sidebar->searchQuery = std::string(author);
+    appList->sidebar->curCategory = 0;
+    appList->update();
+    appList->y = 0;
+    MainDisplay::subscreen = NULL;      // TODO: clean up memory?
+    
+}
+
 bool AppDetails::process(InputEvents* event)
 {
 	// don't process any keystrokes if an operation is in progress
@@ -121,25 +155,6 @@ bool AppDetails::process(InputEvents* event)
 		if (event->held(RIGHT_BUTTON)) this->highlighted = 1;
 	}
 
-	// we need to detect if they hit download/update/remove or close
-	// (this is not a great way to do this)
-	// ((or A button was pressed))
-//    if ((event->isTouchUp() && this->dragging) ||
-//        (event->isKeyDown() && event->held(A_BUTTON)))
-//    {
-//        if (this->parent == NULL)
-//            return false;
-//
-//        this->dragging = false;
-//
-//        int x = 570, y = 465;
-//        int x2 = 950;
-//        int w = 160, h = 55;
-
-		// install/remove button pressed
-		// (or we saw an A button pressed, and the first element is highlighted) (or just B)
-//        if (event->touchIn(x, y, w, h) ||
-//            (event->isKeyDown() && ((event->held(A_BUTTON) && this->highlighted == 0) || event->held(B_BUTTON))))
         if (event->pressed(A_BUTTON))
 		{
 			this->operating = true;
@@ -154,10 +169,6 @@ bool AppDetails::process(InputEvents* event)
 			pbar->color = 0xff0000ff;
             pbar->dimBg = true;
 			this->elements.push_back(pbar);
-
-			// hide the two specific elements for the download/install/remove and close buttons
-//            this->elements[2]->hide();
-//            this->elements[3]->hide();
 
 			// setup progress bar callback
 			networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
@@ -176,22 +187,6 @@ bool AppDetails::process(InputEvents* event)
             this->appList->update();
             return true;
 		}
-
-		// close button pressed
-//        if (event->touchIn(x2, y, w, h) ||
-//            (event->isKeyDown() && event->held(A_BUTTON) && this->highlighted == 1))
-//        {
-//            // remove elements on this pop up
-//            this->wipeElements();
-//
-//            // our parent should also be AppList, tell it that the subscreen is dismissed
-//            if (this->parent)
-//            {
-//                // refresh the screen
-//                MainDisplay::subscreen = NULL;
-//            }
-//        }
-//    }
 
 	if (event->isTouchDown())
 		this->dragging = true;

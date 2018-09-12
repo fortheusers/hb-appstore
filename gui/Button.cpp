@@ -1,15 +1,22 @@
 #include "Button.hpp"
 
-Button::Button(const char* message, const char* button)
+Button::Button(const char* message, const char* button, bool dark, int size, int width)
 {
     int PADDING = 10;
-    SDL_Color color = {0x00, 0x00, 0x00, 0xff};
+    SDL_Color color;
     
-    TextElement* text = new TextElement(message, 20, &color);
+    if (dark)
+        color = {0xff, 0xff, 0xff, 0xff};
+    else
+        color = {0x00, 0x00, 0x00, 0xff};
+    
+    this->dark = dark;
+    
+    TextElement* text = new TextElement(message, size, &color);
     text->position(PADDING, PADDING);
     this->elements.push_back(text);
     
-    this->width = text->width + PADDING*2;
+    this->width = (width > 0)? width : text->width + PADDING*2;
     this->height = text->height + PADDING*2;
     
     this->touchable = true;
@@ -38,7 +45,11 @@ void Button::render(Element* parent)
     // draw bg for button
     SDL_Rect dimens = { x, y, width, height };
     
-    SDL_SetRenderDrawColor(parent->renderer, 0xee, 0xee, 0xee, 0xFF);
+    if (dark)
+        SDL_SetRenderDrawColor(parent->renderer, 0x67, 0x6a, 0x6d, 0xFF);
+    else
+        SDL_SetRenderDrawColor(parent->renderer, 0xee, 0xee, 0xee, 0xFF);
+    
     SDL_RenderFillRect(parent->renderer, &dimens);
     
     super::render(this);
