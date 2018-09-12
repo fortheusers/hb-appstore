@@ -141,6 +141,10 @@ bool MainDisplay::process(InputEvents* event)
 			if (!success) // manually add defualt icon to cache if downloading failed
 				cp("res/default.png", (key_path + "/icon.png").c_str());
             // TODO: generate a custom icon for this version with a color and name
+            
+            success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/screen.png", key_path + "/screen.png");
+            if (!success)
+                cp("res/noscreen.png", (key_path + "/screen.png").c_str());
 
 			// add these versions to the version map
 			this->imageCache->version_cache[current->pkg_name] = current->version;

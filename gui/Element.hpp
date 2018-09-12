@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "InputEvents.hpp"
+#include <functional>
 
 #define DEEP_HIGHLIGHT 200
 #define HIGHLIGHT 100
@@ -20,10 +21,15 @@ public:
     
     // invoked on touchdown/up events
     bool onTouchDown(InputEvents* event);
+    bool onTouchDrag(InputEvents* event);
     bool onTouchUp(InputEvents* event);
 
 	// hide the element
 	void hide();
+    
+    // the action to call (from binded callback) on touch or button selection
+    // https://stackoverflow.com/questions/14189440/c-class-member-callback-simple-examples
+    std::function<void()> action;
 
 	// visible GUI child elements of this element
 	std::vector<Element*> elements;

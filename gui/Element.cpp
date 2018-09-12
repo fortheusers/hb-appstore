@@ -6,9 +6,13 @@ bool Element::process(InputEvents* event)
     // whether or not we need to update the screen
     bool ret = false;
     
-    // do any touch down or up events
-    ret |= onTouchDown(event);
-    ret |= onTouchUp(event);
+    // do any touch down, drag, or up events
+    if (touchable)
+    {
+        ret |= onTouchDown(event);
+        ret |= onTouchDrag(event);
+        ret |= onTouchUp(event);
+    }
     
 	// call process on subelements
 	for (int x=0; x<this->elements.size(); x++)
@@ -16,7 +20,7 @@ bool Element::process(InputEvents* event)
     
     ret |= this->needsRedraw;
     this->needsRedraw = false;
-
+    
 	return ret;
 }
 
@@ -58,6 +62,11 @@ bool Element::onTouchDown(InputEvents* event)
     if (!event->touchIn(this->xOff + this->x, this->yOff + this->y, this->width, this->height))
         return false;
     
+    // mouse pushed down, set variable
+    this->dragging = true;
+    this->lastMouseY = event->yPos;
+    this->lastMouseX = event->xPos;
+    
     // turn on deep highlighting during a touch down
     if (this->touchable)
         this->elasticCounter = DEEP_HIGHLIGHT;
@@ -65,21 +74,63 @@ bool Element::onTouchDown(InputEvents* event)
     return true;
 }
 
+bool Element::onTouchDrag(InputEvents* event)
+{
+    bool ret = false;
+    
+    if (!event->isTouchDrag())
+        return false;
+    
+    // minimum amount of wiggle allowed by finger before calling off a touch event
+    int TRESHOLD = 40;
+    
+    // we've dragged out of the icon, invalidate the click by invoking onTouchUp early
+    // check if we haven't drifted too far from the starting variable (treshold: 40)
+    if (this->dragging && (abs(event->yPos - this->lastMouseY) >= TRESHOLD || abs(event->xPos - this->lastMouseX) >= TRESHOLD))
+        this->elasticCounter = NO_HIGHLIGHT;
+    
+    // ontouchdrag never decides whether to update the view or not
+    return false;
+}
+
 bool Element::onTouchUp(InputEvents* event)
 {
     if (!event->isTouchUp())
         return false;
     
-    if (!event->touchIn(this->xOff + this->x, this->yOff + this->y, this->width, this->height))
-        return false;
+    bool ret;
     
-    // animation counter must be nonzero to allow click to go through
-    if (this->elasticCounter <= 0)
+    // ensure we were dragging first (originally checked the treshold above here, but now that actively invalidates it)
+    if (this->dragging)
+    {
+        // check that this click is in the right coordinates for this square
+        // and that a subscreen isn't already being shown
+        // TODO: allow buttons to activae this too?
+        if (event->touchIn(this->xOff + this->x, this->yOff + this->y, this->width, this->height))
+        {
+            // elasticCounter must be nonzero to allow a click through (highlight must be shown)
+            if (this->elasticCounter > 0 && action != NULL)
+            {
+                // invoke this element's action
+                this->action();
+                ret |= true;
+            }
+        }
+    }
+    
+    // release mouse
+    this->dragging = false;
+    
+    if (!event->touchIn(this->xOff + this->x, this->yOff + this->y, this->width, this->height))
+    {
+        // remove highlight if if the touch wasn't here and short circuit
+        this->elasticCounter = 0;
         return false;
+    }
     
     this->elasticCounter = 0;
     
-    return true;
+    return ret;
 }
 
 void Element::hide()

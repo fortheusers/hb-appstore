@@ -10,6 +10,9 @@ AppCard::AppCard(Package* package)
 	this->height = 195;
     
     this->touchable = true;
+    
+    // connect the action to the callback for this element, to be invoked when the touch event fires
+    this->action = std::bind(&AppCard::displaySubscreen, this);
 }
 
 void AppCard::update()
@@ -70,6 +73,18 @@ void AppCard::render(Element* parent)
 	super::render(parent);
 }
 
+void AppCard::displaySubscreen()
+{
+    // received a click on this app, add a subscreen under the parent
+    // (parent of AppCard should be AppList)
+    if (!this->parent) return;
+    
+    AppList* appList = ((AppList*)this->parent);
+    MainDisplay::subscreen = new AppDetails(this->package, appList);
+    if (!appList->touchMode)
+        ((AppDetails*)MainDisplay::subscreen)->highlighted = 0;        // show cursor if we're not in touch mode
+}
+
 bool AppCard::process(InputEvents* event)
 {
 	if (this->parent == NULL)
@@ -78,49 +93,5 @@ bool AppCard::process(InputEvents* event)
     this->xOff = this->parent->x;
     this->yOff = this->parent->y;
     
-    bool ret = false;
-    
-	if (this->onTouchDown(event))
-	{
-		// mouse pushed down, set variable
-		this->dragging = true;
-		this->lastMouseY = event->yPos;
-        this->lastMouseX = event->xPos;
-	}
-    else if (event->isTouchDrag())
-    {
-        // we've dragged out of the icon, invalidate the click by invoking onTouchUp early
-        // check if we haven't drifted too far from the starting variable (treshold: 40)
-        if (this->dragging && (abs(event->yPos - this->lastMouseY) >= 40 || abs(event->xPos - this->lastMouseX) >= 40))
-            this->elasticCounter = NO_HIGHLIGHT;
-    }
-	// mouse is up, or A is pressed
-	// (if it's A that's being pressed, make sure that our index matches the highlighted value)
-	else if (this->onTouchUp(event))
-	{
-        // ensure we were dragging first (originally checked the treshold above here, but now that actively invalidates it)
-		if (this->dragging)
-		{
-			// check that this click is in the right coordinates for this square
-			// and that a subscreen isn't already being shown
-			// (and also let the A press through)
-			if (((event->touchIn(this->xOff + this->x, this->yOff + this->y, this->width, this->height)) ||
-				event->held(A_BUTTON)) &&
-                !MainDisplay::subscreen)
-			{
-				// received a click on this app, add a subscreen under the parent
-				// (parent of AppCard should be AppList)
-                AppList* appList = ((AppList*)this->parent);
-                MainDisplay::subscreen = new AppDetails(this->package, appList);
-				if (!appList->touchMode)
-                    ((AppDetails*)MainDisplay::subscreen)->highlighted = 0;		// show cursor if we're not in touch mode
-                ret |= true;
-			}
-		}
-
-		// release mouse
-		this->dragging = false;
-	}
-
-	return ret;
+    return super::process(event);
 }

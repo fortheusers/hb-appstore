@@ -9,6 +9,7 @@ public:
 	void update();
 	bool process(InputEvents* event);
 	void render(Element* parent);
+    void displaySubscreen();
 
 	Package* package;
 

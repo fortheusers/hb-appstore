@@ -1,6 +1,7 @@
 #include "AppDetails.hpp"
 #include "../libs/get/src/Get.hpp"
 #include "../libs/get/src/Utils.hpp"
+#include "Button.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <sstream>
 #include "MainDisplay.hpp"
@@ -47,19 +48,36 @@ AppDetails::AppDetails(Package* package, AppList* appList)
     AppDetailsContent* content = new AppDetailsContent();
     this->elements.push_back(content);
     
+    int MARGIN = 60;
+    
 	TextElement* title = new TextElement(package->title.c_str(), 35, &black);
-	title->position(20, 20);
+	title->position(MARGIN, 30);
 	content->elements.push_back(title);
+    
+    Button* moreByAuthor = new Button("More by Author", "X");
+    
+    Button* reportIssue = new Button("Report Issue", "Y");
+    reportIssue->position(920 - MARGIN - reportIssue->width, 45);
+    moreByAuthor->position(reportIssue->x - 20 - moreByAuthor->width, 45);
+    content->elements.push_back(reportIssue);
+    content->elements.push_back(moreByAuthor);
+    
+    ImageElement* banner = new ImageElement((ImageCache::cache_path + package->pkg_name + "/screen.png").c_str());
+    // TODO: check for missing banner and show nothing, and shift everything up in that case
+//    banner->resize(848, 208);
+//    banner->resize(727, 179);
+    banner->resize(787, 193);
 
-	int MARGIN = 525;
+    banner->position(MARGIN + 5, 140);
+    content->elements.push_back(banner);
 
 	TextElement* title2 = new TextElement(package->author.c_str(), 27, &gray);
-	title2->position(20, 80);
+	title2->position(MARGIN, 80);
 	content->elements.push_back(title2);
 
 	// the main description (wrapped text)
-     TextElement* details = new TextElement(package->long_desc.c_str(), 20, &black, false, 700);
-     details->position(150, 230);
+     TextElement* details = new TextElement(package->long_desc.c_str(), 20, &black, false, 740);
+     details->position(MARGIN + 30, 355);
      content->elements.push_back(details);
     
     
