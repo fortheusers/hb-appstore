@@ -1,6 +1,8 @@
-#include "AppList.hpp"
+#include "MainDisplay.hpp"
 #include "AppCard.hpp"
 #include "Keyboard.hpp"
+#include "Button.hpp"
+#include "AboutScreen.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 AppList::AppList(Get* get, Sidebar* sidebar)
@@ -201,4 +203,23 @@ void AppList::update()
 
 	category->position(20, 90);
 	this->elements.push_back(category);
+    
+    // additional buttons (only if not on search)
+    if (curCategoryValue != "_search")
+    {
+        Button* settings = new Button("Credits", 'x', false, 15);
+        settings->position(740 + 260*(R-3), 70);
+        settings->action = std::bind(&AppList::launchSettings, this);
+        this->elements.push_back(settings);
+        
+        Button* sort = new Button("Adjust Sort", 'y', false, 15);
+        sort->position(settings->x - 20 - sort->width, settings->y);
+//        settings->action = std::bind(&AppList::cycleSort, this);
+        this->elements.push_back(sort);
+    }
+}
+
+void AppList::launchSettings()
+{
+    MainDisplay::subscreen = new AboutScreen(this->get);
 }

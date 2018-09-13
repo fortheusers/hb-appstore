@@ -23,6 +23,8 @@ public:
     
     // default number of items per row TODO: save this value as config
     int R = 3;
+    
+    void launchSettings();
 
 };
 

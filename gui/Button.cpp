@@ -1,6 +1,6 @@
 #include "Button.hpp"
 
-Button::Button(const char* message, const char* button, bool dark, int size, int width)
+Button::Button(const char* message, char button, bool dark, int size, int width)
 {
     int PADDING = 10;
     SDL_Color color;

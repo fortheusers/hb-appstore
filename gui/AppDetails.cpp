@@ -38,12 +38,12 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 
 	// download/update/remove button (2)
     
-    Button* download = new Button(action, "A", true, 30);
+    Button* download = new Button(action, 'a', true, 30);
 	download->position(970, 550);
     download->action = std::bind(&AppDetails::proceed, this);
 	this->elements.push_back(download);
     
-    Button* cancel = new Button("Cancel", "B", true, 30, download->width);
+    Button* cancel = new Button("Cancel", 'b', true, 30, download->width);
     cancel->position(970, 630);
     cancel->action = std::bind(&AppDetails::back, this);
     this->elements.push_back(cancel);
@@ -59,9 +59,9 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	title->position(MARGIN, 30);
 	content->elements.push_back(title);
     
-    Button* moreByAuthor = new Button("More by Author", "X");
+    Button* moreByAuthor = new Button("More by Author", 'x');
     
-    Button* reportIssue = new Button("Report Issue", "Y");
+    Button* reportIssue = new Button("Report Issue", 'y');
     reportIssue->position(920 - MARGIN - reportIssue->width, 45);
     moreByAuthor->position(reportIssue->x - 20 - moreByAuthor->width, 45);
     moreByAuthor->action = std::bind(&AppDetails::moreByAuthor, this);

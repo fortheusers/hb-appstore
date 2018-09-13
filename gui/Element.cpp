@@ -87,10 +87,13 @@ bool Element::onTouchDrag(InputEvents* event)
     // we've dragged out of the icon, invalidate the click by invoking onTouchUp early
     // check if we haven't drifted too far from the starting variable (treshold: 40)
     if (this->dragging && (abs(event->yPos - this->lastMouseY) >= TRESHOLD || abs(event->xPos - this->lastMouseX) >= TRESHOLD))
+    {
+        ret |= (this->elasticCounter > 0);
         this->elasticCounter = NO_HIGHLIGHT;
+    }
     
     // ontouchdrag never decides whether to update the view or not
-    return false;
+    return ret;
 }
 
 bool Element::onTouchUp(InputEvents* event)
@@ -121,12 +124,8 @@ bool Element::onTouchUp(InputEvents* event)
     // release mouse
     this->dragging = false;
     
-    if (!event->touchIn(this->xOff + this->x, this->yOff + this->y, this->width, this->height))
-    {
-        // remove highlight if if the touch wasn't here and short circuit
-        this->elasticCounter = 0;
-        return false;
-    }
+    // update if we were previously highlighted, cause we're about to remove it
+    ret |= (this->elasticCounter > 0);
     
     this->elasticCounter = 0;
     

@@ -4,7 +4,7 @@
 class Button : public Element
 {
 public:
-    Button(const char* text, const char* invoke, bool dark = false, int size = 20, int width = 0);
+    Button(const char* text, char button, bool dark = false, int size = 20, int width = 0);
 //    bool process(InputEvents* event);
     void render(Element* parent);
     void position(int x, int y);
