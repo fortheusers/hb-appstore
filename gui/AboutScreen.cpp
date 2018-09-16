@@ -23,12 +23,12 @@ AboutScreen::AboutScreen(Get* get)
     cancel->action = std::bind(&AboutScreen::back, this);
     this->elements.push_back(cancel);
     
-    Button* cleanup = new Button("Cleanup Empty Folders", 'y', true, 20);
+    Button* cleanup = new Button("Cleanup Empty Folders", 'y', true, 21);
     cleanup->position(30, 500);
 //    cleanup->action = std::bind(&AboutScreen::back, this);
     this->elements.push_back(cleanup);
     
-    Button* cache = new Button("Delete Image Cache", 'x', true, 20, cleanup->width);
+    Button* cache = new Button("Delete Image Cache", 'x', true, 21, cleanup->width);
     cache->position(30, cleanup->y + cleanup->height + 25);
     //    cleanup->action = std::bind(&AboutScreen::back, this);
     this->elements.push_back(cache);

@@ -3,6 +3,7 @@
 #include "AppDetails.hpp"
 #include "Sidebar.hpp"
 #include "ListElement.hpp"
+#include "Keyboard.hpp"
 #include "../libs/get/src/Get.hpp"
 
 class AppList : public ListElement
@@ -15,7 +16,10 @@ public:
 
 	Get* get = NULL;
 	Sidebar* sidebar = NULL;
-
+    Keyboard* keyboard = NULL;
+    
+    void toggleKeyboard();
+    
 	bool touchMode = true;
 
 	// the total number of apps displayed in this list

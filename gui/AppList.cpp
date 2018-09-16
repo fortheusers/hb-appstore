@@ -1,8 +1,8 @@
 #include "MainDisplay.hpp"
 #include "AppCard.hpp"
-#include "Keyboard.hpp"
 #include "Button.hpp"
 #include "AboutScreen.hpp"
+#include "Keyboard.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 AppList::AppList(Get* get, Sidebar* sidebar)
@@ -33,6 +33,12 @@ bool AppList::process(InputEvents* event)
         update();
         return true;
     }
+    
+    // if we're showing a keyboard, make sure we're not in its bounds
+    if (event->isTouchDown() && keyboard && !keyboard->hidden &&
+        event->touchIn(keyboard->x, keyboard->y,
+                       keyboard->width, keyboard->height))
+        return keyboard->process(event);
     
     // process some joycon input events
     if (event->isKeyDown())
@@ -192,6 +198,7 @@ void AppList::update()
 	if (curCategoryValue == "_search")
 	{
 		Keyboard* keyboard = new Keyboard(this);
+        this->keyboard = keyboard;
 		this->elements.push_back(keyboard);
 
 		category = new TextElement((std::string("Search: \"") + this->sidebar->searchQuery + "\"").c_str(), 28, &black);
@@ -208,7 +215,7 @@ void AppList::update()
     if (curCategoryValue != "_search")
     {
         Button* settings = new Button("Credits", 'x', false, 15);
-        settings->position(740 + 260*(R-3), 70);
+        settings->position(730 + 260*(R-3), 70);
         settings->action = std::bind(&AppList::launchSettings, this);
         this->elements.push_back(settings);
         
@@ -217,6 +224,19 @@ void AppList::update()
 //        settings->action = std::bind(&AppList::cycleSort, this);
         this->elements.push_back(sort);
     }
+    else
+    {
+        Button* settings = new Button("Toggle Keyboard", 'y', false, 15);
+        settings->position(655 + 260*(R-3), 70);
+        settings->action = std::bind(&AppList::toggleKeyboard, this);
+        this->elements.push_back(settings);
+    }
+}
+
+void AppList::toggleKeyboard()
+{
+    if (this->keyboard)
+        this->keyboard->hidden = !this->keyboard->hidden;
 }
 
 void AppList::launchSettings()

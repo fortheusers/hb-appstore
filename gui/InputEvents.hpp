@@ -30,11 +30,14 @@ public:
 
   // update which buttons are pressed
   bool update();
+    
+    bool allowTouch = true;
 
   // whether or not the current event is one of a few known ones
   bool isTouchDown();
   bool isTouchUp();
   bool isTouchDrag();
+    bool isTouch();
   bool isKeyDown();
   bool isKeyUp();
 

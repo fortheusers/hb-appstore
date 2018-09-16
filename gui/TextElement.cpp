@@ -1,6 +1,6 @@
 #include "MainDisplay.hpp"
 
-TextElement::TextElement(const char* text, int size, SDL_Color* color, bool monospaced, int wrapped_width)
+TextElement::TextElement(const char* text, int size, SDL_Color* color, int font_type, int wrapped_width)
 {
 	this->text = new std::string(text);
 	this->size = size;
@@ -10,7 +10,7 @@ TextElement::TextElement(const char* text, int size, SDL_Color* color, bool mono
 	else
 		this->color = *color;
 
-	this->textSurface = this->renderText(*(this->text), size, monospaced, wrapped_width);
+	this->textSurface = this->renderText(*(this->text), size, font_type, wrapped_width);
     
     int w, h;
     SDL_QueryTexture(this->textSurface, NULL, NULL, &w, &h);
@@ -37,7 +37,7 @@ void TextElement::render(Element* parent)
 
 }
 
-SDL_Texture* TextElement::renderText(std::string& message, int size, bool monospaced, int wrapped_width)
+SDL_Texture* TextElement::renderText(std::string& message, int size, int font_type, int wrapped_width)
 {
 	std::string key = message + std::to_string(size);
 
@@ -49,8 +49,10 @@ SDL_Texture* TextElement::renderText(std::string& message, int size, bool monosp
 
 	TTF_Font* font;
 
-	if (monospaced)
+	if (font_type == MONOSPACED)
 		font = TTF_OpenFont("./res/mono.ttf", size);
+    else if (font_type == ICON)
+        font = TTF_OpenFont("./res/nxicons.ttf", size);
 	else
 		font = TTF_OpenFont("./res/opensans.ttf", size);
 
@@ -59,7 +61,9 @@ SDL_Texture* TextElement::renderText(std::string& message, int size, bool monosp
 		return NULL;
 
 	SDL_Surface* surf;
-	if (wrapped_width == 0)
+    if (font_type == ICON)
+        surf = TTF_RenderUTF8_Blended(font, message.c_str(), this->color);
+	else if (wrapped_width == 0)
 		surf = TTF_RenderText_Blended(font, message.c_str(), this->color);
 	else
 		surf = TTF_RenderText_Blended_Wrapped(font, message.c_str(), this->color, wrapped_width);

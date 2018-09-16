@@ -11,14 +11,48 @@ Button::Button(const char* message, char button, bool dark, int size, int width)
         color = {0x00, 0x00, 0x00, 0xff};
     
     this->dark = dark;
+
+//    ImageElement* icon = new ImageElement((std::string("res/")+inverse+"button-"+button+outline+".png").c_str());
+//    icon->position(PADDING, PADDING);
+//    this->elements.push_back(icon);
+    
+    const char* unicode;
+    
+    switch (button)
+    {
+        case 'a':
+            unicode = "\ue0a0";
+            break;
+        case 'b':
+            unicode = "\ue0a1";
+            break;
+        case 'y':
+            unicode = "\ue0a2";
+            break;
+        case 'x':
+            unicode = "\ue0a3";
+            break;
+        default:
+            unicode = "";
+    }
+    
+    TextElement* icon = new TextElement(unicode, size*1.25, &color, ICON);
+    this->elements.push_back(icon);
+    icon->position(PADDING, PADDING);
     
     TextElement* text = new TextElement(message, size, &color);
-    text->position(PADDING, PADDING);
+//    icon->resize(text->height, text->height);
+    
+    int bWidth = PADDING*0.5*(icon->width!=0);  // gap space between button
+
+    text->position(PADDING + bWidth + icon->width, PADDING);
     this->elements.push_back(text);
     
-    this->width = (width > 0)? width : text->width + PADDING*2;
+    this->width = (width > 0)? width : text->width + PADDING*2 + bWidth + icon->width;
     this->height = text->height + PADDING*2;
     
+    icon->position(PADDING, PADDING + (text->height - icon->height)/2);
+
     this->touchable = true;
     
     // TODO: add icon and make room for it in the x, y dimens

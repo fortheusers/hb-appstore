@@ -38,6 +38,16 @@ Sidebar::Sidebar()
 		category->position(105, 150+x*70);
 		this->elements.push_back(category);
 	}
+    
+    // small indicator to switch to advanced view using L
+    ImageElement* hider = new ImageElement("res/button-l-outline.png");
+    hider->resize(20, 20);
+    hider->position(270, 685);
+    this->elements.push_back(hider);
+    
+    TextElement* hint = new TextElement("Hide", 15);
+    hint->position(hider->x + hider->width + 5, hider->y);
+    this->elements.push_back(hint);
 }
 
 bool Sidebar::process(InputEvents* event)

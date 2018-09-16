@@ -9,56 +9,46 @@
 
 Keyboard::Keyboard(AppList* appList)
 {
-  this->rows = std::vector<std::string>();
-  rows.push_back(row1);
-  rows.push_back(row2);
-  rows.push_back(row3);
-  SDL_Color gray = { 0x52, 0x52, 0x52, 0xff };
+    this->x = 372;
+    this->y = 417;
+    
+    if (appList->R == 4)
+        this->x = 240;
 
-  for (int x=0; x<rows.size(); x++)
-  {
-    TextElement* rowText = new TextElement(rows[x].c_str(), 30, &gray, true);
-    rowText->position(910+x*22, 14+x*33);
-    this->elements.push_back(rowText);
-  }
+    this->appList = appList;
 
-  TextElement* delButton = new TextElement("DEL", 16, &gray, false);
-  delButton->position(900, 90);
-  this->elements.push_back(delButton);
-
-  TextElement* spaceButton = new TextElement("SPACE", 16, &gray, false);
-  spaceButton->position(1210, 90);
-  this->elements.push_back(spaceButton);
-
-  this->appList = appList;
+    // position the keyboard based on this x and y
+    updateSize();
 }
 
 void Keyboard::render(Element* parent)
 {
-  SDL_Rect dimens = { 880, 0, 400, 135 };
+    if (hidden)
+        return;
+    
+  SDL_Rect dimens = { this->x, this->y, this->width, this->height };
 
   this->window = parent->window;
   this->renderer = parent->renderer;
 
 	SDL_SetRenderDrawColor(parent->renderer, 0xf9, 0xf9, 0xf9, 0xFF);
 	SDL_RenderFillRect(parent->renderer, &dimens);
-
+    
   for (int y=0; y<3; y++)
     for (int x=0; x<10 - y - (y==2); x++)
     {
-      SDL_Rect dimens2 = {903 + x*36 + y*22, 17 + y*33, 32, 32};
-      // SDL_SetRenderDrawColor(parent->renderer, 0xff, 0xaa, 0xaa, 0xff);
+      SDL_Rect dimens2 = {this->x + kXPad + x*kXOff + y*yYOff, this->y + kYPad + y*ySpacing, keyWidth, keyWidth};
       SDL_SetRenderDrawColor(parent->renderer, 0xf4, 0xf4, 0xf4, 0xff);
       SDL_RenderFillRect(parent->renderer, &dimens2);
     }
 
-  // SDL_Rect dimens3 = {893, 85, 42, 32};
-  // SDL_SetRenderDrawColor(parent->renderer, 0xff, 0xaa, 0xaa, 0xff);
-  // SDL_RenderFillRect(parent->renderer, &dimens3);
-  //
-  // SDL_Rect dimens4 = {1206, 85, 55, 32};
-  // SDL_SetRenderDrawColor(parent->renderer, 0xff, 0xaa, 0xaa, 0xff);
-  // SDL_RenderFillRect(parent->renderer, &dimens4);
+//   SDL_Rect dimens3 = {this->x+dPos, this->y + dHeight, dWidth, textSize};
+//   SDL_SetRenderDrawColor(parent->renderer, 0xff, 0xaa, 0xaa, 0xff);
+//   SDL_RenderFillRect(parent->renderer, &dimens3);
+//
+//   SDL_Rect dimens4 = {this->x+sPos, this->y + dHeight, sWidth, textSize};
+//   SDL_SetRenderDrawColor(parent->renderer, 0xff, 0xaa, 0xaa, 0xff);
+//   SDL_RenderFillRect(parent->renderer, &dimens4);
 
   super::render(this);
 
@@ -66,23 +56,110 @@ void Keyboard::render(Element* parent)
 
 bool Keyboard::process(InputEvents* event)
 {
-  if (event->isTouchUp() && event->touchIn(880, 0, 400, 135))
+    if (hidden)
+        return false;
+    
+    bool ret = false;
+    
+  if (event->isTouchUp() && event->touchIn(this->x, this->y, width, height))
   {
     for (int y=0; y<3; y++)
       for (int x=0; x<10 - y - (y==2); x++)
-        if (event->touchIn(903 + x*36 + y*22, 17 + y*33, 32, 32))
+        if (event->touchIn(this->x+kXPad + x*kXOff + y*yYOff, this->y + kYPad + y*ySpacing, keyWidth, keyWidth))
+        {
+            ret |= true;
           appList->sidebar->searchQuery += std::tolower(rows[y][x*2]);
+        }
 
-    if (event->touchIn(893, 85, 42, 32))
-      appList->sidebar->searchQuery.pop_back();
+    if (event->touchIn(this->x+dPos, this->y+dHeight, dWidth, textSize))
+        if (!appList->sidebar->searchQuery.empty())
+        {
+            ret |= true;
+            appList->sidebar->searchQuery.pop_back();
+        }
 
-    if (event->touchIn(1206, 85, 55, 32))
+    if (event->touchIn(this->x+sPos, this->y+dHeight, sWidth, textSize))
+    {
+        ret |= true;
       appList->sidebar->searchQuery += " ";
+    }
 
+      if (ret)
+      {
     // update search results
     this->appList->y = 0;
     this->appList->update();
+      }
+      return ret;
   }
 
-  return true;
+  return false;
+}
+
+void Keyboard::updateSize()
+{
+    this->elements.clear();
+    
+    this->width = 900;
+    this->height = (304/900.0)*width;
+    
+    // set up lots of scaling variables based on the width/height
+    
+    this->keyWidth = (int)(0.08*width);
+    this->padding = keyWidth/2.0;
+    
+    // these field variables are for displaying the QWERTY keys (touching and displaying)
+    kXPad = (int)((23/400.0)*width);
+    kXOff = (int)((36.5/400.0)*width);
+    yYOff = (int)((22/400.0)*width);
+    kYPad = (int)((17/135.0)*height);
+    ySpacing = (int)((33/400.0)*width);
+    
+    // these local variables position only the text, and has nothing to do with the
+    // touch. They should likely be based on the above field variables so those
+    // can change quickly
+    int kXPad = (int)((30/400.0)*width);
+    int kXOff = (int)((22/400.0)*width);
+    int kYPad = (int)((14/400.0)*width);
+    int kYOff = (int)((33/400.0)*width);
+    
+    this->textSize = 0.9375*keyWidth;
+    
+    // delete and space key dimensions
+    dPos = (int)((13/400.0)*width);
+    dHeight = (int)((85/135.0)*height);
+    sPos = (int)((326/400.0)*width);
+    
+    dWidth = (int)(1.4125*textSize);
+    sWidth = (int)(1.91875*textSize);
+    
+    // set up the three rows into one vector
+    this->rows = std::vector<std::string>();
+    rows.push_back(row1);
+    rows.push_back(row2);
+    rows.push_back(row3);
+    SDL_Color gray = { 0x52, 0x52, 0x52, 0xff };
+    
+    // go through and draw each of the three rows at the right position
+    for (int x=0; x<rows.size(); x++)
+    {
+        TextElement* rowText = new TextElement(rows[x].c_str(), textSize, &gray, true);
+        rowText->position(kXPad+x*kXOff, kYPad+x*kYOff);
+        this->elements.push_back(rowText);
+    }
+    
+    // these are local variables, similar to how the other ones are global events
+    int dPos2 = (int)((20/400.0)*width);
+    int dHeight2 = (int)((90/135.0)*height);
+    int sPos2 = (int)((330/400.0)*width);
+    
+    int textSize2 = (int)((16/400.0)*width);
+    
+    TextElement* delButton = new TextElement("DEL", textSize2, &gray, false);
+    delButton->position(dPos2, dHeight2);
+    this->elements.push_back(delButton);
+    
+    TextElement* spaceButton = new TextElement("SPACE", textSize2, &gray, false);
+    spaceButton->position(sPos2, dHeight2);
+    this->elements.push_back(spaceButton);
 }
