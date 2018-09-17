@@ -104,7 +104,12 @@ bool MainDisplay::process(InputEvents* event)
 	// if we're on the splash/loading screen, we need to fetch icons+screenshots from the remote repo
 	// and load them into our surface cache with the pkg_name+version as the key
 
+#if defined(__WIIU__)
+	//FIXME
+	if (this->showingSplash /*&& event->noop*/)
+#else
 	if (this->showingSplash && event->noop)
+#endif
 	{
 		// should be a progress bar
 		if (this->get->packages.size() != 1)
