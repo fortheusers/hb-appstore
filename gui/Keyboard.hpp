@@ -8,7 +8,7 @@ class AppList;
 class Keyboard : public Element
 {
 public:
-	Keyboard(AppList* appList);
+    Keyboard(AppList* appList, std::string* myText);
 	void render(Element* parent);
     bool process(InputEvents* event);
     
@@ -21,6 +21,13 @@ public:
 	std::string row3 =   "Z X C V B N M";
 
 	std::vector<std::string> rows;
+    
+    // the pointer to the text for this keyboard to modify
+    std::string* myText;
+    
+    // the currently selected row and index
+    int curRow = -1;
+    int index = -1;
     
     // the below variables are stored to be used in processing touch events
     // and rendering the drawings to screen
@@ -44,5 +51,5 @@ public:
     int kYPad = 0;
     int ySpacing = 0;
 
-	AppList* appList;
+	AppList* appList = NULL;
 };

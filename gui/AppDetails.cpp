@@ -5,6 +5,7 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <sstream>
 #include "MainDisplay.hpp"
+#include "Feedback.hpp"
 
 AppDetails::AppDetails(Package* package, AppList* appList)
 {
@@ -65,6 +66,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
     reportIssue->position(920 - MARGIN - reportIssue->width, 45);
     moreByAuthor->position(reportIssue->x - 20 - moreByAuthor->width, 45);
     moreByAuthor->action = std::bind(&AppDetails::moreByAuthor, this);
+    reportIssue->action = std::bind(&AppDetails::leaveFeedback, this);
     content->elements.push_back(reportIssue);
     content->elements.push_back(moreByAuthor);
     
@@ -132,9 +134,15 @@ void AppDetails::moreByAuthor()
     appList->sidebar->curCategory = 0;
     appList->update();
     appList->y = 0;
+    appList->keyboard->hidden = true;
     MainDisplay::subscreen = NULL;      // TODO: clean up memory?
-    
 }
+
+void AppDetails::leaveFeedback()
+{
+    MainDisplay::subscreen = new Feedback(this->package);
+}
+
 
 bool AppDetails::process(InputEvents* event)
 {

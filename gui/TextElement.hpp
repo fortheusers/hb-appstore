@@ -16,7 +16,7 @@ public:
 	SDL_Texture* textSurface = NULL;
 	SDL_Color color;
 
+    std::string* text;
 private:
-	std::string* text;
 	int size;
 };

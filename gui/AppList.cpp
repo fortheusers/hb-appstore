@@ -35,7 +35,7 @@ bool AppList::process(InputEvents* event)
     }
     
     // if we're showing a keyboard, make sure we're not in its bounds
-    if (event->isTouchDown() && keyboard && !keyboard->hidden &&
+    if (event->isTouchDown() && keyboard != NULL && !keyboard->hidden &&
         event->touchIn(keyboard->x, keyboard->y,
                        keyboard->width, keyboard->height))
         return keyboard->process(event);
@@ -197,7 +197,7 @@ void AppList::update()
 	// if it's a search, add a keyboard
 	if (curCategoryValue == "_search")
 	{
-		Keyboard* keyboard = new Keyboard(this);
+		Keyboard* keyboard = new Keyboard(this, &this->sidebar->searchQuery);
         this->keyboard = keyboard;
 		this->elements.push_back(keyboard);
 

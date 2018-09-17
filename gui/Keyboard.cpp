@@ -7,15 +7,16 @@
 #define K_h y
 
 
-Keyboard::Keyboard(AppList* appList)
+Keyboard::Keyboard(AppList* appList, std::string* myText)
 {
     this->x = 372;
     this->y = 417;
     
-    if (appList->R == 4)
+    if (appList && appList->R == 4)
         this->x = 240;
 
     this->appList = appList;
+    this->myText = myText;
 
     // position the keyboard based on this x and y
     updateSize();
@@ -40,6 +41,14 @@ void Keyboard::render(Element* parent)
       SDL_Rect dimens2 = {this->x + kXPad + x*kXOff + y*yYOff, this->y + kYPad + y*ySpacing, keyWidth, keyWidth};
       SDL_SetRenderDrawColor(parent->renderer, 0xf4, 0xf4, 0xf4, 0xff);
       SDL_RenderFillRect(parent->renderer, &dimens2);
+        
+        if (curRow ==y && index == x)
+        {
+            // draw the currently selected tile if these index things are set
+            // TODO: check touchmode and decide whether to draw a filled rect or not
+            SDL_SetRenderDrawColor(parent->renderer, 0xff, 0xaa, 0xaa, 0xff);
+            SDL_RenderFillRect(parent->renderer, &dimens2);
+        }
     }
 
 //   SDL_Rect dimens3 = {this->x+dPos, this->y + dHeight, dWidth, textSize};
@@ -61,39 +70,61 @@ bool Keyboard::process(InputEvents* event)
     
     bool ret = false;
     
-  if (event->isTouchUp() && event->touchIn(this->x, this->y, width, height))
+  if (event->isTouchDown() && event->touchIn(this->x, this->y, width, height))
   {
-    for (int y=0; y<3; y++)
-      for (int x=0; x<10 - y - (y==2); x++)
-        if (event->touchIn(this->x+kXPad + x*kXOff + y*yYOff, this->y + kYPad + y*ySpacing, keyWidth, keyWidth))
-        {
-            ret |= true;
-          appList->sidebar->searchQuery += std::tolower(rows[y][x*2]);
-        }
-
-    if (event->touchIn(this->x+dPos, this->y+dHeight, dWidth, textSize))
-        if (!appList->sidebar->searchQuery.empty())
-        {
-            ret |= true;
-            appList->sidebar->searchQuery.pop_back();
-        }
-
-    if (event->touchIn(this->x+sPos, this->y+dHeight, sWidth, textSize))
-    {
-        ret |= true;
-      appList->sidebar->searchQuery += " ";
-    }
-
-      if (ret)
-      {
-    // update search results
-    this->appList->y = 0;
-    this->appList->update();
-      }
-      return ret;
+      for (int y=0; y<3; y++)
+          for (int x=0; x<10 - y - (y==2); x++)
+              if (event->touchIn(this->x+kXPad + x*kXOff + y*yYOff, this->y + kYPad + y*ySpacing, keyWidth, keyWidth))
+              {
+                  ret |= true;
+                  curRow = y;
+                  index = x;
+              }
+      return true;
   }
 
-  return false;
+if (event->isTouchUp())
+{
+    // reset current row and info
+    curRow = -1;
+    index = -1;
+    
+    if (event->touchIn(this->x, this->y, width, height))
+      {
+          
+        for (int y=0; y<3; y++)
+          for (int x=0; x<10 - y - (y==2); x++)
+            if (event->touchIn(this->x+kXPad + x*kXOff + y*yYOff, this->y + kYPad + y*ySpacing, keyWidth, keyWidth))
+            {
+                ret |= true;
+                myText->push_back(std::tolower(rows[y][x*2]));
+            }
+
+        if (event->touchIn(this->x+dPos, this->y+dHeight, dWidth, textSize))
+            if (!myText->empty())
+            {
+                ret |= true;
+                myText->pop_back();
+            }
+
+        if (event->touchIn(this->x+sPos, this->y+dHeight, sWidth, textSize))
+        {
+            ret |= true;
+            myText->append(" ");
+        }
+
+          if (ret && appList)
+          {
+        // update search results
+        this->appList->y = 0;
+        this->appList->update();
+          }
+          
+          return ret;
+      }
+
+      return false;
+    }
 }
 
 void Keyboard::updateSize()

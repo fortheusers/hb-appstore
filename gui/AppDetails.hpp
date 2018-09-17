@@ -30,6 +30,7 @@ public:
     void proceed();
     void back();
     void moreByAuthor();
+    void leaveFeedback();
 
 };
 
