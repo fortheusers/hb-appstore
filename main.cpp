@@ -12,10 +12,40 @@
 	#include <switch.h>
 #endif
 
+#if defined(__WIIU__)
+	#include <unistd.h>
+
+
+//remove when the wiiu starts working
+#include <whb/log.h>
+#include <whb/log_udp.h>
+#include <sys/iosupport.h>
+static devoptab_t dotab_stdout;
+static ssize_t wiiu_log_write (struct _reent *r, void *fd, const char *ptr, size_t len) {
+	WHBLogPrintf("%*.*s", len, len, ptr);
+	return len;
+}
+
+#endif
+
 int main(int argc, char *argv[])
 {
 //	consoleDebugInit(debugDevice_SVC);
 //	stdout = stderr; // for yuzu
+
+#if defined(__WIIU__)
+
+//remove when the wiiu starts working
+WHBLogUdpInit();
+memset(&dotab_stdout, 0, sizeof(devoptab_t));
+dotab_stdout.name = "stdout_udp";
+dotab_stdout.write_r = &wiiu_log_write;
+devoptab_list[STD_OUT] = &dotab_stdout;
+devoptab_list[STD_ERR] = &dotab_stdout;
+
+
+	chdir("fs:/vol/external01/wiiu/apps/appstore");
+#endif
 
 #if defined(NOGUI)
 	// if NOGUI variable defined, use the console's main method
