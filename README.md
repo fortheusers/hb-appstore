@@ -45,5 +45,8 @@ cd appstorenx
 make -f Makefile.pc
 ```
 
+### Building for Wii U
+Thanks to @rw-r-r_0644, there is now a Wii U build available. [See here](https://github.com/vgmoose/appstorenx/pull/19) for information on how to build it.
+
 ### License
 This software is licensed under the GPLv3.
