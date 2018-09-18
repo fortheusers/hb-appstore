@@ -165,7 +165,7 @@ void AppList::update()
 	for (int x=0; x<sorted.size(); x++)
 	{
 		// if we're on all categories, or this package matches the current category (or it's a search (prefiltered))
-		if (curCategoryValue == "*" || curCategoryValue == sorted[x]->category || curCategoryValue == "_search")
+		if (curCategoryValue == "_all" || curCategoryValue == sorted[x]->category || curCategoryValue == "_search")
 		{
 			AppCard* card = new AppCard(sorted[x]);
 			card->index = count;
