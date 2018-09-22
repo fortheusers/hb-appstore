@@ -3,15 +3,11 @@
 #include "../libs/get/src/Utils.hpp"
 #include "../libs/get/src/Get.hpp"
 
-int console_main()
+int console_main(Get* get)
 {
 	// initialize text console
 	Console* console = new Console();
 
-	init_networking();
-
-	// create "get" object with default repo
-	Get* get = new Get("./.get/", "http://switchbru.com/appstore");
 	Input* input = new Input();
 
 	// create main menu object

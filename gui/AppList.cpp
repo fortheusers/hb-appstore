@@ -86,18 +86,23 @@ bool AppList::process(InputEvents* event)
             this->highlighted += -1*R*(event->held(UP_BUTTON)) + R*(event->held(DOWN_BUTTON));
 
             // don't let the cursor go out of bounds
+            if (this->highlighted >= this->elements.size()) this->highlighted = this->elements.size() - 1;
+
             if (this->highlighted < 0) this->highlighted = 0;
             if (this->highlighted >= this->totalCount) this->highlighted = this->totalCount-1;
+            
+            if (this->elements.size() > this->highlighted)
+            {
+                // if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
+                // TODO: make it so that the cursor can go to the top of the screen
+                if (this->highlighted >= R*2 && this->elements[this->highlighted])
+                    this->y = -1*((this->highlighted-R*2)/R)*(elements[this->highlighted]->height+15) - 60;
+                else
+                    this->y = 0;		// at the top of the screen
 
-            // if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
-            // TODO: make it so that the cursor can go to the top of the screen
-            if (this->highlighted >= R*2)
-                this->y = -1*((this->highlighted-R*2)/R)*210 - 60;
-            else
-                this->y = 0;		// at the top of the screen
-
-            if (this->elements[this->highlighted])
-                this->elements[this->highlighted]->elasticCounter = HIGHLIGHT;
+                if (this->elements[this->highlighted])
+                    this->elements[this->highlighted]->elasticCounter = HIGHLIGHT;
+            }
         }
     }
     if (event->isTouchDown())
@@ -190,7 +195,7 @@ void AppList::update()
 		AppCard* card = (AppCard*) elements[x];
 
 		// position at proper x, y coordinates
-		card->position(25 + (x%R)*265, 145 + 210*(x/R));		// TODO: extract formula into method (see above)
+		card->position(25 + (x%R)*265, 145 + (card->height+15)*(x/R));		// TODO: extract formula into method (see above)
 		card->update();
 	}
 

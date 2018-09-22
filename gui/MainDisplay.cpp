@@ -103,7 +103,7 @@ bool MainDisplay::process(InputEvents* event)
 {
 	// if we're on the splash/loading screen, we need to fetch icons+screenshots from the remote repo
 	// and load them into our surface cache with the pkg_name+version as the key
-	if (this->showingSplash)
+	if (this->showingSplash && event->noop)
 	{
 		// should be a progress bar
 		if (this->get->packages.size() != 1)
