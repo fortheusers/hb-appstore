@@ -38,20 +38,20 @@ Button::Button(const char* message, char button, bool dark, int size, int width)
     
     TextElement* icon = new TextElement(unicode, size*1.25, &color, ICON);
     this->elements.push_back(icon);
-    icon->position(PADDING, PADDING);
+    icon->position(PADDING*2, PADDING);
     
     TextElement* text = new TextElement(message, size, &color);
 //    icon->resize(text->height, text->height);
     
     int bWidth = PADDING*0.5*(icon->width!=0);  // gap space between button
 
-    text->position(PADDING + bWidth + icon->width, PADDING);
+    text->position(PADDING*2 + bWidth + icon->width, PADDING);
     this->elements.push_back(text);
     
-    this->width = (width > 0)? width : text->width + PADDING*2 + bWidth + icon->width;
+    this->width = (width > 0)? width : text->width + PADDING*4 + bWidth + icon->width;
     this->height = text->height + PADDING*2;
     
-    icon->position(PADDING, PADDING + (text->height - icon->height)/2);
+    icon->position(PADDING*1.7, PADDING + (text->height - icon->height)/2);
 
     this->touchable = true;
     

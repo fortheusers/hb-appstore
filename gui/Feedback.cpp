@@ -18,8 +18,7 @@ Feedback::Feedback(Package* package)
     feedback->position(140, 140);
     elements.push_back(feedback);
     
-    Keyboard* keyboard = new Keyboard(NULL, feedback->text);
-    this->keyboard = keyboard;
+    this->keyboard = new Keyboard(NULL, feedback->text);
     elements.push_back(keyboard);
     
     Button* send = new Button("Submit", 'x', 24);

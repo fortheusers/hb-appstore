@@ -35,10 +35,14 @@ bool AppList::process(InputEvents* event)
     }
     
     // if we're showing a keyboard, make sure we're not in its bounds
-    if (event->isTouchDown() && keyboard != NULL && !keyboard->hidden &&
+    // also make sure the children elements exist before trying the keyboard
+    // AND we're actually on the search category
+    if (event->isTouchDown() && this->elements.size() > 0 &&
+        this->sidebar != NULL && this->sidebar->curCategory == 0 &&
+        this->keyboard != NULL && !this->keyboard->hidden &&
         event->touchIn(keyboard->x, keyboard->y,
                        keyboard->width, keyboard->height))
-        return keyboard->process(event);
+        return this->keyboard->process(event);
     
     // process some joycon input events
     if (event->isKeyDown())
@@ -197,8 +201,7 @@ void AppList::update()
 	// if it's a search, add a keyboard
 	if (curCategoryValue == "_search")
 	{
-		Keyboard* keyboard = new Keyboard(this, &this->sidebar->searchQuery);
-        this->keyboard = keyboard;
+		this->keyboard = new Keyboard(this, &this->sidebar->searchQuery);
 		this->elements.push_back(keyboard);
 
 		category = new TextElement((std::string("Search: \"") + this->sidebar->searchQuery + "\"").c_str(), 28, &black);
@@ -215,7 +218,7 @@ void AppList::update()
     if (curCategoryValue != "_search")
     {
         Button* settings = new Button("Credits", 'x', false, 15);
-        settings->position(730 + 260*(R-3), 70);
+        settings->position(700 + 260*(R-3), 70);
         settings->action = std::bind(&AppList::launchSettings, this);
         this->elements.push_back(settings);
         
@@ -227,7 +230,7 @@ void AppList::update()
     else
     {
         Button* settings = new Button("Toggle Keyboard", 'y', false, 15);
-        settings->position(655 + 260*(R-3), 70);
+        settings->position(625 + 260*(R-3), 70);
         settings->action = std::bind(&AppList::toggleKeyboard, this);
         this->elements.push_back(settings);
     }
