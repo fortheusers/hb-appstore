@@ -31,6 +31,9 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 		case INSTALLED:
 			action = "Remove";
 			break;
+        case LOCAL:
+            action = "Reinstall";
+            break;
 		default:
 			action = "?";
 	}

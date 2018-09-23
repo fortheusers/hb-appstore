@@ -139,7 +139,7 @@ void AppList::update()
 	this->wipeElements();
 
 	// quickly create a vector of "sorted" apps
-	// (they must be sorted by UPDATE -> INSTALLED -> GET)
+	// (they must be sorted by UPDATE -> INSTALLED -> LOCAL -> GET)
 	// TODO: sort this a better way, and also don't use 3 distinct for loops
 	std::vector<Package*> sorted;
 
@@ -162,6 +162,11 @@ void AppList::update()
 	for (int x=0; x<packages.size(); x++)
 		if (packages[x]->status == INSTALLED)
 			sorted.push_back(packages[x]);
+    
+    // local
+    for (int x=0; x<packages.size(); x++)
+        if (packages[x]->status == LOCAL)
+            sorted.push_back(packages[x]);
 
 	// get
 	for (int x=0; x<packages.size(); x++)
@@ -229,7 +234,7 @@ void AppList::update()
         
         Button* sort = new Button("Adjust Sort", 'y', false, 15);
         sort->position(settings->x - 20 - sort->width, settings->y);
-//        settings->action = std::bind(&AppList::cycleSort, this);
+        sort->action = std::bind(&AppList::cycleSort, this);
         this->elements.push_back(sort);
     }
     else
@@ -239,6 +244,11 @@ void AppList::update()
         settings->action = std::bind(&AppList::toggleKeyboard, this);
         this->elements.push_back(settings);
     }
+}
+
+void AppList::cycleSort()
+{
+    
 }
 
 void AppList::toggleKeyboard()

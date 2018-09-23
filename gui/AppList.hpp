@@ -19,6 +19,7 @@ public:
     Keyboard* keyboard = NULL;
     
     void toggleKeyboard();
+    void cycleSort();
     
 	bool touchMode = true;
 

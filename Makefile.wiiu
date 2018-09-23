@@ -5,6 +5,7 @@ VPATH	:= $(BASEDIR)
 GET			:= ./libs/get/src
 RAPIDJSON	:= ./libs/get/src/libs/rapidjson/include
 MINIZIP		:= ./libs/get/src/libs/minizip
+TINYXML := libs/get/src/libs/tinyxml
 
 #---------------------------------------------------------------------------------
 # TARGET is the name of the output
@@ -14,8 +15,8 @@ MINIZIP		:= ./libs/get/src/libs/minizip
 #---------------------------------------------------------------------------------
 TARGET		:=	appstore
 BUILD		:=	build
-SOURCES		:=	. $(GET) $(MINIZIP) console gui
-INCLUDES	:=	-I. -I$(RAPIDJSON) -I$(MINIZIP)
+SOURCES		:=	. $(GET) $(MINIZIP) $(TINYXML) console gui
+INCLUDES	:=	-I. -I$(RAPIDJSON) -I$(MINIZIP) -I$(TINYXML)
 
 #---------------------------------------------------------------------------------
 # options for code generation

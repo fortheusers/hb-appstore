@@ -8,7 +8,7 @@
 #include "libs/get/src/Utils.hpp"
 #include "libs/get/src/Get.hpp"
 
-#if defined(__WIIU__)
+#if !defined(__WIIU__)
 #define DEFAULT_REPO "http://wiiubru.com/appstore"
 #else
 #define DEFAULT_REPO "http://switchbru.com/appstore"

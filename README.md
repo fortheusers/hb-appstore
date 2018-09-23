@@ -44,7 +44,7 @@ make
 If all goes well, `appstore.nro` should be sitting in the current directory.
 
 ### Building for Wii U (with WUT)
-[See here](https://github.com/vgmoose/hb-appstore/pull/19) for info on how to setup the Wii U environment.
+[See here](https://github.com/vgmoose/hb-appstore/pull/19) for info on how to setup the Wii U environment. The Wii U build also makes use of the tinyxml library to look up HBL apps that may already be installed.
 
 Once the environment is setup:
 ```
