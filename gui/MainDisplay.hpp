@@ -24,7 +24,6 @@ public:
     int lastFrameTime = 99;
     SDL_Event needsRender;
 
-private:
 	bool showingSplash = true;
 	int count = 0;
 };

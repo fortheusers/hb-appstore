@@ -48,8 +48,15 @@ AboutScreen::AboutScreen(Get* get)
     subtitle->position(MARGIN, 80);
     this->elements.push_back(subtitle);
     
-    const char* blurb = "Licensed under the GPLv3 license.\n\nThis app is free and open source because the users (like you!) deserve it. Let's support homebrew and the right to control what software we run on our own devices!\n\n\nCredits:\nVGMoose, Pwsincd, rw-r-r_0644, Zarklord1, Maschell, Roman, quarktheawesome, Whovian9369, Ep8Script, crc-32, rakujira\n\n\nAlso FYI you can browse the Internet directly on your Switch by entering 45.55.142.122 as a manual DNS in connection settings. A full web browser is built into the console, but it's normally hidden and inaccessible to the end user.";
-    TextElement* credits = new TextElement(blurb, 20, &black, false, 600);
+    const char* blurb = "Licensed under the GPLv3 license.\n\nThis app is free and open source because the users (like you!) deserve it. Let's support homebrew and the right to control what software we run on our own devices!\n\n\nCredits:\nVGMoose, Pwsincd, rw-r-r_0644, Zarklord1, Maschell, Roman, quarktheawesome, Whovian9369, Ep8Script, crc-32, rakujira\n\n\n";
+    
+#if !defined(__WIIU__)
+    const char* platform_blurb = "Also FYI you can browse the Internet directly on your Switch by entering 45.55.142.122 as a manual DNS in connection settings. A full web browser is built into the console, but it's normally hidden and inaccessible to the end user.";
+#else
+    const char* platform_blurb = "Thank you for 2 years of Wii U homebrew! This update is possible due to a Wii U port of the SDL2 library. Making Wii U homebrew has never been easier, if you're interested, find us on Discord at https://discordapp.com/invite/F2PKpEj";
+#endif
+    
+    TextElement* credits = new TextElement((std::string(blurb) + platform_blurb).c_str(), 20, &black, false, 600);
     credits->position(MARGIN, 150);
     this->elements.push_back(credits);
     

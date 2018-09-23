@@ -80,7 +80,12 @@ void Button::render(Element* parent)
     SDL_Rect dimens = { x, y, width, height };
     
     if (dark)
+    {
         SDL_SetRenderDrawColor(parent->renderer, 0x67, 0x6a, 0x6d, 0xFF);
+//#if defined(__WIIU__)
+//        SDL_SetRenderDrawColor(parent->renderer, 0x3b, 0x3c, 0x4e, 0xFF);
+//#endif
+    }
     else
         SDL_SetRenderDrawColor(parent->renderer, 0xee, 0xee, 0xee, 0xFF);
     

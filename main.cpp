@@ -8,7 +8,7 @@
 #include "libs/get/src/Utils.hpp"
 #include "libs/get/src/Get.hpp"
 
-#if defined(WIIU)
+#if defined(__WIIU__)
 #define DEFAULT_REPO "http://wiiubru.com/appstore"
 #else
 #define DEFAULT_REPO "http://switchbru.com/appstore"
@@ -87,7 +87,7 @@ devoptab_list[STD_ERR] = &dotab_stdout;
         
         // one more event update if nothing changed or there were no previous events seen
         // needed to non-input related processing that might update the screen to take place
-        if (!atLeastOneNewEvent && !viewChanged)
+        if ((!atLeastOneNewEvent && !viewChanged) || display->showingSplash)
         {
             events->update();
             viewChanged |= display->process(events);

@@ -9,7 +9,7 @@ AppCard::AppCard(Package* package)
 	this->width = 256;
 	this->height = 195;
     
-#if defined(WIIU)
+#if defined(__WIIU__)
     this->height = 135;
 #endif
     

@@ -177,7 +177,7 @@ bool AppDetails::process(InputEvents* event)
 			pbar->color = 0xff0000ff;
             pbar->dimBg = true;
 			this->elements.push_back(pbar);
-
+            
 			// setup progress bar callback
 			networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
 
