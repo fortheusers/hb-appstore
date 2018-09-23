@@ -16,7 +16,8 @@ bool Element::process(InputEvents* event)
     
 	// call process on subelements
 	for (int x=0; x<this->elements.size(); x++)
-		ret |= this->elements[x]->process(event);
+        if (this->elements.size() > x && this->elements[x])
+            ret |= this->elements[x]->process(event);
     
     ret |= this->needsRedraw;
     this->needsRedraw = false;

@@ -204,9 +204,9 @@ void MainDisplay::render(Element* parent)
     // set the background color
     MainDisplay::background(0x42, 0x45, 0x48);
 //    MainDisplay::background(0x60, 0x7d, 0x8b);
-//#if defined(__WIIU__)
-//    MainDisplay::background(0x54, 0x55, 0x6e);
-//#endif
+#if defined(__WIIU__)
+    MainDisplay::background(0x54, 0x55, 0x6e);
+#endif
     
     if (MainDisplay::subscreen)
     {

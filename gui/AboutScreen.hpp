@@ -11,8 +11,13 @@ class AboutScreen : public Element
 public:
     AboutScreen(Get* get);
     Get* get = NULL;
-    void back();
     void render(Element* parent);
+
+    // button bindings
+    void back();
+    void removeEmptyFolders();
+    void wipeCache();
+    void launchFeedback();
 };
 
 #endif

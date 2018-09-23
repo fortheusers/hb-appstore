@@ -1,9 +1,11 @@
 #include "AboutScreen.hpp"
 #include "../libs/get/src/Get.hpp"
+#include "../libs/get/src/Utils.hpp"
 #include "Button.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <sstream>
 #include "MainDisplay.hpp"
+#include "Feedback.hpp"
 
 AboutScreen::AboutScreen(Get* get)
 {
@@ -25,19 +27,19 @@ AboutScreen::AboutScreen(Get* get)
     
     Button* cleanup = new Button("Cleanup Empty Folders", 'y', true, 21);
     cleanup->position(30, 500);
-//    cleanup->action = std::bind(&AboutScreen::back, this);
+    cleanup->action = std::bind(&AboutScreen::removeEmptyFolders, this);
     this->elements.push_back(cleanup);
     
     Button* cache = new Button("Delete Image Cache", 'x', true, 21, cleanup->width);
     cache->position(30, cleanup->y + cleanup->height + 25);
-    //    cleanup->action = std::bind(&AboutScreen::back, this);
+    cache->action = std::bind(&AboutScreen::wipeCache, this);
     this->elements.push_back(cache);
     
     int MARGIN = 550;
     
     Button* feedback = new Button("Leave Feedback", 'a', false, 17);
     feedback->position(MARGIN + 450, 65);
-    //    cleanup->action = std::bind(&AboutScreen::back, this);
+    feedback->action = std::bind(&AboutScreen::launchFeedback, this);
     this->elements.push_back(feedback);
     
     TextElement* title = new TextElement("Homebrew App Store", 35, &black);
@@ -82,3 +84,26 @@ void AboutScreen::back()
     MainDisplay::subscreen = NULL;      // TODO: clean up memory?
 }
 
+void AboutScreen::removeEmptyFolders()
+{
+    remove_empty_dirs(ROOT_PATH, 0);
+}
+
+void AboutScreen::wipeCache()
+{
+    // clear out versions
+    std::remove(".get/tmp/cache/versions.json");
+}
+
+void AboutScreen::launchFeedback()
+{
+    // find the package corresponding to us
+    for (auto& package : this->get->packages)
+    {
+        if (package->pkg_name == "appstore")
+        {
+            MainDisplay::subscreen = new Feedback(package);
+            break;
+        }
+    }
+}

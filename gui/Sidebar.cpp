@@ -125,7 +125,7 @@ void Sidebar::render(Element* parent)
 
 	SDL_SetRenderDrawColor(parent->renderer, 0x67, 0x6a, 0x6d, 0xFF);
 //#if defined(__WIIU__)
-//    SDL_SetRenderDrawColor(parent->renderer, 0x3b, 0x3c, 0x4e, 0xFF);
+    SDL_SetRenderDrawColor(parent->renderer, 0x3b, 0x3c, 0x4e, 0xFF);
 //#endif
 
 	SDL_RenderFillRect(parent->renderer, &dimens);

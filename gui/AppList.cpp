@@ -5,6 +5,7 @@
 #include "Keyboard.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 
+
 AppList::AppList(Get* get, Sidebar* sidebar)
 {
     this->x = 400 - 260*(R-3);
@@ -152,26 +153,40 @@ void AppList::update()
 	// if it's a search, do a search query through get rather than using all packages
 	if (curCategoryValue == "_search")
 		packages = get->search(this->sidebar->searchQuery);
-
-	// update
-	for (int x=0; x<packages.size(); x++)
-		if (packages[x]->status == UPDATE)
-			sorted.push_back(packages[x]);
-
-	// installed
-	for (int x=0; x<packages.size(); x++)
-		if (packages[x]->status == INSTALLED)
-			sorted.push_back(packages[x]);
     
-    // local
-    for (int x=0; x<packages.size(); x++)
-        if (packages[x]->status == LOCAL)
-            sorted.push_back(packages[x]);
+    // sort the packages list by whatever criteria is currently set
+    applySortOrder(&packages);
+    
+    if (this->sortMode == ALPHABETICAL)
+    {
+        // alphabetical sort order is the default view, so it puts updates and installed apps first
+        
+        // update
+        for (int x=0; x<packages.size(); x++)
+            if (packages[x]->status == UPDATE)
+                sorted.push_back(packages[x]);
 
-	// get
-	for (int x=0; x<packages.size(); x++)
-		if (packages[x]->status == GET)
-			sorted.push_back(packages[x]);
+        // installed
+        for (int x=0; x<packages.size(); x++)
+            if (packages[x]->status == INSTALLED)
+                sorted.push_back(packages[x]);
+        
+        // local
+        for (int x=0; x<packages.size(); x++)
+            if (packages[x]->status == LOCAL)
+                sorted.push_back(packages[x]);
+
+        // get
+        for (int x=0; x<packages.size(); x++)
+            if (packages[x]->status == GET)
+                sorted.push_back(packages[x]);
+    }
+    else
+    {
+        // not alphabetical, just copy over to the sorted vector
+        for (int x=0; x<packages.size(); x++)
+            sorted.push_back(packages[x]);
+    }
 
 	// total apps we're interested in so far
 	int count = 0;
@@ -244,11 +259,46 @@ void AppList::update()
         settings->action = std::bind(&AppList::toggleKeyboard, this);
         this->elements.push_back(settings);
     }
+    
+    // display the search type above if it's not the default one
+    if (sortMode != ALPHABETICAL)
+    {
+//        TextElement* sort
+    }
+}
+
+void AppList::applySortOrder(std::vector<Package*>* p)
+{
+    if (sortMode == ALPHABETICAL)
+        std::sort(p->begin(), p->end(),
+                  [] (const auto& lhs, const auto& rhs) {
+                      return lhs->title.compare(rhs->title) < 0;
+                  });
+    else if (sortMode == POPULARITY)
+        std::sort(p->begin(), p->end(),
+                  [] (const auto& lhs, const auto& rhs) {
+                      return lhs->downloads > rhs->downloads;
+                  });
+    else if (sortMode == RECENT)
+        std::sort(p->begin(), p->end(),
+                  [] (const auto& lhs, const auto& rhs) {
+                      return lhs->updated_timestamp > rhs->updated_timestamp;
+                  });
+    else if (sortMode == SIZE)
+        std::sort(p->begin(), p->end(),
+                  [] (const auto& lhs, const auto& rhs) {
+                      return lhs->download_size < rhs->download_size;
+                  });
+    else if (sortMode == RANDOM)
+    {
+        std::random_shuffle(p->begin(), p->end());
+    }
 }
 
 void AppList::cycleSort()
 {
-    
+    this->sortMode = (this->sortMode + 1) % TOTAL_SORTS;
+    this->update();
 }
 
 void AppList::toggleKeyboard()

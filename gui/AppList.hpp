@@ -6,6 +6,14 @@
 #include "Keyboard.hpp"
 #include "../libs/get/src/Get.hpp"
 
+#define TOTAL_SORTS 5   // alphabetical (with updates at top), downloads, last updated, size, shuffled
+#define ALPHABETICAL 0
+#define POPULARITY 1
+#define RECENT 2
+#define SIZE 3
+#define RANDOM 4
+
+
 class AppList : public ListElement
 {
 public:
@@ -20,6 +28,7 @@ public:
     
     void toggleKeyboard();
     void cycleSort();
+    void applySortOrder(std::vector<Package*>* packages);
     
 	bool touchMode = true;
 
@@ -28,6 +37,8 @@ public:
     
     // default number of items per row TODO: save this value as config
     int R = 3;
+    
+    int sortMode = RECENT;
     
     void launchSettings();
 
