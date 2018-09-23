@@ -5,6 +5,9 @@ ImageElement::ImageElement(const char* path)
 {
 	std::string key = std::string(path);
 	this->path = path;
+#if defined(SWITCH)
+    this->path = (std::string("romfs:/") + path).c_str();
+#endif
 
 	// try to find it in the cache first
 	if (ImageCache::cache.count(key))
@@ -18,7 +21,7 @@ ImageElement::ImageElement(const char* path)
 	if (this->imgSurface != NULL)
 		SDL_DestroyTexture(this->imgSurface);
 
-	SDL_Surface* surface = IMG_Load(path);
+	SDL_Surface* surface = IMG_Load(this->path);
 	this->imgSurface = SDL_CreateTextureFromSurface(MainDisplay::mainRenderer, surface);
 
 	this->width = 100; //surface->w;

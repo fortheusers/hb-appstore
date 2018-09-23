@@ -2,6 +2,10 @@
 #include "AppCard.hpp"
 #include "../libs/get/src/Utils.hpp"
 
+#if defined(SWITCH)
+#include <switch.h>
+#endif
+
 SDL_Renderer* MainDisplay::mainRenderer = NULL;
 Element* MainDisplay::subscreen = NULL;
 
@@ -28,6 +32,11 @@ MainDisplay::MainDisplay(Get* get)
 //        printf("SDL image init failed: %s\n", SDL_GetError());
 		return;
 	}
+    
+    // initialize teh romfs for switch
+#if defined(SWITCH)
+    romfsInit();
+#endif
 
 //    printf("initialized SDL\n");
 
