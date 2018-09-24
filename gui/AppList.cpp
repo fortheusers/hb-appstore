@@ -4,6 +4,7 @@
 #include "AboutScreen.hpp"
 #include "Keyboard.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include <algorithm>
 
 AppList::AppList(Get* get, Sidebar* sidebar)
 {
@@ -25,7 +26,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 bool AppList::process(InputEvents* event)
 {
     bool ret = false;
-    
+
     if (event->pressed(Z_BUTTON))
     {
         R = (R==3)? 4 : 3;
@@ -33,13 +34,13 @@ bool AppList::process(InputEvents* event)
         update();
         return true;
     }
-    
+
     // if we're showing a keyboard, make sure we're not in its bounds
     if (event->isTouchDown() && keyboard != NULL && !keyboard->hidden &&
         event->touchIn(keyboard->x, keyboard->y,
                        keyboard->width, keyboard->height))
         return keyboard->process(event);
-    
+
     // process some joycon input events
     if (event->isKeyDown())
     {
@@ -58,7 +59,7 @@ bool AppList::process(InputEvents* event)
             // touchmode is false, but our highlight value is negative
             // (do nothing, let sidebar update our highlight value)
             if (this->highlighted < 0) return false;
-            
+
             // look up whatever is currently chosen as the highlighted position
             // and remove its highlight
             if (this->elements[this->highlighted])
@@ -102,7 +103,7 @@ bool AppList::process(InputEvents* event)
         this->highlighted = -1;
         this->touchMode = true;
     }
-    
+
 	ret |= ListElement::process(event);
 
 	return ret;
@@ -161,7 +162,7 @@ void AppList::update()
 
 	// total apps we're interested in so far
 	int count = 0;
-    
+
 	for (int x=0; x<sorted.size(); x++)
 	{
 		// if we're on all categories, or this package matches the current category (or it's a search (prefiltered))
@@ -210,7 +211,7 @@ void AppList::update()
 
 	category->position(20, 90);
 	this->elements.push_back(category);
-    
+
     // additional buttons (only if not on search)
     if (curCategoryValue != "_search")
     {
@@ -218,7 +219,7 @@ void AppList::update()
         settings->position(730 + 260*(R-3), 70);
         settings->action = std::bind(&AppList::launchSettings, this);
         this->elements.push_back(settings);
-        
+
         Button* sort = new Button("Adjust Sort", 'y', false, 15);
         sort->position(settings->x - 20 - sort->width, settings->y);
 //        settings->action = std::bind(&AppList::cycleSort, this);
