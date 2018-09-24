@@ -51,9 +51,8 @@ devoptab_list[STD_ERR] = &dotab_stdout;
 
 	chdir("fs:/vol/external01/wiiu/apps/appstore");
 #endif
-    
     init_networking();
-    
+
     // create main get object
     Get* get = new Get("./.get/", DEFAULT_REPO);
 
@@ -62,7 +61,7 @@ devoptab_list[STD_ERR] = &dotab_stdout;
 	int console_main(Get*);
 	return console_main(get);
 #else
-    
+
 	// initialize main title screen
 	MainDisplay* display = new MainDisplay(get);
 
@@ -74,9 +73,9 @@ devoptab_list[STD_ERR] = &dotab_stdout;
 	{
         bool atLeastOneNewEvent = false;
         bool viewChanged = false;
-        
+
         int frameStart = SDL_GetTicks();
-        
+
 		// get any new input events
 		while(events->update())
         {
@@ -84,7 +83,7 @@ devoptab_list[STD_ERR] = &dotab_stdout;
             viewChanged |= display->process(events);
             atLeastOneNewEvent = true;
         }
-        
+
         // one more event update if nothing changed or there were no previous events seen
         // needed to non-input related processing that might update the screen to take place
         if ((!atLeastOneNewEvent && !viewChanged) || display->showingSplash)
@@ -92,8 +91,8 @@ devoptab_list[STD_ERR] = &dotab_stdout;
             events->update();
             viewChanged |= display->process(events);
         }
-        
-		// draw the display if we processed an event or the view 
+
+		// draw the display if we processed an event or the view
         if (viewChanged)
             display->render(NULL);
         else

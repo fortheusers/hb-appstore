@@ -5,6 +5,8 @@
 #include "Keyboard.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <algorithm>
+#include <ctime>        // std::time
+#include <cstdlib>      // std::rand, std::srand
 
 
 AppList::AppList(Get* get, Sidebar* sidebar)
@@ -20,9 +22,14 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	// the sidebar, which will store the currently selected category info
 	this->sidebar = sidebar;
 
+  // initialize random numbers used for sorting
+  std::srand ( unsigned ( std::time(0) ) );
+
 	// update current app listing
 	update();
 }
+
+int myrandom (int i) { return std::rand()%i;}
 
 bool AppList::process(InputEvents* event)
 {
@@ -45,7 +52,7 @@ bool AppList::process(InputEvents* event)
         event->touchIn(keyboard->x, keyboard->y,
                        keyboard->width, keyboard->height))
         return this->keyboard->process(event);
-    
+
     // process some joycon input events
     if (event->isKeyDown())
     {
@@ -92,7 +99,7 @@ bool AppList::process(InputEvents* event)
 
             if (this->highlighted < 0) this->highlighted = 0;
             if (this->highlighted >= this->totalCount) this->highlighted = this->totalCount-1;
-            
+
             if (this->elements.size() > this->highlighted)
             {
                 // if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
@@ -154,14 +161,14 @@ void AppList::update()
 	// if it's a search, do a search query through get rather than using all packages
 	if (curCategoryValue == "_search")
 		packages = get->search(this->sidebar->searchQuery);
-    
+
     // sort the packages list by whatever criteria is currently set
-    applySortOrder(&packages);
-    
-    if (this->sortMode == ALPHABETICAL)
+    const char* sortString = applySortOrder(&packages);
+
+    if (this->sortMode == RECENT)
     {
         // alphabetical sort order is the default view, so it puts updates and installed apps first
-        
+
         // update
         for (int x=0; x<packages.size(); x++)
             if (packages[x]->status == UPDATE)
@@ -171,7 +178,7 @@ void AppList::update()
         for (int x=0; x<packages.size(); x++)
             if (packages[x]->status == INSTALLED)
                 sorted.push_back(packages[x]);
-        
+
         // local
         for (int x=0; x<packages.size(); x++)
             if (packages[x]->status == LOCAL)
@@ -252,6 +259,13 @@ void AppList::update()
         sort->position(settings->x - 20 - sort->width, settings->y);
         sort->action = std::bind(&AppList::cycleSort, this);
         this->elements.push_back(sort);
+
+
+          // display the search type above if it's not the default one
+          SDL_Color gray = {0x50, 0x50, 0x50, 0xff};
+         TextElement* sortBlurb = new TextElement(sortString, 15, &gray);
+         sortBlurb->position(category->x + category->width + 15, category->y + 12);
+         this->elements.push_back(sortBlurb);
     }
     else
     {
@@ -260,15 +274,9 @@ void AppList::update()
         settings->action = std::bind(&AppList::toggleKeyboard, this);
         this->elements.push_back(settings);
     }
-    
-    // display the search type above if it's not the default one
-    if (sortMode != ALPHABETICAL)
-    {
-//        TextElement* sort
-    }
 }
 
-void AppList::applySortOrder(std::vector<Package*>* p)
+const char* AppList::applySortOrder(std::vector<Package*>* p)
 {
     if (sortMode == ALPHABETICAL)
         std::sort(p->begin(), p->end(),
@@ -288,12 +296,15 @@ void AppList::applySortOrder(std::vector<Package*>* p)
     else if (sortMode == SIZE)
         std::sort(p->begin(), p->end(),
                   [] (const auto& lhs, const auto& rhs) {
-                      return lhs->download_size < rhs->download_size;
+                      return lhs->download_size > rhs->download_size;
                   });
     else if (sortMode == RANDOM)
     {
-        std::random_shuffle(p->begin(), p->end());
+        std::random_shuffle(p->begin(), p->end(), myrandom);
     }
+
+    const char* humanStrings[] = {"by most recent", "by download count", "alphabetically", "by size (descending)", "randomly"};
+    return humanStrings[sortMode];
 }
 
 void AppList::cycleSort()

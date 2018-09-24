@@ -33,18 +33,18 @@ Sidebar::Sidebar()
         icon->resize(40, 40);
         icon->position(30, 150+x*70 - 5);
         this->elements.push_back(icon);
-        
+
 		TextElement* category = new TextElement(cat_names[x], 25);
 		category->position(105, 150+x*70);
 		this->elements.push_back(category);
 	}
-    
+
     // small indicator to switch to advanced view using L
     ImageElement* hider = new ImageElement("res/button-l-outline.png");
     hider->resize(20, 20);
     hider->position(270, 685);
     this->elements.push_back(hider);
-    
+
     TextElement* hint = new TextElement("Hide", 15);
     hint->position(hider->x + hider->width + 5, hider->y);
     this->elements.push_back(hint);
@@ -110,7 +110,7 @@ bool Sidebar::process(InputEvents* event)
 				}
 			}
 		}
-        
+
         return true;
 	}
 
@@ -124,9 +124,9 @@ void Sidebar::render(Element* parent)
 	dimens.y = 150+this->curCategory*70 - 15;		// TODO: extract formula into method
 
 	SDL_SetRenderDrawColor(parent->renderer, 0x67, 0x6a, 0x6d, 0xFF);
-//#if defined(__WIIU__)
+#if defined(__WIIU__)
     SDL_SetRenderDrawColor(parent->renderer, 0x3b, 0x3c, 0x4e, 0xFF);
-//#endif
+#endif
 
 	SDL_RenderFillRect(parent->renderer, &dimens);
 
