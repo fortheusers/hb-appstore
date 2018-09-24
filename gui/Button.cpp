@@ -38,20 +38,20 @@ Button::Button(const char* message, char button, bool dark, int size, int width)
     
     TextElement* icon = new TextElement(unicode, size*1.25, &color, ICON);
     this->elements.push_back(icon);
-    icon->position(PADDING, PADDING);
+    icon->position(PADDING*2, PADDING);
     
     TextElement* text = new TextElement(message, size, &color);
 //    icon->resize(text->height, text->height);
     
     int bWidth = PADDING*0.5*(icon->width!=0);  // gap space between button
 
-    text->position(PADDING + bWidth + icon->width, PADDING);
+    text->position(PADDING*2 + bWidth + icon->width, PADDING);
     this->elements.push_back(text);
     
-    this->width = (width > 0)? width : text->width + PADDING*2 + bWidth + icon->width;
+    this->width = (width > 0)? width : text->width + PADDING*4 + bWidth + icon->width;
     this->height = text->height + PADDING*2;
     
-    icon->position(PADDING, PADDING + (text->height - icon->height)/2);
+    icon->position(PADDING*1.7, PADDING + (text->height - icon->height)/2);
 
     this->touchable = true;
     
@@ -80,7 +80,12 @@ void Button::render(Element* parent)
     SDL_Rect dimens = { x, y, width, height };
     
     if (dark)
+    {
         SDL_SetRenderDrawColor(parent->renderer, 0x67, 0x6a, 0x6d, 0xFF);
+#if defined(__WIIU__)
+        SDL_SetRenderDrawColor(parent->renderer, 0x3b, 0x3c, 0x4e, 0xFF);
+#endif
+    }
     else
         SDL_SetRenderDrawColor(parent->renderer, 0xee, 0xee, 0xee, 0xFF);
     

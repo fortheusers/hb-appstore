@@ -9,6 +9,7 @@ class Keyboard : public Element
 {
 public:
     Keyboard(AppList* appList, std::string* myText);
+    ~Keyboard();
 	void render(Element* parent);
     bool process(InputEvents* event);
     

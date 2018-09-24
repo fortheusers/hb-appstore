@@ -194,3 +194,10 @@ void Keyboard::updateSize()
     spaceButton->position(sPos2, dHeight2);
     this->elements.push_back(spaceButton);
 }
+
+Keyboard::~Keyboard()
+{
+    // during deconstructor,
+    if (this->appList != NULL)
+        this->appList->keyboard = NULL;
+}

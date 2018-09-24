@@ -31,6 +31,9 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 		case INSTALLED:
 			action = "Remove";
 			break;
+        case LOCAL:
+            action = "Reinstall";
+            break;
 		default:
 			action = "?";
 	}
@@ -177,7 +180,7 @@ bool AppDetails::process(InputEvents* event)
 			pbar->color = 0xff0000ff;
             pbar->dimBg = true;
 			this->elements.push_back(pbar);
-
+            
 			// setup progress bar callback
 			networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
 

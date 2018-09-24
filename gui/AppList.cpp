@@ -6,6 +6,7 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <algorithm>
 
+
 AppList::AppList(Get* get, Sidebar* sidebar)
 {
     this->x = 400 - 260*(R-3);
@@ -36,11 +37,15 @@ bool AppList::process(InputEvents* event)
     }
 
     // if we're showing a keyboard, make sure we're not in its bounds
-    if (event->isTouchDown() && keyboard != NULL && !keyboard->hidden &&
+    // also make sure the children elements exist before trying the keyboard
+    // AND we're actually on the search category
+    if (event->isTouchDown() && this->elements.size() > 0 &&
+        this->sidebar != NULL && this->sidebar->curCategory == 0 &&
+        this->keyboard != NULL && !this->keyboard->hidden &&
         event->touchIn(keyboard->x, keyboard->y,
                        keyboard->width, keyboard->height))
-        return keyboard->process(event);
-
+        return this->keyboard->process(event);
+    
     // process some joycon input events
     if (event->isKeyDown())
     {
@@ -83,18 +88,23 @@ bool AppList::process(InputEvents* event)
             this->highlighted += -1*R*(event->held(UP_BUTTON)) + R*(event->held(DOWN_BUTTON));
 
             // don't let the cursor go out of bounds
+            if (this->highlighted >= this->elements.size()) this->highlighted = this->elements.size() - 1;
+
             if (this->highlighted < 0) this->highlighted = 0;
             if (this->highlighted >= this->totalCount) this->highlighted = this->totalCount-1;
+            
+            if (this->elements.size() > this->highlighted)
+            {
+                // if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
+                // TODO: make it so that the cursor can go to the top of the screen
+                if (this->highlighted >= R*2 && this->elements[this->highlighted])
+                    this->y = -1*((this->highlighted-R*2)/R)*(elements[this->highlighted]->height+15) - 60;
+                else
+                    this->y = 0;		// at the top of the screen
 
-            // if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
-            // TODO: make it so that the cursor can go to the top of the screen
-            if (this->highlighted >= R*2)
-                this->y = -1*((this->highlighted-R*2)/R)*210 - 60;
-            else
-                this->y = 0;		// at the top of the screen
-
-            if (this->elements[this->highlighted])
-                this->elements[this->highlighted]->elasticCounter = HIGHLIGHT;
+                if (this->elements[this->highlighted])
+                    this->elements[this->highlighted]->elasticCounter = HIGHLIGHT;
+            }
         }
     }
     if (event->isTouchDown())
@@ -131,7 +141,7 @@ void AppList::update()
 	this->wipeElements();
 
 	// quickly create a vector of "sorted" apps
-	// (they must be sorted by UPDATE -> INSTALLED -> GET)
+	// (they must be sorted by UPDATE -> INSTALLED -> LOCAL -> GET)
 	// TODO: sort this a better way, and also don't use 3 distinct for loops
 	std::vector<Package*> sorted;
 
@@ -144,21 +154,40 @@ void AppList::update()
 	// if it's a search, do a search query through get rather than using all packages
 	if (curCategoryValue == "_search")
 		packages = get->search(this->sidebar->searchQuery);
+    
+    // sort the packages list by whatever criteria is currently set
+    applySortOrder(&packages);
+    
+    if (this->sortMode == ALPHABETICAL)
+    {
+        // alphabetical sort order is the default view, so it puts updates and installed apps first
+        
+        // update
+        for (int x=0; x<packages.size(); x++)
+            if (packages[x]->status == UPDATE)
+                sorted.push_back(packages[x]);
 
-	// update
-	for (int x=0; x<packages.size(); x++)
-		if (packages[x]->status == UPDATE)
-			sorted.push_back(packages[x]);
+        // installed
+        for (int x=0; x<packages.size(); x++)
+            if (packages[x]->status == INSTALLED)
+                sorted.push_back(packages[x]);
+        
+        // local
+        for (int x=0; x<packages.size(); x++)
+            if (packages[x]->status == LOCAL)
+                sorted.push_back(packages[x]);
 
-	// installed
-	for (int x=0; x<packages.size(); x++)
-		if (packages[x]->status == INSTALLED)
-			sorted.push_back(packages[x]);
-
-	// get
-	for (int x=0; x<packages.size(); x++)
-		if (packages[x]->status == GET)
-			sorted.push_back(packages[x]);
+        // get
+        for (int x=0; x<packages.size(); x++)
+            if (packages[x]->status == GET)
+                sorted.push_back(packages[x]);
+    }
+    else
+    {
+        // not alphabetical, just copy over to the sorted vector
+        for (int x=0; x<packages.size(); x++)
+            sorted.push_back(packages[x]);
+    }
 
 	// total apps we're interested in so far
 	int count = 0;
@@ -187,7 +216,7 @@ void AppList::update()
 		AppCard* card = (AppCard*) elements[x];
 
 		// position at proper x, y coordinates
-		card->position(25 + (x%R)*265, 145 + 210*(x/R));		// TODO: extract formula into method (see above)
+		card->position(25 + (x%R)*265, 145 + (card->height+15)*(x/R));		// TODO: extract formula into method (see above)
 		card->update();
 	}
 
@@ -198,8 +227,7 @@ void AppList::update()
 	// if it's a search, add a keyboard
 	if (curCategoryValue == "_search")
 	{
-		Keyboard* keyboard = new Keyboard(this, &this->sidebar->searchQuery);
-        this->keyboard = keyboard;
+		this->keyboard = new Keyboard(this, &this->sidebar->searchQuery);
 		this->elements.push_back(keyboard);
 
 		category = new TextElement((std::string("Search: \"") + this->sidebar->searchQuery + "\"").c_str(), 28, &black);
@@ -216,22 +244,62 @@ void AppList::update()
     if (curCategoryValue != "_search")
     {
         Button* settings = new Button("Credits", 'x', false, 15);
-        settings->position(730 + 260*(R-3), 70);
+        settings->position(700 + 260*(R-3), 70);
         settings->action = std::bind(&AppList::launchSettings, this);
         this->elements.push_back(settings);
 
         Button* sort = new Button("Adjust Sort", 'y', false, 15);
         sort->position(settings->x - 20 - sort->width, settings->y);
-//        settings->action = std::bind(&AppList::cycleSort, this);
+        sort->action = std::bind(&AppList::cycleSort, this);
         this->elements.push_back(sort);
     }
     else
     {
         Button* settings = new Button("Toggle Keyboard", 'y', false, 15);
-        settings->position(655 + 260*(R-3), 70);
+        settings->position(625 + 260*(R-3), 70);
         settings->action = std::bind(&AppList::toggleKeyboard, this);
         this->elements.push_back(settings);
     }
+    
+    // display the search type above if it's not the default one
+    if (sortMode != ALPHABETICAL)
+    {
+//        TextElement* sort
+    }
+}
+
+void AppList::applySortOrder(std::vector<Package*>* p)
+{
+    if (sortMode == ALPHABETICAL)
+        std::sort(p->begin(), p->end(),
+                  [] (const auto& lhs, const auto& rhs) {
+                      return lhs->title.compare(rhs->title) < 0;
+                  });
+    else if (sortMode == POPULARITY)
+        std::sort(p->begin(), p->end(),
+                  [] (const auto& lhs, const auto& rhs) {
+                      return lhs->downloads > rhs->downloads;
+                  });
+    else if (sortMode == RECENT)
+        std::sort(p->begin(), p->end(),
+                  [] (const auto& lhs, const auto& rhs) {
+                      return lhs->updated_timestamp > rhs->updated_timestamp;
+                  });
+    else if (sortMode == SIZE)
+        std::sort(p->begin(), p->end(),
+                  [] (const auto& lhs, const auto& rhs) {
+                      return lhs->download_size < rhs->download_size;
+                  });
+    else if (sortMode == RANDOM)
+    {
+        std::random_shuffle(p->begin(), p->end());
+    }
+}
+
+void AppList::cycleSort()
+{
+    this->sortMode = (this->sortMode + 1) % TOTAL_SORTS;
+    this->update();
 }
 
 void AppList::toggleKeyboard()

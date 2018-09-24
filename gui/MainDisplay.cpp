@@ -2,6 +2,10 @@
 #include "AppCard.hpp"
 #include "../libs/get/src/Utils.hpp"
 
+#if defined(SWITCH)
+#include <switch.h>
+#endif
+
 SDL_Renderer* MainDisplay::mainRenderer = NULL;
 Element* MainDisplay::subscreen = NULL;
 
@@ -28,6 +32,11 @@ MainDisplay::MainDisplay(Get* get)
 //        printf("SDL image init failed: %s\n", SDL_GetError());
 		return;
 	}
+    
+    // initialize teh romfs for switch
+#if defined(SWITCH)
+    romfsInit();
+#endif
 
 //    printf("initialized SDL\n");
 
@@ -44,7 +53,7 @@ MainDisplay::MainDisplay(Get* get)
 
 	for (int i = 0; i < SDL_NumJoysticks(); i++) {
 		if (SDL_JoystickOpen(i) == NULL) {
-				printf("SDL_JoystickOpen: %s\n", SDL_GetError());
+//                printf("SDL_JoystickOpen: %s\n", SDL_GetError());
 				SDL_Quit();
 				return;
 		}
@@ -103,13 +112,7 @@ bool MainDisplay::process(InputEvents* event)
 {
 	// if we're on the splash/loading screen, we need to fetch icons+screenshots from the remote repo
 	// and load them into our surface cache with the pkg_name+version as the key
-
-#if defined(__WIIU__)
-	//FIXME
-	if (this->showingSplash /*&& event->noop*/)
-#else
 	if (this->showingSplash && event->noop)
-#endif
 	{
 		// should be a progress bar
 		if (this->get->packages.size() != 1)
@@ -201,6 +204,9 @@ void MainDisplay::render(Element* parent)
     // set the background color
     MainDisplay::background(0x42, 0x45, 0x48);
 //    MainDisplay::background(0x60, 0x7d, 0x8b);
+#if defined(__WIIU__)
+    MainDisplay::background(0x54, 0x55, 0x6e);
+#endif
     
     if (MainDisplay::subscreen)
     {

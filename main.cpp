@@ -8,6 +8,12 @@
 #include "libs/get/src/Utils.hpp"
 #include "libs/get/src/Get.hpp"
 
+#if defined(__WIIU__)
+#define DEFAULT_REPO "http://wiiubru.com/appstore"
+#else
+#define DEFAULT_REPO "http://switchbru.com/appstore"
+#endif
+
 #if defined(SWITCH)
 	#include <switch.h>
 #endif
@@ -43,20 +49,20 @@ dotab_stdout.write_r = &wiiu_log_write;
 devoptab_list[STD_OUT] = &dotab_stdout;
 devoptab_list[STD_ERR] = &dotab_stdout;
 
-
 	chdir("fs:/vol/external01/wiiu/apps/appstore");
 #endif
+    
+    init_networking();
+    
+    // create main get object
+    Get* get = new Get("./.get/", DEFAULT_REPO);
 
 #if defined(NOGUI)
 	// if NOGUI variable defined, use the console's main method
-	int console_main(void);
-	return console_main();
+	int console_main(Get*);
+	return console_main(get);
 #else
-	init_networking();
-
-	// create main get object
-	Get* get = new Get("./.get/", "http://switchbru.com/appstore");
-
+    
 	// initialize main title screen
 	MainDisplay* display = new MainDisplay(get);
 
@@ -81,7 +87,7 @@ devoptab_list[STD_ERR] = &dotab_stdout;
         
         // one more event update if nothing changed or there were no previous events seen
         // needed to non-input related processing that might update the screen to take place
-        if (!atLeastOneNewEvent && !viewChanged)
+        if ((!atLeastOneNewEvent && !viewChanged) || display->showingSplash)
         {
             events->update();
             viewChanged |= display->process(events);

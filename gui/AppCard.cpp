@@ -9,6 +9,10 @@ AppCard::AppCard(Package* package)
 	this->width = 256;
 	this->height = 195;
     
+#if defined(__WIIU__)
+    this->height = 135;
+#endif
+    
     this->touchable = true;
     
     // connect the action to the callback for this element, to be invoked when the touch event fires
@@ -22,7 +26,8 @@ void AppCard::update()
 	// icon, and look up cached image to load
 	ImageElement* icon = new ImageElement((ImageCache::cache_path + this->package->pkg_name + "/icon.png").c_str());
 	icon->position(this->x, this->y);
-	icon->resize(256, 150);
+	icon->resize(256, this->height - 45);
+    
 	this->elements.push_back(icon);
 
 	int size = 13;
@@ -32,30 +37,30 @@ void AppCard::update()
 
 	// version
 	TextElement* version = new TextElement(("v. " + package->version).c_str(), size, &gray);
-	version->position(this->x + 40, this->y + 160);
+	version->position(this->x + 40, this->y + icon->height + 10);
 	this->elements.push_back(version);
 
 	// status string
 	TextElement* status = new TextElement(package->statusString(), size, &gray);
-	status->position(this->x + 40, this->y + 175);
+	status->position(this->x + 40, this->y + icon->height + 25);
 	this->elements.push_back(status);
 
 	// app name
 	int w, h;
 	TextElement* appname = new TextElement(package->title.c_str(), size+3, &black);
 	SDL_QueryTexture(appname->textSurface, NULL, NULL, &w, &h);
-	appname->position(this->x + 245 - w, this->y + 155);
+	appname->position(this->x + 245 - w, this->y + icon->height + 5);
 	this->elements.push_back(appname);
 
 	// author
 	TextElement* author = new TextElement(package->author.c_str(), size, &gray);
 	SDL_QueryTexture(author->textSurface, NULL, NULL, &w, &h);
-	author->position(this->x + 245 - w, this->y + 175);
+	author->position(this->x + 245 - w, this->y + icon->height + 25);
 	this->elements.push_back(author);
 
 	// download status icon
 	ImageElement* statusicon = new ImageElement(("res/" + std::string(package->statusString()) + ".png").c_str());
-	statusicon->position(this->x + 4, this->y + 160);
+	statusicon->position(this->x + 4, this->y + icon->height + 10);
 	statusicon->resize(30, 30);
 	this->elements.push_back(statusicon);
 }

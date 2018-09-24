@@ -55,9 +55,9 @@ void Menu::display()
 			line << cur->title << " (" << cur->version << ")";
 			console->drawString(15, curPosition, line.str().c_str());
 
-			int r = (cur->status == UPDATE)? 0xFF : 0x00;
+			int r = (cur->status == UPDATE || cur->status == LOCAL)? 0xFF : 0x00;
 			int g = (cur->status == UPDATE)? 0xF7 : 0xFF;
-			int b = (cur->status == INSTALLED)? 0xFF : 0x00;
+			int b = (cur->status == INSTALLED || cur->status == LOCAL)? 0xFF : 0x00;
 			console->drawColorString(5, curPosition, cur->statusString(), r, g, b);
 			
 			std::stringstream line2;
@@ -90,9 +90,9 @@ void Menu::display()
 		console->drawString(6, 5, cur->version.c_str());
 		console->drawString(6, 6, cur->author.c_str());
 		
-		int r = (cur->status == UPDATE)? 0xFF : 0x00;
+		int r = (cur->status == UPDATE || cur->status == LOCAL)? 0xFF : 0x00;
 		int g = (cur->status == UPDATE)? 0xF7 : 0xFF;
-		int b = (cur->status == INSTALLED)? 0xFF : 0x00;
+		int b = (cur->status == INSTALLED || cur->status == LOCAL)? 0xFF : 0x00;
 		console->drawColorString(5, 8, cur->statusString(), r, g, b);
 		
 		console->drawColorString(5, 12, "Press [A] to install this package", 0xff, 0xff, 0x00);

@@ -26,7 +26,7 @@ public:
 	int curCategory = 1;		// 1 is all apps
 
 	// list of human-readable category titles and short names from the json
-	const char* cat_names[TOTAL_CATS] = {"Search", "All Apps", "Games", "Emulators", "Tools", "Modules", "Loaders", "Concepts"};
-	const char* cat_value[TOTAL_CATS] = {"_search", "_all", "game", "emu", "tool", "module", "loader", "concept"};
+	const char* cat_names[TOTAL_CATS] = {"Search", "All Apps", "Games", "Emulators", "Tools", "Advanced", "Loaders", "Concepts"};
+	const char* cat_value[TOTAL_CATS] = {"_search", "_all", "game", "emu", "tool", "advanced", "loader", "concept"};
 
 };
