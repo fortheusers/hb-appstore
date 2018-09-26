@@ -1,11 +1,14 @@
 #include "MainDisplay.hpp"
 #include <SDL2/SDL2_rotozoom.h>
+#include <string.h>
 
 ImageElement::ImageElement(const char* path)
 {
 	std::string key = std::string(path);
 	this->path = path;
 #if defined(SWITCH)
+	// if the image path we want to load starts with 'res', prepend romfs for switch
+	if (strncmp(this->path, "res/", 4) == 0)
     this->path = (std::string("romfs:/") + path).c_str();
 #endif
 
