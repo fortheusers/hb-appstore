@@ -37,17 +37,17 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 		default:
 			action = "?";
 	}
-    
+
     // TODO: show current app status somewhere
 
 	// download/update/remove button (2)
-    
-    Button* download = new Button(action, 'a', true, 30);
+
+    Button* download = new Button(action, A_BUTTON, true, 30);
 	download->position(970, 550);
     download->action = std::bind(&AppDetails::proceed, this);
 	this->elements.push_back(download);
-    
-    Button* cancel = new Button("Cancel", 'b', true, 30, download->width);
+
+    Button* cancel = new Button("Cancel", B_BUTTON, true, 30, download->width);
     cancel->position(970, 630);
     cancel->action = std::bind(&AppDetails::back, this);
     this->elements.push_back(cancel);
@@ -56,23 +56,23 @@ AppDetails::AppDetails(Package* package, AppList* appList)
     // the scrollable portion of the app details page
     AppDetailsContent* content = new AppDetailsContent();
     this->elements.push_back(content);
-    
+
     int MARGIN = 60;
-    
+
 	TextElement* title = new TextElement(package->title.c_str(), 35, &black);
 	title->position(MARGIN, 30);
 	content->elements.push_back(title);
-    
-    Button* moreByAuthor = new Button("More by Author", 'x');
-    
-    Button* reportIssue = new Button("Report Issue", 'y');
+
+    Button* moreByAuthor = new Button("More by Author", X_BUTTON);
+
+    Button* reportIssue = new Button("Report Issue", Y_BUTTON);
     reportIssue->position(920 - MARGIN - reportIssue->width, 45);
     moreByAuthor->position(reportIssue->x - 20 - moreByAuthor->width, 45);
     moreByAuthor->action = std::bind(&AppDetails::moreByAuthor, this);
     reportIssue->action = std::bind(&AppDetails::leaveFeedback, this);
     content->elements.push_back(reportIssue);
     content->elements.push_back(moreByAuthor);
-    
+
     ImageElement* banner = new ImageElement((ImageCache::cache_path + package->pkg_name + "/screen.png").c_str());
     // TODO: check for missing banner and show nothing, and shift everything up in that case
 //    banner->resize(848, 208);
@@ -90,8 +90,8 @@ AppDetails::AppDetails(Package* package, AppList* appList)
      TextElement* details = new TextElement(package->long_desc.c_str(), 20, &black, false, 740);
      details->position(MARGIN + 30, 355);
      content->elements.push_back(details);
-    
-    
+
+
     // lots of details that we know about the package
     std::stringstream more_details;
     more_details << "Title: " << package->title << "\n"
@@ -104,7 +104,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
     << "Updated: " << package->updated << "\n\n"
     << "Download size: " << package->download_size << " KB\n"
     << "Install size: " << package->extracted_size << " KB\n";
-    
+
     auto mdeets = more_details.str();
 
     TextElement* more_details_elem = new TextElement(mdeets.c_str(), 20, &white, false, 300);
@@ -152,7 +152,7 @@ bool AppDetails::process(InputEvents* event)
 	// don't process any keystrokes if an operation is in progress
 	if (this->operating)
 		return false;
-    
+
     if (event->pressed(B_BUTTON))
     {
         MainDisplay::subscreen = NULL;
@@ -172,7 +172,7 @@ bool AppDetails::process(InputEvents* event)
 			// event->key.keysym.sym = SDLK_z;
 			event->update();
 			this->highlighted = -1;
-            
+
 			// add a progress bar to the screen to be drawn
 			this->pbar = new ProgressBar();
             pbar->width = 740;
@@ -180,7 +180,7 @@ bool AppDetails::process(InputEvents* event)
 			pbar->color = 0xff0000ff;
             pbar->dimBg = true;
 			this->elements.push_back(pbar);
-            
+
 			// setup progress bar callback
 			networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
 
@@ -211,13 +211,13 @@ void AppDetails::render(Element* parent)
 		this->renderer = parent->renderer;
     if (this->parent == NULL)
         this->parent = parent;
-    
+
     // draw white background
     SDL_Rect dimens = { 0, 0, 920, 720 };
-    
+
     SDL_SetRenderDrawColor(parent->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderFillRect(parent->renderer, &dimens);
-    
+
     // draw all elements
     super::render(this);
 
@@ -235,11 +235,11 @@ void AppDetails::render(Element* parent)
 }
 
 int AppDetails::updateCurrentlyDisplayedPopup(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
-{    
+{
     if (dltotal == 0) dltotal = 1;
-    
+
     double amount = dlnow / dltotal;
-    
+
     AppDetails* popup = (AppDetails*)MainDisplay::subscreen;
 
 	// update the amount
@@ -263,7 +263,7 @@ int AppDetails::updateCurrentlyDisplayedPopup(void *clientp, double dltotal, dou
 		}
 
 	}
-    
+
     return 0;
 }
 
@@ -271,9 +271,9 @@ void AppDetailsContent::render(Element* parent)
 {
     if (this->parent == NULL)
         this->parent = parent;
-    
+
     this->renderer = parent->renderer;
-    
+
     super::render(this);
 }
 

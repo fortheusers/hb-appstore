@@ -52,7 +52,7 @@ bool AppList::process(InputEvents* event)
         event->touchIn(keyboard->x, keyboard->y,
                        keyboard->width, keyboard->height))
         return this->keyboard->process(event);
-    
+
     int origHighlight = this->highlighted;
 
     // process some joycon input events
@@ -68,6 +68,12 @@ bool AppList::process(InputEvents* event)
                 this->highlighted = 0;
                 this->y = 0;		// reset scroll TODO: maintain scroll when switching back from touch mode
                 return true;
+            }
+
+            if (event->held(A_BUTTON))
+            {
+              this->elements[this->highlighted]->action();
+              ret |= true;
             }
 
             // touchmode is false, but our highlight value is negative
@@ -122,7 +128,7 @@ bool AppList::process(InputEvents* event)
         this->highlighted = -1;
         this->touchMode = true;
     }
-    
+
     // highlight was modified, we need to redraw
     if (origHighlight != this->highlighted)
         ret |= true;
@@ -256,12 +262,12 @@ void AppList::update()
     // additional buttons (only if not on search)
     if (curCategoryValue != "_search")
     {
-        Button* settings = new Button("Credits", 'x', false, 15);
+        Button* settings = new Button("Credits", X_BUTTON, false, 15);
         settings->position(700 + 260*(R-3), 70);
         settings->action = std::bind(&AppList::launchSettings, this);
         this->elements.push_back(settings);
 
-        Button* sort = new Button("Adjust Sort", 'y', false, 15);
+        Button* sort = new Button("Adjust Sort", Y_BUTTON, false, 15);
         sort->position(settings->x - 20 - sort->width, settings->y);
         sort->action = std::bind(&AppList::cycleSort, this);
         this->elements.push_back(sort);
@@ -275,7 +281,7 @@ void AppList::update()
     }
     else
     {
-        Button* settings = new Button("Toggle Keyboard", 'y', false, 15);
+        Button* settings = new Button("Toggle Keyboard", Y_BUTTON, false, 15);
         settings->position(625 + 260*(R-3), 70);
         settings->action = std::bind(&AppList::toggleKeyboard, this);
         this->elements.push_back(settings);
