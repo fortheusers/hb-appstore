@@ -34,7 +34,7 @@ void Element::render(Element* parent)
 	}
     
     // if we're touchable, and we have some animation counter left, draw a rectangle+overlay
-    if (this->touchable && this->elasticCounter > HIGHLIGHT)
+    if (this->touchable && this->elasticCounter > THICK_HIGHLIGHT)
     {
         SDL_Rect d = { this->xOff + this->x - 5, this->yOff + this->y - 5, this->width + 10, this->height + 10};
         SDL_SetRenderDrawBlendMode(parent->renderer, SDL_BLENDMODE_BLEND);
@@ -46,6 +46,15 @@ void Element::render(Element* parent)
     {
         SDL_Rect d = { this->xOff + this->x - 5, this->yOff + this->y - 5, this->width + 10, this->height + 10};
         rectangleRGBA(parent->renderer, d.x, d.y, d.x + d.w, d.y + d.h, 0x66, 0x7c, 0x89, 0xFF);
+        
+        if (this->elasticCounter == THICK_HIGHLIGHT)
+        {
+            // make it a little thicker by drawing more rectangles TODO: better way to do this?
+            for (int x=0; x<5; x++)
+            {
+                rectangleRGBA(parent->renderer, d.x + x, d.y + x, d.x + d.w - x, d.y + d.h - x, 0x66 - x*10, 0x7c + x*20, 0x89 + x*10, 0xFF);
+            }
+        }
     }
 }
 

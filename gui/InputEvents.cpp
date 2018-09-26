@@ -1,9 +1,15 @@
 #include "InputEvents.hpp"
 
-int TOTAL_BUTTONS = 11;
-SDL_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE};
-SDL_GameControllerButton pad_buttons[] = { SDL_CONTROLLER_BUTTON_A, SDL_CONTROLLER_BUTTON_B, SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_CONTROLLER_BUTTON_DPAD_DOWN, SDL_CONTROLLER_BUTTON_DPAD_LEFT, SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDL_CONTROLLER_BUTTON_START, SDL_CONTROLLER_BUTTON_LEFTSHOULDER, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, SDL_CONTROLLER_BUTTON_GUIDE, SDL_CONTROLLER_BUTTON_BACK };
-unsigned int ie_buttons[] = { A_BUTTON, B_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, Z_BUTTON, SELECT_BUTTON };
+int TOTAL_BUTTONS = 13;
+
+// computer key mappings
+SDL_Keycode key_buttons[] = { SDLK_a, SDLK_b, SDLK_x, SDLK_y, SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_l, SDLK_r, SDLK_z, SDLK_BACKSPACE};
+
+//SDL_GameControllerButton pad_buttons[] = { 0, 1, 2, 3, 13, 15, 12, 14, 10, 6, 7, 8, 11 };
+SDL_GameControllerButton pad_buttons[] = { SDL_A, SDL_B, SDL_X, SDL_Y, SDL_UP, SDL_DOWN, SDL_LEFT, SDL_RIGHT, SDL_PLUS, SDL_L, SDL_R, SDL_ZL, SDL_MINUS };
+
+// our own "buttons" that correspond to the above SDL ones
+unsigned int ie_buttons[] = { A_BUTTON, B_BUTTON, X_BUTTON, Y_BUTTON, UP_BUTTON, DOWN_BUTTON, LEFT_BUTTON, RIGHT_BUTTON, START_BUTTON, L_BUTTON, R_BUTTON, Z_BUTTON, SELECT_BUTTON };
 
 bool InputEvents::update()
 {
@@ -31,10 +37,10 @@ bool InputEvents::update()
     else if (this->type == SDL_JOYAXISMOTION)
     {
         // x values for left and right sticks
-        if (event.jaxis.axis == 0 || event.jaxis.axis == 2) this->keyCode = (event.jaxis.value / 32767.0f < 0)? SDL_CONTROLLER_BUTTON_DPAD_LEFT : SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
+        if (event.jaxis.axis == 0 || event.jaxis.axis == 2) this->keyCode = (event.jaxis.value / 32767.0f < 0)? SDL_LEFT : SDL_RIGHT;
         
         // y values
-        if (event.jaxis.axis == 1 || event.jaxis.axis == 3) this->keyCode = (event.jaxis.value / 32767.0f < 0)? SDL_CONTROLLER_BUTTON_DPAD_UP : SDL_CONTROLLER_BUTTON_DPAD_DOWN;
+        if (event.jaxis.axis == 1 || event.jaxis.axis == 3) this->keyCode = (event.jaxis.value / 32767.0f < 0)? SDL_UP : SDL_DOWN;
         
         // just simulate Dpad direction from stick input
         this->type = SDL_KEYDOWN | SDL_KEYUP;

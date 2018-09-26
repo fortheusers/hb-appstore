@@ -5,6 +5,7 @@
 #include <functional>
 
 #define DEEP_HIGHLIGHT 200
+#define THICK_HIGHLIGHT 150
 #define HIGHLIGHT 100
 #define NO_HIGHLIGHT 0
 

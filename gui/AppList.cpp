@@ -52,6 +52,8 @@ bool AppList::process(InputEvents* event)
         event->touchIn(keyboard->x, keyboard->y,
                        keyboard->width, keyboard->height))
         return this->keyboard->process(event);
+    
+    int origHighlight = this->highlighted;
 
     // process some joycon input events
     if (event->isKeyDown())
@@ -110,7 +112,7 @@ bool AppList::process(InputEvents* event)
                     this->y = 0;		// at the top of the screen
 
                 if (this->elements[this->highlighted])
-                    this->elements[this->highlighted]->elasticCounter = HIGHLIGHT;
+                    this->elements[this->highlighted]->elasticCounter = THICK_HIGHLIGHT;
             }
         }
     }
@@ -120,6 +122,10 @@ bool AppList::process(InputEvents* event)
         this->highlighted = -1;
         this->touchMode = true;
     }
+    
+    // highlight was modified, we need to redraw
+    if (origHighlight != this->highlighted)
+        ret |= true;
 
 	ret |= ListElement::process(event);
 
