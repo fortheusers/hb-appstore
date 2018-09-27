@@ -12,7 +12,7 @@ Sidebar::Sidebar()
 	// there's no back color to the sidebar, as the background is already the right color
 
 	// create image in top left
-	ImageElement* logo = new ImageElement("res/icon.png");
+	ImageElement* logo = new ImageElement(ROMFS "res/icon.png");
 	logo->resize(40, 40);
 	logo->position(30, 50);
 	this->elements.push_back(logo);
@@ -29,7 +29,7 @@ Sidebar::Sidebar()
 	// for every entry in cat names, create a text element
 	for (int x=0; x<TOTAL_CATS; x++)
 	{
-        ImageElement* icon = new ImageElement((std::string("res/") + cat_value[x] + ".png").c_str());
+        ImageElement* icon = new ImageElement((std::string(ROMFS "res/") + cat_value[x] + ".png").c_str());
         icon->resize(40, 40);
         icon->position(30, 150+x*70 - 5);
         this->elements.push_back(icon);
@@ -40,7 +40,7 @@ Sidebar::Sidebar()
 	}
 
     // small indicator to switch to advanced view using L
-    ImageElement* hider = new ImageElement("res/button-l-outline.png");
+    ImageElement* hider = new ImageElement(ROMFS "res/button-l-outline.png");
     hider->resize(20, 20);
     hider->position(270, 685);
     this->elements.push_back(hider);

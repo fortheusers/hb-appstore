@@ -59,7 +59,7 @@ void AppCard::update()
 	this->elements.push_back(author);
 
 	// download status icon
-	ImageElement* statusicon = new ImageElement(("res/" + std::string(package->statusString()) + ".png").c_str());
+	ImageElement* statusicon = new ImageElement((ROMFS "res/" + std::string(package->statusString()) + ".png").c_str());
 	statusicon->position(this->x + 4, this->y + icon->height + 10);
 	statusicon->resize(30, 30);
 	this->elements.push_back(statusicon);

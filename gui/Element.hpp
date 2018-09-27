@@ -9,6 +9,12 @@
 #define HIGHLIGHT 100
 #define NO_HIGHLIGHT 0
 
+#if defined(SWITCH)
+#define ROMFS "romfs:/"
+#else
+#define ROMFS ""
+#endif
+
 #pragma once
 
 class Element

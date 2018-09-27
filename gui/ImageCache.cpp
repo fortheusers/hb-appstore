@@ -4,8 +4,6 @@
 #include "../libs/get/src/libs/rapidjson/include/rapidjson/writer.h"
 #include "../libs/get/src/libs/rapidjson/include/rapidjson/stringbuffer.h"
 
-
-
 #include <fstream>
 
 std::unordered_map<std::string, SDL_Texture*> ImageCache::cache;

@@ -12,10 +12,6 @@ Button::Button(const char* message, int button, bool dark, int size, int width)
 
     this->dark = dark;
 
-//    ImageElement* icon = new ImageElement((std::string("res/")+inverse+"button-"+button+outline+".png").c_str());
-//    icon->position(PADDING, PADDING);
-//    this->elements.push_back(icon);
-
     const char* unicode;
 
     switch (button)

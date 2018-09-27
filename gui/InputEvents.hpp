@@ -56,7 +56,7 @@ public:
   bool isKeyDown();
   bool isKeyUp();
 
-  SDL_Keycode keyCode;
+  SDL_Keycode keyCode = -1;
 
   int yPos = 0, xPos = 0;
     bool noop = false;

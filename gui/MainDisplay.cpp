@@ -83,7 +83,7 @@ MainDisplay::MainDisplay(Get* get)
 //	this->elements.push_back(pbar_text);
 
 	// create the first two elements (icon and app title)
-	ImageElement* icon = new ImageElement("res/icon.png");
+	ImageElement* icon = new ImageElement(ROMFS "res/icon.png");
 	icon->position(330 + this->error*140, 255 - this->error*230);
 	icon->resize(70 - this->error*35, 70 - this->error*35);
 	this->elements.push_back(icon);
@@ -147,12 +147,12 @@ bool MainDisplay::process(InputEvents* event)
 
 			bool success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/icon.png", key_path + "/icon.png");
 			if (!success) // manually add defualt icon to cache if downloading failed
-				cp("res/default.png", (key_path + "/icon.png").c_str());
+				cp(ROMFS "res/default.png", (key_path + "/icon.png").c_str());
             // TODO: generate a custom icon for this version with a color and name
             
             success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/screen.png", key_path + "/screen.png");
             if (!success)
-                cp("res/noscreen.png", (key_path + "/screen.png").c_str());
+                cp(ROMFS "res/noscreen.png", (key_path + "/screen.png").c_str());
 
 			// add these versions to the version map
 			this->imageCache->version_cache[current->pkg_name] = current->version;

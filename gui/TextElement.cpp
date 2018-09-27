@@ -50,11 +50,11 @@ SDL_Texture* TextElement::renderText(std::string& message, int size, int font_ty
 	TTF_Font* font;
 
 	if (font_type == MONOSPACED)
-		font = TTF_OpenFont("./res/mono.ttf", size);
+		font = TTF_OpenFont(ROMFS "./res/mono.ttf", size);
     else if (font_type == ICON)
-        font = TTF_OpenFont("./res/nxicons.ttf", size);
+        font = TTF_OpenFont(ROMFS "./res/nxicons.ttf", size);
 	else
-		font = TTF_OpenFont("./res/opensans.ttf", size);
+		font = TTF_OpenFont(ROMFS "./res/opensans.ttf", size);
 
 	// font couldn't load, don't render anything
 	if (!font)

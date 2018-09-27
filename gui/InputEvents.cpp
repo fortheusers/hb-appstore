@@ -19,7 +19,7 @@ bool InputEvents::update()
     
   // update our variables
   this->type = event.type;
-  this->keyCode = 0;
+  this->keyCode = -1;
   this->noop = false;
     
 #ifdef PC
@@ -32,7 +32,7 @@ bool InputEvents::update()
   }
   else if (this->type == SDL_JOYBUTTONDOWN || this->type == SDL_JOYBUTTONUP)
   {
-    this->keyCode = event.jbutton.which;
+    this->keyCode = event.jbutton.button;
   }
     else if (this->type == SDL_JOYAXISMOTION)
     {
