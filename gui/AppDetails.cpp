@@ -90,6 +90,10 @@ AppDetails::AppDetails(Package* package, AppList* appList)
      TextElement* details = new TextElement(package->long_desc.c_str(), 20, &black, false, 740);
      details->position(MARGIN + 30, 355);
      content->elements.push_back(details);
+    
+    TextElement* changelog = new TextElement((std::string("Changelog:\n") + package->changelog).c_str(), 20, &black, false, 740);
+    changelog->position(MARGIN + 30, details->y + details->height + 30);
+    content->elements.push_back(changelog);
 
 
     // lots of details that we know about the package
@@ -220,18 +224,6 @@ void AppDetails::render(Element* parent)
 
     // draw all elements
     super::render(this);
-
-	// draw the currently selected symbol, if appropriate
-	if (this->highlighted >= 0)
-	{
-		int x = 570 + (this->highlighted)*380, y = 465;		// TODO: extract into formula (logic matches same check below in process)
-		int w = 160, h = 55;
-
-		if (this->package->status == GET && this->highlighted == 0)
-			w += 25;
-
-		rectangleRGBA(parent->renderer, x, y, x + w, y + h, 0xff, 0x00, 0xff, 0xff);
-	}
 }
 
 int AppDetails::updateCurrentlyDisplayedPopup(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)

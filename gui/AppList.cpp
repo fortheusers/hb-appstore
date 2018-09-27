@@ -39,6 +39,7 @@ bool AppList::process(InputEvents* event)
     {
         R = (R==3)? 4 : 3;
         this->x = 400 - 260*(R-3);
+        
         update();
         return true;
     }
@@ -67,10 +68,11 @@ bool AppList::process(InputEvents* event)
                 this->touchMode = false;
                 this->highlighted = 0;
                 this->y = 0;		// reset scroll TODO: maintain scroll when switching back from touch mode
-                return true;
+                event->keyCode = -1;  // we already have the cursor where we want it, no further updates
+                ret |= true;
             }
 
-            if (event->held(A_BUTTON))
+            if (event->held(A_BUTTON) && this->highlighted >= 0)
             {
               this->elements[this->highlighted]->action();
               ret |= true;
@@ -107,23 +109,29 @@ bool AppList::process(InputEvents* event)
 
             if (this->highlighted < 0) this->highlighted = 0;
             if (this->highlighted >= this->totalCount) this->highlighted = this->totalCount-1;
-
-            if (this->elements.size() > this->highlighted)
-            {
-                // if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
-                // TODO: make it so that the cursor can go to the top of the screen
-                if (this->highlighted >= R*2 && this->elements[this->highlighted])
-                    this->y = -1*((this->highlighted-R*2)/R)*(elements[this->highlighted]->height+15) - 60;
-                else
-                    this->y = 0;		// at the top of the screen
-
-                if (this->elements[this->highlighted])
-                    this->elements[this->highlighted]->elasticCounter = THICK_HIGHLIGHT;
-            }
         }
     }
+    
+    // always check the currently highlighted piece and try to give it a thick border or adjust the screen
+    if (!touchMode && this->elements.size() > this->highlighted)
+    {
+        // if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
+        // TODO: make it so that the cursor can go to the top of the screen
+        if (this->highlighted >= R*2 && this->elements[this->highlighted])
+            this->y = -1*((this->highlighted-R*2)/R)*(elements[this->highlighted]->height+15) - 60;
+        else
+            this->y = 0;        // at the top of the screen
+        
+        if (this->elements[this->highlighted])
+            this->elements[this->highlighted]->elasticCounter = THICK_HIGHLIGHT;
+    }
+    
     if (event->isTouchDown())
     {
+        // remove a highilight if it exists (TODO: same as an above if statement)
+        if (this->highlighted >= 0 && this->highlighted < this->elements.size() && this->elements[this->highlighted])
+            this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
+        
         // got a touch, so let's enter touchmode
         this->highlighted = -1;
         this->touchMode = true;

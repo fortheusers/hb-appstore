@@ -34,7 +34,6 @@ void TextElement::render(Element* parent)
 	// textLocation.w << " " << textLocation.h << std::endl;
 
 	SDL_RenderCopy(MainDisplay::mainRenderer, this->textSurface, NULL, &textLocation);
-
 }
 
 SDL_Texture* TextElement::renderText(std::string& message, int size, int font_type, int wrapped_width)
