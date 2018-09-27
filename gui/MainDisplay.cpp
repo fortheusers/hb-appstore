@@ -8,6 +8,7 @@
 
 SDL_Renderer* MainDisplay::mainRenderer = NULL;
 Element* MainDisplay::subscreen = NULL;
+MainDisplay* MainDisplay::mainDisplay = NULL;
 
 MainDisplay::MainDisplay(Get* get)
 {
@@ -50,6 +51,7 @@ MainDisplay::MainDisplay(Get* get)
 	SDL_SetRenderTarget(this->renderer, NULL);
 
 	MainDisplay::mainRenderer = this->renderer;
+    MainDisplay::mainDisplay = this;
 
 	for (int i = 0; i < SDL_NumJoysticks(); i++) {
 		if (SDL_JoystickOpen(i) == NULL) {
@@ -240,4 +242,21 @@ void MainDisplay::update()
 
     SDL_RenderPresent(this->renderer);
 //    this->lastFrameTime = now;
+}
+
+void quit()
+{
+    IMG_Quit();
+    TTF_Quit();
+    
+    SDL_Delay(10);
+    SDL_DestroyWindow(MainDisplay::mainDisplay->window);
+    
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    SDL_Quit();
+    
+#if defined(SWITCH)
+    socketExit();
+#endif
+    exit(0);
 }

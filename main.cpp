@@ -112,18 +112,7 @@ devoptab_list[STD_ERR] = &dotab_stdout;
 			running = false;
 	}
 
-	IMG_Quit();
-	TTF_Quit();
-
-	SDL_Delay(10);
-	SDL_DestroyWindow(display->window);
-
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
-	SDL_Quit();
-
-	#if defined(SWITCH)
-		socketExit();
-	#endif
+    quit();
 
 	return 0;
 #endif

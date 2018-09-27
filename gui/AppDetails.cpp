@@ -7,6 +7,10 @@
 #include "MainDisplay.hpp"
 #include "Feedback.hpp"
 
+#if defined(SWITCH)
+#include <switch.h>
+#endif
+
 AppDetails::AppDetails(Package* package, AppList* appList)
 {
 	this->package = package;
@@ -162,51 +166,66 @@ bool AppDetails::process(InputEvents* event)
         MainDisplay::subscreen = NULL;
         return true;
     }
+    
+    if (event->pressed(A_BUTTON))
+    {
+        this->operating = true;
+        // event->key.keysym.sym = SDLK_z;
+        event->update();
 
-	if (this->highlighted >=0 && event->isKeyDown())
-	{
-		// update the highlight feature depending on left/right input
-		if (event->held(LEFT_BUTTON))  this->highlighted = 0;
-		if (event->held(RIGHT_BUTTON)) this->highlighted = 1;
-	}
+        // add a progress bar to the screen to be drawn
+        this->pbar = new ProgressBar();
+        pbar->width = 740;
+        pbar->position(1280/2 - this->pbar->width/2, 720/2 - 5);
+        pbar->color = 0xff0000ff;
+        pbar->dimBg = true;
+        this->elements.push_back(pbar);
 
-        if (event->pressed(A_BUTTON))
-		{
-			this->operating = true;
-			// event->key.keysym.sym = SDLK_z;
-			event->update();
-			this->highlighted = -1;
+        // setup progress bar callback
+        networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
+        
+        // if we're installing ourselves, we need to quit after on switch
+        preInstallHook();
 
-			// add a progress bar to the screen to be drawn
-			this->pbar = new ProgressBar();
-            pbar->width = 740;
-			pbar->position(1280/2 - this->pbar->width/2, 720/2 - 5);
-			pbar->color = 0xff0000ff;
-            pbar->dimBg = true;
-			this->elements.push_back(pbar);
+        // install or remove this package based on the package status
+        if (this->package->status == INSTALLED)
+            get->remove(this->package);
+        else
+            get->install(this->package);
+        
+        postInstallHook();
 
-			// setup progress bar callback
-			networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
+        // refresh the screen
+        this->wipeElements();
+        MainDisplay::subscreen = NULL;
 
-			// install or remove this package based on the package status
-            if (this->package->status == INSTALLED)
-                get->remove(this->package);
-            else
-                get->install(this->package);
-
-			// refresh the screen
-			this->wipeElements();
-			MainDisplay::subscreen = NULL;
-
-			this->operating = false;
-            this->appList->update();
-            return true;
-		}
+        this->operating = false;
+        this->appList->update();
+        return true;
+    }
 
 	if (event->isTouchDown())
 		this->dragging = true;
 
+    // if A or B were hit, we don't get down here (which is good, because the children buttons are just pushing A and B events)
     return super::process(event);
+}
+
+void AppDetails::preInstallHook()
+{
+#if defined(SWITCH)
+    if (this->package->pkg_name == "appstore")
+        romfsExit();
+#endif
+}
+
+void AppDetails::postInstallHook()
+{
+#if defined(SWITCH)
+    fsdevCommitDevice("sdmc");
+    if (this->package->pkg_name == "appstore")
+        quit();
+#endif
 }
 
 void AppDetails::render(Element* parent)
@@ -271,5 +290,15 @@ void AppDetailsContent::render(Element* parent)
 
 bool AppDetailsContent::process(InputEvents* event)
 {
+    // handle up and down for the scroll view
+    if (event->isKeyDown())
+    {
+        // scroll the view
+        this->y += (20*event->held(UP_BUTTON) - 20*event->held(DOWN_BUTTON));
+        if (this->y > 0)
+            this->y = 0;
+        return event->held(UP_BUTTON) || event->held(DOWN_BUTTON);
+    }
+    
     return ListElement::process(event);
 }

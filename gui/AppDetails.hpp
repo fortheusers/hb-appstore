@@ -31,6 +31,9 @@ public:
     void back();
     void moreByAuthor();
     void leaveFeedback();
+    
+    void preInstallHook();
+    void postInstallHook();
 
 };
 

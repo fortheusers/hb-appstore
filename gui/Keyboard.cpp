@@ -74,6 +74,15 @@ bool Keyboard::process(InputEvents* event)
     
     // default to non touchmode, unless one of our inputables has something to say about it
     bool touchMode = ((appList == NULL)? false : appList->touchMode) || (feedback == NULL)? false : feedback->touchMode;
+    
+    if (touchMode)
+        curRow = index = -1;
+    
+    if (touchMode)
+    {
+        if (curRow < 0) curRow = 0;
+        if (index < 0) index = 0;
+    }
 
   if (event->isTouchDown() && event->touchIn(this->x, this->y, width, height))
   {
@@ -90,6 +99,7 @@ bool Keyboard::process(InputEvents* event)
 
 if (event->isTouchUp())
 {
+    // only proceed if we've been touchdown'd
     // reset current row and info
     curRow = -1;
     index = -1;

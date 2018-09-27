@@ -16,6 +16,7 @@ public:
 
 	static SDL_Renderer* mainRenderer;
     static Element* subscreen;
+    static MainDisplay* mainDisplay;
 
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;
@@ -27,3 +28,5 @@ public:
 	bool showingSplash = true;
 	int count = 0;
 };
+
+void quit();

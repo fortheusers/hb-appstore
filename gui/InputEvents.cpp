@@ -43,7 +43,7 @@ bool InputEvents::update()
         if (event.jaxis.axis == 1 || event.jaxis.axis == 3) this->keyCode = (event.jaxis.value / 32767.0f < 0)? SDL_UP : SDL_DOWN;
         
         // just simulate Dpad direction from stick input
-        this->type = SDL_KEYDOWN | SDL_KEYUP;
+        this->type = SDL_KEYDOWN;
     }
   else if (this->type == SDL_MOUSEMOTION || this->type == SDL_MOUSEBUTTONUP || this->type == SDL_MOUSEBUTTONDOWN)
   {
