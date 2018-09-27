@@ -1,5 +1,6 @@
 #include "Keyboard.hpp"
 #include "AppList.hpp"
+#include "Feedback.hpp"
 
 #define K_x x
 #define K_y y
@@ -7,7 +8,7 @@
 #define K_h y
 
 
-Keyboard::Keyboard(AppList* appList, std::string* myText)
+Keyboard::Keyboard(AppList* appList, std::string* myText, Feedback* feedback)
 {
     this->x = 372;
     this->y = 417;
@@ -16,6 +17,7 @@ Keyboard::Keyboard(AppList* appList, std::string* myText)
         this->x = 240;
 
     this->appList = appList;
+    this->feedback = feedback;
     this->myText = myText;
 
     // position the keyboard based on this x and y
@@ -118,6 +120,11 @@ if (event->isTouchUp())
         // update search results
         this->appList->y = 0;
         this->appList->update();
+          }
+          else if (ret && feedback)
+          {
+              // TODO: do this a more generic way (TypeableElement?) instead of passing in as more params
+              this->feedback->refresh();
           }
 
           return ret;

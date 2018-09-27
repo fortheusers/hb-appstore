@@ -3,12 +3,14 @@
 #include <SDL2/SDL_image.h>
 #pragma once
 
+// bad idea, TODO: Input-able interface for elements that can be typed-in
+class Feedback;
 class AppList;
 
 class Keyboard : public Element
 {
 public:
-    Keyboard(AppList* appList, std::string* myText);
+    Keyboard(AppList* appList, std::string* myText, Feedback* feedback = NULL);
     ~Keyboard();
 	void render(Element* parent);
     bool process(InputEvents* event);
@@ -53,4 +55,5 @@ public:
     int ySpacing = 0;
 
 	AppList* appList = NULL;
+    Feedback* feedback = NULL;
 };

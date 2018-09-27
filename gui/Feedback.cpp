@@ -3,6 +3,7 @@
 #include "ImageElement.hpp"
 #include "Button.hpp"
 #include "MainDisplay.hpp"
+#include "AppCard.hpp"
 
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -10,31 +11,48 @@
 Feedback::Feedback(Package* package)
 {
     this->package = package;
+    
+    this->message = std::string("");
 
+    this->refresh();
+}
+
+void Feedback::refresh()
+{
+    this->wipeElements();
+    
     TextElement* elem = new TextElement((std::string("Leaving feedback for: \"") + package->title + "\"").c_str(), 25);
-    elem->position(20, 20);
+    elem->position(50, 30);
     elements.push_back(elem);
-
+    
+    AppCard card(package);
+    
     ImageElement* icon = new ImageElement((ImageCache::cache_path + package->pkg_name + "/icon.png").c_str());
-    icon->position(20, 120);
+    icon->position(50, 160);
+    icon->resize(256, card.height - 45); // TODO: extract method for icon height, in common with wiiu/switch
     elements.push_back(icon);
-
-    TextElement* feedback = new TextElement(this->message.c_str(), 17, NULL, false, 500);
-    feedback->position(140, 140);
+    
+    TextElement* feedback = new TextElement(this->message.c_str(), 23, NULL, false, 730);
+    feedback->position(390, 140);
     elements.push_back(feedback);
-
-    this->keyboard = new Keyboard(NULL, &this->message);
+    
+    this->keyboard = new Keyboard(NULL, &this->message, this);
+    this->keyboard->x = 200;
     elements.push_back(keyboard);
-
-    Button* send = new Button("Submit", X_BUTTON, 24);
-    Button* quit = new Button("Discard", Y_BUTTON, 24);
-    send->position(20, 330);
-    quit->position(20, 400);
+    
+    Button* send = new Button("Submit", X_BUTTON, true, 24);
+    Button* quit = new Button("Discard", Y_BUTTON, true, 24);
+    quit->position(470, 340);
+    send->position(quit->x + quit->width + 25, quit->y);
     elements.push_back(send);
     elements.push_back(quit);
-
+    
     send->action = std::bind(&Feedback::submit, this);
     quit->action = std::bind(&Feedback::back, this);
+    
+    TextElement* response = new TextElement("If you need to send more detailed feedback, please email us at fight@fortheusers.org", 20, NULL, false, 360);
+    response->position(860, 20);
+    elements.push_back(response);
 }
 
 void Feedback::submit()

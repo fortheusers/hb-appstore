@@ -10,6 +10,7 @@ class Feedback : public Element
 {
 public:
     Feedback(Package* package);
+    void refresh();
     Keyboard* keyboard = NULL;
     Package* package = NULL;
     
