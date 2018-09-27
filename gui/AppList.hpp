@@ -28,6 +28,8 @@ public:
 
     void toggleKeyboard();
     void cycleSort();
+    void reorient();
+    
     const char* applySortOrder(std::vector<Package*>* packages);
 
 	bool touchMode = true;

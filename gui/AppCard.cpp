@@ -69,7 +69,11 @@ void AppCard::render(Element* parent)
 {
 	// grab and store the parent while we have it, and if we need it
 	if (this->parent == NULL)
+    {
 		this->parent = parent;
+        this->xOff = this->parent->x;
+        this->yOff = this->parent->y;
+    }
 
 	// TODO: don't render this card if it's going to be offscreen anyway according to the parent (AppList)
 //	if (((AppList*)parent)->scrollOffset)

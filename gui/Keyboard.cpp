@@ -71,6 +71,9 @@ bool Keyboard::process(InputEvents* event)
         return false;
 
     bool ret = false;
+    
+    // default to non touchmode, unless one of our inputables has something to say about it
+    bool touchMode = ((appList == NULL)? false : appList->touchMode) || (feedback == NULL)? false : feedback->touchMode;
 
   if (event->isTouchDown() && event->touchIn(this->x, this->y, width, height))
   {

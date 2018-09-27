@@ -120,7 +120,7 @@ bool Sidebar::process(InputEvents* event)
 		for (int x=0; x<TOTAL_CATS; x++)
 		{
 			int xc = 0, yc = 150+x*70 - 15, width = 400 - 260*(appList->R-3) - 35, height = 60;		// TODO: extract formula into method (same as AppList x value)
-			if (event->touchIn(xc, yc, width, height) ||
+			if ((event->isTouchUp() && event->touchIn(xc, yc, width, height)) ||
 				(event->held(A_BUTTON) && this->highlighted == x))
 			{
                 // if it's a touch up, let's make sure this is the same one we touched down on

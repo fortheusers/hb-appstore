@@ -15,6 +15,7 @@ public:
     Package* package = NULL;
     
     std::string message = "";
+    bool touchMode = false;
     
     void submit();
     void back();

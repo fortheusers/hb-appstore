@@ -39,26 +39,53 @@ bool AppList::process(InputEvents* event)
     {
         R = (R==3)? 4 : 3;
         this->x = 400 - 260*(R-3);
-        
         update();
         return true;
+    }
+    
+    // must be done before keyboard stuff to properly switch modes
+    if (event->isTouchDown())
+    {
+        // remove a highilight if it exists (TODO: same as an above if statement)
+        if (this->highlighted >= 0 && this->highlighted < this->elements.size() && this->elements[this->highlighted])
+            this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
+        
+        // got a touch, so let's enter touchmode
+        this->highlighted = -1;
+        this->touchMode = true;
     }
 
     // if we're showing a keyboard, make sure we're not in its bounds
     // also make sure the children elements exist before trying the keyboard
     // AND we're actually on the search category
-    if (event->isTouchDown() && this->elements.size() > 0 &&
+    // also if we're not in touchmode, always go in here regardless of any button presses (user can only interact with keyboard)
+    bool keyboardIsShowing = this->elements.size() > 0 &&
         this->sidebar != NULL && this->sidebar->curCategory == 0 &&
-        this->keyboard != NULL && !this->keyboard->hidden &&
-        event->touchIn(keyboard->x, keyboard->y,
-                       keyboard->width, keyboard->height))
-        return this->keyboard->process(event);
+        this->keyboard != NULL && !this->keyboard->hidden;
+    if (keyboardIsShowing &&
+        ((event->isTouchDown() && event->touchIn(keyboard->x, keyboard->y,
+                       keyboard->width, keyboard->height)) || !touchMode))
+    {
+        ret |= this->keyboard->process(event);
+        if (event->isKeyDown() && event->held(Y_BUTTON))
+            ret |= ListElement::process(event); // continue processing ONLY if they're pressing Y
+        return ret;
+    }
 
     int origHighlight = this->highlighted;
 
     // process some joycon input events
     if (event->isKeyDown())
     {
+        if (keyboardIsShowing)
+        {
+            // keyboard is showing, but we'r epressing buttons, and we're down here, so set touch mode and get out
+            touchMode = false;
+            if (event->held(Y_BUTTON))  // again, only let a Y through to toggle keyboard (TODO: redo this!)
+                ret |= ListElement::process(event);
+            return true;    // short circuit, should be handled by someone else
+        }
+        
         if (event->held(A_BUTTON | B_BUTTON | UP_BUTTON | DOWN_BUTTON | LEFT_BUTTON | RIGHT_BUTTON))
         {
             // if we were in touch mode, draw the cursor in the applist
@@ -105,10 +132,10 @@ bool AppList::process(InputEvents* event)
             this->highlighted += -1*R*(event->held(UP_BUTTON)) + R*(event->held(DOWN_BUTTON));
 
             // don't let the cursor go out of bounds
-            if (this->highlighted >= this->elements.size()) this->highlighted = this->elements.size() - 1;
+            if (this->highlighted >= (int)this->elements.size()) this->highlighted = this->elements.size() - 1;
 
             if (this->highlighted < 0) this->highlighted = 0;
-            if (this->highlighted >= this->totalCount) this->highlighted = this->totalCount-1;
+            if (this->highlighted >= (int)this->totalCount) this->highlighted = this->totalCount-1;
         }
     }
     
@@ -124,17 +151,6 @@ bool AppList::process(InputEvents* event)
         
         if (this->elements[this->highlighted])
             this->elements[this->highlighted]->elasticCounter = THICK_HIGHLIGHT;
-    }
-    
-    if (event->isTouchDown())
-    {
-        // remove a highilight if it exists (TODO: same as an above if statement)
-        if (this->highlighted >= 0 && this->highlighted < this->elements.size() && this->elements[this->highlighted])
-            this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
-        
-        // got a touch, so let's enter touchmode
-        this->highlighted = -1;
-        this->touchMode = true;
     }
 
     // highlight was modified, we need to redraw
@@ -327,8 +343,22 @@ const char* AppList::applySortOrder(std::vector<Package*>* p)
     return humanStrings[sortMode];
 }
 
+void AppList::reorient()
+{
+    // remove a highilight if it exists (TODO: extract method, we use this everywehre)
+    if (this->highlighted >= 0 && this->highlighted < this->elements.size() && this->elements[this->highlighted])
+        this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
+//
+//    // take us to the top of the list, reset touch and highlight variables
+//    if (this->highlighted > 0)
+//        this->highlighted = 0;  // reset us only in app list
+//    this->needsRedraw = true;
+//    this->touchMode = true;
+}
+
 void AppList::cycleSort()
 {
+    reorient();
     this->sortMode = (this->sortMode + 1) % TOTAL_SORTS;
     this->update();
 }
@@ -336,7 +366,18 @@ void AppList::cycleSort()
 void AppList::toggleKeyboard()
 {
     if (this->keyboard)
+    {
+        reorient();
         this->keyboard->hidden = !this->keyboard->hidden;
+        
+        // if it's hidden now, make sure we release our highlight
+        if (this->keyboard->hidden)
+        {
+            this->sidebar->highlighted = -1;
+            this->highlighted = 0;
+        }
+    }
+    
 }
 
 void AppList::launchSettings()
