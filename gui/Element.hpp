@@ -9,7 +9,7 @@
 #define HIGHLIGHT 100
 #define NO_HIGHLIGHT 0
 
-#if defined(SWITCH)
+#if defined(SWITCH) || defined(__WIIU__)
 #define ROMFS "romfs:/"
 #else
 #define ROMFS ""

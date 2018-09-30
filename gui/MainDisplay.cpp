@@ -6,6 +6,10 @@
 #include <switch.h>
 #endif
 
+#if defined(__WIIU__)
+#include <romfs-wiiu.h>
+#endif
+
 SDL_Renderer* MainDisplay::mainRenderer = NULL;
 Element* MainDisplay::subscreen = NULL;
 MainDisplay* MainDisplay::mainDisplay = NULL;
@@ -34,8 +38,8 @@ MainDisplay::MainDisplay(Get* get)
 		return;
 	}
     
-    // initialize teh romfs for switch
-#if defined(SWITCH)
+    // initialize teh romfs for switch/wiiu
+#if defined(SWITCH) || defined(__WIIU__)
     romfsInit();
 #endif
 
@@ -255,6 +259,10 @@ void quit()
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
     SDL_Quit();
     
+#if defined(__WIIU__)
+    romfsExit();
+#endif
+
 #if defined(SWITCH)
     socketExit();
 #endif
