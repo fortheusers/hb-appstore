@@ -20,16 +20,23 @@
 #define SDL_B       SDL_CONTROLLER_BUTTON_B
 #define SDL_X       SDL_CONTROLLER_BUTTON_X
 #define SDL_Y       SDL_CONTROLLER_BUTTON_Y
-#define SDL_UP      SDL_CONTROLLER_BUTTON_DPAD_LEFT
-#define SDL_DOWN    SDL_CONTROLLER_BUTTON_MAX
-#define SDL_LEFT    SDL_CONTROLLER_BUTTON_DPAD_DOWN
-#define SDL_RIGHT   SDL_CONTROLLER_BUTTON_DPAD_RIGHT
+
 #define SDL_PLUS    SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
 #define SDL_L       SDL_CONTROLLER_BUTTON_START
 #define SDL_R       SDL_CONTROLLER_BUTTON_LEFTSTICK
 #define SDL_ZL      SDL_CONTROLLER_BUTTON_RIGHTSTICK
 #define SDL_ZR      SDL_CONTROLLER_BUTTON_LEFTSHOULDER
 #define SDL_MINUS   SDL_CONTROLLER_BUTTON_DPAD_UP
+
+#define SDL_UP      SDL_CONTROLLER_BUTTON_DPAD_LEFT
+#define SDL_DOWN    SDL_CONTROLLER_BUTTON_MAX
+#define SDL_LEFT    SDL_CONTROLLER_BUTTON_DPAD_DOWN
+#define SDL_RIGHT   SDL_CONTROLLER_BUTTON_DPAD_RIGHT
+
+#define SDL_LEFT_STICK      (SDL_GameControllerButton)16
+#define SDL_UP_STICK        (SDL_GameControllerButton)17
+#define SDL_RIGHT_STICK     (SDL_GameControllerButton)18
+#define SDL_DOWN_STICK      (SDL_GameControllerButton)19
 
 
 class InputEvents
@@ -52,11 +59,21 @@ public:
   bool isTouchDown();
   bool isTouchUp();
   bool isTouchDrag();
-    bool isTouch();
+  bool isTouch();
   bool isKeyDown();
   bool isKeyUp();
+    
+    // additional key processing info
+    bool processDirectionalButtons();
+    int directionForKeycode();
+    void toggleHeldButtons();
+    
 
   SDL_Keycode keyCode = -1;
+    
+    bool held_directions[4] = {false, false, false, false};
+    int rapidFireRate = 12; // fire duplicate events if curframe mod rapidFireRate is 0 (higher = slower)
+    int curFrame = 0;
 
   int yPos = 0, xPos = 0;
     bool noop = false;

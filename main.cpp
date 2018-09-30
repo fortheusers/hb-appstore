@@ -108,8 +108,8 @@ devoptab_list[STD_ERR] = &dotab_stdout;
         }
 
 		// quit on enter/start
-		if (events->held(START_BUTTON))
-			running = false;
+        if (events->held(START_BUTTON))
+            running = false;
 	}
 
     quit();

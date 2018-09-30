@@ -2,12 +2,6 @@
 #include "AppList.hpp"
 #include "Feedback.hpp"
 
-#define K_x x
-#define K_y y
-#define K_w x
-#define K_h y
-
-
 Keyboard::Keyboard(AppList* appList, std::string* myText, Feedback* feedback)
 {
     this->x = 372;

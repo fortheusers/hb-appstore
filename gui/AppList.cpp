@@ -376,6 +376,8 @@ void AppList::toggleKeyboard()
             this->sidebar->highlighted = -1;
             this->highlighted = 0;
         }
+        
+//        this->needsDisplay = true;
     }
     
 }
