@@ -118,7 +118,7 @@ bool AppList::process(InputEvents* event)
             if (this->highlighted%R==0 && event->held(LEFT_BUTTON))
             {
                 this->highlighted = -1;
-                this->sidebar->highlighted = 0;
+                this->sidebar->highlighted = this->sidebar->curCategory;
                 return true;
             }
 
@@ -193,6 +193,13 @@ void AppList::render(Element* parent)
 
 void AppList::update()
 {
+    // if there's a keyboard, get its current highlighted positions
+    int kRow = -1, kIndex = -1;
+    if (this->keyboard) {
+        kRow = keyboard->curRow;
+        kIndex = keyboard->index;
+    }
+    
 	// remove any old elements
 	this->wipeElements();
 
@@ -284,6 +291,11 @@ void AppList::update()
 	if (curCategoryValue == "_search")
 	{
 		this->keyboard = new Keyboard(this, &this->sidebar->searchQuery);
+        if (kRow >= 0 || kIndex >=0)
+        {
+            this->keyboard->curRow = kRow;
+            this->keyboard->index = kIndex;
+        }
 		this->elements.push_back(keyboard);
 
 		category = new TextElement((std::string("Search: \"") + this->sidebar->searchQuery + "\"").c_str(), 28, &black);

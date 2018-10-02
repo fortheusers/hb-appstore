@@ -40,7 +40,6 @@ public:
     // default number of items per row TODO: save this value as config
     int R = 3;
 
-    // the current row we are scrolled down to
     int sortMode = RECENT;
 
     void launchSettings();

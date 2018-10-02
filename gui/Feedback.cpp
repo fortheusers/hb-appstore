@@ -19,6 +19,13 @@ Feedback::Feedback(Package* package)
 
 void Feedback::refresh()
 {
+    // if there's a keyboard, get its current highlighted positions
+    int kRow = -1, kIndex = -1;
+    if (this->keyboard) {
+        kRow = keyboard->curRow;
+        kIndex = keyboard->index;
+    }
+    
     this->wipeElements();
     
     TextElement* elem = new TextElement((std::string("Leaving feedback for: \"") + package->title + "\"").c_str(), 25);
@@ -37,6 +44,12 @@ void Feedback::refresh()
     elements.push_back(feedback);
     
     this->keyboard = new Keyboard(NULL, &this->message, this);
+    if (kRow >= 0 || kIndex >=0)
+    {
+        this->keyboard->curRow = kRow;
+        this->keyboard->index = kIndex;
+        this->keyboard->touchMode = false;
+    }
     this->keyboard->x = 200;
     elements.push_back(keyboard);
     

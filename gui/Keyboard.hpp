@@ -53,7 +53,14 @@ public:
     int yYOff = 0;
     int kYPad = 0;
     int ySpacing = 0;
+    
+    bool touchMode = true;
 
 	AppList* appList = NULL;
     Feedback* feedback = NULL;
+    
+    void space();
+    void backspace();
+    void type(int y, int x);
+    void updateView();
 };

@@ -13,6 +13,12 @@ Keyboard::Keyboard(AppList* appList, std::string* myText, Feedback* feedback)
     this->appList = appList;
     this->feedback = feedback;
     this->myText = myText;
+    
+    // set touchmode based on applist if it's present
+    if (appList)
+        touchMode = appList->touchMode;
+    
+    curRow = index = -1;
 
     // position the keyboard based on this x and y
     updateSize();
@@ -37,13 +43,43 @@ void Keyboard::render(Element* parent)
       SDL_Rect dimens2 = {this->x + kXPad + x*kXOff + y*yYOff, this->y + kYPad + y*ySpacing, keyWidth, keyWidth};
       SDL_SetRenderDrawColor(parent->renderer, 0xf4, 0xf4, 0xf4, 0xff);
       SDL_RenderFillRect(parent->renderer, &dimens2);
-
-        if (curRow ==y && index == x)
+    }
+    
+    // if there's a highlighted piece set, color it in
+    if (curRow >= 0 || index >= 0)
+    {
+        SDL_Rect dimens2 = {this->x + kXPad + index*kXOff + curRow*yYOff, this->y + kYPad + curRow*ySpacing, keyWidth, keyWidth};
+        
+        // if we're on DEL or SPACE, expand the dimens width of the highllighted button
+        if (curRow == 2 && index < 0)
         {
-            // draw the currently selected tile if these index things are set
-            // TODO: check touchmode and decide whether to draw a filled rect or not
-            SDL_SetRenderDrawColor(parent->renderer, 0xff, 0xaa, 0xaa, 0xff);
+           SDL_Rect dimens3 = {this->x+dPos, this->y + dHeight, dWidth, textSize};
+            dimens2 = dimens3;
+        }
+        if (curRow == 2 && index > 6)
+        {
+           SDL_Rect dimens4 = {this->x+sPos, this->y + dHeight, sWidth, textSize};
+            dimens2 = dimens4;
+        }
+
+        // draw the currently selected tile if these index things are set
+        if (touchMode)
+        {
+            SDL_SetRenderDrawColor(parent->renderer, 0xad, 0xd8, 0xe6, 0x90); // TODO: matches the DEEP_HIGHLIGHT color
             SDL_RenderFillRect(parent->renderer, &dimens2);
+        }
+        else
+        {
+            // border
+            for (int z=4; z>=0; z--)
+            {
+                SDL_SetRenderDrawColor(parent->renderer, 0x66 - z*10, 0x7c + z*20, 0x89 + z*10, 0xFF);
+                dimens2.x --;
+                dimens2.y --;
+                dimens2.w += 2;
+                dimens2.h += 2;
+                SDL_RenderDrawRect(parent->renderer, &dimens2);
+            }
         }
     }
 
@@ -61,21 +97,62 @@ void Keyboard::render(Element* parent)
 
 bool Keyboard::process(InputEvents* event)
 {
-    if (hidden)
+    // don't do anything if we're hidden, or there's a sidebar and it's active
+    if (hidden || (appList && appList->sidebar->highlighted >= 0))
         return false;
+    
+    if (event->isTouchDown())
+    {
+        curRow = index = -1;
+        touchMode = true;
+    }
+    
+    if (event->isKeyDown())
+        touchMode = false;
 
     bool ret = false;
-    
-    // default to non touchmode, unless one of our inputables has something to say about it
-    bool touchMode = ((appList == NULL)? false : appList->touchMode) || (feedback == NULL)? false : feedback->touchMode;
-    
-    if (touchMode)
-        curRow = index = -1;
-    
-    if (touchMode)
+
+    if (!touchMode)
     {
-        if (curRow < 0) curRow = 0;
-        if (index < 0) index = 0;
+        if (curRow < 0 && index < 0)
+        {
+            // switched into keyboard, set to 0 and return
+            curRow = index = 0;
+            return true;
+        }
+        
+        if (event->isKeyDown())
+        {
+            curRow += (event->held(DOWN_BUTTON) - event->held(UP_BUTTON));
+            index += (event->held(RIGHT_BUTTON) - event->held(LEFT_BUTTON));
+            
+            if (curRow < 0) curRow = 0;
+            if (index < (0 - curRow==2)) index = -1*(curRow==2);
+            if (curRow > 2) curRow = 2;
+            if (index > 10 - curRow - 1) index = 10 - curRow - 1;
+            
+            if (event->held(A_BUTTON))
+            {
+                // on the last row, check for delete or space
+                if (curRow == 2 && (index < 0 || index > 6))
+                {
+                    if (index < 0) backspace();
+                    if (index > 6) space();
+                    updateView();
+                    return true;
+                }
+                type(curRow, index);
+            }
+            
+            if (event->held(B_BUTTON))
+                backspace();
+            
+            updateView();
+            return true;
+        }
+        
+        return false;
+        
     }
 
   if (event->isTouchDown() && event->touchIn(this->x, this->y, width, height))
@@ -106,33 +183,23 @@ if (event->isTouchUp())
             if (event->touchIn(this->x+kXPad + x*kXOff + y*yYOff, this->y + kYPad + y*ySpacing, keyWidth, keyWidth))
             {
                 ret |= true;
-                myText->push_back(std::tolower(rows[y][x*2]));
+                type(y, x);
             }
 
         if (event->touchIn(this->x+dPos, this->y+dHeight, dWidth, textSize))
-            if (!myText->empty())
-            {
-                ret |= true;
-                myText->pop_back();
-            }
+        {
+            ret |= true;
+            backspace();
+        }
 
         if (event->touchIn(this->x+sPos, this->y+dHeight, sWidth, textSize))
         {
             ret |= true;
-            myText->append(" ");
+            space();
         }
 
-          if (ret && appList)
-          {
-        // update search results
-        this->appList->y = 0;
-        this->appList->update();
-          }
-          else if (ret && feedback)
-          {
-              // TODO: do this a more generic way (TypeableElement?) instead of passing in as more params
-              this->feedback->refresh();
-          }
+          if (ret)
+              updateView();
 
           return ret;
       }
@@ -209,6 +276,37 @@ void Keyboard::updateSize()
     TextElement* spaceButton = new TextElement("SPACE", textSize2, &gray, false);
     spaceButton->position(sPos2, dHeight2);
     this->elements.push_back(spaceButton);
+}
+
+void Keyboard::type(int y, int x)
+{
+    myText->push_back(std::tolower(rows[y][x*2]));
+}
+
+void Keyboard::backspace()
+{
+    if (!myText->empty())
+        myText->pop_back();
+}
+
+void Keyboard::space()
+{
+    myText->append(" ");
+}
+
+void Keyboard::updateView()
+{
+    if (appList != NULL)
+    {
+        // update search results
+        this->appList->y = 0;
+        this->appList->update();
+    }
+    else if (feedback != NULL)
+    {
+        // TODO: do this a more generic way (TypeableElement?) instead of passing in as more params
+        this->feedback->refresh();
+    }
 }
 
 Keyboard::~Keyboard()
