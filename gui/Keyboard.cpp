@@ -145,7 +145,14 @@ bool Keyboard::process(InputEvents* event)
             }
             
             if (event->held(B_BUTTON))
+            {
+                if (myText->empty() && appList)
+                {
+                    appList->toggleKeyboard();
+                    return true;
+                }
                 backspace();
+            }
             
             updateView();
             return true;

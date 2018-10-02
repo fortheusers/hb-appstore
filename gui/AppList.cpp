@@ -373,12 +373,6 @@ void AppList::reorient()
     // remove a highilight if it exists (TODO: extract method, we use this everywehre)
     if (this->highlighted >= 0 && this->highlighted < this->elements.size() && this->elements[this->highlighted])
         this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
-//
-//    // take us to the top of the list, reset touch and highlight variables
-//    if (this->highlighted > 0)
-//        this->highlighted = 0;  // reset us only in app list
-//    this->needsRedraw = true;
-//    this->touchMode = true;
 }
 
 void AppList::cycleSort()
@@ -402,7 +396,7 @@ void AppList::toggleKeyboard()
             this->highlighted = 0;
         }
         
-//        this->needsDisplay = true;
+        this->needsRedraw = true;
     }
     
 }
