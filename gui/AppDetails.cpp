@@ -127,6 +127,7 @@ void AppDetails::proceed()
     SDL_Event sdlevent;
     sdlevent.type = SDL_KEYDOWN;
     sdlevent.key.keysym.sym = SDLK_a;
+    sdlevent.key.repeat = 0;
     SDL_PushEvent(&sdlevent);
 }
 
@@ -135,6 +136,7 @@ void AppDetails::back()
     SDL_Event sdlevent;
     sdlevent.type = SDL_KEYDOWN;
     sdlevent.key.keysym.sym = SDLK_b;
+    sdlevent.key.repeat = 0;
     SDL_PushEvent(&sdlevent);
 }
 
@@ -214,6 +216,7 @@ bool AppDetails::process(InputEvents* event)
 void AppDetails::preInstallHook()
 {
 #if defined(SWITCH)
+    // if we're going to modify the appstore itself, we need to exit romfs so we can change the nro on disk
     if (this->package->pkg_name == "appstore")
         romfsExit();
 #endif
@@ -223,7 +226,9 @@ void AppDetails::postInstallHook()
 {
 #if defined(SWITCH)
     fsdevCommitDevice("sdmc");
-    if (this->package->pkg_name == "appstore")
+    // only exit if the target package is the appstore, and it wasn't being removed
+    // (if it was removed, romfs is still unmounted and fonts will have issues but it gives them a chance to reinstall)
+    if (this->package->status != INSTALLED && this->package->pkg_name == "appstore")
         quit();
 #endif
 }
@@ -262,17 +267,6 @@ int AppDetails::updateCurrentlyDisplayedPopup(void *clientp, double dltotal, dou
 		// force render the element right here (and it's progress bar too)
 		if (popup->parent != NULL)
 			popup->parent->render(NULL);
-
-		// force update the main screen
-		if (popup->renderer != NULL)
-		{
-            SDL_RenderPresent(popup->renderer);
-
-			// must call poll event here to allow SDL to redraw the screen
-			SDL_Event event;
-			SDL_PollEvent(&event);
-		}
-
 	}
 
     return 0;
@@ -291,6 +285,7 @@ void AppDetailsContent::render(Element* parent)
 bool AppDetailsContent::process(InputEvents* event)
 {
     int SPEED = 60;
+    bool ret = false;
     
     // handle up and down for the scroll view
     if (event->isKeyDown())
@@ -299,8 +294,8 @@ bool AppDetailsContent::process(InputEvents* event)
         this->y += (SPEED*event->held(UP_BUTTON) - SPEED*event->held(DOWN_BUTTON));
         if (this->y > 0)
             this->y = 0;
-        return event->held(UP_BUTTON) || event->held(DOWN_BUTTON);
+        ret |= event->held(UP_BUTTON) || event->held(DOWN_BUTTON);
     }
     
-    return ListElement::process(event);
+    return ret || ListElement::process(event);
 }

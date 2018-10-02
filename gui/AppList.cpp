@@ -140,14 +140,27 @@ bool AppList::process(InputEvents* event)
     }
     
     // always check the currently highlighted piece and try to give it a thick border or adjust the screen
-    if (!touchMode && this->elements.size() > this->highlighted)
+    if (!touchMode && this->elements.size() > this->highlighted && this->highlighted >= 0 && this->elements[this->highlighted])
     {
         // if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
-        // TODO: make it so that the cursor can go to the top of the screen
-        if (this->highlighted >= R*2 && this->elements[this->highlighted])
-            this->y = -1*((this->highlighted-R*2)/R)*(elements[this->highlighted]->height+15) - 60;
-        else
-            this->y = 0;        // at the top of the screen
+        
+        Element* curTile = this->elements[this->highlighted];
+        
+        // the y-position of the currently highlighted tile, precisely on them screen (accounting for scroll)
+        // this means that if it's < 0 or > 720 then it's not visible
+        int normalizedY = curTile->y + this->y;
+        
+        // if we're out of range above, recenter at the top row
+        if (normalizedY < 0)
+            this->y = -1 * (curTile->y - 15) + 25;
+        
+        // if we're out of range below, recenter at bottom row
+        if (normalizedY > 720 - curTile->height)
+            this->y = -1 * (curTile->y - 3*(curTile->height - 15)) - 40;
+        
+        // if the card is this close to the top, just set it the list offset to 0 to scroll up to the top
+        if (this->highlighted < R)
+            this->y = 0;
         
         if (this->elements[this->highlighted])
             this->elements[this->highlighted]->elasticCounter = THICK_HIGHLIGHT;
