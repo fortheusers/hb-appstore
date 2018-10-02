@@ -13,6 +13,8 @@ public:
 	void render(Element* parent);
 	void background(int r, int g, int b);
 	void update();
+    
+    TextElement* notice = NULL;
 
 	static SDL_Renderer* mainRenderer;
     static Element* subscreen;

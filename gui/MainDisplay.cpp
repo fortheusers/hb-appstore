@@ -98,6 +98,14 @@ MainDisplay::MainDisplay(Get* get)
 	title->position(415 + this->error*100, 255 - this->error*230);
 	this->elements.push_back(title);
     
+    if (this->imageCache->version_cache.size() == 0)
+    {
+        notice = new TextElement("Still doing initial load-- next time will be faster!", 20);
+        notice->position(410, 460);
+        notice->hidden = true;
+        this->elements.push_back(notice);
+    }
+    
     if (this->error)
     {
         std::string troubleshootingText = "No enabled repos found, check ./get/repos.json\nMake sure repo has at least one package";
@@ -123,7 +131,7 @@ bool MainDisplay::process(InputEvents* event)
 		// should be a progress bar
 		if (this->get->packages.size() != 1)
 			((ProgressBar*)this->elements[0])->percent = (this->count / ((float)this->get->packages.size()-1));
-
+        
 		// no packages, prevent crash TODO: display offline in bottom bar
 		if (this->get->packages.size() == 0)
 		{
@@ -131,6 +139,9 @@ bool MainDisplay::process(InputEvents* event)
             this->showingSplash = false;
             return true;
 		}
+        
+        if (notice && ((ProgressBar*)this->elements[0])->percent > 0.5)
+            notice->hidden = false;
         
         // update the counter (TODO: replace with fetching app icons/screen previews)
         this->count++;
