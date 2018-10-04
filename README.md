@@ -11,7 +11,6 @@ A quick summary of how to run it, provided you can get to hbmenu, is also includ
 
 #### Quick summary
 - download latest [appstore folder](https://github.com/vgmoose/hb-appstore/releases) to `sd:/switch/appstore/`
-   - make sure that the `res` folder is next to `appstore.nro` inside of the `appstore` folder
 - download latest [hbmenu.nro](https://github.com/switchbrew/nx-hbmenu/releases/latest) to `sd:/hbmenu.nro`
 - put the SD card (recommended formatted FAT32) in the Switch, and enter hbmenu (see instructions above)
 - run "hb App Store" from within hbmenu
