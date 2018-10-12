@@ -19,13 +19,14 @@ BUILD		:=	build
 SOURCES		:=	. $(GET) $(MINIZIP) $(TINYXML) console gui
 INCLUDES	:=	-I. -I$(RAPIDJSON) -I$(MINIZIP) -I$(TINYXML)
 ROMFS		:=	romfs
+include $(WUT_ROOT)/share/romfs-wiiu.mk
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 CFLAGS		+=	-DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -D_XOPEN_SOURCE $(INCLUDES)
 CXXFLAGS	+=	$(CFLAGS)
-LDFLAGS		+=	$(WUT_NEWLIB_LDFLAGS) $(WUT_STDCPP_LDFLAGS) $(WUT_DEVOPTAB_LDFLAGS) \
+LDFLAGS		+=	$(WUT_NEWLIB_LDFLAGS) $(WUT_STDCPP_LDFLAGS) $(WUT_DEVOPTAB_LDFLAGS) $(ROMFS_LDFLAGS) \
 				-lSDL2_ttf -lfreetype -lpng -lSDL2_gfx -lSDL2_image -lSDL2 -ljpeg -lzip \
 				-lcoreinit -lvpad -lsndcore2 -lzlib125 -lsysapp -lnsysnet -lnlibcurl -lproc_ui -lgx2 -lgfd -lwhb
 
@@ -35,16 +36,11 @@ LDFLAGS		+=	$(WUT_NEWLIB_LDFLAGS) $(WUT_STDCPP_LDFLAGS) $(WUT_DEVOPTAB_LDFLAGS) 
 CFILES		:=	$(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(wildcard $(dir)/*.cpp))
 SFILES		:=	$(foreach dir,$(SOURCES),$(wildcard $(dir)/*.s))
-OBJECTS		:=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+OBJECTS		:=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o) $(ROMFS_TARGET)
 
 #---------------------------------------------------------------------------------
 # objectives
 #---------------------------------------------------------------------------------
-ifneq ($(ROMFS),)
-include $(DEVKITPRO)/portlibs/ppc/share/romfs-wiiu.mk
-OBJECTS += $(ROMFS_TARGET)
-endif
-
 $(TARGET).rpx: $(OBJECTS)
 
 clean:
