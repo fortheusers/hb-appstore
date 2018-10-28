@@ -54,7 +54,11 @@ MainDisplay::MainDisplay(Get* get)
 	int width = 1280;
 
 	this->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
+#if defined(__WIIU__)
+	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED);
+#else
 	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_SOFTWARE);
+#endif
 
 	//Detach the texture
 	SDL_SetRenderTarget(this->renderer, NULL);
