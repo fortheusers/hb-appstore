@@ -21,10 +21,20 @@ MainDisplay::MainDisplay(Get* get)
 	// populate image cache with any local version info if it exists
 	this->imageCache = new ImageCache(get->tmp_path);
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0) {
 //        printf("SDL init failed: %s\n", SDL_GetError());
 		return;
 	}
+
+	//Initialize SDL_mixer
+	Mix_Init(MIX_INIT_MP3);
+	Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
+	this->music = Mix_LoadMUS(ROMFS "./res/music.mp3");
+	if (music) {
+	    Mix_FadeInMusic(music, -1, 300);
+	}
+	else
+		printf("hi\n%s\n", Mix_GetError());
 
 	if (TTF_Init() < 0) {
 //        printf("SDL ttf init failed: %s\n", SDL_GetError());
@@ -37,7 +47,7 @@ MainDisplay::MainDisplay(Get* get)
 //        printf("SDL image init failed: %s\n", SDL_GetError());
 		return;
 	}
-    
+
     // initialize teh romfs for switch/wiiu
 #if defined(SWITCH) || defined(__WIIU__)
     romfsInit();
@@ -64,10 +74,10 @@ MainDisplay::MainDisplay(Get* get)
 				return;
 		}
 	}
-    
+
     // set up the SDL needsRender event
     this->needsRender.type = SDL_USEREVENT;
-    
+
     // go through all repos and if one has an error, set the error flag
     bool atLeastOneEnabled = false;
     for (auto repo : this->get->repos)
@@ -75,7 +85,7 @@ MainDisplay::MainDisplay(Get* get)
         this->error = this->error || !repo->loaded;
         atLeastOneEnabled = atLeastOneEnabled || repo->enabled;
     }
-    
+
     this->error = this->error || !atLeastOneEnabled;
 
 	// the progress bar
@@ -97,7 +107,7 @@ MainDisplay::MainDisplay(Get* get)
 	TextElement* title = new TextElement("Homebrew App Store", 50 - this->error*25);
 	title->position(415 + this->error*100, 255 - this->error*230);
 	this->elements.push_back(title);
-    
+
     if (this->imageCache->version_cache.size() == 0)
     {
         notice = new TextElement("Still doing initial load-- next time will be faster!", 20);
@@ -105,17 +115,17 @@ MainDisplay::MainDisplay(Get* get)
         notice->hidden = true;
         this->elements.push_back(notice);
     }
-    
+
     if (this->error)
     {
         std::string troubleshootingText = "No enabled repos found, check ./get/repos.json\nMake sure repo has at least one package";
         if (atLeastOneEnabled)
             troubleshootingText = std::string("Perform a connection test in the Switch System Settings\nEnsure DNS isn't blocking: ") + this->get->repos[0]->url;
-        
+
         TextElement* errorMessage = new TextElement("Couldn't connect to the Internet!", 40);
         errorMessage->position(345, 305);
         this->elements.push_back(errorMessage);
-        
+
         TextElement* troubleshooting = new TextElement((std::string("Troubleshooting:\n") + troubleshootingText).c_str(), 20, NULL, false, 600);
         troubleshooting->position(380, 585);
         this->elements.push_back(troubleshooting);
@@ -131,7 +141,7 @@ bool MainDisplay::process(InputEvents* event)
 		// should be a progress bar
 		if (this->get->packages.size() != 1)
 			((ProgressBar*)this->elements[0])->percent = (this->count / ((float)this->get->packages.size()-1));
-        
+
 		// no packages, prevent crash TODO: display offline in bottom bar
 		if (this->get->packages.size() == 0)
 		{
@@ -139,10 +149,10 @@ bool MainDisplay::process(InputEvents* event)
             this->showingSplash = false;
             return true;
 		}
-        
+
         if (notice && ((ProgressBar*)this->elements[0])->percent > 0.5)
             notice->hidden = false;
-        
+
         // update the counter (TODO: replace with fetching app icons/screen previews)
         this->count++;
 
@@ -166,7 +176,7 @@ bool MainDisplay::process(InputEvents* event)
 			if (!success) // manually add defualt icon to cache if downloading failed
 				cp(ROMFS "res/default.png", (key_path + "/icon.png").c_str());
             // TODO: generate a custom icon for this version with a color and name
-            
+
             success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/screen.png", key_path + "/screen.png");
             if (!success)
                 cp(ROMFS "res/noscreen.png", (key_path + "/screen.png").c_str());
@@ -194,7 +204,7 @@ bool MainDisplay::process(InputEvents* event)
 			// add in the sidebar, footer, and main app listing
 			Sidebar* sidebar = new Sidebar();
 			this->elements.push_back(sidebar);
-            
+
 			AppList* applist = new AppList(this->get, sidebar);
 			this->elements.push_back(applist);
 			sidebar->appList = applist;
@@ -202,7 +212,7 @@ bool MainDisplay::process(InputEvents* event)
 			this->showingSplash = false;
             this->needsRedraw = true;
 		}
-        
+
         return true;
 	}
 	else
@@ -224,7 +234,7 @@ void MainDisplay::render(Element* parent)
 #if defined(__WIIU__)
     MainDisplay::background(0x54, 0x55, 0x6e);
 #endif
-    
+
     if (MainDisplay::subscreen)
     {
         MainDisplay::subscreen->render(this);
@@ -248,7 +258,7 @@ void MainDisplay::background(int r, int g, int b)
 void MainDisplay::update()
 {
     // never exceed 60fps because there's no point
-    
+
 //    int now = SDL_GetTicks();
 //    int diff = now - this->lastFrameTime;
 //
@@ -263,13 +273,13 @@ void quit()
 {
     IMG_Quit();
     TTF_Quit();
-    
+
     SDL_Delay(10);
     SDL_DestroyWindow(MainDisplay::mainDisplay->window);
-    
+
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
     SDL_Quit();
-    
+
 #if defined(__WIIU__)
     romfsExit();
 #endif

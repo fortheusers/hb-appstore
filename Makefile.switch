@@ -154,6 +154,7 @@ all: $(BUILD)
 
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
+	@rm ./res/music.mp3			# switch build won't use music (yet)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile.switch
 
 #---------------------------------------------------------------------------------

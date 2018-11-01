@@ -4,6 +4,7 @@
 #include "AppList.hpp"
 #include "ImageCache.hpp"
 #include <unordered_map>
+#include <SDL2/SDL_mixer.h>
 
 class MainDisplay : public Element
 {
@@ -13,7 +14,7 @@ public:
 	void render(Element* parent);
 	void background(int r, int g, int b);
 	void update();
-    
+
     TextElement* notice = NULL;
 
 	static SDL_Renderer* mainRenderer;
@@ -23,9 +24,10 @@ public:
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;
     bool error = false;
-    
+
     int lastFrameTime = 99;
     SDL_Event needsRender;
+		Mix_Music* music;
 
 	bool showingSplash = true;
 	int count = 0;

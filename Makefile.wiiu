@@ -26,7 +26,7 @@ ROMFS		:=	romfs
 CFLAGS		+=	-DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -D_XOPEN_SOURCE $(INCLUDES)
 CXXFLAGS	+=	$(CFLAGS)
 LDFLAGS		+=	$(WUT_NEWLIB_LDFLAGS) $(WUT_STDCPP_LDFLAGS) $(WUT_DEVOPTAB_LDFLAGS) \
-				-lSDL2_ttf -lfreetype -lpng -lSDL2_gfx -lSDL2_image -lSDL2 -ljpeg -lzip \
+				-lSDL2_ttf -lfreetype -lpng -SDL2_mixer -lSDL2_gfx -lSDL2_image -lSDL2 -ljpeg -lzip \
 				-lcoreinit -lvpad -lsndcore2 -lzlib125 -lsysapp -lnsysnet -lnlibcurl -lproc_ui -lgx2 -lgfd -lwhb
 
 #---------------------------------------------------------------------------------
