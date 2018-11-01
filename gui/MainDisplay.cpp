@@ -2,12 +2,17 @@
 #include "AppCard.hpp"
 #include "../libs/get/src/Utils.hpp"
 
+
 #if defined(SWITCH)
 #include <switch.h>
-#endif
+#define PLATFORM "Switch"
 
-#if defined(__WIIU__)
+#elif defined(__WIIU__)
 #include <romfs-wiiu.h>
+#define PLATFORM "Wii U"
+
+#else
+#define PLATFORM "Console"
 #endif
 
 SDL_Renderer* MainDisplay::mainRenderer = NULL;
@@ -59,7 +64,11 @@ MainDisplay::MainDisplay(Get* get)
 	int width = 1280;
 
 	this->window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
+#if defined(__WIIU__)
+	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED);
+#else
 	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_SOFTWARE);
+#endif
 
 	//Detach the texture
 	SDL_SetRenderTarget(this->renderer, NULL);
@@ -120,7 +129,7 @@ MainDisplay::MainDisplay(Get* get)
     {
         std::string troubleshootingText = "No enabled repos found, check ./get/repos.json\nMake sure repo has at least one package";
         if (atLeastOneEnabled)
-            troubleshootingText = std::string("Perform a connection test in the Switch System Settings\nEnsure DNS isn't blocking: ") + this->get->repos[0]->url;
+            troubleshootingText = std::string("Perform a connection test in the " PLATFORM " System Settings\nEnsure DNS isn't blocking: ") + this->get->repos[0]->url;
 
         TextElement* errorMessage = new TextElement("Couldn't connect to the Internet!", 40);
         errorMessage->position(345, 305);
