@@ -4,7 +4,9 @@
 #include "AppList.hpp"
 #include "ImageCache.hpp"
 #include <unordered_map>
+#if defined(MUSIC)
 #include <SDL2/SDL_mixer.h>
+#endif
 
 class MainDisplay : public Element
 {
@@ -27,7 +29,10 @@ public:
 
     int lastFrameTime = 99;
     SDL_Event needsRender;
-		Mix_Music* music;
+
+		#if defined(MUSIC)
+			Mix_Music* music;
+		#endif
 
 	bool showingSplash = true;
 	int count = 0;

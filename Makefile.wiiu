@@ -23,7 +23,7 @@ ROMFS		:=	romfs
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-CFLAGS		+=	-DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -D_XOPEN_SOURCE $(INCLUDES)
+CFLAGS		+=	-DUSE_FILE32API -DMUSIC -DNOCRYPT -DINPUT_JOYSTICK -D_XOPEN_SOURCE $(INCLUDES)
 CXXFLAGS	+=	$(CFLAGS)
 LDFLAGS		+=	$(WUT_NEWLIB_LDFLAGS) $(WUT_STDCPP_LDFLAGS) $(WUT_DEVOPTAB_LDFLAGS) \
 				-lSDL2_ttf -lfreetype -lpng -SDL2_mixer -lSDL2_gfx -lSDL2_image -lSDL2 -ljpeg -lzip \

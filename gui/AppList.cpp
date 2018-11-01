@@ -42,14 +42,14 @@ bool AppList::process(InputEvents* event)
         update();
         return true;
     }
-    
+
     // must be done before keyboard stuff to properly switch modes
     if (event->isTouchDown())
     {
         // remove a highilight if it exists (TODO: same as an above if statement)
         if (this->highlighted >= 0 && this->highlighted < this->elements.size() && this->elements[this->highlighted])
             this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
-        
+
         // got a touch, so let's enter touchmode
         this->highlighted = -1;
         this->touchMode = true;
@@ -85,7 +85,7 @@ bool AppList::process(InputEvents* event)
                 ret |= ListElement::process(event);
             return true;    // short circuit, should be handled by someone else
         }
-        
+
         if (event->held(A_BUTTON | B_BUTTON | UP_BUTTON | DOWN_BUTTON | LEFT_BUTTON | RIGHT_BUTTON))
         {
             // if we were in touch mode, draw the cursor in the applist
@@ -138,30 +138,30 @@ bool AppList::process(InputEvents* event)
             if (this->highlighted >= (int)this->totalCount) this->highlighted = this->totalCount-1;
         }
     }
-    
+
     // always check the currently highlighted piece and try to give it a thick border or adjust the screen
     if (!touchMode && this->elements.size() > this->highlighted && this->highlighted >= 0 && this->elements[this->highlighted])
     {
         // if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
-        
+
         Element* curTile = this->elements[this->highlighted];
-        
+
         // the y-position of the currently highlighted tile, precisely on them screen (accounting for scroll)
         // this means that if it's < 0 or > 720 then it's not visible
         int normalizedY = curTile->y + this->y;
-        
+
         // if we're out of range above, recenter at the top row
         if (normalizedY < 0)
             this->y = -1 * (curTile->y - 15) + 25;
-        
+
         // if we're out of range below, recenter at bottom row
         if (normalizedY > 720 - curTile->height)
             this->y = -1 * (curTile->y - 3*(curTile->height - 15)) - 40;
-        
+
         // if the card is this close to the top, just set it the list offset to 0 to scroll up to the top
         if (this->highlighted < R)
             this->y = 0;
-        
+
         if (this->elements[this->highlighted])
             this->elements[this->highlighted]->elasticCounter = THICK_HIGHLIGHT;
     }
@@ -199,7 +199,7 @@ void AppList::update()
         kRow = keyboard->curRow;
         kIndex = keyboard->index;
     }
-    
+
 	// remove any old elements
 	this->wipeElements();
 
@@ -321,6 +321,17 @@ void AppList::update()
         sort->action = std::bind(&AppList::cycleSort, this);
         this->elements.push_back(sort);
 
+        #if defined(MUSIC)
+          Button* mute = new Button(" ", 0, false, 15);
+          mute->position(sort->x - 20 - mute->width, settings->y);
+          mute->action = std::bind(&AppList::toggleAudio, this);
+          this->elements.push_back(mute);
+
+          ImageElement* muteIcon = new ImageElement(ROMFS "res/mute.png");
+          muteIcon->position(sort->x - 20 - mute->width + 5, settings->y + 5);
+          muteIcon->resize(32, 32);
+          this->elements.push_back(muteIcon);
+        #endif
 
           // display the search type above if it's not the default one
           SDL_Color gray = {0x50, 0x50, 0x50, 0xff};
@@ -382,23 +393,33 @@ void AppList::cycleSort()
     this->update();
 }
 
+void AppList::toggleAudio()
+{
+  #if defined(MUSIC)
+    if (Mix_PausedMusic())
+      Mix_ResumeMusic();
+    else
+      Mix_PauseMusic();
+  #endif
+}
+
 void AppList::toggleKeyboard()
 {
     if (this->keyboard)
     {
         reorient();
         this->keyboard->hidden = !this->keyboard->hidden;
-        
+
         // if it's hidden now, make sure we release our highlight
         if (this->keyboard->hidden)
         {
             this->sidebar->highlighted = -1;
             this->highlighted = 0;
         }
-        
+
         this->needsRedraw = true;
     }
-    
+
 }
 
 void AppList::launchSettings()

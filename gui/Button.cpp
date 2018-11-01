@@ -65,7 +65,7 @@ void Button::position(int x, int y)
 
 bool Button::process(InputEvents* event)
 {
-  if (event->isKeyDown() && event->held(this->physical))
+  if (event->isKeyDown() && this->physical != 0 && event->held(this->physical))
   {
     // invoke our action, since we saw a physical button press that matches!
     this->action();

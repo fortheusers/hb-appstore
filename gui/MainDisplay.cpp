@@ -27,14 +27,14 @@ MainDisplay::MainDisplay(Get* get)
 	}
 
 	//Initialize SDL_mixer
-	Mix_Init(MIX_INIT_MP3);
-	Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
-	this->music = Mix_LoadMUS(ROMFS "./res/music.mp3");
-	if (music) {
-	    Mix_FadeInMusic(music, -1, 300);
-	}
-	else
-		printf("hi\n%s\n", Mix_GetError());
+	#if defined(MUSIC)
+		Mix_Init(MIX_INIT_MP3);
+		Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
+		this->music = Mix_LoadMUS(ROMFS "./res/music.mp3");
+		if (music) {
+		    Mix_FadeInMusic(music, -1, 300);
+		}
+	#endif
 
 	if (TTF_Init() < 0) {
 //        printf("SDL ttf init failed: %s\n", SDL_GetError());

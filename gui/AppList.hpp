@@ -29,7 +29,8 @@ public:
     void toggleKeyboard();
     void cycleSort();
     void reorient();
-    
+		void toggleAudio();
+
     const char* applySortOrder(std::vector<Package*>* packages);
 
 	bool touchMode = true;
