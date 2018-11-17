@@ -16,7 +16,7 @@ public:
 	AppDetails(Package* package, AppList* appList);
 	bool process(InputEvents* event);
 	void render(Element* parent);
-    bool launchFile(char* path);
+    bool launchFile(char* path, char* context);
     
 	bool operating = false;
 	Package* package;

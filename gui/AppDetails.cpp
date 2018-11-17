@@ -241,11 +241,11 @@ bool AppDetails::process(InputEvents* event)
         bool successLaunch;
         if ((file = fopen(path, "r"))){
             fclose(file);
-            successLaunch = this->launchFile(path);
+            successLaunch = this->launchFile(path, path);
         }else if((fopen(path2, "r")))
         {
             fclose(file);
-            successLaunch = this->launchFile(path2);
+            successLaunch = this->launchFile(path2, path2);
         }else{
             successLaunch = false;
         }
@@ -272,8 +272,8 @@ void AppDetails::preInstallHook()
 #endif
 }
 
-bool AppDetails::launchFile(char* path){
-    envSetNextLoad(path, ""); //TODO: Argv
+bool AppDetails::launchFile(char* path, char* context){
+    envSetNextLoad(path, context);
     quit();
     return true;
 }
