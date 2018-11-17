@@ -54,7 +54,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
     cancel->position(970, 630);
     cancel->action = std::bind(&AppDetails::back, this);
 
-    Button* start = new Button("Launch", L_BUTTON, true, 30, download->width);
+    Button* start = new Button("Launch", START_BUTTON, true, 30, download->width);
 
     #if defined(SWITCH)
     if((package->status == UPDATE || package->status == INSTALLED || package->status == LOCAL) && envHasNextLoad()){
@@ -148,7 +148,7 @@ void AppDetails::launch()
 {
     SDL_Event sdlevent;
     sdlevent.type = SDL_KEYDOWN;
-    sdlevent.key.keysym.sym = SDLK_l;
+    sdlevent.key.keysym.sym = SDLK_PLUS;
     sdlevent.key.repeat = 0;
     SDL_PushEvent(&sdlevent);
 }
@@ -228,7 +228,7 @@ bool AppDetails::process(InputEvents* event)
         return true;
     }
     #if defined(SWITCH)
-    if (event->pressed(L_BUTTON))
+    if (event->pressed(START_BUTTON))
     {
         //TODO: Better path searching to find nro, currently assumes package name is nro/dir name
         char path[21+(2*strlen(package->pkg_name.c_str()))];
@@ -239,16 +239,16 @@ bool AppDetails::process(InputEvents* event)
 
         FILE *file;
         bool successLaunch;
-        if ((file = fopen(path, "r"))){
+        if ((file = fopen(path, "r")))
+        {
             fclose(file);
             successLaunch = this->launchFile(path, path);
         }else if((fopen(path2, "r")))
         {
             fclose(file);
             successLaunch = this->launchFile(path2, path2);
-        }else{
-            successLaunch = false;
-        }
+        }else successLaunch = false;
+
         if(!successLaunch){
             //TODO: Notify user of failed launch somehow
         }
@@ -272,11 +272,15 @@ void AppDetails::preInstallHook()
 #endif
 }
 
+#if defined(SWITCH)
 bool AppDetails::launchFile(char* path, char* context){
-    envSetNextLoad(path, context);
-    quit();
-    return true;
+    if(R_SUCCEEDED(envSetNextLoad(path, context))){
+        quit();
+        return true;
+    }
+    return false;
 }
+#endif
 
 void AppDetails::postInstallHook()
 {
