@@ -16,6 +16,7 @@ public:
 	AppDetails(Package* package, AppList* appList);
 	bool process(InputEvents* event);
 	void render(Element* parent);
+    bool launchFile(char* path);
     
 	bool operating = false;
 	Package* package;
@@ -29,6 +30,8 @@ public:
     
     void proceed();
     void back();
+    void launch();
+
     void moreByAuthor();
     void leaveFeedback();
     

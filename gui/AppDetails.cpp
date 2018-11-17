@@ -49,12 +49,25 @@ AppDetails::AppDetails(Package* package, AppList* appList)
     Button* download = new Button(action, A_BUTTON, true, 30);
 	download->position(970, 550);
     download->action = std::bind(&AppDetails::proceed, this);
-	this->elements.push_back(download);
 
     Button* cancel = new Button("Cancel", B_BUTTON, true, 30, download->width);
     cancel->position(970, 630);
     cancel->action = std::bind(&AppDetails::back, this);
+
+    Button* start = new Button("Launch", L_BUTTON, true, 30, download->width);
+
+    #if defined(SWITCH)
+    if((package->status == UPDATE || package->status == INSTALLED || package->status == LOCAL) && envHasNextLoad()){
+        download->position(970, 470);
+        start->position(970, 550);
+        cancel->position(970, 630);
+        start->action = std::bind(&AppDetails::launch, this);
+        this->elements.push_back(start);
+    }
+    #endif
+
     this->elements.push_back(cancel);
+    this->elements.push_back(download);
 
 
     // the scrollable portion of the app details page
@@ -127,6 +140,15 @@ void AppDetails::proceed()
     SDL_Event sdlevent;
     sdlevent.type = SDL_KEYDOWN;
     sdlevent.key.keysym.sym = SDLK_a;
+    sdlevent.key.repeat = 0;
+    SDL_PushEvent(&sdlevent);
+}
+
+void AppDetails::launch()
+{
+    SDL_Event sdlevent;
+    sdlevent.type = SDL_KEYDOWN;
+    sdlevent.key.keysym.sym = SDLK_l;
     sdlevent.key.repeat = 0;
     SDL_PushEvent(&sdlevent);
 }
@@ -205,6 +227,34 @@ bool AppDetails::process(InputEvents* event)
         this->appList->update();
         return true;
     }
+    #if defined(SWITCH)
+    if (event->pressed(L_BUTTON))
+    {
+        //TODO: Better path searching to find nro, currently assumes package name is nro/dir name
+        char path[21+(2*strlen(package->pkg_name.c_str()))];
+        char path2[21+strlen(package->pkg_name.c_str())];
+
+        sprintf(path, "sdmc:/switch/%s/%s.nro", package->pkg_name.c_str(), package->pkg_name.c_str());
+        sprintf(path2, "sdmc:/switch/%s.nro", package->pkg_name.c_str());
+
+        FILE *file;
+        bool successLaunch;
+        if ((file = fopen(path, "r"))){
+            fclose(file);
+            successLaunch = this->launchFile(path);
+        }else if((fopen(path2, "r")))
+        {
+            fclose(file);
+            successLaunch = this->launchFile(path2);
+        }else{
+            successLaunch = false;
+        }
+        if(!successLaunch){
+            //TODO: Notify user of failed launch somehow
+        }
+        return true;
+    }
+    #endif
 
 	if (event->isTouchDown())
 		this->dragging = true;
@@ -220,6 +270,12 @@ void AppDetails::preInstallHook()
     if (this->package->pkg_name == "appstore")
         romfsExit();
 #endif
+}
+
+bool AppDetails::launchFile(char* path){
+    envSetNextLoad(path, ""); //TODO: Argv
+    quit();
+    return true;
 }
 
 void AppDetails::postInstallHook()
