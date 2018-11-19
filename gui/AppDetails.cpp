@@ -57,7 +57,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
     Button* start = new Button("Launch", START_BUTTON, true, 30, download->width);
 
     #if defined(SWITCH)
-    if((package->status == UPDATE || package->status == INSTALLED || package->status == LOCAL) && envHasNextLoad()){
+    if((package->status == UPDATE || package->status == INSTALLED || package->status == LOCAL) && envHasNextLoad() && package->binary != "none"){
         download->position(970, 470);
         start->position(970, 550);
         cancel->position(970, 630);
@@ -230,27 +230,24 @@ bool AppDetails::process(InputEvents* event)
     #if defined(SWITCH)
     if (event->pressed(START_BUTTON))
     {
-        //TODO: Better path searching to find nro, currently assumes package name is nro/dir name
-        char path[21+(2*strlen(package->pkg_name.c_str()))];
-        char path2[21+strlen(package->pkg_name.c_str())];
+        char path[8+strlen(package->binary.c_str())];
 
-        sprintf(path, "sdmc:/switch/%s/%s.nro", package->pkg_name.c_str(), package->pkg_name.c_str());
-        sprintf(path2, "sdmc:/switch/%s.nro", package->pkg_name.c_str());
+        sprintf(path, "sdmc:/%s", package->binary.c_str());
+        printf("Launch path: %s\n", path);
 
         FILE *file;
         bool successLaunch;
+        //Final check if path actually exists
         if ((file = fopen(path, "r")))
         {
             fclose(file);
+            printf("Path OK, Launching...");
             successLaunch = this->launchFile(path, path);
-        }else if((fopen(path2, "r")))
-        {
-            fclose(file);
-            successLaunch = this->launchFile(path2, path2);
         }else successLaunch = false;
 
         if(!successLaunch){
             //TODO: Notify user of failed launch somehow
+            printf("Failed to launch.");
         }
         return true;
     }
@@ -274,6 +271,7 @@ void AppDetails::preInstallHook()
 
 #if defined(SWITCH)
 bool AppDetails::launchFile(char* path, char* context){
+    //If setnexload works without problems, quit to make loader open next nro
     if(R_SUCCEEDED(envSetNextLoad(path, context))){
         quit();
         return true;
