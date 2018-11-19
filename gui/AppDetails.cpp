@@ -147,9 +147,9 @@ void AppDetails::proceed()
 void AppDetails::launch()
 {
     SDL_Event sdlevent;
-    sdlevent.type = SDL_KEYDOWN;
-    sdlevent.key.keysym.sym = SDLK_PLUS;
-    sdlevent.key.repeat = 0;
+    sdlevent.type = SDL_JOYBUTTONDOWN;
+    // 10 = KEY_PLUS for switch, see https://github.com/devkitPro/SDL/blob/switch-sdl2/src/joystick/switch/SDL_sysjoystick.c#L52
+    sdlevent.jbutton.button = 10;
     SDL_PushEvent(&sdlevent);
 }
 
@@ -181,6 +181,8 @@ void AppDetails::leaveFeedback()
 
 bool AppDetails::process(InputEvents* event)
 {
+    SDL_Color red = {0xFF, 0x00, 0x00, 0xff};
+
 	// don't process any keystrokes if an operation is in progress
 	if (this->operating)
 		return false;
@@ -228,7 +230,7 @@ bool AppDetails::process(InputEvents* event)
         return true;
     }
     #if defined(SWITCH)
-    if (event->pressed(START_BUTTON))
+    if (event->pressed(START_BUTTON) && this->canLaunch == true)
     {
         char path[8+strlen(package->binary.c_str())];
 
@@ -244,10 +246,13 @@ bool AppDetails::process(InputEvents* event)
             printf("Path OK, Launching...");
             successLaunch = this->launchFile(path, path);
         }else successLaunch = false;
-
+        
         if(!successLaunch){
-            //TODO: Notify user of failed launch somehow
             printf("Failed to launch.");
+            TextElement* errorText = new TextElement("Couldn't launch app", 24, &red, false, 300);
+            errorText->position(970, 430);
+            this->elements.push_back(errorText);
+            this->canLaunch = false;
         }
         return true;
     }

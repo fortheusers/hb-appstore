@@ -24,6 +24,7 @@ public:
     AppList* appList;
 	ProgressBar* pbar = NULL;
 	int highlighted = -1;
+    bool canLaunch = true;
     
 	// the callback method to update the currently displayed pop up (and variables it needs)
     static int updateCurrentlyDisplayedPopup(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
