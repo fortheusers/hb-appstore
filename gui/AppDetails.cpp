@@ -146,11 +146,13 @@ void AppDetails::proceed()
 
 void AppDetails::launch()
 {
+    #if defined(SWITCH)
     SDL_Event sdlevent;
     sdlevent.type = SDL_JOYBUTTONDOWN;
     // 10 = KEY_PLUS for switch, see https://github.com/devkitPro/SDL/blob/switch-sdl2/src/joystick/switch/SDL_sysjoystick.c#L52
     sdlevent.jbutton.button = 10;
     SDL_PushEvent(&sdlevent);
+    #endif
 }
 
 void AppDetails::back()
@@ -246,7 +248,7 @@ bool AppDetails::process(InputEvents* event)
             printf("Path OK, Launching...");
             successLaunch = this->launchFile(path, path);
         }else successLaunch = false;
-        
+
         if(!successLaunch){
             printf("Failed to launch.");
             TextElement* errorText = new TextElement("Couldn't launch app", 24, &red, false, 300);
@@ -274,16 +276,16 @@ void AppDetails::preInstallHook()
 #endif
 }
 
-#if defined(SWITCH)
 bool AppDetails::launchFile(char* path, char* context){
+#if defined(SWITCH)
     //If setnexload works without problems, quit to make loader open next nro
     if(R_SUCCEEDED(envSetNextLoad(path, context))){
         quit();
         return true;
     }
     return false;
-}
 #endif
+}
 
 void AppDetails::postInstallHook()
 {
