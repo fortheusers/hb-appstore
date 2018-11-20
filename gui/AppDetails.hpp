@@ -16,6 +16,7 @@ public:
 	AppDetails(Package* package, AppList* appList);
 	bool process(InputEvents* event);
 	void render(Element* parent);
+    bool launchFile(char* path, char* context);
     
 	bool operating = false;
 	Package* package;
@@ -23,12 +24,15 @@ public:
     AppList* appList;
 	ProgressBar* pbar = NULL;
 	int highlighted = -1;
+    bool canLaunch = true;
     
 	// the callback method to update the currently displayed pop up (and variables it needs)
     static int updateCurrentlyDisplayedPopup(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
     
     void proceed();
     void back();
+    void launch();
+
     void moreByAuthor();
     void leaveFeedback();
     

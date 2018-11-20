@@ -49,12 +49,25 @@ AppDetails::AppDetails(Package* package, AppList* appList)
     Button* download = new Button(action, A_BUTTON, true, 30);
 	download->position(970, 550);
     download->action = std::bind(&AppDetails::proceed, this);
-	this->elements.push_back(download);
 
     Button* cancel = new Button("Cancel", B_BUTTON, true, 30, download->width);
     cancel->position(970, 630);
     cancel->action = std::bind(&AppDetails::back, this);
+
+    Button* start = new Button("Launch", START_BUTTON, true, 30, download->width);
+
+    #if defined(SWITCH)
+    if((package->status == UPDATE || package->status == INSTALLED || package->status == LOCAL) && envHasNextLoad() && package->binary != "none"){
+        download->position(970, 470);
+        start->position(970, 550);
+        cancel->position(970, 630);
+        start->action = std::bind(&AppDetails::launch, this);
+        this->elements.push_back(start);
+    }
+    #endif
+
     this->elements.push_back(cancel);
+    this->elements.push_back(download);
 
 
     // the scrollable portion of the app details page
@@ -131,6 +144,17 @@ void AppDetails::proceed()
     SDL_PushEvent(&sdlevent);
 }
 
+void AppDetails::launch()
+{
+    #if defined(SWITCH)
+    SDL_Event sdlevent;
+    sdlevent.type = SDL_JOYBUTTONDOWN;
+    // 10 = KEY_PLUS for switch, see https://github.com/devkitPro/SDL/blob/switch-sdl2/src/joystick/switch/SDL_sysjoystick.c#L52
+    sdlevent.jbutton.button = 10;
+    SDL_PushEvent(&sdlevent);
+    #endif
+}
+
 void AppDetails::back()
 {
     SDL_Event sdlevent;
@@ -159,6 +183,8 @@ void AppDetails::leaveFeedback()
 
 bool AppDetails::process(InputEvents* event)
 {
+    SDL_Color red = {0xFF, 0x00, 0x00, 0xff};
+
 	// don't process any keystrokes if an operation is in progress
 	if (this->operating)
 		return false;
@@ -205,6 +231,34 @@ bool AppDetails::process(InputEvents* event)
         this->appList->update();
         return true;
     }
+    #if defined(SWITCH)
+    if (event->pressed(START_BUTTON) && this->canLaunch == true)
+    {
+        char path[8+strlen(package->binary.c_str())];
+
+        sprintf(path, "sdmc:/%s", package->binary.c_str());
+        printf("Launch path: %s\n", path);
+
+        FILE *file;
+        bool successLaunch;
+        //Final check if path actually exists
+        if ((file = fopen(path, "r")))
+        {
+            fclose(file);
+            printf("Path OK, Launching...");
+            successLaunch = this->launchFile(path, path);
+        }else successLaunch = false;
+
+        if(!successLaunch){
+            printf("Failed to launch.");
+            TextElement* errorText = new TextElement("Couldn't launch app", 24, &red, false, 300);
+            errorText->position(970, 430);
+            this->elements.push_back(errorText);
+            this->canLaunch = false;
+        }
+        return true;
+    }
+    #endif
 
 	if (event->isTouchDown())
 		this->dragging = true;
@@ -219,6 +273,17 @@ void AppDetails::preInstallHook()
     // if we're going to modify the appstore itself, we need to exit romfs so we can change the nro on disk
     if (this->package->pkg_name == "appstore")
         romfsExit();
+#endif
+}
+
+bool AppDetails::launchFile(char* path, char* context){
+#if defined(SWITCH)
+    //If setnexload works without problems, quit to make loader open next nro
+    if(R_SUCCEEDED(envSetNextLoad(path, context))){
+        quit();
+        return true;
+    }
+    return false;
 #endif
 }
 

@@ -28,6 +28,9 @@ Button::Button(const char* message, int button, bool dark, int size, int width)
         case X_BUTTON:
             unicode = "\ue0a3";
             break;
+        case START_BUTTON:
+            unicode = "\ue0a4";
+            break;
         default:
             unicode = "";
     }
