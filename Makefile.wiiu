@@ -24,10 +24,10 @@ include $(WUT_ROOT)/share/romfs-wiiu.mk
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-CFLAGS		+=	-DUSE_FILE32API -DMUSIC -DNOCRYPT -DINPUT_JOYSTICK -D_XOPEN_SOURCE $(INCLUDES)
+CFLAGS		+=	-DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -D_XOPEN_SOURCE $(INCLUDES)
 CXXFLAGS	+=	$(CFLAGS)
 LDFLAGS		+=	$(WUT_NEWLIB_LDFLAGS) $(WUT_STDCPP_LDFLAGS) $(WUT_DEVOPTAB_LDFLAGS) $(ROMFS_LDFLAGS) \
-				-lSDL2_ttf -lfreetype -lpng -SDL2_mixer -lSDL2_gfx -lSDL2_image -lSDL2 -ljpeg -lzip \
+				-lSDL2_ttf -lfreetype -lpng -lSDL2_gfx -lSDL2_image -lSDL2 -ljpeg -lz -lbz2 \
 				-lcoreinit -lvpad -lsndcore2 -lzlib125 -lsysapp -lnsysnet -lnlibcurl -lproc_ui -lgx2 -lgfd -lwhb
 
 #---------------------------------------------------------------------------------
@@ -56,6 +56,7 @@ include $(WUT_ROOT)/share/wut.mk
 # portlibs
 #---------------------------------------------------------------------------------
 PORTLIBS	:=	$(DEVKITPRO)/portlibs/ppc
-LDFLAGS		+=	-L$(PORTLIBS)/lib
-CFLAGS		+=	-I$(PORTLIBS)/include
-CXXFLAGS	+=	-I$(PORTLIBS)/include
+PORTLIBS2	:=	$(DEVKITPRO)/portlibs/wiiu
+LDFLAGS		+=	-L$(PORTLIBS)/lib -L$(PORTLIBS2)/lib
+CFLAGS		+=	-I$(PORTLIBS)/include -I$(PORTLIBS2)/include
+CXXFLAGS	+=	-I$(PORTLIBS)/include -I$(PORTLIBS2)/include

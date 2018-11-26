@@ -17,7 +17,9 @@ A quick summary of how to run it, provided you can get to hbmenu, is also includ
    - when you're done hit home to exit (and album again to go back to hbmenu)
 
 ### Wii U
-To run this program, a Wii U with access to the Homebrew Launcher is required. This can be done on any firmware. For more information, see the tutorial [here](https://wiiu.hacks.guide). For a stable release, see [here](https://github.com/vgmoose/wiiu-hbas/releases).
+To run this program, a Wii U with access to the Homebrew Launcher is required. This can be done on any firmware. For more information, see the tutorial [here](https://wiiu.hacks.guide).
+
+For a stable release, see [here](https://github.com/vgmoose/wiiu-hbas/releases).
 
 ## Maintaining a repo
 See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for setting up a repository. Everything is designed to be statically hosted. If there's no repo provided in the `repos.json` config file, then it will generate a default one pointing to [switchbru.com/appstore](http://switchbru.com/appstore/).
@@ -29,7 +31,7 @@ This program is written using SDL2 and has dependencies on libsdl, libcurl, and 
 
 ### Building for Switch (with libnx)
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
-3. Install devkitA64 and needed Switch dependencies via dkp-pacman:
+2. Install devkitA64 and needed Switch dependencies via dkp-pacman:
 ```
 sudo dkp-pacman -S devkitA64 libnx switch-tools switch-curl switch-bzip2 switch-freetype switch-libjpeg-turbo switch-sdl2 switch-sdl2_gfx switch-sdl2_image switch-sdl2_ttf switch-zlib switch-libpng
 ```
@@ -45,13 +47,28 @@ If all goes well, `appstore.nro` should be sitting in the current directory.
 ### Building for Wii U (with WUT)
 [See here](https://github.com/vgmoose/hb-appstore/pull/19) for info on how to setup the Wii U environment. The Wii U build also makes use of the tinyxml library to look up HBL apps that may already be installed.
 
+The below instructions are currently for Linux only
+1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
+2. Setup the wiiu repo in pacman:
+```
+wget https://fling.heyquark.com/fling-key.pub
+dkp-pacman-key --add fling-key.pub
+dkp-pacman-key --lsign 6F986ED22C5B9003
+dkp-pacman -Syu
+```
+3. Install sdl2, wut, devkitPPC and other dependencies
+```
+sudo dkp-pacman -S wut-linux wiiu-sdl2 devkitPPC ppc-zlib ppc-bzip2 ppc-freetype ppc-libpng
+```
+ 
 Once the environment is setup:
 ```
 git clone --recursive https://github.com/vgmoose/hb-appstore.git
 cd hb-appstore
-make -f Makefile.wiiu clean
 make -f Makefile.wiiu
 ```
+
+If all goes well, `appstore.rpx` should be sitting in the current directory.
 
 ### Building for PC
 There's a separate makefile for building the SDL2 app for PC. Below instructions are for Ubuntu, but should be similar on other platforms:
