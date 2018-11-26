@@ -72,6 +72,6 @@ This software is licensed under the GPLv3.
 #### Contributing
 It's not required, but running a clang-format before making a PR helps to clean up styling issues:
 ```
-find . -name "*.cpp" -not -path "./libs/*" -exec clang-format -i {} \;
+find . \( -name "*.cpp" -or -name "*.hpp" \) -not -path "./libs/*" -exec clang-format -i {} \;
 ```
 

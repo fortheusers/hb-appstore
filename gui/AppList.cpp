@@ -6,7 +6,7 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <algorithm>
 #include <cstdlib> // std::rand, std::srand
-#include <ctime> // std::time
+#include <ctime>   // std::time
 
 AppList::AppList(Get* get, Sidebar* sidebar)
 {
@@ -89,7 +89,7 @@ bool AppList::process(InputEvents* event)
 			{
 				this->touchMode = false;
 				this->highlighted = 0;
-				this->y = 0; // reset scroll TODO: maintain scroll when switching back from touch mode
+				this->y = 0;		 // reset scroll TODO: maintain scroll when switching back from touch mode
 				event->keyCode = -1; // we already have the cursor where we want it, no further updates
 				ret |= true;
 			}

@@ -23,7 +23,7 @@ ImageElement::ImageElement(const char* incoming)
 	SDL_Surface* surface = IMG_Load(this->path);
 	this->imgSurface = SDL_CreateTextureFromSurface(MainDisplay::mainRenderer, surface);
 
-	this->width = 100; //surface->w;
+	this->width = 100;  //surface->w;
 	this->height = 100; //surface->h;
 
 	SDL_FreeSurface(surface);

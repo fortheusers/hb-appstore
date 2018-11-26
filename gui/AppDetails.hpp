@@ -1,12 +1,12 @@
 #ifndef APPDETAILS_H_
 #define APPDETAILS_H_
 
-#include "TextElement.hpp"
-#include "ImageElement.hpp"
-#include "ProgressBar.hpp"
-#include "ListElement.hpp"
-#include "../libs/get/src/Package.hpp"
 #include "../libs/get/src/Get.hpp"
+#include "../libs/get/src/Package.hpp"
+#include "ImageElement.hpp"
+#include "ListElement.hpp"
+#include "ProgressBar.hpp"
+#include "TextElement.hpp"
 
 class AppList;
 
@@ -16,35 +16,34 @@ public:
 	AppDetails(Package* package, AppList* appList);
 	bool process(InputEvents* event);
 	void render(Element* parent);
-    bool launchFile(char* path, char* context);
-    
+	bool launchFile(char* path, char* context);
+
 	bool operating = false;
 	Package* package;
-    Get* get;
-    AppList* appList;
+	Get* get;
+	AppList* appList;
 	ProgressBar* pbar = NULL;
 	int highlighted = -1;
-    bool canLaunch = true;
-    
+	bool canLaunch = true;
+
 	// the callback method to update the currently displayed pop up (and variables it needs)
-    static int updateCurrentlyDisplayedPopup(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
-    
-    void proceed();
-    void back();
-    void launch();
+	static int updateCurrentlyDisplayedPopup(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow);
 
-    void moreByAuthor();
-    void leaveFeedback();
-    
-    void preInstallHook();
-    void postInstallHook();
+	void proceed();
+	void back();
+	void launch();
 
+	void moreByAuthor();
+	void leaveFeedback();
+
+	void preInstallHook();
+	void postInstallHook();
 };
 
 class AppDetailsContent : public ListElement
 {
-    bool process(InputEvents* event);
-    void render(Element* parent);
+	bool process(InputEvents* event);
+	void render(Element* parent);
 };
 
 #endif

@@ -1,5 +1,5 @@
-#include <string>
 #include "Element.hpp"
+#include <string>
 #pragma once
 
 #define NORMAL 0
@@ -16,7 +16,8 @@ public:
 	SDL_Texture* textSurface = NULL;
 	SDL_Color color;
 
-    std::string* text;
+	std::string* text;
+
 private:
 	int size;
 };

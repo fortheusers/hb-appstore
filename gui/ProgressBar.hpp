@@ -6,9 +6,9 @@ public:
 	ProgressBar();
 	void render(Element* parent);
 	float percent = 0;
-	
+
 	int color;
-    bool dimBg = false;
-    
+	bool dimBg = false;
+
 	int width = 0;
 };

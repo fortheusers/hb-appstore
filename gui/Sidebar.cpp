@@ -150,7 +150,7 @@ void Sidebar::render(Element* parent)
 {
 	// draw the light gray bg behind the active category
 	SDL_Rect dimens = { 0, 0, 400 - 260 * (appList->R - 3) - 35, 60 }; // TODO: extract this to a method too
-	dimens.y = 150 + this->curCategory * 70 - 15; // TODO: extract formula into method
+	dimens.y = 150 + this->curCategory * 70 - 15;					   // TODO: extract formula into method
 
 	SDL_SetRenderDrawColor(parent->renderer, 0x67, 0x6a, 0x6d, 0xFF);
 #if defined(__WIIU__)

@@ -1,13 +1,12 @@
+#include <SDL2/SDL.h>
+#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <iostream>
 #include <unordered_map>
-#include <SDL2/SDL.h>
 
 class ImageCache
 {
 public:
-
 	ImageCache(const char* tmp_path);
 	void writeVersionCache();
 

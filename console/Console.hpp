@@ -14,7 +14,6 @@ public:
 	void update();
 
 private:
-
 	// SDL graphics variables
 	SDL_Surface* window_surface;
 	SDL_Window* window;
