@@ -56,7 +56,7 @@ dkp-pacman -Syu
 ```
 3. Install sdl2, wut, devkitPPC and other dependencies
 ```
-sudo dkp-pacman -S wut-linux wiiu-sdl2 devkitPPC ppc-zlib ppc-bzip2 ppc-freetype ppc-libpng
+sudo dkp-pacman -S wut-linux wiiu-sdl2 devkitPPC ppc-zlib ppc-bzip2 ppc-freetype ppc-libpng wiiu-curl-headers
 ```
  
 Once the environment is setup:
