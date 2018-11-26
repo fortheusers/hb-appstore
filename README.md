@@ -58,8 +58,8 @@ dkp-pacman -Syu
 ```
 sudo dkp-pacman -S wut-linux wiiu-sdl2 devkitPPC ppc-zlib ppc-bzip2 ppc-freetype ppc-libpng wiiu-curl-headers
 ```
- 
-Once the environment is setup:
+4. Install [libromfs](https://github.com/rw-r-r-0644/libromfs-wiiu) according to the readme instructions
+5. Once the environment is setup:
 ```
 git clone --recursive https://github.com/vgmoose/hb-appstore.git
 cd hb-appstore
