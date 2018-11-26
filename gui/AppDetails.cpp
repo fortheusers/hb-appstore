@@ -56,7 +56,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	Button* start = new Button("Launch", START_BUTTON, true, 30, download->width);
 
 #if defined(SWITCH)
-	if ((package->status == UPDATE || package->status == INSTALLED || package->status == LOCAL) && envHasNextLoad() && package->binary != "none")
+	if (package->status != GET && envHasNextLoad() && package->binary && package->binary != "none")
 	{
 		download->position(970, 470);
 		start->position(970, 550);
@@ -286,6 +286,7 @@ bool AppDetails::launchFile(char* path, char* context)
 	}
 	return false;
 #endif
+	return false;
 }
 
 void AppDetails::postInstallHook()
