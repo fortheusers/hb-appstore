@@ -1,7 +1,6 @@
 #include "MainDisplay.hpp"
-#include "AppCard.hpp"
 #include "../libs/get/src/Utils.hpp"
-
+#include "AppCard.hpp"
 
 #if defined(SWITCH)
 #include <switch.h>
@@ -26,39 +25,42 @@ MainDisplay::MainDisplay(Get* get)
 	// populate image cache with any local version info if it exists
 	this->imageCache = new ImageCache(get->tmp_path);
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0) {
-//        printf("SDL init failed: %s\n", SDL_GetError());
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO) < 0)
+	{
+		//        printf("SDL init failed: %s\n", SDL_GetError());
 		return;
 	}
 
-	//Initialize SDL_mixer
-	#if defined(MUSIC)
-		Mix_Init(MIX_INIT_MP3);
-		Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
-		this->music = Mix_LoadMUS(ROMFS "./res/music.mp3");
-		if (music) {
-		    Mix_FadeInMusic(music, -1, 300);
-		}
-	#endif
+//Initialize SDL_mixer
+#if defined(MUSIC)
+	Mix_Init(MIX_INIT_MP3);
+	Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
+	this->music = Mix_LoadMUS(ROMFS "./res/music.mp3");
+	if (music)
+	{
+		Mix_FadeInMusic(music, -1, 300);
+	}
+#endif
 
-	if (TTF_Init() < 0) {
-//        printf("SDL ttf init failed: %s\n", SDL_GetError());
+	if (TTF_Init() < 0)
+	{
+		//        printf("SDL ttf init failed: %s\n", SDL_GetError());
 		return;
 	}
 
 	int imgFlags = IMG_INIT_PNG;
-	if( !( IMG_Init( imgFlags ) & imgFlags ) )
+	if (!(IMG_Init(imgFlags) & imgFlags))
 	{
-//        printf("SDL image init failed: %s\n", SDL_GetError());
+		//        printf("SDL image init failed: %s\n", SDL_GetError());
 		return;
 	}
 
-    // initialize teh romfs for switch/wiiu
+		// initialize teh romfs for switch/wiiu
 #if defined(SWITCH) || defined(__WIIU__)
-    romfsInit();
+	romfsInit();
 #endif
 
-//    printf("initialized SDL\n");
+	//    printf("initialized SDL\n");
 
 	int height = 720;
 	int width = 1280;
@@ -70,71 +72,73 @@ MainDisplay::MainDisplay(Get* get)
 	SDL_SetRenderTarget(this->renderer, NULL);
 
 	MainDisplay::mainRenderer = this->renderer;
-    MainDisplay::mainDisplay = this;
+	MainDisplay::mainDisplay = this;
 
-	for (int i = 0; i < SDL_NumJoysticks(); i++) {
-		if (SDL_JoystickOpen(i) == NULL) {
-//                printf("SDL_JoystickOpen: %s\n", SDL_GetError());
-				SDL_Quit();
-				return;
+	for (int i = 0; i < SDL_NumJoysticks(); i++)
+	{
+		if (SDL_JoystickOpen(i) == NULL)
+		{
+			//                printf("SDL_JoystickOpen: %s\n", SDL_GetError());
+			SDL_Quit();
+			return;
 		}
 	}
 
-    // set up the SDL needsRender event
-    this->needsRender.type = SDL_USEREVENT;
+	// set up the SDL needsRender event
+	this->needsRender.type = SDL_USEREVENT;
 
-    // go through all repos and if one has an error, set the error flag
-    bool atLeastOneEnabled = false;
-    for (auto repo : this->get->repos)
-    {
-        this->error = this->error || !repo->loaded;
-        atLeastOneEnabled = atLeastOneEnabled || repo->enabled;
-    }
+	// go through all repos and if one has an error, set the error flag
+	bool atLeastOneEnabled = false;
+	for (auto repo : this->get->repos)
+	{
+		this->error = this->error || !repo->loaded;
+		atLeastOneEnabled = atLeastOneEnabled || repo->enabled;
+	}
 
-    this->error = this->error || !atLeastOneEnabled;
+	this->error = this->error || !atLeastOneEnabled;
 
 	// the progress bar
 	ProgressBar* pbar = new ProgressBar();
-	pbar->position(401, 380 - this->error*290);
+	pbar->position(401, 380 - this->error * 290);
 	this->elements.push_back(pbar);
 
 	// the text above the progress bar
-//	TextElement* pbar_text = new TextElement("Updating App Info...", 17);
-//	pbar_text->position(550, 365);
-//	this->elements.push_back(pbar_text);
+	//	TextElement* pbar_text = new TextElement("Updating App Info...", 17);
+	//	pbar_text->position(550, 365);
+	//	this->elements.push_back(pbar_text);
 
 	// create the first two elements (icon and app title)
 	ImageElement* icon = new ImageElement(ROMFS "res/icon.png");
-	icon->position(330 + this->error*140, 255 - this->error*230);
-	icon->resize(70 - this->error*35, 70 - this->error*35);
+	icon->position(330 + this->error * 140, 255 - this->error * 230);
+	icon->resize(70 - this->error * 35, 70 - this->error * 35);
 	this->elements.push_back(icon);
 
-	TextElement* title = new TextElement("Homebrew App Store", 50 - this->error*25);
-	title->position(415 + this->error*100, 255 - this->error*230);
+	TextElement* title = new TextElement("Homebrew App Store", 50 - this->error * 25);
+	title->position(415 + this->error * 100, 255 - this->error * 230);
 	this->elements.push_back(title);
 
-    if (this->imageCache->version_cache.size() == 0)
-    {
-        notice = new TextElement("Still doing initial load-- next time will be faster!", 20);
-        notice->position(410, 460);
-        notice->hidden = true;
-        this->elements.push_back(notice);
-    }
+	if (this->imageCache->version_cache.size() == 0)
+	{
+		notice = new TextElement("Still doing initial load-- next time will be faster!", 20);
+		notice->position(410, 460);
+		notice->hidden = true;
+		this->elements.push_back(notice);
+	}
 
-    if (this->error)
-    {
-        std::string troubleshootingText = "No enabled repos found, check ./get/repos.json\nMake sure repo has at least one package";
-        if (atLeastOneEnabled)
-            troubleshootingText = std::string("Perform a connection test in the " PLATFORM " System Settings\nEnsure DNS isn't blocking: ") + this->get->repos[0]->url;
+	if (this->error)
+	{
+		std::string troubleshootingText = "No enabled repos found, check ./get/repos.json\nMake sure repo has at least one package";
+		if (atLeastOneEnabled)
+			troubleshootingText = std::string("Perform a connection test in the " PLATFORM " System Settings\nEnsure DNS isn't blocking: ") + this->get->repos[0]->url;
 
-        TextElement* errorMessage = new TextElement("Couldn't connect to the Internet!", 40);
-        errorMessage->position(345, 305);
-        this->elements.push_back(errorMessage);
+		TextElement* errorMessage = new TextElement("Couldn't connect to the Internet!", 40);
+		errorMessage->position(345, 305);
+		this->elements.push_back(errorMessage);
 
-        TextElement* troubleshooting = new TextElement((std::string("Troubleshooting:\n") + troubleshootingText).c_str(), 20, NULL, false, 600);
-        troubleshooting->position(380, 585);
-        this->elements.push_back(troubleshooting);
-    }
+		TextElement* troubleshooting = new TextElement((std::string("Troubleshooting:\n") + troubleshootingText).c_str(), 20, NULL, false, 600);
+		troubleshooting->position(380, 585);
+		this->elements.push_back(troubleshooting);
+	}
 }
 
 bool MainDisplay::process(InputEvents* event)
@@ -145,21 +149,21 @@ bool MainDisplay::process(InputEvents* event)
 	{
 		// should be a progress bar
 		if (this->get->packages.size() != 1)
-			((ProgressBar*)this->elements[0])->percent = (this->count / ((float)this->get->packages.size()-1));
+			((ProgressBar*)this->elements[0])->percent = (this->count / ((float)this->get->packages.size() - 1));
 
 		// no packages, prevent crash TODO: display offline in bottom bar
 		if (this->get->packages.size() == 0)
 		{
 			((ProgressBar*)this->elements[0])->percent = -1;
-            this->showingSplash = false;
-            return true;
+			this->showingSplash = false;
+			return true;
 		}
 
-        if (notice && ((ProgressBar*)this->elements[0])->percent > 0.5)
-            notice->hidden = false;
+		if (notice && ((ProgressBar*)this->elements[0])->percent > 0.5)
+			notice->hidden = false;
 
-        // update the counter (TODO: replace with fetching app icons/screen previews)
-        this->count++;
+		// update the counter (TODO: replace with fetching app icons/screen previews)
+		this->count++;
 
 		// get the package whose icon+screen to process
 		Package* current = this->get->packages[this->count - 1];
@@ -169,9 +173,7 @@ bool MainDisplay::process(InputEvents* event)
 
 		// check if this package exists in our cache, but the version doesn't match
 		// (if (it's not in the cache) OR (it's in the cache but the version doesn't match)
-		if (this->imageCache->version_cache.count(current->pkg_name) == 0 ||
-			(this->imageCache->version_cache.count(current->pkg_name) &&
-			 this->imageCache->version_cache[current->pkg_name] != current->version))
+		if (this->imageCache->version_cache.count(current->pkg_name) == 0 || (this->imageCache->version_cache.count(current->pkg_name) && this->imageCache->version_cache[current->pkg_name] != current->version))
 		{
 			// the version in our cache doesn't match the one that will be on the server
 			// so we need to download the images now
@@ -180,11 +182,11 @@ bool MainDisplay::process(InputEvents* event)
 			bool success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/icon.png", key_path + "/icon.png");
 			if (!success) // manually add defualt icon to cache if downloading failed
 				cp(ROMFS "res/default.png", (key_path + "/icon.png").c_str());
-            // TODO: generate a custom icon for this version with a color and name
+			// TODO: generate a custom icon for this version with a color and name
 
-            success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/screen.png", key_path + "/screen.png");
-            if (!success)
-                cp(ROMFS "res/noscreen.png", (key_path + "/screen.png").c_str());
+			success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/screen.png", key_path + "/screen.png");
+			if (!success)
+				cp(ROMFS "res/noscreen.png", (key_path + "/screen.png").c_str());
 
 			// add these versions to the version map
 			this->imageCache->version_cache[current->pkg_name] = current->version;
@@ -215,15 +217,15 @@ bool MainDisplay::process(InputEvents* event)
 			sidebar->appList = applist;
 
 			this->showingSplash = false;
-            this->needsRedraw = true;
+			this->needsRedraw = true;
 		}
 
-        return true;
+		return true;
 	}
 	else
 	{
-        if (MainDisplay::subscreen)
-            return MainDisplay::subscreen->process(event);
+		if (MainDisplay::subscreen)
+			return MainDisplay::subscreen->process(event);
 		// keep processing child elements
 		return super::process(event);
 	}
@@ -233,19 +235,19 @@ bool MainDisplay::process(InputEvents* event)
 
 void MainDisplay::render(Element* parent)
 {
-    // set the background color
-    MainDisplay::background(0x42, 0x45, 0x48);
+	// set the background color
+	MainDisplay::background(0x42, 0x45, 0x48);
 //    MainDisplay::background(0x60, 0x7d, 0x8b);
 #if defined(__WIIU__)
-    MainDisplay::background(0x54, 0x55, 0x6e);
+	MainDisplay::background(0x54, 0x55, 0x6e);
 #endif
 
-    if (MainDisplay::subscreen)
-    {
-        MainDisplay::subscreen->render(this);
-        this->update();
-        return;
-    }
+	if (MainDisplay::subscreen)
+	{
+		MainDisplay::subscreen->render(this);
+		this->update();
+		return;
+	}
 
 	// render the rest of the subelements
 	super::render(this);
@@ -262,35 +264,35 @@ void MainDisplay::background(int r, int g, int b)
 
 void MainDisplay::update()
 {
-    // never exceed 60fps because there's no point
+	// never exceed 60fps because there's no point
 
-//    int now = SDL_GetTicks();
-//    int diff = now - this->lastFrameTime;
-//
-//    if (diff < 16)
-//        return;
+	//    int now = SDL_GetTicks();
+	//    int diff = now - this->lastFrameTime;
+	//
+	//    if (diff < 16)
+	//        return;
 
-    SDL_RenderPresent(this->renderer);
-//    this->lastFrameTime = now;
+	SDL_RenderPresent(this->renderer);
+	//    this->lastFrameTime = now;
 }
 
 void quit()
 {
-    IMG_Quit();
-    TTF_Quit();
+	IMG_Quit();
+	TTF_Quit();
 
-    SDL_Delay(10);
-    SDL_DestroyWindow(MainDisplay::mainDisplay->window);
+	SDL_Delay(10);
+	SDL_DestroyWindow(MainDisplay::mainDisplay->window);
 
-    SDL_QuitSubSystem(SDL_INIT_VIDEO);
-    SDL_Quit();
+	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	SDL_Quit();
 
 #if defined(__WIIU__)
-    romfsExit();
+	romfsExit();
 #endif
 
 #if defined(SWITCH)
-    socketExit();
+	socketExit();
 #endif
-    exit(0);
+	exit(0);
 }

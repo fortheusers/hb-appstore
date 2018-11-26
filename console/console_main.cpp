@@ -1,7 +1,7 @@
-#include "Menu.hpp"
-#include "Input.hpp"
-#include "../libs/get/src/Utils.hpp"
 #include "../libs/get/src/Get.hpp"
+#include "../libs/get/src/Utils.hpp"
+#include "Input.hpp"
+#include "Menu.hpp"
 
 int console_main(Get* get)
 {
@@ -15,7 +15,7 @@ int console_main(Get* get)
 
 	bool running = true;
 
-	while(running)
+	while (running)
 	{
 		console->background(42, 37, 39);
 
@@ -62,10 +62,10 @@ int console_main(Get* get)
 		//			running = false;
 
 		// move cursor up or down depending on input
-		menu->moveCursor(-1*(input->held(BUTTON_UP)) + (input->held(BUTTON_DOWN)));
+		menu->moveCursor(-1 * (input->held(BUTTON_UP)) + (input->held(BUTTON_DOWN)));
 
 		// move page PAGE_SIZE forward/backward depending on input
-		menu->moveCursor(-1*PAGE_SIZE*input->held(BUTTON_LEFT) + PAGE_SIZE*input->held(BUTTON_RIGHT));
+		menu->moveCursor(-1 * PAGE_SIZE * input->held(BUTTON_LEFT) + PAGE_SIZE * input->held(BUTTON_RIGHT));
 	}
 
 	console->close();

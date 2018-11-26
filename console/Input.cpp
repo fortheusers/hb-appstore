@@ -3,7 +3,7 @@
 Input::Input()
 {
 #if defined(INPUT_JOYSTICK)
-	if(SDL_Init(SDL_INIT_JOYSTICK) < 0)
+	if (SDL_Init(SDL_INIT_JOYSTICK) < 0)
 		return;
 
 	for (int i = 0; i < SDL_NumJoysticks(); i++)
@@ -32,25 +32,25 @@ void Input::updateButtons()
 #if defined(INPUT_JOYSTICK)
 	if (event.type == SDL_JOYBUTTONDOWN)
 	{
-		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_A)?				BUTTON_A		: 0);
-		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_B)?				BUTTON_B		: 0);
-		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT)?		BUTTON_UP		: 0);
-		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_MAX)?			BUTTON_DOWN		: 0);
-		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN)?		BUTTON_LEFT		: 0);
-		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT)?	BUTTON_RIGHT 	: 0);
-		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_UP)?		BUTTON_MINUS	: 0);
+		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_A) ? BUTTON_A : 0);
+		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_B) ? BUTTON_B : 0);
+		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT) ? BUTTON_UP : 0);
+		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_MAX) ? BUTTON_DOWN : 0);
+		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN) ? BUTTON_LEFT : 0);
+		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT) ? BUTTON_RIGHT : 0);
+		this->btns_h |= ((event.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_UP) ? BUTTON_MINUS : 0);
 	}
 #else
 	if (event.type == SDL_KEYDOWN)
 	{
-		this->btns_h |= ((event.key.keysym.sym == SDLK_a)?			BUTTON_A : 0);
-		this->btns_h |= ((event.key.keysym.sym == SDLK_b)?			BUTTON_B : 0);
-		this->btns_h |= ((event.key.keysym.sym == SDLK_UP)?			BUTTON_UP : 0);
-		this->btns_h |= ((event.key.keysym.sym == SDLK_DOWN)?		BUTTON_DOWN : 0);
-		this->btns_h |= ((event.key.keysym.sym == SDLK_LEFT)?		BUTTON_LEFT : 0);
-		this->btns_h |= ((event.key.keysym.sym == SDLK_RIGHT)?		BUTTON_RIGHT : 0);
-		this->btns_h |= ((event.key.keysym.sym == SDLK_MINUS|| event.key.keysym.sym == SDLK_RETURN)?		BUTTON_MINUS : 0);
-		this->btns_h |= ((event.key.keysym.sym == SDLK_x)?			BUTTON_X : 0);
+		this->btns_h |= ((event.key.keysym.sym == SDLK_a) ? BUTTON_A : 0);
+		this->btns_h |= ((event.key.keysym.sym == SDLK_b) ? BUTTON_B : 0);
+		this->btns_h |= ((event.key.keysym.sym == SDLK_UP) ? BUTTON_UP : 0);
+		this->btns_h |= ((event.key.keysym.sym == SDLK_DOWN) ? BUTTON_DOWN : 0);
+		this->btns_h |= ((event.key.keysym.sym == SDLK_LEFT) ? BUTTON_LEFT : 0);
+		this->btns_h |= ((event.key.keysym.sym == SDLK_RIGHT) ? BUTTON_RIGHT : 0);
+		this->btns_h |= ((event.key.keysym.sym == SDLK_MINUS || event.key.keysym.sym == SDLK_RETURN) ? BUTTON_MINUS : 0);
+		this->btns_h |= ((event.key.keysym.sym == SDLK_x) ? BUTTON_X : 0);
 	}
 #endif
 }

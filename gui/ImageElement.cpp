@@ -4,9 +4,9 @@
 
 ImageElement::ImageElement(const char* incoming)
 {
-    this->path = incoming;
-    
-    std::string key = std::string(this->path);
+	this->path = incoming;
+
+	std::string key = std::string(this->path);
 
 	// try to find it in the cache first
 	if (ImageCache::cache.count(key))
