@@ -85,5 +85,16 @@ bool ListElement::handleInertiaScroll(InputEvents* event)
 		ret |= true;
 	}
 
+#ifdef PC
+	if (event->wheelScroll != 0)
+	{
+		// apply wheel scroll directly to y position, and then reset
+		elem->y += event->wheelScroll * 10;
+		if (elem->y > 0) elem->y = 0;
+		event->wheelScroll = 0;
+		ret |= true;
+	}
+#endif
+
 	return ret;
 }

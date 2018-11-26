@@ -24,6 +24,8 @@ bool InputEvents::update()
 
 #ifdef PC
 	this->allowTouch = false;
+	if (event.type == SDL_MOUSEWHEEL)
+		this->wheelScroll = event.wheel.y;
 #endif
 
 	if (event.key.repeat == 0 && (this->type == SDL_KEYDOWN || this->type == SDL_KEYUP))
