@@ -45,16 +45,24 @@ make -f Makefile.switch
 If all goes well, `appstore.nro` should be sitting in the current directory.
 
 ### Building for Wii U (with WUT)
-The below instructions are currently for Linux only
+The below instructions are currently for Linux and macOS
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
-2. Setup the wiiu repo in pacman:
+2. Setup the wiiu repo in pacman–
+
+Add the following to the bottom of `/opt/devkitpro/pacman/etc/pacman.conf`:
+```
+[wiiu-fling]
+Server = https://fling.heyquark.com
+```
+
+Then run the following commands:
 ```
 wget https://fling.heyquark.com/fling-key.pub
 dkp-pacman-key --add fling-key.pub
 dkp-pacman-key --lsign 6F986ED22C5B9003
 dkp-pacman -Syu
 ```
-3. Install sdl2, wut, devkitPPC and other dependencies
+3. Install sdl2, wut, devkitPPC and other dependencies (on macOS, use `wut-osx` instead of `wut-linux`)
 ```
 sudo dkp-pacman -S wut-linux wiiu-sdl2 devkitPPC ppc-zlib ppc-bzip2 ppc-freetype ppc-libpng wiiu-curl-headers
 ```
