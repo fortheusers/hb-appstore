@@ -56,7 +56,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	Button* start = new Button("Launch", START_BUTTON, true, 30, download->width);
 
 #if defined(SWITCH)
-	if (package->status != GET && envHasNextLoad() && package->binary && package->binary != "none")
+	if (package->status != GET && envHasNextLoad() && package->binary != "none")
 	{
 		download->position(970, 470);
 		start->position(970, 550);
