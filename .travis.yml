@@ -1,16 +1,27 @@
 language: c++
 sudo: required
+
+os: linux
+dist: xenial
+
+env:
+  - DEVKITPRO=/opt/devkitpro
+  - WUT_ROOT=/opt/wut
+
 matrix:
   include:
-    - os: linux
-      dist: xenial
+    - env: PLATFORM=pc
+    - env: PLATFORM=switch
+    - env: PLATFORM=wiiu
+
 addons:
   apt:
     packages:
-      - libsdl2-dev
-      - libsdl2-image-dev
-      - libsdl2-gfx-dev
-      - libsdl2-ttf-dev
-      - zlib1g-dev
+      - git
+      - wget
 
-script: make -f Makefile.pc
+install:
+  - ./dependency_helper.sh
+
+script:
+  - make -f Makefile.${PLATFORM}
