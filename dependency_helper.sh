@@ -27,9 +27,9 @@ case "${PLATFORM}" in
   wiiu)   # uses wut
       setup_dkp_repo
 
-      dkp-pacman-key --recv 6F986ED22C5B9003
-      dkp-pacman-key --lsign 6F986ED22C5B9003
-      dkp-pacman -Syu
+      sudo dkp-pacman-key --recv 6F986ED22C5B9003
+      sudo dkp-pacman-key --lsign 6F986ED22C5B9003
+      sudo dkp-pacman -Syu
 
       sudo echo "
       [wiiu-fling]
