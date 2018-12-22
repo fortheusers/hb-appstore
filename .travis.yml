@@ -1,12 +1,13 @@
-language: c++
+language: cpp
 sudo: required
 
 os: linux
 dist: xenial
 
 env:
-  - DEVKITPRO=/opt/devkitpro
-  - WUT_ROOT=/opt/wut
+  global:
+    - DEVKITPRO=/opt/devkitpro
+    - WUT_ROOT=/opt/wut
 
 matrix:
   include:
