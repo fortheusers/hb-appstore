@@ -34,12 +34,12 @@ case "${PLATFORM}" in
       sudo echo "
       [wiiu-fling]
       Server = https://fling.heyquark.com
-      " >> /opt/devkitpro/pacman/etc/pacman.conf
+      " | sudo tee --append /opt/devkitpro/pacman/etc/pacman.conf
 
       sudo dkp-pacman --noconfirm -S wut-linux wiiu-sdl2 devkitPPC ppc-zlib ppc-bzip2 ppc-freetype ppc-libpng wiiu-curl-headers
       git clone https://github.com/rw-r-r-0644/libromfs-wiiu.git
       cd libromfs-wiiu
-      make install
+      sudo make install
     ;;
 esac
 
