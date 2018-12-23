@@ -29,12 +29,13 @@ case "${PLATFORM}" in
 
       sudo dkp-pacman-key --recv 6F986ED22C5B9003
       sudo dkp-pacman-key --lsign 6F986ED22C5B9003
-      sudo dkp-pacman -Syu
 
       sudo echo "
       [wiiu-fling]
       Server = https://fling.heyquark.com
       " | sudo tee --append /opt/devkitpro/pacman/etc/pacman.conf
+
+      sudo dkp-pacman -Syu
 
       sudo dkp-pacman --noconfirm -S wut-linux wiiu-sdl2 devkitPPC ppc-zlib ppc-bzip2 ppc-freetype ppc-libpng wiiu-curl-headers
       git clone https://github.com/rw-r-r-0644/libromfs-wiiu.git
