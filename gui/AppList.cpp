@@ -34,7 +34,7 @@ bool AppList::process(InputEvents* event)
 {
 	bool ret = false;
 
-	if (event->pressed(Z_BUTTON) || event->pressed(L_BUTTON))
+	if (event->pressed(ZL_BUTTON) || event->pressed(L_BUTTON))
 	{
 		R = (R == 3) ? 4 : 3;
 		this->x = 400 - 260 * (R - 3);

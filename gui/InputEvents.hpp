@@ -1,19 +1,20 @@
 #include <SDL2/SDL.h>
 
 // clang-format off
-#define LEFT_BUTTON       0b0000000000001
-#define RIGHT_BUTTON      0b0000000000010
-#define UP_BUTTON         0b0000000000100
-#define DOWN_BUTTON       0b0000000001000
-#define START_BUTTON      0b0000000010000
-#define B_BUTTON          0b0000000100000
-#define A_BUTTON          0b0000001000000
-#define Z_BUTTON          0b0000010000000
-#define SELECT_BUTTON     0b0000100000000
-#define L_BUTTON          0b0001000000000
-#define R_BUTTON          0b0010000000000
-#define X_BUTTON          0b0100000000000
-#define Y_BUTTON          0b1000000000000
+#define LEFT_BUTTON       0b00000000000001
+#define RIGHT_BUTTON      0b00000000000010
+#define UP_BUTTON         0b00000000000100
+#define DOWN_BUTTON       0b00000000001000
+#define START_BUTTON      0b00000000010000
+#define B_BUTTON          0b00000000100000
+#define A_BUTTON          0b00000001000000
+#define ZL_BUTTON         0b00000010000000
+#define SELECT_BUTTON     0b00000100000000
+#define L_BUTTON          0b00001000000000
+#define R_BUTTON          0b00010000000000
+#define X_BUTTON          0b00100000000000
+#define Y_BUTTON          0b01000000000000
+#define ZR_BUTTON         0b10000000000000
 
 // SDL enums should line up with the actual controls
 // uses switch+wiiu mappings, see: https://github.com/rw-r-r-0644/sdl2-wiiu/blob/master/SDL2-wiiu/src/joystick/wiiu/SDL_sysjoystick.c#L38
