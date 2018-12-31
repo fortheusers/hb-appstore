@@ -50,10 +50,9 @@ The below instructions are currently for Linux and macOS
 2. Setup [wiiu-fling](https://gitlab.com/QuarkTheAwesome/wiiu-fling#wiiu-fling) according to the instructions
 3. Install sdl2, wut, devkitPPC and other dependencies (on macOS, use `wut-osx` instead of `wut-linux`)
 ```
-sudo dkp-pacman -S wut-linux wiiu-sdl2 devkitPPC ppc-zlib ppc-bzip2 ppc-freetype ppc-libpng wiiu-curl-headers
+sudo dkp-pacman -S wut-linux wiiu-sdl2 devkitPPC wiiu-libromfs ppc-zlib ppc-bzip2 ppc-freetype ppc-libpng wiiu-curl-headers libromfs
 ```
-4. Install [libromfs](https://github.com/rw-r-r-0644/libromfs-wiiu) according to the readme instructions
-5. Once the environment is setup:
+4. Once the environment is setup:
 ```
 git clone --recursive https://github.com/vgmoose/hb-appstore.git
 cd hb-appstore

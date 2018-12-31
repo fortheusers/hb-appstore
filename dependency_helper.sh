@@ -37,10 +37,7 @@ case "${PLATFORM}" in
 
       sudo dkp-pacman -Syu
 
-      sudo dkp-pacman --noconfirm -S wut-linux wiiu-sdl2 devkitPPC ppc-zlib ppc-bzip2 ppc-freetype ppc-libpng wiiu-curl-headers
-      git clone https://github.com/rw-r-r-0644/libromfs-wiiu.git
-      cd libromfs-wiiu
-      sudo make install
+      sudo dkp-pacman --noconfirm -S wut-linux wiiu-sdl2 devkitPPC wiiu-libromfs ppc-zlib ppc-bzip2 ppc-freetype ppc-libpng wiiu-curl-headers
     ;;
 esac
 
