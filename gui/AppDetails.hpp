@@ -17,6 +17,7 @@ public:
 	bool process(InputEvents* event);
 	void render(Element* parent);
 	bool launchFile(char* path, char* context);
+	bool themeInstall(char* installerPath);
 
 	bool operating = false;
 	Package* package;

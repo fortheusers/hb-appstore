@@ -6,6 +6,7 @@
 #include "MainDisplay.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <sstream>
+#include <fstream>
 
 #if defined(SWITCH)
 #include <switch.h>
@@ -56,7 +57,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	Button* start = new Button("Launch", START_BUTTON, true, 30, download->width);
 
 #if defined(SWITCH)
-	if (package->status != GET && envHasNextLoad() && package->binary != "none")
+	if (package->status != GET && envHasNextLoad() && (package->binary != "none" || this->package->category == "theme" || true)) //XXX: Always true for testing
 	{
 		download->position(970, 470);
 		start->position(970, 550);
@@ -236,16 +237,27 @@ bool AppDetails::process(InputEvents* event)
 		printf("Launch path: %s\n", path);
 
 		FILE* file;
-		bool successLaunch;
-		//Final check if path actually exists
-		if ((file = fopen(path, "r")))
+		bool successLaunch = false;
+
+		if(package->category == "theme" || true) //XXX: Forces package as theme for testing
 		{
-			fclose(file);
-			printf("Path OK, Launching...");
-			successLaunch = this->launchFile(path, path);
+			Package *installer = get->search("an homebrew that can manage custom themes directly on the switch, it can install both nxtheme and szs themes.")[0];
+			if(installer->status == INSTALLED) //XXX: Stupid way of seeing if themeinstaller is installed
+			{
+				sprintf(path, "sdmc:/%s", installer->binary.c_str());
+				successLaunch = this->themeInstall(path);
+			}
+		}else{
+			//Final check if path actually exists
+			if ((file = fopen(path, "r")))
+			{
+				fclose(file);
+				printf("Path OK, Launching...");
+				successLaunch = this->launchFile(path, path);
+			}
+			else
+				successLaunch = false;
 		}
-		else
-			successLaunch = false;
 
 		if (!successLaunch)
 		{
@@ -273,6 +285,70 @@ void AppDetails::preInstallHook()
 	if (this->package->pkg_name == "appstore")
 		romfsExit();
 #endif
+}
+
+bool AppDetails::themeInstall(char* installerPath)
+{
+	std::string ManifestPathInternal = "manifest.install";
+	std::string ManifestPath = get->pkg_path + this->package->pkg_name + "/" + ManifestPathInternal;
+
+	struct stat sbuff;
+	if (stat(ManifestPath.c_str(), &sbuff) != 0) //! There's no manifest
+	{
+		// there should've been one!
+		// TODO: generate a temporary one
+		printf("--> ERROR: no manifest found at %s\n", ManifestPath.c_str());
+		return false;
+	}
+
+	//! Open the manifest normally
+	std::ifstream ManifestFile;
+	ManifestFile.open(ManifestPath.c_str());
+
+	printf("Parsing the Manifest\n");
+	std::vector <std::string> themePaths;
+
+	std::string CurrentLine;
+	while(std::getline(ManifestFile, CurrentLine))
+	{
+		char Mode = CurrentLine.at(0);
+		std::string ThemePath = ROOT_PATH + CurrentLine.substr(3);
+
+		if(Mode == 'U')
+		{
+			if(CurrentLine.find(".nxtheme") != std::string::npos)
+			{
+				//Found an nxtheme
+				printf("Found nxtheme\n");
+				themePaths.push_back(ThemePath);
+			}
+		}
+
+	}
+
+	std::string themeArg = "installtheme=";
+	for (int i=0; i<(int)themePaths.size(); i++)
+	{
+		if(i == (int)themePaths.size()-1)
+		{
+			themeArg.append(themePaths[i]);
+		}else{
+			themeArg.append(themePaths[i]);
+			themeArg.append(",");
+		}
+	}
+	printf("Theme Install: %s\n", themeArg.c_str());
+	size_t index = 0;
+	while (true)
+	{
+		index = themeArg.find(" ", index);
+     	if (index == std::string::npos) break;
+     	themeArg.replace(index, 1, "(_)");
+	}
+	char args[strlen(installerPath) + themeArg.size() + 8];
+	sprintf(args, "%s %s", installerPath, themeArg.c_str());
+	printf("\nA %s\n", args);
+	return this->launchFile(installerPath, args);
 }
 
 bool AppDetails::launchFile(char* path, char* context)
