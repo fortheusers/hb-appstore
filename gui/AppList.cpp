@@ -318,7 +318,7 @@ void AppList::update()
 		this->elements.push_back(sort);
 
 #if defined(MUSIC)
-		Button* mute = new Button(" ", 0, false, 15);
+		Button* mute = new Button(" ", 0, false, 15, 43);
 		mute->position(sort->x - 20 - mute->width, settings->y);
 		mute->action = std::bind(&AppList::toggleAudio, this);
 		this->elements.push_back(mute);
