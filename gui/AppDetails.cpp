@@ -241,8 +241,8 @@ bool AppDetails::process(InputEvents* event)
 
 		if(package->category == "theme" || true) //XXX: Forces package as theme for testing
 		{
-			Package *installer = get->search("an homebrew that can manage custom themes directly on the switch, it can install both nxtheme and szs themes.")[0];
-			if(installer->status == INSTALLED) //XXX: Stupid way of seeing if themeinstaller is installed
+			Package *installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
+			if(installer->status != GET)
 			{
 				sprintf(path, "sdmc:/%s", installer->binary.c_str());
 				successLaunch = this->themeInstall(path);
