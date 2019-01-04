@@ -17,26 +17,26 @@ Sidebar::Sidebar()
 	{
 		ImageElement* icon = new ImageElement((std::string(ROMFS "res/") + cat_value[x] + ".png").c_str());
 		icon->resize(40, 40);
-		icon->position(30, 150 + x * 70 - 5);
+		icon->position(30, 110 + x * 70 - 5);
 		this->elements.push_back(icon);
 
 		TextElement* category = new TextElement(cat_names[x], 25);
-		category->position(105, 150 + x * 70);
+		category->position(105, 110 + x * 70);
 		this->elements.push_back(category);
 	}
 
 	// create image in top left
 	ImageElement* logo = new ImageElement(ROMFS "res/icon.png");
 	logo->resize(40, 40);
-	logo->position(30, 50);
+	logo->position(30, 30);
 	this->elements.push_back(logo);
 
 	// create title for logo, top left
 	TextElement* title = new TextElement("Homebrew App Store", 22);
-	title->position(105, 45);
+	title->position(105, 25);
 	this->elements.push_back(title);
 	TextElement* subtitle = new TextElement("GPLv3 License", 18);
-	subtitle->position(105, 75);
+	subtitle->position(105, 55);
 	this->elements.push_back(subtitle);
 
 	// small indicator to switch to advanced view using L
@@ -95,7 +95,7 @@ bool Sidebar::process(InputEvents* event)
 		// and every category itself should be a CategoryLabel just like an AppCard consists of images + text
 		for (int x = 0; x < TOTAL_CATS; x++)
 		{
-			int xc = 0, yc = 150 + x * 70 - 15, width = 400 - 260 * (appList->R - 3) - 35, height = 60;
+			int xc = 0, yc = 110 + x * 70 - 15, width = 400 - 260 * (appList->R - 3) - 35, height = 60;
 			if (event->touchIn(xc, yc, width, height))
 			{
 				// touch is over an element of the sidebar, set the elasticCounter
@@ -118,7 +118,7 @@ bool Sidebar::process(InputEvents* event)
 		// check if it's one of the text elements
 		for (int x = 0; x < TOTAL_CATS; x++)
 		{
-			int xc = 0, yc = 150 + x * 70 - 15, width = 400 - 260 * (appList->R - 3) - 35, height = 60; // TODO: extract formula into method (same as AppList x value)
+			int xc = 0, yc = 110 + x * 70 - 15, width = 400 - 260 * (appList->R - 3) - 35, height = 60; // TODO: extract formula into method (same as AppList x value)
 			if ((event->touchIn(xc, yc, width, height) && event->isTouchUp()) || (event->held(A_BUTTON) && this->highlighted == x))
 			{
 				// if it's a touch up, let's make sure this is the same one we touched down on
@@ -150,7 +150,7 @@ void Sidebar::render(Element* parent)
 {
 	// draw the light gray bg behind the active category
 	SDL_Rect dimens = { 0, 0, 400 - 260 * (appList->R - 3) - 35, 60 }; // TODO: extract this to a method too
-	dimens.y = 150 + this->curCategory * 70 - 15;					   // TODO: extract formula into method
+	dimens.y = 110 + this->curCategory * 70 - 15;					   // TODO: extract formula into method
 
 	SDL_SetRenderDrawColor(parent->renderer, 0x67, 0x6a, 0x6d, 0xFF);
 #if defined(__WIIU__)
@@ -162,7 +162,7 @@ void Sidebar::render(Element* parent)
 	if (appList && appList->touchMode && this->elasticCounter >= 0)
 	{
 		SDL_Rect dimens2 = { 0, 0, 400, 60 };
-		dimens2.y = 150 + this->elasticCounter * 70 - 15; // TODO: extract formula into method
+		dimens2.y = 110 + this->elasticCounter * 70 - 15; // TODO: extract formula into method
 		SDL_SetRenderDrawBlendMode(parent->renderer, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(parent->renderer, 0xad, 0xd8, 0xe6, 0x90); // TODO: matches the DEEP_HIGHLIGHT color
 		SDL_RenderFillRect(parent->renderer, &dimens2);
@@ -171,7 +171,7 @@ void Sidebar::render(Element* parent)
 	// draw the selected category, if one should be highlighted
 	if (this->highlighted >= 0)
 	{
-		int y = 150 + this->highlighted * 70 - 15;
+		int y = 110 + this->highlighted * 70 - 15;
 		//        rectangleRGBA(parent->renderer, 0, y, dimens.w, y + dimens.h, 0xff, 0x00, 0xff, 0xff);
 
 		for (int x = 0; x < 5; x++)

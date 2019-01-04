@@ -4,7 +4,11 @@
 
 class AppList;
 
+#if defined(SWITCH)
+#define TOTAL_CATS 9
+#else
 #define TOTAL_CATS 8
+#endif
 #pragma once
 
 class Sidebar : public ListElement
@@ -26,6 +30,11 @@ public:
 	int curCategory = 1; // 1 is all apps
 
 	// list of human-readable category titles and short names from the json
+	#if defined(SWITCH)
+	const char* cat_names[TOTAL_CATS] = { "Search", "All Apps", "Games", "Emulators", "Tools", "Advanced", "Loaders", "Concepts", "Themes" };
+	const char* cat_value[TOTAL_CATS] = { "_search", "_all", "game", "emu", "tool", "advanced", "loader", "concept", "theme" };
+	#else
 	const char* cat_names[TOTAL_CATS] = { "Search", "All Apps", "Games", "Emulators", "Tools", "Advanced", "Loaders", "Concepts" };
 	const char* cat_value[TOTAL_CATS] = { "_search", "_all", "game", "emu", "tool", "advanced", "loader", "concept" };
+	#endif
 };

@@ -18,11 +18,6 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	this->get = appList->get;
 	this->appList = appList;
 
-	SDL_Color red = { 0xFF, 0x00, 0x00, 0xff };
-	SDL_Color gray = { 0x50, 0x50, 0x50, 0xff };
-	SDL_Color black = { 0x00, 0x00, 0x00, 0xff };
-	SDL_Color white = { 0xFF, 0xFF, 0xFF, 0xff };
-
 	const char* action;
 	switch (package->status)
 	{
@@ -53,15 +48,24 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	Button* cancel = new Button("Cancel", B_BUTTON, true, 30, download->width);
 	cancel->position(970, 630);
 	cancel->action = std::bind(&AppDetails::back, this);
-
-	Button* start = new Button("Launch", START_BUTTON, true, 30, download->width);
-
+	Button* start;
 #if defined(SWITCH)
-	if (package->status != GET && envHasNextLoad() && (package->binary != "none" || this->package->category == "theme" || true)) //XXX: Always true for testing
+	if (package->status != GET && envHasNextLoad() && (package->binary != "none" || this->package->category == "theme"))
 	{
 		download->position(970, 470);
-		start->position(970, 550);
 		cancel->position(970, 630);
+		if(this->package->category == "theme")
+		{
+			Package *installer = get->lookup("NXthemes_Installer");
+			if(installer->status != GET){
+				start = new Button("Inject", START_BUTTON, true, 30, download->width);
+			}else{
+				start = new Button("Injector", START_BUTTON, true, 30, download->width);
+			}
+		}else{
+			start = new Button("Launch", START_BUTTON, true, 30, download->width);
+		}
+		start->position(970, 550);
 		start->action = std::bind(&AppDetails::launch, this);
 		this->elements.push_back(start);
 	}
@@ -153,6 +157,12 @@ void AppDetails::launch()
 #endif
 }
 
+void AppDetails::getSupported()
+{
+	Package *installer = get->lookup("NXthemes_Installer");
+	MainDisplay::subscreen = new AppDetails(installer, appList);
+}
+
 void AppDetails::back()
 {
 	SDL_Event sdlevent;
@@ -180,7 +190,6 @@ void AppDetails::leaveFeedback()
 
 bool AppDetails::process(InputEvents* event)
 {
-	SDL_Color red = { 0xFF, 0x00, 0x00, 0xff };
 
 	// don't process any keystrokes if an operation is in progress
 	if (this->operating)
@@ -239,13 +248,16 @@ bool AppDetails::process(InputEvents* event)
 		FILE* file;
 		bool successLaunch = false;
 
-		if(package->category == "theme" || true) //XXX: Forces package as theme for testing
+		if(package->category == "theme")
 		{
 			Package *installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
 			if(installer->status != GET)
 			{
 				sprintf(path, "sdmc:/%s", installer->binary.c_str());
 				successLaunch = this->themeInstall(path);
+			}else{
+				successLaunch = true;
+				this->getSupported();
 			}
 		}else{
 			//Final check if path actually exists
@@ -347,7 +359,6 @@ bool AppDetails::themeInstall(char* installerPath)
 	}
 	char args[strlen(installerPath) + themeArg.size() + 8];
 	sprintf(args, "%s %s", installerPath, themeArg.c_str());
-	printf("\nA %s\n", args);
 	return this->launchFile(installerPath, args);
 }
 
