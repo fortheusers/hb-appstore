@@ -57,17 +57,20 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 		if(this->package->category == "theme")
 		{
 			Package *installer = get->lookup("NXthemes_Installer");
-			if(installer->status != GET){
-				start = new Button("Inject", START_BUTTON, true, 30, download->width);
-			}else{
-				start = new Button("Injector", START_BUTTON, true, 30, download->width);
+			if(installer != NULL)
+			{
+				if(installer->status != GET){
+					start = new Button("Inject", START_BUTTON, true, 30, download->width);
+				}else{
+					start = new Button("Injector", START_BUTTON, true, 30, download->width);
+				}
+				start->position(970, 550);
+				start->action = std::bind(&AppDetails::launch, this);
+				this->elements.push_back(start);
 			}
 		}else{
 			start = new Button("Launch", START_BUTTON, true, 30, download->width);
 		}
-		start->position(970, 550);
-		start->action = std::bind(&AppDetails::launch, this);
-		this->elements.push_back(start);
 	}
 #endif
 
