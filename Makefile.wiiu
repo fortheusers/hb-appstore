@@ -24,7 +24,7 @@ include $(WUT_ROOT)/share/romfs-wiiu.mk
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-CFLAGS		+=	-DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -DMUSIC -D_XOPEN_SOURCE $(INCLUDES)
+CFLAGS		+=	-O2 -DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -DMUSIC -D_XOPEN_SOURCE $(INCLUDES)
 CXXFLAGS	+=	$(CFLAGS)
 LDFLAGS		+=	$(WUT_NEWLIB_LDFLAGS) $(WUT_STDCPP_LDFLAGS) $(WUT_DEVOPTAB_LDFLAGS) $(ROMFS_LDFLAGS) \
 				-lcoreinit -lvpad -lsndcore2 -lsysapp -lnsysnet -lnlibcurl -lproc_ui -lgx2 -lgfd -lwhb \
