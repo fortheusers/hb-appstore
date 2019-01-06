@@ -163,7 +163,8 @@ void AppDetails::launch()
 void AppDetails::getSupported()
 {
 	Package *installer = get->lookup("NXthemes_Installer");
-	MainDisplay::subscreen = new AppDetails(installer, appList);
+	if(installer != NULL)
+		MainDisplay::subscreen = new AppDetails(installer, appList);
 }
 
 void AppDetails::back()
@@ -254,7 +255,7 @@ bool AppDetails::process(InputEvents* event)
 		if(package->category == "theme")
 		{
 			Package *installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
-			if(installer->status != GET)
+			if(installer != NULL && installer->status != GET)
 			{
 				sprintf(path, "sdmc:/%s", installer->binary.c_str());
 				successLaunch = this->themeInstall(path);
