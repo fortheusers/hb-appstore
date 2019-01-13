@@ -20,6 +20,11 @@ MainDisplay* MainDisplay::mainDisplay = NULL;
 
 MainDisplay::MainDisplay(Get* get)
 {
+	// initialize romfs for switch/wiiu
+#if defined(SWITCH) || defined(__WIIU__)
+	romfsInit();
+#endif
+
 	this->get = get;
 
 	// populate image cache with any local version info if it exists
@@ -54,11 +59,6 @@ MainDisplay::MainDisplay(Get* get)
 		//        printf("SDL image init failed: %s\n", SDL_GetError());
 		return;
 	}
-
-		// initialize teh romfs for switch/wiiu
-#if defined(SWITCH) || defined(__WIIU__)
-	romfsInit();
-#endif
 
 	//    printf("initialized SDL\n");
 

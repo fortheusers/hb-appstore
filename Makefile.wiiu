@@ -24,11 +24,12 @@ include $(WUT_ROOT)/share/romfs-wiiu.mk
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-CFLAGS		+=	-DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -D_XOPEN_SOURCE $(INCLUDES)
+CFLAGS		+=	-O2 -DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -DMUSIC -D_XOPEN_SOURCE $(INCLUDES)
 CXXFLAGS	+=	$(CFLAGS)
 LDFLAGS		+=	$(WUT_NEWLIB_LDFLAGS) $(WUT_STDCPP_LDFLAGS) $(WUT_DEVOPTAB_LDFLAGS) $(ROMFS_LDFLAGS) \
-				-lSDL2_ttf -lfreetype -lpng -lSDL2_gfx -lSDL2_image -lSDL2 -ljpeg -lz -lbz2 \
-				-lcoreinit -lvpad -lsndcore2 -lzlib125 -lsysapp -lnsysnet -lnlibcurl -lproc_ui -lgx2 -lgfd -lwhb
+				-lcoreinit -lvpad -lsndcore2 -lsysapp -lnsysnet -lnlibcurl -lproc_ui -lgx2 -lgfd -lwhb \
+				-lfreetype -lpng -lmpg123 -lvorbisidec -ljpeg -lz -lbz2 \
+				-lSDL2 -lSDL2_gfx -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
 #---------------------------------------------------------------------------------
 # get a list of objects
