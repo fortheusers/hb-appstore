@@ -75,7 +75,8 @@ This software is licensed under the GPLv3.
 
 #### Maintainers
 - vgmoose
-- rw-r-r_0644
+- [rw-r-r_0644](https://github.com/rw-r-r-0644)
+- [crc32](https://github.com/crc-32)
 
 #### Contributing
 It's not required, but running a clang-format before making a PR helps to clean up styling issues:
