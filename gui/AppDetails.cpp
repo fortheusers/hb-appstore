@@ -5,8 +5,8 @@
 #include "Feedback.hpp"
 #include "MainDisplay.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
-#include <sstream>
 #include <fstream>
+#include <sstream>
 
 #if defined(SWITCH)
 #include <switch.h>
@@ -66,8 +66,8 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 		if (isTheme)
 		{
 			Package* installer = get->lookup("NXthemes_Installer");
-      injectorPresent = installer != NULL;    // whether or not the currently hardcoded installer package exists, in the future becomes something functionality-based like "theme_installer"
-      buttonLabel = (injectorPresent && installer->status == GET) ? "Injector" : "Inject";
+			injectorPresent = installer != NULL; // whether or not the currently hardcoded installer package exists, in the future becomes something functionality-based like "theme_installer"
+			buttonLabel = (injectorPresent && installer->status == GET) ? "Injector" : "Inject";
 		}
 
 		// show the third button if a binary is present, or a theme injector is available (installed or not)
@@ -172,8 +172,8 @@ void AppDetails::launch()
 
 void AppDetails::getSupported()
 {
-	Package *installer = get->lookup("NXthemes_Installer");
-	if(installer != NULL)
+	Package* installer = get->lookup("NXthemes_Installer");
+	if (installer != NULL)
 		MainDisplay::subscreen = new AppDetails(installer, appList);
 }
 
@@ -263,18 +263,22 @@ bool AppDetails::process(InputEvents* event)
 		FILE* file;
 		bool successLaunch = false;
 
-		if(package->category == "theme")
+		if (package->category == "theme")
 		{
-			Package *installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
-			if(installer != NULL && installer->status != GET)
+			Package* installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
+			if (installer != NULL && installer->status != GET)
 			{
 				sprintf(path, "sdmc:/%s", installer->binary.c_str());
 				successLaunch = this->themeInstall(path);
-			}else{
+			}
+			else
+			{
 				successLaunch = true;
 				this->getSupported();
 			}
-		}else{
+		}
+		else
+		{
 			//Final check if path actually exists
 			if ((file = fopen(path, "r")))
 			{
@@ -333,33 +337,34 @@ bool AppDetails::themeInstall(char* installerPath)
 	ManifestFile.open(ManifestPath.c_str());
 
 	printf("Parsing the Manifest\n");
-	std::vector <std::string> themePaths;
+	std::vector<std::string> themePaths;
 
 	std::string CurrentLine;
-	while(std::getline(ManifestFile, CurrentLine))
+	while (std::getline(ManifestFile, CurrentLine))
 	{
 		char Mode = CurrentLine.at(0);
 		std::string ThemePath = ROOT_PATH + CurrentLine.substr(3);
 
-		if(Mode == 'U')
+		if (Mode == 'U')
 		{
-			if(CurrentLine.find(".nxtheme") != std::string::npos)
+			if (CurrentLine.find(".nxtheme") != std::string::npos)
 			{
 				//Found an nxtheme
 				printf("Found nxtheme\n");
 				themePaths.push_back(ThemePath);
 			}
 		}
-
 	}
 
 	std::string themeArg = "installtheme=";
-	for (int i=0; i<(int)themePaths.size(); i++)
+	for (int i = 0; i < (int)themePaths.size(); i++)
 	{
-		if(i == (int)themePaths.size()-1)
+		if (i == (int)themePaths.size() - 1)
 		{
 			themeArg.append(themePaths[i]);
-		}else{
+		}
+		else
+		{
 			themeArg.append(themePaths[i]);
 			themeArg.append(",");
 		}
@@ -369,8 +374,8 @@ bool AppDetails::themeInstall(char* installerPath)
 	while (true)
 	{
 		index = themeArg.find(" ", index);
-     	if (index == std::string::npos) break;
-     	themeArg.replace(index, 1, "(_)");
+		if (index == std::string::npos) break;
+		themeArg.replace(index, 1, "(_)");
 	}
 	char args[strlen(installerPath) + themeArg.size() + 8];
 	sprintf(args, "%s %s", installerPath, themeArg.c_str());

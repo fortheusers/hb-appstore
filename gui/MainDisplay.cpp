@@ -20,7 +20,7 @@ MainDisplay* MainDisplay::mainDisplay = NULL;
 
 MainDisplay::MainDisplay(Get* get)
 {
-	// initialize romfs for switch/wiiu
+// initialize romfs for switch/wiiu
 #if defined(SWITCH) || defined(__WIIU__)
 	romfsInit();
 #endif
