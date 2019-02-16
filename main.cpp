@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 		}
 
 		// quit on enter/start
-		if (events->held(START_BUTTON))
+		if (events->held(SELECT_BUTTON))
 			running = false;
 	}
 

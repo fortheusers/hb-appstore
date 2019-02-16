@@ -118,6 +118,10 @@ bool InputEvents::processDirectionalButtons()
 
 int InputEvents::directionForKeycode()
 {
+	// this keycode overlaps with some other constants, so just return asap
+	if (this->type == SDL_KEYDOWN && this->keyCode == SDLK_RETURN)
+		return -1;
+
 	// returns 0 1 2 or 3 for up down left or right
 	switch (this->keyCode)
 	{

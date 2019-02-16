@@ -48,28 +48,37 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	Button* cancel = new Button("Cancel", B_BUTTON, true, 30, download->width);
 	cancel->position(970, 630);
 	cancel->action = std::bind(&AppDetails::back, this);
-	Button* start;
+
 #if defined(SWITCH)
-	if (package->status != GET && envHasNextLoad() && (package->binary != "none" || this->package->category == "theme"))
+	// display an additional launch/install button if the package is installed,  and has a binary or is a theme
+
+	bool hasBinary = package->binary != "none";
+	bool isTheme = this->package->category == "theme";
+
+	if (package->status != GET && (hasBinary || isTheme))
 	{
 		download->position(970, 470);
 		cancel->position(970, 630);
-		if(this->package->category == "theme")
+
+		const char* buttonLabel = "Launch";
+		bool injectorPresent = false;
+
+		if (isTheme)
 		{
-			Package *installer = get->lookup("NXthemes_Installer");
-			if(installer != NULL)
-			{
-				if(installer->status != GET){
-					start = new Button("Inject", START_BUTTON, true, 30, download->width);
-				}else{
-					start = new Button("Injector", START_BUTTON, true, 30, download->width);
-				}
-				start->position(970, 550);
-				start->action = std::bind(&AppDetails::launch, this);
-				this->elements.push_back(start);
-			}
-		}else{
-			start = new Button("Launch", START_BUTTON, true, 30, download->width);
+			Package* installer = get->lookup("NXthemes_Installer");
+      injectorPresent = installer != NULL;    // whether or not the currently hardcoded installer package exists, in the future becomes something functionality-based like "theme_installer"
+      buttonLabel = (injectorPresent && installer->status == GET) ? "Injector" : "Inject";
+		}
+
+		// show the third button if a binary is present, or a theme injector is available (installed or not)
+		if (hasBinary || injectorPresent)
+		{
+			this->canLaunch = true;
+
+			Button* start = new Button(buttonLabel, START_BUTTON, true, 30, download->width);
+			start->position(970, 550);
+			start->action = std::bind(&AppDetails::launch, this);
+			this->elements.push_back(start);
 		}
 	}
 #endif
@@ -151,13 +160,14 @@ void AppDetails::proceed()
 
 void AppDetails::launch()
 {
-#if defined(SWITCH)
+	if (!this->canLaunch)
+		return;
+
 	SDL_Event sdlevent;
-	sdlevent.type = SDL_JOYBUTTONDOWN;
-	// 10 = KEY_PLUS for switch, see https://github.com/devkitPro/SDL/blob/switch-sdl2/src/joystick/switch/SDL_sysjoystick.c#L52
-	sdlevent.jbutton.button = 10;
+	sdlevent.type = SDL_KEYDOWN;
+	sdlevent.key.keysym.sym = SDLK_RETURN;
+	sdlevent.key.repeat = 0;
 	SDL_PushEvent(&sdlevent);
-#endif
 }
 
 void AppDetails::getSupported()
@@ -241,6 +251,7 @@ bool AppDetails::process(InputEvents* event)
 		this->appList->update();
 		return true;
 	}
+
 #if defined(SWITCH)
 	if (event->pressed(START_BUTTON) && this->canLaunch == true)
 	{
