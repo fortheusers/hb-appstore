@@ -254,8 +254,20 @@ void AppList::update()
 	for (int x = 0; x < sorted.size(); x++)
 	{
 		// if we're on all categories, or this package matches the current category (or it's a search (prefiltered))
-		if (curCategoryValue == "_all" || curCategoryValue == sorted[x]->category || curCategoryValue == "_search")
+    // OR it's *not* any of the other categories, and we're on misc
+		if ((curCategoryValue == "_all" || curCategoryValue == sorted[x]->category || curCategoryValue == "_search") || curCategoryValue == "_misc")
 		{
+      if (curCategoryValue == "_misc")
+      {
+        bool matchedCat = false;
+        for (int y=0; y<TOTAL_CATS; y++)
+          if (this->sidebar->cat_value[y] == sorted[x]->category)
+            matchedCat = true;
+        
+        if (matchedCat)
+          continue;
+      }
+
 			AppCard* card = new AppCard(sorted[x]);
 			card->index = count;
 

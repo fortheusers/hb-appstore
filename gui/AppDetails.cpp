@@ -6,6 +6,7 @@
 #include "MainDisplay.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <sstream>
+#include <fstream>
 
 #if defined(SWITCH)
 #include <switch.h>
@@ -16,11 +17,6 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	this->package = package;
 	this->get = appList->get;
 	this->appList = appList;
-
-	SDL_Color red = { 0xFF, 0x00, 0x00, 0xff };
-	SDL_Color gray = { 0x50, 0x50, 0x50, 0xff };
-	SDL_Color black = { 0x00, 0x00, 0x00, 0xff };
-	SDL_Color white = { 0xFF, 0xFF, 0xFF, 0xff };
 
 	const char* action;
 	switch (package->status)
@@ -53,16 +49,37 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	cancel->position(970, 630);
 	cancel->action = std::bind(&AppDetails::back, this);
 
-	Button* start = new Button("Launch", START_BUTTON, true, 30, download->width);
-
 #if defined(SWITCH)
-	if (package->status != GET && envHasNextLoad() && package->binary != "none")
+	// display an additional launch/install button if the package is installed,  and has a binary or is a theme
+
+	bool hasBinary = package->binary != "none";
+	bool isTheme = this->package->category == "theme";
+
+	if (package->status != GET && (hasBinary || isTheme))
 	{
 		download->position(970, 470);
-		start->position(970, 550);
 		cancel->position(970, 630);
-		start->action = std::bind(&AppDetails::launch, this);
-		this->elements.push_back(start);
+
+		const char* buttonLabel = "Launch";
+		bool injectorPresent = false;
+
+		if (isTheme)
+		{
+			Package* installer = get->lookup("NXthemes_Installer");
+      injectorPresent = installer != NULL;    // whether or not the currently hardcoded installer package exists, in the future becomes something functionality-based like "theme_installer"
+      buttonLabel = (injectorPresent && installer->status == GET) ? "Injector" : "Inject";
+		}
+
+		// show the third button if a binary is present, or a theme injector is available (installed or not)
+		if (hasBinary || injectorPresent)
+		{
+			this->canLaunch = true;
+
+			Button* start = new Button(buttonLabel, START_BUTTON, true, 30, download->width);
+			start->position(970, 550);
+			start->action = std::bind(&AppDetails::launch, this);
+			this->elements.push_back(start);
+		}
 	}
 #endif
 
@@ -143,13 +160,21 @@ void AppDetails::proceed()
 
 void AppDetails::launch()
 {
-#if defined(SWITCH)
+	if (!this->canLaunch)
+		return;
+
 	SDL_Event sdlevent;
-	sdlevent.type = SDL_JOYBUTTONDOWN;
-	// 10 = KEY_PLUS for switch, see https://github.com/devkitPro/SDL/blob/switch-sdl2/src/joystick/switch/SDL_sysjoystick.c#L52
-	sdlevent.jbutton.button = 10;
+	sdlevent.type = SDL_KEYDOWN;
+	sdlevent.key.keysym.sym = SDLK_RETURN;
+	sdlevent.key.repeat = 0;
 	SDL_PushEvent(&sdlevent);
-#endif
+}
+
+void AppDetails::getSupported()
+{
+	Package *installer = get->lookup("NXthemes_Installer");
+	if(installer != NULL)
+		MainDisplay::subscreen = new AppDetails(installer, appList);
 }
 
 void AppDetails::back()
@@ -179,7 +204,6 @@ void AppDetails::leaveFeedback()
 
 bool AppDetails::process(InputEvents* event)
 {
-	SDL_Color red = { 0xFF, 0x00, 0x00, 0xff };
 
 	// don't process any keystrokes if an operation is in progress
 	if (this->operating)
@@ -227,6 +251,7 @@ bool AppDetails::process(InputEvents* event)
 		this->appList->update();
 		return true;
 	}
+
 #if defined(SWITCH)
 	if (event->pressed(START_BUTTON) && this->canLaunch == true)
 	{
@@ -236,16 +261,30 @@ bool AppDetails::process(InputEvents* event)
 		printf("Launch path: %s\n", path);
 
 		FILE* file;
-		bool successLaunch;
-		//Final check if path actually exists
-		if ((file = fopen(path, "r")))
+		bool successLaunch = false;
+
+		if(package->category == "theme")
 		{
-			fclose(file);
-			printf("Path OK, Launching...");
-			successLaunch = this->launchFile(path, path);
+			Package *installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
+			if(installer != NULL && installer->status != GET)
+			{
+				sprintf(path, "sdmc:/%s", installer->binary.c_str());
+				successLaunch = this->themeInstall(path);
+			}else{
+				successLaunch = true;
+				this->getSupported();
+			}
+		}else{
+			//Final check if path actually exists
+			if ((file = fopen(path, "r")))
+			{
+				fclose(file);
+				printf("Path OK, Launching...");
+				successLaunch = this->launchFile(path, path);
+			}
+			else
+				successLaunch = false;
 		}
-		else
-			successLaunch = false;
 
 		if (!successLaunch)
 		{
@@ -273,6 +312,69 @@ void AppDetails::preInstallHook()
 	if (this->package->pkg_name == "appstore")
 		romfsExit();
 #endif
+}
+
+bool AppDetails::themeInstall(char* installerPath)
+{
+	std::string ManifestPathInternal = "manifest.install";
+	std::string ManifestPath = get->pkg_path + this->package->pkg_name + "/" + ManifestPathInternal;
+
+	struct stat sbuff;
+	if (stat(ManifestPath.c_str(), &sbuff) != 0) //! There's no manifest
+	{
+		// there should've been one!
+		// TODO: generate a temporary one
+		printf("--> ERROR: no manifest found at %s\n", ManifestPath.c_str());
+		return false;
+	}
+
+	//! Open the manifest normally
+	std::ifstream ManifestFile;
+	ManifestFile.open(ManifestPath.c_str());
+
+	printf("Parsing the Manifest\n");
+	std::vector <std::string> themePaths;
+
+	std::string CurrentLine;
+	while(std::getline(ManifestFile, CurrentLine))
+	{
+		char Mode = CurrentLine.at(0);
+		std::string ThemePath = ROOT_PATH + CurrentLine.substr(3);
+
+		if(Mode == 'U')
+		{
+			if(CurrentLine.find(".nxtheme") != std::string::npos)
+			{
+				//Found an nxtheme
+				printf("Found nxtheme\n");
+				themePaths.push_back(ThemePath);
+			}
+		}
+
+	}
+
+	std::string themeArg = "installtheme=";
+	for (int i=0; i<(int)themePaths.size(); i++)
+	{
+		if(i == (int)themePaths.size()-1)
+		{
+			themeArg.append(themePaths[i]);
+		}else{
+			themeArg.append(themePaths[i]);
+			themeArg.append(",");
+		}
+	}
+	printf("Theme Install: %s\n", themeArg.c_str());
+	size_t index = 0;
+	while (true)
+	{
+		index = themeArg.find(" ", index);
+     	if (index == std::string::npos) break;
+     	themeArg.replace(index, 1, "(_)");
+	}
+	char args[strlen(installerPath) + themeArg.size() + 8];
+	sprintf(args, "%s %s", installerPath, themeArg.c_str());
+	return this->launchFile(installerPath, args);
 }
 
 bool AppDetails::launchFile(char* path, char* context)
