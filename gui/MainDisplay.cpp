@@ -177,16 +177,15 @@ bool MainDisplay::process(InputEvents* event)
 		{
 			// the version in our cache doesn't match the one that will be on the server
 			// so we need to download the images now
-			mkdir(key_path.c_str(), 0700);
+			my_mkdir(key_path.c_str());
 
 			bool success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/icon.png", key_path + "/icon.png");
 			if (!success) // manually add defualt icon to cache if downloading failed
 				cp(ROMFS "res/default.png", (key_path + "/icon.png").c_str());
 			// TODO: generate a custom icon for this version with a color and name
 
+			// no more default banners, just try to download the file
 			success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/screen.png", key_path + "/screen.png");
-			if (!success)
-				cp(ROMFS "res/noscreen.png", (key_path + "/screen.png").c_str());
 
 			// add these versions to the version map
 			this->imageCache->version_cache[current->pkg_name] = current->version;

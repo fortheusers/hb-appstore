@@ -7,10 +7,10 @@ AppCard::AppCard(Package* package)
 
 	// fixed width+height of one app card
 	this->width = 256;
-	this->height = 195;
+	this->height = ICON_SIZE + 45;
 
 #if defined(__WIIU__)
-	this->height = 135;
+	this->height = ICON_SIZE + 45;
 #endif
 
 	this->touchable = true;

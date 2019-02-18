@@ -90,7 +90,9 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	AppDetailsContent* content = new AppDetailsContent();
 	this->elements.push_back(content);
 
-	int MARGIN = 60;
+  int MARGIN = content->MARGIN;
+  int BANNER_X = content->BANNER_X;
+  int BANNER_Y = content->BANNER_Y;
 
 	TextElement* title = new TextElement(package->title.c_str(), 35, &black);
 	title->position(MARGIN, 30);
@@ -107,12 +109,24 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	content->elements.push_back(moreByAuthor);
 
 	ImageElement* banner = new ImageElement((ImageCache::cache_path + package->pkg_name + "/screen.png").c_str());
-	// TODO: check for missing banner and show nothing, and shift everything up in that case
 	//    banner->resize(848, 208);
 	//    banner->resize(727, 179);
 	banner->resize(787, 193);
 
-	banner->position(MARGIN + 5, 140);
+	banner->position(BANNER_X, BANNER_Y);
+
+  if (banner->imgSurface == NULL)
+  {
+    // if banner is missing, use the app's icon instead
+    delete banner;
+    banner = new ImageElement((ImageCache::cache_path + package->pkg_name + "/icon.png").c_str(), true);
+    banner->resize(256, ICON_SIZE);
+    banner->position(BANNER_X + 787/2 - 256/2, BANNER_Y);
+    content->useIconBanner = true;
+  }
+
+  content->banner = banner;
+
 	content->elements.push_back(banner);
 
 	TextElement* title2 = new TextElement(package->author.c_str(), 27, &gray);
@@ -121,7 +135,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 
 	// the main description (wrapped text)
 	TextElement* details = new TextElement(package->long_desc.c_str(), 20, &black, false, 740);
-	details->position(MARGIN + 30, 355);
+	details->position(MARGIN + 30, banner->y + banner->height + 22);
 	content->elements.push_back(details);
 
 	TextElement* changelog = new TextElement((std::string("Changelog:\n") + package->changelog).c_str(), 20, &black, false, 740);
@@ -194,7 +208,7 @@ void AppDetails::moreByAuthor()
 	appList->update();
 	appList->y = 0;
 	appList->keyboard->hidden = true;
-	MainDisplay::subscreen = NULL; // TODO: clean up memory?
+	MainDisplay::subscreen = NULL; // TODO: clean up memory???
 }
 
 void AppDetails::leaveFeedback()
@@ -420,6 +434,8 @@ void AppDetails::render(Element* parent)
 	SDL_SetRenderDrawColor(parent->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderFillRect(parent->renderer, &dimens);
 
+  SDL_SetRenderDrawColor(parent->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
 	// draw all elements
 	super::render(this);
 }
@@ -453,6 +469,15 @@ void AppDetailsContent::render(Element* parent)
 
 	this->renderer = parent->renderer;
 
+  // if we're using an icon banner, draw a background based on the icon
+  if (useIconBanner && banner != NULL && banner->imgSurface != NULL && banner->firstPixel != NULL)
+  {
+    SDL_Rect banner_bg = { BANNER_X, BANNER_Y + parent->y + this->y, 787, ICON_SIZE };
+    SDL_Color color = *(banner->firstPixel);
+    SDL_SetRenderDrawColor(parent->renderer, color.r, color.g, color.b, 0xFF);
+    SDL_RenderFillRect(parent->renderer, &banner_bg);
+  }
+
 	super::render(this);
 }
 
@@ -472,4 +497,36 @@ bool AppDetailsContent::process(InputEvents* event)
 	}
 
 	return ret || ListElement::process(event);
+}
+
+Uint32 getpixel(SDL_Surface *surface, int x, int y)
+{
+    int bpp = surface->format->BytesPerPixel;
+    /* Here p is the address to the pixel we want to retrieve */
+    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+
+switch (bpp)
+{
+    case 1:
+        return *p;
+        break;
+
+    case 2:
+        return *(Uint16 *)p;
+        break;
+
+    case 3:
+        if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+            return p[0] << 16 | p[1] << 8 | p[2];
+        else
+            return p[0] | p[1] << 8 | p[2] << 16;
+            break;
+
+        case 4:
+            return *(Uint32 *)p;
+            break;
+
+        default:
+            return 0;       /* shouldn't happen, but avoids warnings */
+      }
 }
