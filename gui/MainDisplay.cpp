@@ -177,7 +177,7 @@ bool MainDisplay::process(InputEvents* event)
 		{
 			// the version in our cache doesn't match the one that will be on the server
 			// so we need to download the images now
-			my_mkdir(key_path.c_str());
+			mkdir(key_path.c_str(), 0700);
 
 			bool success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/icon.png", key_path + "/icon.png");
 			if (!success) // manually add defualt icon to cache if downloading failed
