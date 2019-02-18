@@ -53,16 +53,16 @@ class AppDetailsContent : public ListElement
 	bool process(InputEvents* event);
 	void render(Element* parent);
 
-  public:
-  bool useIconBanner = false;
-  ImageElement* banner = NULL;
+public:
+	bool useIconBanner = false;
+	ImageElement* banner = NULL;
 
-  // banner/text constants
-  int MARGIN = 60;
-  int BANNER_X = MARGIN + 5;
-  int BANNER_Y = 140;
+	// banner/text constants
+	int MARGIN = 60;
+	int BANNER_X = MARGIN + 5;
+	int BANNER_Y = 140;
 };
 
-Uint32 getpixel(SDL_Surface *surface, int x, int y);
+Uint32 getpixel(SDL_Surface* surface, int x, int y);
 
 #endif

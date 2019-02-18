@@ -15,7 +15,6 @@
 #define ICON_SIZE 150
 #endif
 
-
 class MainDisplay : public Element
 {
 public:
