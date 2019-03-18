@@ -36,6 +36,9 @@ MainDisplay::MainDisplay(Get* get)
 		return;
 	}
 
+	// use linear filtering when available
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+
 //Initialize SDL_mixer
 #if defined(MUSIC)
 	Mix_Init(MIX_INIT_MP3);
