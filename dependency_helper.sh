@@ -33,7 +33,7 @@ case "${PLATFORM}" in
       sudo echo "
       [wiiu-fling]
       Server = https://fling.heyquark.com
-      " | sudo tee --append /opt/devkitpro/pacman/etc/pacman.conf
+      $(cat /opt/devkitpro/pacman/etc/pacman.conf)" > /opt/devkitpro/pacman/etc/pacman.conf
 
       sudo dkp-pacman -Syu
 
