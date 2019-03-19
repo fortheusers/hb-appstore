@@ -7,7 +7,7 @@ dist: xenial
 env:
   global:
     - DEVKITPRO=/opt/devkitpro
-    - WUT_ROOT=/opt/wut
+    - WUT_ROOT=/opt/devkitpro/wut
 
 matrix:
   include:
