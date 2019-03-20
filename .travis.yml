@@ -14,6 +14,9 @@ matrix:
     - env: PLATFORM=pc
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
+  allow_failures:
+    - env: PLATFORM=switch
+    - env: PLATFORM=wiiu
 
 addons:
   apt:
