@@ -1,7 +1,7 @@
 #ifndef ABOUTSCREEN_H_
 #define ABOUTSCREEN_H_
 
-#include "../libs/get/src/Get.hpp"
+#include "libget/src/Get.hpp"
 #include "ImageElement.hpp"
 #include "ListElement.hpp"
 #include "TextElement.hpp"

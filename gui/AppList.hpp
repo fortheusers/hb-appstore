@@ -1,4 +1,5 @@
-#include "../libs/get/src/Get.hpp"
+#include "libget/src/Get.hpp"
+
 #include "AppDetails.hpp"
 #include "ImageElement.hpp"
 #include "Keyboard.hpp"

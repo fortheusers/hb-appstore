@@ -1,11 +1,14 @@
+#include <sstream>
+#include <SDL2/SDL2_gfxPrimitives.h>
+
+#include "libget/src/Get.hpp"
+#include "libget/src/Utils.hpp"
+
 #include "AboutScreen.hpp"
-#include "../libs/get/src/Get.hpp"
-#include "../libs/get/src/Utils.hpp"
 #include "Button.hpp"
 #include "Feedback.hpp"
 #include "MainDisplay.hpp"
-#include <SDL2/SDL2_gfxPrimitives.h>
-#include <sstream>
+
 
 AboutScreen::AboutScreen(Get* get)
 {

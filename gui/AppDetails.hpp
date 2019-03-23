@@ -1,8 +1,9 @@
 #ifndef APPDETAILS_H_
 #define APPDETAILS_H_
 
-#include "../libs/get/src/Get.hpp"
-#include "../libs/get/src/Package.hpp"
+#include "libget/src/Get.hpp"
+#include "libget/src/Package.hpp"
+
 #include "ImageElement.hpp"
 #include "ListElement.hpp"
 #include "ProgressBar.hpp"

@@ -1,16 +1,19 @@
-#include "AppDetails.hpp"
-#include "../libs/get/src/Get.hpp"
-#include "../libs/get/src/Utils.hpp"
-#include "Button.hpp"
-#include "Feedback.hpp"
-#include "MainDisplay.hpp"
-#include <SDL2/SDL2_gfxPrimitives.h>
 #include <fstream>
 #include <sstream>
+#include <SDL2/SDL2_gfxPrimitives.h>
+
 
 #if defined(SWITCH)
 #include <switch.h>
 #endif
+
+#include "libget/src/Get.hpp"
+#include "libget/src/Utils.hpp"
+
+#include "AppDetails.hpp"
+#include "Button.hpp"
+#include "Feedback.hpp"
+#include "MainDisplay.hpp"
 
 AppDetails::AppDetails(Package* package, AppList* appList)
 {
