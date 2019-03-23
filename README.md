@@ -1,30 +1,23 @@
-# Homebrew App Store [![travis](https://travis-ci.org/vgmoose/hb-appstore.svg?branch=master)](https://travis-ci.org/vgmoose/hb-appstore)
-A graphical frontend to the [get package manager](https://github.com/vgmoose/libget) for downloading and managing homebrew on video game consoles, such as the Nintendo Switch. This is a replacement to the [Wii U Homebrew App Store](https://github.com/vgmoose/wiiu-hbas).
+# Homebrew App Store
+[![travis](https://travis-ci.org/vgmoose/hb-appstore.svg?branch=master)](https://travis-ci.org/vgmoose/hb-appstore) [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://opensource.org/licenses/GPL-3.0) [![discord](https://img.shields.io/discord/339118412414582786.svg?logo=discord)](https://discordapp.com/invite/F2PKpEj)
+
+A graphical frontend to the [get package manager](https://github.com/vgmoose/libget) for downloading and managing homebrew on video game consoles, such as the Nintendo Switch and Wii U. This is a replacement to the older [Wii U Homebrew App Store](https://github.com/vgmoose/wiiu-hbas).
 
 ## Supported Platforms
 ### Nintendo Switch
-To run this program, a Nintendo Switch with access to the Homebrew Menu is required (currently requires an sd card).
-- [1.x-5.x hbmenu instructions](https://gbatemp.net/threads/switch-hacking-101-how-to-launch-the-homebrew-menu-on-4-x-5-x.504012/)
-- [older 3.0.0 hbmenu instructions](https://switchbrew.github.io/nx-hbl/) -
+To run this program, a Nintendo Switch with access to the Homebrew Menu is required. This can be done on most Switches manufactured before July 2018, for compatibility check your serial number at [ismyswitchpatched.com](https://ismyswitchpatched.com). To run hbmenu, see the tutorial [here](https://gbatemp.net/threads/switch-hacking-101-how-to-launch-the-homebrew-menu-on-4-x-5-x.504012/).
 
-A quick summary of how to run it, provided you can get to hbmenu, is also included below. For newer firmwares, see the link to the 4.x-5.x instructions above.
-
-#### Quick summary
-- download latest [appstore folder](https://github.com/vgmoose/hb-appstore/releases) to `sd:/switch/appstore/`
-- download latest [hbmenu.nro](https://github.com/switchbrew/nx-hbmenu/releases/latest) to `sd:/hbmenu.nro`
-- put the SD card (recommended formatted FAT32) in the Switch, and enter hbmenu (see instructions above)
-- run "hb App Store" from within hbmenu
-   - when you're done hit home to exit (and album again to go back to hbmenu)
+Extract the latest [hb-appstore](https://github.com/vgmoose/hb-appstore/releases) to `sd:/switch/appstore/`, and run "hb App Store" from within hbmenu. When you're done, you can press the Minus (-) button to exit.
 
 ### Wii U
-To run this program, a Wii U with access to the Homebrew Launcher is required. This can be done on any firmware. For more information, see the tutorial [here](https://wiiu.hacks.guide).
+To run this program, a Wii U with access to the Homebrew Launcher is required. This can be done on any firmware. To run the Homebrew Launcher, see the tutorial [here](https://wiiu.hacks.guide).
 
-For a stable release, see [here](https://github.com/vgmoose/wiiu-hbas/releases).
+Extract the latest [hb-appstore](https://github.com/vgmoose/hb-appstore/releases) to `sd:/wiiu/apps/appstore/`, and run "hb App Store" from within Homebrew Launcher. When you're done, you can press the Minus (-) button to exit.
 
 ## Maintaining a repo
 See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for setting up a repository. Everything is designed to be statically hosted. If there's no repo provided in the `repos.json` config file, then it will generate a default one pointing to [switchbru.com/appstore](http://switchbru.com/appstore/).
 
-A new project called [Barkeep](https://github.com/vgmoose/barkeep) is being worked on to allow this to be done without using a simple script.
+If you run into any issues and need help maintaining or setting up a libget repo, feel free to get in touch with vgmoose at me@vgmoose.com or on Discord.
 
 ## Compilation instructions
 This program is written using SDL2 and has dependencies on libsdl, libcurl, and zlib. It also makes use of libget which is included in this repo as a submodule.
@@ -70,11 +63,25 @@ cd hb-appstore
 make -f Makefile.pc
 ```
 
+#### Building with Buck (WIP)
+This project is moving towards [Buck](https://github.com/facebook/buck) to build and [Buckaroo](https://github.com/LoopPerfect/buckaroo/) for dependency management.
+
+1. Install a [precompiled Buck](https://github.com/facebook/buck/releases), and [precompiled Buckaroo](https://github.com/LoopPerfect/buckaroo/releases) for your platform, or build them from source
+2. Run the following:
+```
+git clone https://github.com/vgmoose/hb-appstore.git
+cd hb-appstore
+buckaroo install
+buck build :hb-appstore
+```
+
+Currently sdl2 is manually linked in the `.buckconfig`, as a buckaroo port is not yet available. After running the above, there should be a binary sitting in `./buck-out/gen/hb-appstore`. It may have some issues that aren't present in the Makefile.pc build.
+
 ### License
 This software is licensed under the GPLv3.
 
 #### Maintainers
-- vgmoose
+- [vgmoose](https://github.com/vgmoose)
 - [rw-r-r_0644](https://github.com/rw-r-r-0644)
 - [crc32](https://github.com/crc-32)
 

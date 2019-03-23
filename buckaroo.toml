@@ -1,0 +1,5 @@
+targets = [ "//:hb-appstore" ]
+
+[[dependency]]
+package = "github.com/vgmoose/libget"
+version = "*"
