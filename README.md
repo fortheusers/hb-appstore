@@ -75,7 +75,7 @@ buckaroo install
 buck build :hb-appstore
 ```
 
-Currently sdl2 is manually linked in the `.buckconfig`, as a buckaroo port is not yet available. After running the above, there should be a binary sitting in `./buck-out/gen/hb-appstore`. It may have some issues that aren't present in the Makefile.pc build.
+Currently sdl2 is manually linked in the `.buckconfig`, as a buckaroo port is not yet available, so SDL2 will need to be installed via the system package manager. After running the above, there should be a binary sitting in `./buck-out/gen/hb-appstore`.
 
 ### License
 This software is licensed under the GPLv3.
