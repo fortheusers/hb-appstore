@@ -1,20 +1,4 @@
-manifest = "4a84138525f74ec0180fe60a3925c7c59f86e5cb50158d4aac9adaffea4034de"
-
-[[dependency]]
-package = "github.com/buckaroo-pm/madler-zlib"
-target = "//:zlib"
-
-[[dependency]]
-package = "github.com/buckaroo-pm/mapbox-rapidjson"
-target = "//:rapidjson"
-
-[[dependency]]
-package = "github.com/buckaroo-pm/nmoinvaz-minizip"
-target = "//:minizip"
-
-[[dependency]]
-package = "github.com/buckaroo-pm/pkg-config-curl"
-target = "//:curl"
+manifest = "02bd53055e1fd24871475225442c9efde237659038616c62e1a3ffb8545a1700"
 
 [[dependency]]
 package = "github.com/vgmoose/libget"
