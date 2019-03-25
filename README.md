@@ -82,6 +82,7 @@ This software is licensed under the GPLv3.
 
 #### Maintainers
 - [vgmoose](https://github.com/vgmoose)
+- [pwsincd](https://github.com/pwsincd)
 - [rw-r-r_0644](https://github.com/rw-r-r-0644)
 - [crc32](https://github.com/crc-32)
 
