@@ -42,7 +42,7 @@ EXEFS_SRC	:=	exefs_src
 
 APP_TITLE	:= hb App Store
 APP_AUTHOR 	:= vgmoose
-APP_VERSION 	:= 2.0
+APP_VERSION 	:= 2.1
 ICON		:= romfs/res/icon.jpg
 #APP_TITLEID := is the titleID of the app stored in the .nacp file (Optional)
 
