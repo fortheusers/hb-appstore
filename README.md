@@ -54,16 +54,7 @@ make -f Makefile.wiiu
 
 If all goes well, `appstore.rpx` should be sitting in the current directory.
 
-### Building for PC
-There's a separate makefile for building the SDL2 app for PC. Below instructions are for Ubuntu, but should be similar on other platforms:
-```
-sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++ git
-git clone --recursive https://github.com/vgmoose/hb-appstore.git
-cd hb-appstore
-make -f Makefile.pc
-```
-
-#### Building with Buck (WIP)
+### Building for PC (with Buck)
 This project is moving towards [Buck](https://github.com/facebook/buck) to build and [Buckaroo](https://github.com/LoopPerfect/buckaroo/) for dependency management.
 
 1. Install a [precompiled Buck](https://github.com/facebook/buck/releases), and [precompiled Buckaroo](https://github.com/LoopPerfect/buckaroo/releases) for your platform, or build them from source
@@ -75,13 +66,23 @@ buckaroo install
 buck build :hb-appstore
 ```
 
-Currently sdl2 is manually linked in the `.buckconfig`, as a buckaroo port is not yet available, so SDL2 will need to be installed via the system package manager. After running the above, there should be a binary sitting in `./buck-out/gen/hb-appstore`.
+Currently sdl2 is manually linked in the `.buckconfig`, as a buckaroo port is not yet available, so SDL2 will need to be installed via the system package manager (see below). After running the above, there should be a binary sitting in `./buck-out/gen/hb-appstore`.
+
+#### Using GNU Makefile
+There's a separate makefile for building the SDL2 app for PC, if you don't want to try the Buck build. Below instructions are for Ubuntu, but should be similar on other platforms:
+```
+sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++ git
+git clone --recursive https://github.com/vgmoose/hb-appstore.git
+cd hb-appstore
+make -f Makefile.pc
+```
 
 ### License
 This software is licensed under the GPLv3.
 
 #### Maintainers
 - [vgmoose](https://github.com/vgmoose)
+- [pwsincd](https://github.com/pwsincd)
 - [rw-r-r_0644](https://github.com/rw-r-r-0644)
 - [crc32](https://github.com/crc-32)
 

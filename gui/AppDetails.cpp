@@ -1,7 +1,6 @@
+#include <SDL2/SDL2_gfxPrimitives.h>
 #include <fstream>
 #include <sstream>
-#include <SDL2/SDL2_gfxPrimitives.h>
-
 
 #if defined(SWITCH)
 #include <switch.h>
@@ -14,6 +13,8 @@
 #include "Button.hpp"
 #include "Feedback.hpp"
 #include "MainDisplay.hpp"
+
+int AppDetails::lastFrameTime = 99;
 
 AppDetails::AppDetails(Package* package, AppList* appList)
 {
@@ -445,9 +446,17 @@ void AppDetails::render(Element* parent)
 
 int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow)
 {
+	int now = SDL_GetTicks();
+	int diff = now - AppDetails::lastFrameTime;
+
 	if (dltotal == 0) dltotal = 1;
 
 	double amount = dlnow / dltotal;
+
+	// don't update the GUI too frequently here, it slows down downloading
+	// (never return early if it's 100% done)
+	if (diff < 32 && amount != 1)
+		return 0;
 
 	AppDetails* popup = (AppDetails*)MainDisplay::subscreen;
 
@@ -461,6 +470,8 @@ int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, dou
 		if (popup->parent != NULL)
 			popup->parent->render(NULL);
 	}
+
+	AppDetails::lastFrameTime = now;
 
 	return 0;
 }
