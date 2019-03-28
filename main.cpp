@@ -28,7 +28,9 @@ int main(int argc, char* argv[])
 //	stdout = stderr; // for yuzu
 
 #if defined(__WIIU__)
-	chdir("fs:/vol/external01/wiiu/apps/appstore");
+	const char* wiiu_home = "fs:/vol/external01/wiiu/apps/appstore";
+	mkdir(wiiu_home, 0700);
+	chdir(wiiu_home);
 #endif
 	init_networking();
 
