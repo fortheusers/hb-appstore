@@ -83,7 +83,7 @@ void Feedback::submit()
 	curl = curl_easy_init();
 	if (curl)
 	{
-		curl_easy_setopt(curl, CURLOPT_URL, "http://switchbru.com/appstore/feedback");
+		curl_easy_setopt(curl, CURLOPT_URL, "https://switchbru.com/appstore/feedback");
 		std::string fields = std::string("name=") + userKey + "&package=" + package->pkg_name + "&message=" + this->message;
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, fields.c_str());
 

@@ -17,9 +17,9 @@
 #endif
 
 #if defined(__WIIU__)
-#define DEFAULT_REPO "http://wiiubru.com/appstore"
+#define DEFAULT_REPO "https://wiiubru.com/appstore"
 #else
-#define DEFAULT_REPO "http://switchbru.com/appstore"
+#define DEFAULT_REPO "https://switchbru.com/appstore"
 #endif
 
 int main(int argc, char* argv[])
