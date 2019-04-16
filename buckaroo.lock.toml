@@ -22,4 +22,4 @@ revision = "172dabe81beabe3f4dce71d66a5ff9251ef9ef11"
 
 [lock."github.com/vgmoose/libget"]
 versions = [ "branch=master" ]
-revision = "36a29380b429a5044f70b762ca9f28c9d0c31a59"
+revision = "52c8cd46883a23319f1c1463011a5b40d3ab2b26"
