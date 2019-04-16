@@ -341,8 +341,15 @@ void AppList::update()
 		this->elements.push_back(muteIcon);
 #endif
 
-		// display the search type above if it's not the default one
-		SDL_Color gray = { 0x50, 0x50, 0x50, 0xff };
+SDL_Color gray = { 0x50, 0x50, 0x50, 0xff };
+
+#if defined(__WIIU__)
+		TextElement* exitNotice = new TextElement("press the Minus [-] button to Exit", 15, &gray);
+		exitNotice->position(settings->x + settings->width - exitNotice->width, category->y - 55);
+		this->elements.push_back(exitNotice);
+#endif
+
+		// display the search type next to the category in a gray font
 		TextElement* sortBlurb = new TextElement(sortString, 15, &gray);
 		sortBlurb->position(category->x + category->width + 15, category->y + 12);
 		this->elements.push_back(sortBlurb);

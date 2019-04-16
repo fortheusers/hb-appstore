@@ -67,6 +67,15 @@ void Feedback::refresh()
 	TextElement* response = new TextElement("If you need to send more detailed feedback, please email us at fight@fortheusers.org", 20, NULL, false, 360);
 	response->position(860, 20);
 	elements.push_back(response);
+
+#if defined(__WIIU__)
+	if (package->pkg_name == "appstore")
+	{
+		TextElement* response = new TextElement("(btw you can press Minus to exit!)", 20, NULL);
+		response->position(50, 120);
+		elements.push_back(response);
+	}
+#endif
 }
 
 void Feedback::submit()

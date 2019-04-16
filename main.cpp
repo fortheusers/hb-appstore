@@ -28,7 +28,16 @@ int main(int argc, char* argv[])
 //	stdout = stderr; // for yuzu
 
 #if defined(__WIIU__)
-	chdir("fs:/vol/external01/wiiu/apps/appstore");
+#define HBAS_PATH ROOT_PATH "wiiu/apps/appstore"
+#define ELF_PATH HBAS_PATH "/hbas.elf"
+#define RPX_PATH HBAS_PATH "/appstore.rpx"
+
+	chdir(HBAS_PATH);
+
+	// "migrate" old elf users over to rpx (should've been done last version)
+	struct stat sbuff;
+	if (stat(ELF_PATH, &sbuff) == 0)
+		std::rename(ELF_PATH, RPX_PATH);
 #endif
 	init_networking();
 
