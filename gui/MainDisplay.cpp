@@ -187,7 +187,7 @@ bool MainDisplay::process(InputEvents* event)
 			// TODO: generate a custom icon for this version with a color and name
 
 			// no more default banners, just try to download the file (don't do this on Wii U)
-			#if defined(__WIIU__)
+			#if !defined(__WIIU__)
 			downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/screen.png", key_path + "/screen.png");
 			#endif
 

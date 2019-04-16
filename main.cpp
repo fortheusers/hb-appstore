@@ -17,9 +17,9 @@
 #endif
 
 #if defined(__WIIU__)
-#define DEFAULT_REPO "http://wiiubru.com/appstore"
+#define DEFAULT_REPO "https://wiiubru.com/appstore"
 #else
-#define DEFAULT_REPO "http://switchbru.com/appstore"
+#define DEFAULT_REPO "https://switchbru.com/appstore"
 #endif
 
 int main(int argc, char* argv[])
@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 #define HBAS_PATH ROOT_PATH "wiiu/apps/appstore"
 #define ELF_PATH HBAS_PATH "/hbas.elf"
 #define RPX_PATH HBAS_PATH "/appstore.rpx"
-
+    mkdir(HBAS_PATH, 0700);
 	chdir(HBAS_PATH);
 
 	// "migrate" old elf users over to rpx (should've been done last version)
