@@ -70,10 +70,6 @@ int main(int argc, char* argv[])
 			// process the inputs of the supplied event
 			viewChanged |= display->process(events);
 			atLeastOneNewEvent = true;
-
-			// quit on select/minus
-			if (events->held(SELECT_BUTTON))
-				running = false;
 		}
 
 		// one more event update if nothing changed or there were no previous events seen

@@ -316,16 +316,21 @@ void AppList::update()
 	category->position(20, 90);
 	this->elements.push_back(category);
 
+	Button* quit = new Button("Quit", SELECT_BUTTON, false, 15);
+	quit->position(720 + 260 * (R - 3), 70);
+	quit->action = std::bind(&AppList::exit, this);
+	this->elements.push_back(quit);
+
 	// additional buttons (only if not on search)
 	if (curCategoryValue != "_search")
 	{
 		Button* settings = new Button("Credits", X_BUTTON, false, 15);
-		settings->position(700 + 260 * (R - 3), 70);
+		settings->position(quit->x - 20 - settings->width, quit->y);
 		settings->action = std::bind(&AppList::launchSettings, this);
 		this->elements.push_back(settings);
 
 		Button* sort = new Button("Adjust Sort", Y_BUTTON, false, 15);
-		sort->position(settings->x - 20 - sort->width, settings->y);
+		sort->position(settings->x - 20 - sort->width, quit->y);
 		sort->action = std::bind(&AppList::cycleSort, this);
 		this->elements.push_back(sort);
 
@@ -343,12 +348,6 @@ void AppList::update()
 
 SDL_Color gray = { 0x50, 0x50, 0x50, 0xff };
 
-#if defined(__WIIU__)
-		TextElement* exitNotice = new TextElement("press the Minus [-] button to Exit", 15, &gray);
-		exitNotice->position(settings->x + settings->width - exitNotice->width, category->y - 55);
-		this->elements.push_back(exitNotice);
-#endif
-
 		// display the search type next to the category in a gray font
 		TextElement* sortBlurb = new TextElement(sortString, 15, &gray);
 		sortBlurb->position(category->x + category->width + 15, category->y + 12);
@@ -357,7 +356,8 @@ SDL_Color gray = { 0x50, 0x50, 0x50, 0xff };
 	else
 	{
 		Button* settings = new Button("Toggle Keyboard", Y_BUTTON, false, 15);
-		settings->position(625 + 260 * (R - 3), 70);
+		// settings->position(625 + 260 * (R - 3), 70);
+		settings->position(quit->x - 20 - settings->width, quit->y);
 		settings->action = std::bind(&AppList::toggleKeyboard, this);
 		this->elements.push_back(settings);
 	}
@@ -406,6 +406,11 @@ void AppList::cycleSort()
 	reorient();
 	this->sortMode = (this->sortMode + 1) % TOTAL_SORTS;
 	this->update();
+}
+
+void AppList::exit()
+{
+	quit();
 }
 
 void AppList::toggleAudio()
