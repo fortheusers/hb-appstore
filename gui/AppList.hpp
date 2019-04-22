@@ -30,6 +30,7 @@ public:
 	void cycleSort();
 	void reorient();
 	void toggleAudio();
+	void exit();
 
 	const char* applySortOrder(std::vector<Package*>* packages);
 
