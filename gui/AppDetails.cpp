@@ -341,37 +341,24 @@ bool AppDetails::themeInstall(char* installerPath)
 	std::string ManifestPathInternal = "manifest.install";
 	std::string ManifestPath = get->pkg_path + this->package->pkg_name + "/" + ManifestPathInternal;
 
-	struct stat sbuff;
-	if (stat(ManifestPath.c_str(), &sbuff) != 0) //! There's no manifest
-	{
-		// there should've been one!
-		// TODO: generate a temporary one
-		printf("--> ERROR: no manifest found at %s\n", ManifestPath.c_str());
-		return false;
-	}
-
-	//! Open the manifest normally
-	std::ifstream ManifestFile;
-	ManifestFile.open(ManifestPath.c_str());
-
-	printf("Parsing the Manifest\n");
 	std::vector<std::string> themePaths;
 
-	std::string CurrentLine;
-	while (std::getline(ManifestFile, CurrentLine))
-	{
-		char Mode = CurrentLine.at(0);
-		std::string ThemePath = ROOT_PATH + CurrentLine.substr(3);
+	if (!package->manifest) package->manifest = new Manifest(ManifestPath, ROOT_PATH);
 
-		if (Mode == 'U')
+	if (package->manifest->valid)
+	{
+		for (size_t i = 0; i <= package->manifest->entries.size() - 1; i++)
 		{
-			if (CurrentLine.find(".nxtheme") != std::string::npos)
+			if (package->manifest->entries[i].operation == MUPDATE && package->manifest->entries[i].extension == "nxtheme")
 			{
-				//Found an nxtheme
 				printf("Found nxtheme\n");
-				themePaths.push_back(ThemePath);
+				themePaths.push_back(package->manifest->entries[i].path);
 			}
 		}
+		
+	}else{
+		printf("--> ERROR: no manifest found/manifest invalid at %s\n", ManifestPath.c_str());
+		return false;
 	}
 
 	std::string themeArg = "installtheme=";
