@@ -1,84 +1,135 @@
-BASEDIR	:= $(dir $(firstword $(MAKEFILE_LIST)))
-VPATH	:= $(BASEDIR)
+GET		:= ./libs/get/src
+RAPIDJSON	:= ./libs/get/src/libs/rapidjson/include
+MINIZIP         := ./libs/get/src/libs/minizip
+TINYXML 	:= ./libs/get/src/libs/tinyxml
 
-#---------------------------------------------------------------------------------
-# additional libraries
-#---------------------------------------------------------------------------------
-GET			:=	./libs/get/src
-RAPIDJSON	:=	./libs/get/src/libs/rapidjson/include
-MINIZIP		:=	./libs/get/src/libs/minizip
-TINYXML 	:=	libs/get/src/libs/tinyxml
+#-------------------------------------------------------------------------------
+.SUFFIXES:
+#-------------------------------------------------------------------------------
 
-#---------------------------------------------------------------------------------
+ifeq ($(strip $(DEVKITPRO)),)
+$(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to>/devkitpro")
+endif
+
+TOPDIR ?= $(CURDIR)
+include $(DEVKITPRO)/wut/share/wut_rules
+
+#-------------------------------------------------------------------------------
 # TARGET is the name of the output
 # BUILD is the directory where object files & intermediate files will be placed
 # SOURCES is a list of directories containing source code
 # INCLUDES is a list of directories containing header files
-# ROMFS is a directory that will be available as romfs:/
-#---------------------------------------------------------------------------------
+# ROMFS is a folder to generate app's romfs
+#-------------------------------------------------------------------------------
 TARGET		:=	appstore
 BUILD		:=	build
 SOURCES		:=	. $(GET) $(MINIZIP) $(TINYXML) console gui
 INCLUDES	:=	. $(RAPIDJSON) $(MINIZIP) $(TINYXML)
 ROMFS		:=	romfs
 
-#---------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # options for code generation
-#---------------------------------------------------------------------------------
-CFLAGS		+=	-O2 -DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -DMUSIC -D_XOPEN_SOURCE
-CXXFLAGS	+=	-O2 -DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -DMUSIC -D_XOPEN_SOURCE
+#-------------------------------------------------------------------------------
+CFLAGS		:=	-g -Wall -O2 -ffunction-sections \
+			-ffast-math \
+			$(MACHDEP)
 
-#---------------------------------------------------------------------------------
-# libraries
-#---------------------------------------------------------------------------------
-PKGCONF			:=	$(DEVKITPRO)/portlibs/ppc/bin/powerpc-eabi-pkg-config
-PKGCONF_WIIU	:=	$(DEVKITPRO)/portlibs/wiiu/bin/powerpc-eabi-pkg-config
-CFLAGS			+=	`$(PKGCONF_WIIU) --cflags sdl2 SDL2_gfx SDL2_image SDL2_mixer SDL2_ttf`
-CXXFLAGS		+=	`$(PKGCONF_WIIU) --cflags sdl2 SDL2_gfx SDL2_image SDL2_mixer SDL2_ttf`
-LDFLAGS			+=	`$(PKGCONF_WIIU) --libs sdl2 SDL2_gfx SDL2_image SDL2_mixer SDL2_ttf` \
-					`$(PKGCONF) --libs freetype2 libpng libmpg123 vorbisidec libjpeg zlib libpng`
+CFLAGS		+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -DMUSIC -D_XOPEN_SOURCE
 
-#---------------------------------------------------------------------------------
-# wut libraries
-#---------------------------------------------------------------------------------
-LDFLAGS		+=	$(WUT_NEWLIB_LDFLAGS) $(WUT_STDCPP_LDFLAGS) $(WUT_DEVOPTAB_LDFLAGS) \
-				-lcoreinit -lvpad -lsndcore2 -lsysapp -lnsysnet -lnlibcurl -lproc_ui -lgx2 -lgfd -lwhb \
+CXXFLAGS	:=	$(CFLAGS) -std=gnu++14
 
-#---------------------------------------------------------------------------------
+ASFLAGS		:=	-g $(MACHDEP)
+LDFLAGS		:=	-g $(MACHDEP) $(RPXSPECS) -Wl,-Map,$(notdir $*.map)
+
+LIBS		:=	-lSDL2_ttf -lSDL2_mixer -lSDL2_gfx -lSDL2_image -lSDL2 -lfreetype -lpng -lmpg123 -lbz2 -ljpeg -lz -lwut
+
+#-------------------------------------------------------------------------------
+# list of directories containing libraries, this must be the top level
+# containing include and lib
+#-------------------------------------------------------------------------------
+LIBDIRS		:=	$(PORTLIBS) $(WUT_ROOT)
+
+
+#-------------------------------------------------------------------------------
+# no real need to edit anything past this point unless you need to add additional
+# rules for different file extensions
+#-------------------------------------------------------------------------------
+ifneq ($(BUILD),$(notdir $(CURDIR)))
+#-------------------------------------------------------------------------------
+
+export OUTPUT	:=	$(CURDIR)/$(TARGET)
+export TOPDIR	:=	$(CURDIR)
+
+export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir))
+export DEPSDIR	:=	$(CURDIR)/$(BUILD)
+
+CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
+
+#-------------------------------------------------------------------------------
+# use CXX for linking C++ projects, CC for standard C
+#-------------------------------------------------------------------------------
+ifeq ($(strip $(CPPFILES)),)
+#-------------------------------------------------------------------------------
+	export LD	:=	$(CC)
+#-------------------------------------------------------------------------------
+else
+#-------------------------------------------------------------------------------
+	export LD	:=	$(CXX)
+#-------------------------------------------------------------------------------
+endif
+#-------------------------------------------------------------------------------
+
+export SRCFILES		:=	$(CPPFILES) $(CFILES) $(SFILES)
+export OFILES		:=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+export INCLUDE		:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
+				$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
+				-I$(CURDIR)/$(BUILD)
+
+export LIBPATHS		:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
+
+.PHONY: $(BUILD) clean all
+
+#-------------------------------------------------------------------------------
+all: $(BUILD)
+
+$(BUILD): $(SRCFILES)
+	@[ -d $@ ] || mkdir -p $@
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile.wiiu
+
+#-------------------------------------------------------------------------------
+clean:
+	@echo clean ...
+	@rm -fr $(BUILD) $(TARGET).rpx $(TARGET).elf
+
+#-------------------------------------------------------------------------------
+else
+.PHONY:	all
+
+#-------------------------------------------------------------------------------
 # romfs
-#---------------------------------------------------------------------------------
-include $(DEVKITPRO)/portlibs/wiiu/share/romfs-wiiu.mk
+#-------------------------------------------------------------------------------
+include $(PORTLIBS_PATH)/wiiu/share/romfs-wiiu.mk
 CFLAGS		+=	$(ROMFS_CFLAGS)
 CXXFLAGS	+=	$(ROMFS_CFLAGS)
-LDFLAGS		+=	$(ROMFS_LDFLAGS)
-OBJECTS		+=	$(ROMFS_TARGET)
+LIBS		+=	$(ROMFS_LIBS)
+OFILES		+=	$(ROMFS_TARGET)
+#-------------------------------------------------------------------------------
 
-#---------------------------------------------------------------------------------
-# includes
-#---------------------------------------------------------------------------------
-CFLAGS		+=	$(foreach dir,$(INCLUDES),-I$(dir))
-CXXFLAGS	+=	$(foreach dir,$(INCLUDES),-I$(dir))
+DEPENDS		:=	$(OFILES:.o=.d)
 
-#---------------------------------------------------------------------------------
-# generate a list of objects
-#---------------------------------------------------------------------------------
-CFILES		:=	$(foreach dir,$(SOURCES),$(wildcard $(dir)/*.c))
-CPPFILES	:=	$(foreach dir,$(SOURCES),$(wildcard $(dir)/*.cpp))
-SFILES		:=	$(foreach dir,$(SOURCES),$(wildcard $(dir)/*.S))
-OBJECTS		+=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.S=.o)
+#-------------------------------------------------------------------------------
+# main targets
+#-------------------------------------------------------------------------------
+all		:	$(OUTPUT).rpx
 
-#---------------------------------------------------------------------------------
-# targets
-#---------------------------------------------------------------------------------
-$(TARGET).rpx: $(OBJECTS)
+$(OUTPUT).rpx	:	$(OUTPUT).elf
 
-clean:
-	$(info clean ...)
-	@rm -rf $(TARGET).rpx $(OBJECTS) $(OBJECTS:.o=.d)
+$(OUTPUT).elf	:	$(OFILES)
 
-.PHONY: clean
+-include $(DEPENDS)
 
-#---------------------------------------------------------------------------------
-# wut
-#---------------------------------------------------------------------------------
-include $(WUT_ROOT)/share/wut.mk
+#-------------------------------------------------------------------------------
+endif
+#------------------------------------------------------------------------------- 
