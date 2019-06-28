@@ -12,6 +12,7 @@
 
 #include "MainDisplay.hpp"
 #include "AppCard.hpp"
+#include "Button.hpp"
 
 SDL_Renderer* MainDisplay::mainRenderer = NULL;
 Element* MainDisplay::subscreen = NULL;
@@ -140,6 +141,11 @@ MainDisplay::MainDisplay(Get* get)
 		TextElement* troubleshooting = new TextElement((std::string("Troubleshooting:\n") + troubleshootingText).c_str(), 20, NULL, false, 600);
 		troubleshooting->position(380, 585);
 		this->elements.push_back(troubleshooting);
+
+		Button* quit = new Button("Quit", SELECT_BUTTON, false, 15);
+		quit->position(1130, 630);
+		quit->action = std::bind(&MainDisplay::exit, this);
+		this->elements.push_back(quit);
 	}
 }
 
@@ -277,6 +283,11 @@ void MainDisplay::update()
 
 	SDL_RenderPresent(this->renderer);
 	//    this->lastFrameTime = now;
+}
+
+void MainDisplay::exit()
+{
+	quit();
 }
 
 void quit()
