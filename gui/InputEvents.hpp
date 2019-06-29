@@ -70,6 +70,9 @@ public:
 	int directionForKeycode();
 	void toggleHeldButtons();
 
+	// joystick device events processing
+	void processJoystickHotplugging(SDL_Event *event);
+
 	SDL_Keycode keyCode = -1;
 
 	bool held_directions[4] = { false, false, false, false };

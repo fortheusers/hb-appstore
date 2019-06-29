@@ -24,6 +24,7 @@ public:
 	void render(Element* parent);
 	void background(int r, int g, int b);
 	void update();
+	void exit();
 
 	TextElement* notice = NULL;
 
