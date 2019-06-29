@@ -217,6 +217,8 @@ void AppList::update()
 	
 	if (curCategoryValue == "_courses")
 	{
+		std::vector<Package*> empty;
+		packages = empty;
 		this->mario = new MarioMaker();
 		if (R_FAILED(mario->failResult))
 		{
@@ -224,12 +226,11 @@ void AppList::update()
 			return;
 			//TODO: Failed somewhere
 		}
-		std::vector<MarioMakerLevel> levels = mario->listLevels();
-		for (size_t i = 0; i < levels.size(); i++)
+		for (size_t i = 0; i < mario->levels.size(); i++)
 		{
 			Package *pkg = new Package(LOCAL);
-			pkg->pkg_name = std::to_string(levels[i].index);
-			pkg->title = levels[i].levelName;
+			pkg->pkg_name = std::to_string(mario->levels[i]->index);
+			pkg->title = mario->levels[i]->levelName;
 			pkg->author = mario->username;
 			pkg->category = "_courses";
 			packages.push_back(pkg);
