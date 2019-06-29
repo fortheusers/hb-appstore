@@ -3,7 +3,7 @@
 extern "C" {
 #endif
 
-size_t decrypt(const char *inf, const char *out);
+void decrypt(const char *inf, char *out);
 
 #ifdef __cplusplus
 }

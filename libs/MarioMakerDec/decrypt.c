@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "decrypt.h"
 #include "aes.h"
@@ -71,7 +72,7 @@ void getThumb(const char *inf, char* out)
 	AES_CBC_decrypt_buffer(&ctx, out, sz - 0x30);
 }
 
-size_t decrypt(const char *inf, const char *out)
+void decrypt(const char *inf, char *out)
 {
 	FILE *in = fopen(inf, "rb");
 	
@@ -88,58 +89,72 @@ size_t decrypt(const char *inf, const char *out)
 	{
 		case 0x1C000: // Thumbnail image data
 		{
+			char *buf = malloc(0x1C000);
 			
-			fread(out, 1, 0x1C000, in);
+			fread(buf, 1, 0x1C000, in);
 			fclose(in);
 			
-			char *end = out + sz - 0x30;
+			char *end = buf + sz - 0x30;
 			
 			rand_init(rand_state, *(uint32_t *)&end[0x10], *(uint32_t *)&end[0x14], *(uint32_t *)&end[0x18], *(uint32_t *)&end[0x1C]);
 			gen_key(thumb_key_table, key_state, rand_state);
 			
 			AES_init_ctx_iv(&ctx, (uint8_t *)key_state, end);		
-			AES_CBC_decrypt_buffer(&ctx, out, sz - 0x30);
-
+			AES_CBC_decrypt_buffer(&ctx, buf, sz - 0x30);
+			
+			memcpy(out, buf, sz - 0x30);
+			
+			free(buf);
+			
 			break;
 		}
 		
 		case 0x5C000: // Course data
 		{
+			char *buf = malloc(0x5C000);
 			
-			fread(out, 1, 0x5C000, in);
+			fread(buf, 1, 0x5C000, in);
 			fclose(in);
 			
-			char *end = out + sz - 0x30;
+			char *end = buf + sz - 0x30;
 			
 			rand_init(rand_state, *(uint32_t *)&end[0x10], *(uint32_t *)&end[0x14], *(uint32_t *)&end[0x18], *(uint32_t *)&end[0x1C]);
 			gen_key(course_key_table, key_state, rand_state);
 			
 			AES_init_ctx_iv(&ctx, (uint8_t *)key_state, end);		
-			AES_CBC_decrypt_buffer(&ctx, out + 0x10, sz - 0x40);
+			AES_CBC_decrypt_buffer(&ctx, buf + 0x10, sz - 0x40);
+			
+			memcpy(out, buf, sz - 0x30);
+
+			free(buf);
 			
 			break;
 		}
 		
 		case 0x68000: // Replay data
 		{
+			char *buf = malloc(0x68000);
 			
-			fread(out, 1, 0x68000, in);
+			fread(buf, 1, 0x68000, in);
 			fclose(in);
 			
-			char *end = out + sz - 0x30;
+			char *end = buf + sz - 0x30;
 			
 			rand_init(rand_state, *(uint32_t *)&end[0x10], *(uint32_t *)&end[0x14], *(uint32_t *)&end[0x18], *(uint32_t *)&end[0x1C]);
 			gen_key(replay_key_table, key_state, rand_state);
 			
 			AES_init_ctx_iv(&ctx, (uint8_t *)key_state, end);		
-			AES_CBC_decrypt_buffer(&ctx, out, sz - 0x30);
+			AES_CBC_decrypt_buffer(&ctx, buf, sz - 0x30);
 			
-			fwrite(out, 1, sz - 0x30, out);
+			memcpy(out, buf, sz - 0x30);
 
-			free(out);
+			free(buf);
 			
 			break;
 		}
-		return sz;
+
+		default:
+			fatalSimple(0);
+			break;
 	}
 }

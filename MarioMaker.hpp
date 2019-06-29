@@ -1,5 +1,6 @@
 #pragma once
 #include <switch.h>
+#include <string.h>
 #include <string>
 #include <vector>
 
@@ -11,17 +12,16 @@ class MarioMakerLevel
     char course[0x5C000],
     char replay[0x68000])
     {
+        memcpy(this->thumb, thumb, 0x1C000);
+        memcpy(this->course, course, 0x5C000);
         this->levelName = levelName;
         this->index = index;
-        this->thumb = thumb;
-        this->course = course;
-        this->replay = replay;
     }
     std::string levelName;
     u32 index;
-    char *thumb;
-    char *course;
-    char *replay;
+    char thumb[0x1C000] = {0};
+    char course[0x5C000] = {0};
+    char replay[0x68000] = {0};
 };
 
 class MarioMaker

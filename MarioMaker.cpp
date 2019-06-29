@@ -74,8 +74,8 @@ void MarioMaker::dumpLevels()
         struct stat st;
         if(stat(name.str().c_str(), &st) == 0)
         {
-            char thumbd[0x1C000];
-            char datad[0x5C000];
+            char thumbd[0x1C000] = {0};
+            char datad[0x5C000] = {0};
 
             std::string data = name.str();
             name.str("");
@@ -84,10 +84,11 @@ void MarioMaker::dumpLevels()
             decrypt(data.c_str(), datad);
             decrypt(thumb.c_str(), thumbd);
             u16 *txt16 = (u16*)&datad[0xf4];
-            u8 lname[0x20 + 1] = {0};
-            utf16_to_utf8(lname, txt16, 0x20);
-            this->levels.push_back(new MarioMakerLevel(std::string((char*)lname), i, thumbd, datad, NULL));
-            std::cout << "Level " << lname;
+            std::cout << datad << std::endl;
+            char lname[0x20 + 1] = {0};
+            utf16_to_utf8((u8*)lname, txt16, 0x20);
+            this->levels.push_back(new MarioMakerLevel(std::string(lname), i, thumbd, datad, NULL));
+            std::cout << "Level " << lname << std::endl;
         }
     }
 }
