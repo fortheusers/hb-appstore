@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdlib> // std::rand, std::srand
 #include <ctime>   // std::time
+#include <get/src/constants.h>
 
 AppList::AppList(Get* get, Sidebar* sidebar)
 {
@@ -213,6 +214,28 @@ void AppList::update()
 	// if it's a search, do a search query through get rather than using all packages
 	if (curCategoryValue == "_search")
 		packages = get->search(this->sidebar->searchQuery);
+	
+	if (curCategoryValue == "_courses")
+	{
+		this->mario = new MarioMaker();
+		if (R_FAILED(mario->failResult))
+		{
+			delete mario;
+			return;
+			//TODO: Failed somewhere
+		}
+		std::vector<MarioMakerLevel> levels = mario->listLevels();
+		for (size_t i = 0; i < levels.size(); i++)
+		{
+			Package *pkg = new Package(LOCAL);
+			pkg->pkg_name = std::to_string(levels[i].index);
+			pkg->title = levels[i].levelName;
+			pkg->author = mario->username;
+			pkg->category = "_courses";
+			packages.push_back(pkg);
+		}
+		
+	}
 
 	// sort the packages list by whatever criteria is currently set
 	const char* sortString = applySortOrder(&packages);
@@ -255,7 +278,7 @@ void AppList::update()
 	{
 		// if we're on all categories, or this package matches the current category (or it's a search (prefiltered))
 		// OR it's *not* any of the other categories, and we're on misc
-		if ((curCategoryValue == "_all" || curCategoryValue == sorted[x]->category || curCategoryValue == "_search") || curCategoryValue == "_misc")
+		if ((curCategoryValue == "_all" || curCategoryValue == sorted[x]->category || curCategoryValue == "_search") || curCategoryValue == "_misc" || curCategoryValue == "_courses")
 		{
 			if (curCategoryValue == "_misc")
 			{
@@ -267,8 +290,11 @@ void AppList::update()
 				if (matchedCat)
 					continue;
 			}
-
-			AppCard* card = new AppCard(sorted[x]);
+			AppCard* card;
+			if (curCategoryValue != "_courses")
+				card = new AppCard(sorted[x]);
+			else
+				card = new AppCard(sorted[x], this->mario);
 			card->index = count;
 
 			this->elements.push_back(card);

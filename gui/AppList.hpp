@@ -6,6 +6,7 @@
 #include "ListElement.hpp"
 #include "Sidebar.hpp"
 #include "TextElement.hpp"
+#include "MarioMaker.hpp"
 
 #define TOTAL_SORTS 5 // alphabetical (with updates at top), downloads, last updated, size, shuffled
 #define RECENT 0
@@ -25,6 +26,7 @@ public:
 	Get* get = NULL;
 	Sidebar* sidebar = NULL;
 	Keyboard* keyboard = NULL;
+	MarioMaker* mario = NULL;
 
 	void toggleKeyboard();
 	void cycleSort();

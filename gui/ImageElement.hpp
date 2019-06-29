@@ -6,6 +6,7 @@ class ImageElement : public Element
 {
 public:
 	ImageElement(const char* path, bool calcFirstPixel = false);
+	ImageElement(bool calcFirstPixel, const char* buf);
 	void render(Element* parent);
 
 	SDL_Texture* imgSurface = NULL;

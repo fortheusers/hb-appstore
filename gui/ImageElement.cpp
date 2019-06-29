@@ -45,6 +45,31 @@ ImageElement::ImageElement(const char* incoming, bool calcFirstPixel)
 		ImageCache::cache[key] = (this->imgSurface);
 }
 
+ImageElement::ImageElement(bool calcFirstPixel, const char* buf)
+{
+
+	if (this->imgSurface != NULL && !calcFirstPixel)
+		SDL_DestroyTexture(this->imgSurface);
+
+	SDL_RWops *sdlbuf = SDL_RWFromMem((void*) buf, sizeof(buf));
+	SDL_Surface* surface = IMG_Load_RW(sdlbuf, 0);
+
+	if (!calcFirstPixel)
+		this->imgSurface = SDL_CreateTextureFromSurface(MainDisplay::mainRenderer, surface);
+
+	this->width = 0;  //surface->w;
+	this->height = 0; //surface->h;
+
+	if (surface != NULL && imgSurface != NULL && calcFirstPixel)
+	{
+		this->firstPixel = new SDL_Color();
+		Uint32 value = getpixel(surface, 0, 0);
+		SDL_GetRGB(value, surface->format, &(this->firstPixel->r), &(this->firstPixel->g), &(this->firstPixel->b));
+	}
+
+	SDL_FreeSurface(surface);
+}
+
 void ImageElement::render(Element* parent)
 {
 	SDL_Rect imgLocation;

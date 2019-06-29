@@ -19,12 +19,35 @@ AppCard::AppCard(Package* package)
 	this->action = std::bind(&AppCard::displaySubscreen, this);
 }
 
+AppCard::AppCard(Package* package, MarioMaker *mario)
+{
+	this->package = package;
+
+	// fixed width+height of one app card
+	this->width = 256;
+	this->height = ICON_SIZE + 45;
+
+#if defined(__WIIU__)
+	this->height = ICON_SIZE + 45;
+#endif
+
+	this->touchable = true;
+
+	// connect the action to the callback for this element, to be invoked when the touch event fires
+	this->action = std::bind(&AppCard::displaySubscreen, this);
+	this->mario = mario;
+}
+
 void AppCard::update()
 {
 	// create the layout of the app card (all relative)
 
 	// icon, and look up cached image to load
-	ImageElement* icon = new ImageElement((ImageCache::cache_path + this->package->pkg_name + "/icon.png").c_str());
+	ImageElement* icon;
+	if (this->package->category != "_courses")
+		icon = new ImageElement((ImageCache::cache_path + this->package->pkg_name + "/icon.png").c_str());
+	else
+		icon = new ImageElement(false, mario->levels[std::stoi(package->pkg_name)].thumb);
 	icon->position(this->x, this->y);
 	icon->resize(256, this->height - 45);
 
