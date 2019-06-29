@@ -22,6 +22,9 @@ bool InputEvents::update()
 	this->keyCode = -1;
 	this->noop = false;
 
+	// proces joystick hotplugging events
+	processJoystickHotplugging(&event);
+
 #ifdef PC
 	this->allowTouch = false;
 	if (event.type == SDL_MOUSEWHEEL)
@@ -218,4 +221,27 @@ bool InputEvents::isKeyDown()
 bool InputEvents::isKeyUp()
 {
 	return this->type == SDL_KEYUP || this->type == SDL_JOYBUTTONUP;
+}
+
+void InputEvents::processJoystickHotplugging(SDL_Event *event)
+{
+	SDL_Joystick *j;
+	switch(event->type)
+	{
+	case SDL_JOYDEVICEADDED:
+		j = SDL_JoystickOpen(event->jdevice.which);
+		if (j)
+			printf("Added joystick device: %s\n", SDL_JoystickName(j));
+		break;
+	case SDL_JOYDEVICEREMOVED:
+		j = SDL_JoystickFromInstanceID(event->jdevice.which);
+		if (j && SDL_JoystickGetAttached(j))
+		{
+			printf("Removed joystick device: %s\n", SDL_JoystickName(j));
+			SDL_JoystickClose(j);
+		}
+		break;
+	default:
+		break;
+	}
 }
