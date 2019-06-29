@@ -35,8 +35,8 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	appstore
 BUILD		:=	build
-SOURCES		:=	. $(GET) $(MINIZIP) console gui
-INCLUDES	:=	. $(RAPIDJSON) $(MINIZIP)
+SOURCES		:=	. $(GET) $(MINIZIP) console gui libs/MarioMakerDec
+INCLUDES	:=	. $(RAPIDJSON) $(MINIZIP) libs/MarioMakerDec ./libs/
 ROMFS         := romfs
 EXEFS_SRC	:=	exefs_src
 

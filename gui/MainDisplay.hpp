@@ -19,7 +19,6 @@ class MainDisplay : public Element
 {
 public:
 	MainDisplay(Get* get);
-	void exit();
 	bool process(InputEvents* event);
 	void render(Element* parent);
 	void background(int r, int g, int b);
