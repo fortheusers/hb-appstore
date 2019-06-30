@@ -45,13 +45,13 @@ ImageElement::ImageElement(const char* incoming, bool calcFirstPixel)
 		ImageCache::cache[key] = (this->imgSurface);
 }
 
-ImageElement::ImageElement(bool calcFirstPixel, const char* buf)
+ImageElement::ImageElement(bool calcFirstPixel, const char* buf, int size)
 {
 
 	if (this->imgSurface != NULL && !calcFirstPixel)
 		SDL_DestroyTexture(this->imgSurface);
 
-	SDL_RWops *sdlbuf = SDL_RWFromMem((void*) buf, sizeof(buf));
+	SDL_RWops *sdlbuf = SDL_RWFromMem((void*) buf, size);
 	SDL_Surface* surface = IMG_Load_RW(sdlbuf, 0);
 
 	if (!calcFirstPixel)

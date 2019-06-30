@@ -74,21 +74,16 @@ void MarioMaker::dumpLevels()
         struct stat st;
         if(stat(name.str().c_str(), &st) == 0)
         {
-            char thumbd[0x1C000] = {0};
-            char datad[0x5C000] = {0};
-
+            MarioMakerLevel *level = new MarioMakerLevel(i);
             std::string data = name.str();
             name.str("");
             name << "smm2save:/course_thumb_" << std::setw(3) << std::setfill('0') << i << ".btl";
             std::string thumb = name.str();
-            decrypt(data.c_str(), datad);
-            decrypt(thumb.c_str(), thumbd);
-            u16 *txt16 = (u16*)&datad[0xf4];
-            std::cout << datad << std::endl;
-            char lname[0x20 + 1] = {0};
-            utf16_to_utf8((u8*)lname, txt16, 0x20);
-            this->levels.push_back(new MarioMakerLevel(std::string(lname), i, thumbd, datad, NULL));
-            std::cout << "Level " << lname << std::endl;
+            decrypt(data.c_str(), level->course);
+            decrypt(thumb.c_str(), level->thumb);
+            level->setName();
+            std::cout << "Level found: " << level->levelName << std::endl;
+            this->levels.push_back(level);
         }
     }
 }

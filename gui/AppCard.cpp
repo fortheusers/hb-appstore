@@ -47,7 +47,7 @@ void AppCard::update()
 	if (this->package->category != "_courses")
 		icon = new ImageElement((ImageCache::cache_path + this->package->pkg_name + "/icon.png").c_str());
 	else
-		icon = new ImageElement(false, mario->levels[std::stoi(package->pkg_name)]->thumb);
+		icon = new ImageElement(false, mario->levels[std::stoi(package->pkg_name)]->thumb, 0x1C000);
 	icon->position(this->x, this->y);
 	icon->resize(256, this->height - 45);
 

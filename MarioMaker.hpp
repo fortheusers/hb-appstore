@@ -1,21 +1,21 @@
 #pragma once
 #include <switch.h>
-#include <string.h>
 #include <string>
 #include <vector>
 
 class MarioMakerLevel
 {
     public:
-    MarioMakerLevel(std::string levelName, u32 index,
-    char thumb[0x1C000],
-    char course[0x5C000],
-    char replay[0x68000])
+    MarioMakerLevel(u32 index)
     {
-        memcpy(this->thumb, thumb, 0x1C000);
-        memcpy(this->course, course, 0x5C000);
-        this->levelName = levelName;
         this->index = index;
+    }
+    void setName()
+    {
+        u16 *txt16 = (u16*)&this->course[0xf4];
+        char lname[0x20 + 1] = {0};
+        utf16_to_utf8((u8*)lname, txt16, 0x20);
+        this->levelName = std::string(lname);
     }
     std::string levelName;
     u32 index;

@@ -124,7 +124,7 @@ void decrypt(const char *inf, char *out)
 			AES_init_ctx_iv(&ctx, (uint8_t *)key_state, end);		
 			AES_CBC_decrypt_buffer(&ctx, buf + 0x10, sz - 0x40);
 			
-			memcpy(out, buf, sz - 0x30);
+			memcpy(out, buf + 0x10, sz - 0x50);
 
 			free(buf);
 			
@@ -146,15 +146,11 @@ void decrypt(const char *inf, char *out)
 			AES_init_ctx_iv(&ctx, (uint8_t *)key_state, end);		
 			AES_CBC_decrypt_buffer(&ctx, buf, sz - 0x30);
 			
-			memcpy(out, buf, sz - 0x30);
+			memcpy(out, buf + 0x10, sz - 0x30);
 
 			free(buf);
 			
 			break;
 		}
-
-		default:
-			fatalSimple(0);
-			break;
 	}
 }
