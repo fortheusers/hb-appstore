@@ -44,6 +44,7 @@ MarioMaker::MarioMaker()
     accountProfileGet(&accP, NULL, &userProfile);
     accountProfileLoadImage(&accP, &this->profileIcon, 64000, &this->profileSize);
     this->username = userProfile.username;
+    this->uuid = userProfile.userID;
 
     if(userid == 0)
     {
@@ -79,10 +80,16 @@ void MarioMaker::dumpLevels()
             name.str("");
             name << "smm2save:/course_thumb_" << std::setw(3) << std::setfill('0') << i << ".btl";
             std::string thumb = name.str();
+            name.str("");
+            name << "smm2save:/course_replay_" << std::setw(3) << std::setfill('0') << i << ".dat";
+            std::string replay = name.str();
             decrypt(data.c_str(), level->course);
             decrypt(thumb.c_str(), level->thumb);
             level->setName();
             std::cout << "Level found: " << level->levelName << std::endl;
+            level->cpath = data;
+            level->tpath = thumb;
+            level->rpath = replay;
             this->levels.push_back(level);
         }
     }

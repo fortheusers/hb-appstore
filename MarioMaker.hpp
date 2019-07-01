@@ -22,6 +22,10 @@ class MarioMakerLevel
     char thumb[0x1C000] = {0};
     char course[0x5C000] = {0};
     char replay[0x68000] = {0};
+
+    std::string tpath;
+    std::string cpath;
+    std::string rpath;
 };
 
 class MarioMaker
@@ -33,6 +37,7 @@ class MarioMaker
     public:
     std::vector<MarioMakerLevel*> levels;
     std::string username;
+    u128 uuid;
     MarioMaker();
     Result failResult = 0;
     ~MarioMaker();

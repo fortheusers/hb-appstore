@@ -349,7 +349,7 @@ void AppList::update()
 	this->elements.push_back(quit);
 
 	// additional buttons (only if not on search)
-	if (curCategoryValue != "_search")
+	if (curCategoryValue != "_search" && curCategoryValue != "_courses")
 	{
 		Button* settings = new Button("Credits", X_BUTTON, false, 15);
 		settings->position(quit->x - 20 - settings->width, quit->y);

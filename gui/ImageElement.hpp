@@ -5,7 +5,7 @@
 class ImageElement : public Element
 {
 public:
-	ImageElement(const char* path, bool calcFirstPixel = false);
+	ImageElement(const char* path, bool calcFirstPixel = false, bool cache = true);
 	ImageElement(bool calcFirstPixel, const char* buf, int size);
 	void render(Element* parent);
 

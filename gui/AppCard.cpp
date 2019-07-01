@@ -1,5 +1,6 @@
 #include "AppCard.hpp"
 #include "MainDisplay.hpp"
+#include "MakerSubmit.hpp"
 
 AppCard::AppCard(Package* package)
 {
@@ -112,9 +113,17 @@ void AppCard::displaySubscreen()
 	if (!this->parent) return;
 
 	AppList* appList = ((AppList*)this->parent);
-	MainDisplay::subscreen = new AppDetails(this->package, appList);
-	if (!appList->touchMode)
-		((AppDetails*)MainDisplay::subscreen)->highlighted = 0; // show cursor if we're not in touch mode
+	if (this->package->category != "_courses" || this->package->status != LOCAL)
+	{
+		MainDisplay::subscreen = new AppDetails(this->package, appList);
+		if (!appList->touchMode)
+			((AppDetails*)MainDisplay::subscreen)->highlighted = 0; // show cursor if we're not in touch mode
+	}
+	else
+	{
+		MainDisplay::subscreen = new MakerSubmit(this->package, appList, mario);
+	}
+	
 }
 
 bool AppCard::process(InputEvents* event)

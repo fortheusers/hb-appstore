@@ -1,3 +1,4 @@
+#pragma once
 #include "libget/src/Get.hpp"
 
 #include "AppDetails.hpp"

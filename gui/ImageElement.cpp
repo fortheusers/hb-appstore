@@ -2,14 +2,14 @@
 #include <SDL2/SDL2_rotozoom.h>
 #include <string.h>
 
-ImageElement::ImageElement(const char* incoming, bool calcFirstPixel)
+ImageElement::ImageElement(const char* incoming, bool calcFirstPixel, bool cache)
 {
 	this->path = incoming;
 
 	std::string key = std::string(this->path);
 
 	// try to find it in the cache first
-	if (ImageCache::cache.count(key))
+	if (ImageCache::cache.count(key) && cache)
 	{
 		this->imgSurface = ImageCache::cache[key];
 
@@ -41,7 +41,7 @@ ImageElement::ImageElement(const char* incoming, bool calcFirstPixel)
 	SDL_FreeSurface(surface);
 
 	// add to cache for next time
-	if (this->imgSurface != NULL)
+	if (this->imgSurface != NULL && cache)
 		ImageCache::cache[key] = (this->imgSurface);
 }
 

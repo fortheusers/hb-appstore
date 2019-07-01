@@ -52,6 +52,8 @@ SDL_Texture* TextElement::renderText(std::string& message, int size, int font_ty
 		font = TTF_OpenFont(ROMFS "./res/mono.ttf", size);
 	else if (font_type == ICON)
 		font = TTF_OpenFont(ROMFS "./res/nxicons.ttf", size);
+	else if (font_type == MAKER)
+		font = TTF_OpenFont(ROMFS "./res/super-mario-extended/SuperMarioMakerExtended.ttf", size);
 	else
 		font = TTF_OpenFont(ROMFS "./res/opensans.ttf", size);
 

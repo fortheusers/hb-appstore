@@ -5,6 +5,7 @@
 #define NORMAL 0
 #define MONOSPACED 1
 #define ICON 2
+#define MAKER 3
 
 class TextElement : public Element
 {
