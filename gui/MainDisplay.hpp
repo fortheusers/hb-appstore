@@ -1,4 +1,5 @@
 #include "AppList.hpp"
+#include "DownloadQueue.hpp"
 #include "Element.hpp"
 #include "ImageCache.hpp"
 #include "ImageElement.hpp"
@@ -15,6 +16,14 @@
 #define ICON_SIZE 150
 #endif
 
+struct iconDownloadInfo
+{
+	Package *pkg;
+	bool isBanner;
+	iconDownloadInfo(Package *pkg, bool isBanner) :
+		pkg(pkg), isBanner(isBanner) {}
+};
+
 class MainDisplay : public Element
 {
 public:
@@ -25,6 +34,8 @@ public:
 	void update();
 	void exit();
 
+	void iconDownloadComplete(DownloadOperation *download);
+
 	TextElement* notice = NULL;
 
 	static SDL_Renderer* mainRenderer;
@@ -33,6 +44,7 @@ public:
 
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;
+	DownloadQueue *downloadQueue = NULL;
 	bool error = false;
 
 	int lastFrameTime = 99;
@@ -43,7 +55,13 @@ public:
 #endif
 
 	bool showingSplash = true;
-	int count = 0;
+
+private:
+	ProgressBar* pbar;
+
+	int completeDownloads = 0;
+	int totalDownloads = 0;
+	int percentDownloads = -1;
 };
 
 void quit();

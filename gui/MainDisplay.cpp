@@ -101,7 +101,7 @@ MainDisplay::MainDisplay(Get* get)
 	this->error = this->error || !atLeastOneEnabled;
 
 	// the progress bar
-	ProgressBar* pbar = new ProgressBar();
+	pbar = new ProgressBar();
 	pbar->position(401, 380 - this->error * 290);
 	this->elements.push_back(pbar);
 
@@ -146,7 +146,65 @@ MainDisplay::MainDisplay(Get* get)
 		quit->position(1130, 630);
 		quit->action = std::bind(&MainDisplay::exit, this);
 		this->elements.push_back(quit);
+
+		return;
 	}
+
+	downloadQueue = new DownloadQueue();
+
+	// start downloads for missing or outdated package icons
+	for (Package *pkg : this->get->packages)
+	{
+		// if the package is already in cache, and the version matches, do nothing
+		if (this->imageCache->version_cache.count(pkg->pkg_name) &&
+			this->imageCache->version_cache[pkg->pkg_name] == pkg->version)
+			continue;
+
+		DownloadOperation *icon_download = new DownloadOperation();
+		icon_download->url = *(pkg->repoUrl) + "/packages/" + pkg->pkg_name + "/icon.png";
+		icon_download->cbdata = new iconDownloadInfo(pkg, 0);
+		icon_download->cb = std::bind(&MainDisplay::iconDownloadComplete, this, std::placeholders::_1);
+		downloadQueue->downloadAdd(icon_download);
+		totalDownloads++;
+
+		// no more default banners, just try to download the file (don't do this on Wii U)
+#if !defined(__WIIU__)
+		DownloadOperation *banner_download = new DownloadOperation();
+		banner_download->url = *(pkg->repoUrl) + "/packages/" + pkg->pkg_name + "/screen.png";
+		banner_download->cbdata = new iconDownloadInfo(pkg, 1);
+		banner_download->cb = std::bind(&MainDisplay::iconDownloadComplete, this, std::placeholders::_1);
+		downloadQueue->downloadAdd(banner_download);
+		totalDownloads++;
+#endif
+	}
+}
+
+void MainDisplay::iconDownloadComplete(DownloadOperation *download)
+{
+	iconDownloadInfo *info = (iconDownloadInfo *)download->cbdata;
+	Package *pkg = info->pkg;
+
+	std::string key_path = this->imageCache->cache_path + pkg->pkg_name;
+
+	mkpath(key_path);
+
+	if (download->status == DownloadStatus::COMPLETE)
+	{
+		std::ofstream file(key_path + ((info->isBanner) ? "/screen.png" : "/icon.png"));
+		file << download->buffer;
+		file.close();
+
+		this->imageCache->version_cache[pkg->pkg_name] = pkg->version;
+	}
+	else if ((download->status == DownloadStatus::FAILED) && !info->isBanner)
+	{
+		cp(ROMFS "res/default.png", (key_path + "/icon.png").c_str());
+	}
+
+	completeDownloads++;
+
+	delete info;
+	delete download;
 }
 
 bool MainDisplay::process(InputEvents* event)
@@ -155,61 +213,24 @@ bool MainDisplay::process(InputEvents* event)
 	// and load them into our surface cache with the pkg_name+version as the key
 	if (this->showingSplash && event->noop)
 	{
-		// should be a progress bar
-		if (this->get->packages.size() != 1)
-			((ProgressBar*)this->elements[0])->percent = (this->count / ((float)this->get->packages.size() - 1));
-
 		// no packages, prevent crash TODO: display offline in bottom bar
 		if (this->get->packages.size() == 0)
 		{
-			((ProgressBar*)this->elements[0])->percent = -1;
+			pbar->percent = -1;
 			this->showingSplash = false;
 			return true;
 		}
 
-		if (notice && ((ProgressBar*)this->elements[0])->percent > 0.5)
-			notice->hidden = false;
+		int res = downloadQueue->process();
 
-		// update the counter (TODO: replace with fetching app icons/screen previews)
-		this->count++;
-
-		// get the package whose icon+screen to process
-		Package* current = this->get->packages[this->count - 1];
-
-		// the path to the cache location of the icon and screen for this pkg_name and version number
-		std::string key_path = imageCache->cache_path + current->pkg_name;
-
-		// check if this package exists in our cache, but the version doesn't match
-		// (if (it's not in the cache) OR (it's in the cache but the version doesn't match)
-		if (this->imageCache->version_cache.count(current->pkg_name) == 0 || (this->imageCache->version_cache.count(current->pkg_name) && this->imageCache->version_cache[current->pkg_name] != current->version))
+		if (res || (completeDownloads == totalDownloads))
 		{
-			// the version in our cache doesn't match the one that will be on the server
-			// so we need to download the images now
-			mkdir(key_path.c_str(), 0700);
-
-			bool success = downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/icon.png", key_path + "/icon.png");
-			if (!success) // manually add default icon to cache if downloading failed
-				cp(ROMFS "res/default.png", (key_path + "/icon.png").c_str());
-			// TODO: generate a custom icon for this version with a color and name
-
-			// no more default banners, just try to download the file (don't do this on Wii U)
-			#if !defined(__WIIU__)
-			downloadFileToDisk(*(current->repoUrl) + "/packages/" + current->pkg_name + "/screen.png", key_path + "/screen.png");
-			#endif
-
-			// add these versions to the version map
-			this->imageCache->version_cache[current->pkg_name] = current->version;
+			// Update progress bar only if needed
+			pbar->percent = (float)completeDownloads / (float)totalDownloads;
+			if (notice && pbar->percent > 0.5)
+				notice->hidden = false;
 		}
-
-		// whether we just downloaded it or it was already there from the cache, load this image element into our memory cache
-		// (making an AppCard and calling update() will do this, even if we don't intend to do anything with it yet)
-		AppCard a(current);
-		a.update();
-
-		// write the version we just got to the cache as well so that we can know whether or not we need to up date it next time
-
-		// are we done processing all packages
-		if (this->count == this->get->packages.size())
+		else
 		{
 			// write whatever we have in the icon version cache to a file
 			this->imageCache->writeVersionCache();
@@ -227,6 +248,8 @@ bool MainDisplay::process(InputEvents* event)
 
 			this->showingSplash = false;
 			this->needsRedraw = true;
+
+			delete downloadQueue;
 		}
 
 		return true;
