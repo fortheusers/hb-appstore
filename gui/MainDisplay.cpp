@@ -223,7 +223,7 @@ bool MainDisplay::process(InputEvents* event)
 
 		int res = downloadQueue->process();
 
-		if (res || (completeDownloads == totalDownloads))
+		if (res && (completeDownloads < totalDownloads))
 		{
 			// Update progress bar only if needed
 			pbar->percent = (float)completeDownloads / (float)totalDownloads;
