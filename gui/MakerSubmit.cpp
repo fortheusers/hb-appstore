@@ -1,6 +1,6 @@
 #include "MakerSubmit.hpp"
 #include "libget/src/Package.hpp"
-#include "libget/src/libs/minizip/zip.h"
+#include "libs/get/src/ZipUtil.hpp"
 #include "MarioMaker.hpp"
 #include "Button.hpp"
 #include "ListElement.hpp"
@@ -54,63 +54,37 @@ std::string u128ToString(u128 num) {
     return str;
 }
 
-void cSubmit(MarioMakerLevel *level, MarioMaker *mario, Package* package)
+void MakerSubmit::cSubmit()
 {
     CURL* curl;
     curl = curl_easy_init();
     if (curl)
     {
-        mkdir("sdmc:/switch/appstore/mario/", 777);
-        std::string zpath = "sdmc:/switch/appstore/mario/course.zip";
-        FILE *thIn = fopen(level->tpath.c_str(), "rb");
-        char *thBuf[0x1C000];
-        fread(thBuf, 1, sizeof(thBuf), thIn);
+        mkdir("sdmc:/switch/appstore/mario/", 0777);
+        Zip *zip = new Zip("sdmc:/switch/appstore/mario/course.zip");
         
-        FILE *cdIn = fopen(level->cpath.c_str(), "rb");
-        char *cdBuf[0x5C000];
-        fread(cdBuf, 1, sizeof(cdBuf), cdIn);
+        zip->AddFile("thumb.bin", level->tpath.c_str());
+
+        zip->AddFile("course.bin", level->cpath.c_str());
         
-        FILE *rpIn = fopen(level->rpath.c_str(), "rb");
-        char *rpBuf[0x68000];
-        fread(rpBuf, 1, sizeof(rpBuf), rpIn);
-        
-        zipFile zip = zipOpen(zpath.c_str(), APPEND_STATUS_CREATE);
-        if (zip == NULL)
-            return;
+        zip->AddFile("replay.bin", level->rpath.c_str());
 
-        zip_fileinfo th = {0};
-        zipOpenNewFileInZip(zip, "thumb.jpg", &th, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
-        zipWriteInFileInZip(zip, thBuf, sizeof(thBuf));
-        zipCloseFileInZip(zip);
+        zip->Close();
 
-        zip_fileinfo cd = {0};
-        zipOpenNewFileInZip(zip, "course.bin", &cd, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
-        zipWriteInFileInZip(zip, cdBuf, sizeof(cdBuf));
-        zipCloseFileInZip(zip);
-
-        zip_fileinfo rp = {0};
-        zipOpenNewFileInZip(zip, "replay.bin", &rp, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
-        zipWriteInFileInZip(zip, rpBuf, sizeof(rpBuf));
-        zipCloseFileInZip(zip);
-
-        zipClose(zip, NULL);
-        fclose(thIn);
-        fclose(cdIn);
-        fclose(rpIn);
-
-        FILE *zipIn = fopen(zpath.c_str(), "rb");
+        FILE *zipIn = fopen("sdmc:/switch/appstore/mario/course.zip", "rb");
 
         curl_easy_setopt(curl, CURLOPT_URL, "https://dragonite.fortheusers.org/mmcourse");
         curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
         curl_easy_setopt(curl, CURLOPT_READDATA, zipIn);
         curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
 
         char* epc = curl_easy_escape(curl, package->title.c_str(), 0);
         std::string escpkg = std::string(epc);
         curl_free(epc);
 
 	    std::stringstream fields;
-        fields << "package=" << package->pkg_name << "-" << escpkg << "&uuid=" << u128ToString(mario->uuid);
+        fields << "/" << u128ToString(mario->uuid) << "/" << package->pkg_name << "-" << escpkg;
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, fields.str().c_str());
 
         CURLcode res = curl_easy_perform(curl);
@@ -168,7 +142,7 @@ void MakerSubmit::update()
 
     Button *submit = new Button("Submit", A_BUTTON, true, 25, 48*4);
     submit->position(SBSTART+48, 48*11);
-    submit->action = std::bind(cSubmit, this->level, this->mario, this->package);
+    //submit->action = std::bind(&MakerSubmit::cSubmit, this);
     this->elements.push_back(submit);
 
     Button *cancel = new Button("Cancel", B_BUTTON, true, 25, 48*4);
@@ -189,6 +163,11 @@ bool MakerSubmit::process(InputEvents* event)
 		backBtn();
 		return true;
 	}
+    if (event->pressed(A_BUTTON))
+    {
+        this->cSubmit();
+        return true;
+    }
 
     return super::process(event);
 }

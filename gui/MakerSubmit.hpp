@@ -21,6 +21,7 @@ class MakerSubmit : public Element
     int MARGIN;
     int SBSTART;
     MarioMakerLevel *level;
+    void cSubmit();
     public:
     Package *package;
     MakerSubmit(Package *package, AppList *appList, MarioMaker *mario);
