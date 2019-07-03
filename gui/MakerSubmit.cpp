@@ -72,6 +72,11 @@ void MakerSubmit::cSubmit()
         zip->Close();
 
         FILE *zipIn = fopen("sdmc:/switch/appstore/mario/course.zip", "rb");
+        
+        char* epc = curl_easy_escape(curl, package->title.c_str(), 0);
+        std::string escpkg = std::string(epc);
+        curl_free(epc);
+
         std::stringstream fields;
         fields << "/" << u128ToString(mario->uuid) << "/" << package->pkg_name << "-" << escpkg;
         curl_easy_setopt(curl, CURLOPT_URL, "https://dragonite.fortheusers.org/mmcourse" + fields.str());
@@ -79,10 +84,6 @@ void MakerSubmit::cSubmit()
         curl_easy_setopt(curl, CURLOPT_READDATA, zipIn);
         curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
-
-        char* epc = curl_easy_escape(curl, package->title.c_str(), 0);
-        std::string escpkg = std::string(epc);
-        curl_free(epc);
 
         CURLcode res = curl_easy_perform(curl);
         fclose(zipIn);
