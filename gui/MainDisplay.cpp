@@ -158,7 +158,11 @@ MainDisplay::MainDisplay(Get* get)
 		// if the package is already in cache, and the version matches, do nothing
 		if (this->imageCache->version_cache.count(pkg->pkg_name) &&
 			this->imageCache->version_cache[pkg->pkg_name] == pkg->version)
+		{
+			AppCard a(pkg);
+			a.update();
 			continue;
+		}
 
 		DownloadOperation *icon_download = new DownloadOperation();
 		icon_download->url = *(pkg->repoUrl) + "/packages/" + pkg->pkg_name + "/icon.png";
@@ -200,6 +204,9 @@ void MainDisplay::iconDownloadComplete(DownloadOperation *download)
 	{
 		cp(ROMFS "res/default.png", (key_path + "/icon.png").c_str());
 	}
+
+	AppCard a(pkg);
+	a.update();
 
 	completeDownloads++;
 
