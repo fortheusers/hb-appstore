@@ -1,5 +1,7 @@
 #include <SDL2/SDL.h>
 
+#pragma once
+
 // clang-format off
 #define LEFT_BUTTON       0b00000000000001
 #define RIGHT_BUTTON      0b00000000000010

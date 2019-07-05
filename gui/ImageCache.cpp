@@ -7,6 +7,8 @@
 #include <fstream>
 
 std::unordered_map<std::string, SDL_Texture*> ImageCache::cache;
+std::unordered_map<std::string, IconData> ImageCache::iconCaches;
+
 std::string ImageCache::cache_path;
 
 ImageCache::ImageCache(const char* tmp_path)

@@ -50,6 +50,9 @@ int main(int argc, char* argv[])
 	return console_main(get);
 #else
 
+	// initialize download queue
+	DownloadQueue::init();
+
 	// initialize main title screen
 	MainDisplay* display = new MainDisplay(get);
 
@@ -64,6 +67,9 @@ int main(int argc, char* argv[])
 
 		int frameStart = SDL_GetTicks();
 
+		// update download queue
+		DownloadQueue::downloadQueue->process();
+
 		// get any new input events
 		while (events->update())
 		{
@@ -74,7 +80,7 @@ int main(int argc, char* argv[])
 
 		// one more event update if nothing changed or there were no previous events seen
 		// needed to non-input related processing that might update the screen to take place
-		if ((!atLeastOneNewEvent && !viewChanged) || display->showingSplash)
+		if (!atLeastOneNewEvent && !viewChanged)
 		{
 			events->update();
 			viewChanged |= display->process(events);

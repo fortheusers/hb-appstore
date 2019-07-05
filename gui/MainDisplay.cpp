@@ -100,33 +100,10 @@ MainDisplay::MainDisplay(Get* get)
 
 	this->error = this->error || !atLeastOneEnabled;
 
-	// the progress bar
-	pbar = new ProgressBar();
-	pbar->position(401, 380 - this->error * 290);
-	this->elements.push_back(pbar);
-
 	// the text above the progress bar
 	//	TextElement* pbar_text = new TextElement("Updating App Info...", 17);
 	//	pbar_text->position(550, 365);
 	//	this->elements.push_back(pbar_text);
-
-	// create the first two elements (icon and app title)
-	ImageElement* icon = new ImageElement(ROMFS "res/icon.png");
-	icon->position(330 + this->error * 140, 255 - this->error * 230);
-	icon->resize(70 - this->error * 35, 70 - this->error * 35);
-	this->elements.push_back(icon);
-
-	TextElement* title = new TextElement("Homebrew App Store", 50 - this->error * 25);
-	title->position(415 + this->error * 100, 255 - this->error * 230);
-	this->elements.push_back(title);
-
-	if (this->imageCache->version_cache.size() == 0)
-	{
-		notice = new TextElement("Still doing initial load-- next time will be faster!", 20);
-		notice->position(410, 460);
-		notice->hidden = true;
-		this->elements.push_back(notice);
-	}
 
 	if (this->error)
 	{
@@ -150,126 +127,23 @@ MainDisplay::MainDisplay(Get* get)
 		return;
 	}
 
-	downloadQueue = new DownloadQueue();
+	// add in the sidebar, footer, and main app listing
+	Sidebar* sidebar = new Sidebar();
+	this->elements.push_back(sidebar);
 
-	// start downloads for missing or outdated package icons
-	for (Package *pkg : this->get->packages)
-	{
-		// if the package is already in cache, and the version matches, do nothing
-		if (this->imageCache->version_cache.count(pkg->pkg_name) &&
-			this->imageCache->version_cache[pkg->pkg_name] == pkg->version)
-		{
-			AppCard a(pkg);
-			a.update();
-			continue;
-		}
+	AppList* applist = new AppList(this->get, sidebar);
+	this->elements.push_back(applist);
+	sidebar->appList = applist;
 
-		DownloadOperation *icon_download = new DownloadOperation();
-		icon_download->url = *(pkg->repoUrl) + "/packages/" + pkg->pkg_name + "/icon.png";
-		icon_download->cbdata = new iconDownloadInfo(pkg, 0);
-		icon_download->cb = std::bind(&MainDisplay::iconDownloadComplete, this, std::placeholders::_1);
-		downloadQueue->downloadAdd(icon_download);
-		totalDownloads++;
-
-		// no more default banners, just try to download the file (don't do this on Wii U)
-#if !defined(__WIIU__)
-		DownloadOperation *banner_download = new DownloadOperation();
-		banner_download->url = *(pkg->repoUrl) + "/packages/" + pkg->pkg_name + "/screen.png";
-		banner_download->cbdata = new iconDownloadInfo(pkg, 1);
-		banner_download->cb = std::bind(&MainDisplay::iconDownloadComplete, this, std::placeholders::_1);
-		downloadQueue->downloadAdd(banner_download);
-		totalDownloads++;
-#endif
-	}
-}
-
-void MainDisplay::iconDownloadComplete(DownloadOperation *download)
-{
-	iconDownloadInfo *info = (iconDownloadInfo *)download->cbdata;
-	Package *pkg = info->pkg;
-
-	std::string key_path = this->imageCache->cache_path + pkg->pkg_name;
-
-	mkpath(key_path);
-
-	if (download->status == DownloadStatus::COMPLETE)
-	{
-		std::ofstream file(key_path + ((info->isBanner) ? "/screen.png" : "/icon.png"));
-		file << download->buffer;
-		file.close();
-
-		this->imageCache->version_cache[pkg->pkg_name] = pkg->version;
-	}
-	else if ((download->status == DownloadStatus::FAILED) && !info->isBanner)
-	{
-		cp(ROMFS "res/default.png", (key_path + "/icon.png").c_str());
-	}
-
-	AppCard a(pkg);
-	a.update();
-
-	completeDownloads++;
-
-	delete info;
-	delete download;
+	this->needsRedraw = true;
 }
 
 bool MainDisplay::process(InputEvents* event)
 {
-	// if we're on the splash/loading screen, we need to fetch icons+screenshots from the remote repo
-	// and load them into our surface cache with the pkg_name+version as the key
-	if (this->showingSplash && event->noop)
-	{
-		// no packages, prevent crash TODO: display offline in bottom bar
-		if (this->get->packages.size() == 0)
-		{
-			pbar->percent = -1;
-			this->showingSplash = false;
-			return true;
-		}
-
-		int res = downloadQueue->process();
-
-		if (res && (completeDownloads < totalDownloads))
-		{
-			// Update progress bar only if needed
-			pbar->percent = (float)completeDownloads / (float)totalDownloads;
-			if (notice && pbar->percent > 0.5)
-				notice->hidden = false;
-		}
-		else
-		{
-			// write whatever we have in the icon version cache to a file
-			this->imageCache->writeVersionCache();
-
-			// remove the splash screen elements
-			this->wipeElements();
-
-			// add in the sidebar, footer, and main app listing
-			Sidebar* sidebar = new Sidebar();
-			this->elements.push_back(sidebar);
-
-			AppList* applist = new AppList(this->get, sidebar);
-			this->elements.push_back(applist);
-			sidebar->appList = applist;
-
-			this->showingSplash = false;
-			this->needsRedraw = true;
-
-			delete downloadQueue;
-		}
-
-		return true;
-	}
-	else
-	{
-		if (MainDisplay::subscreen)
-			return MainDisplay::subscreen->process(event);
-		// keep processing child elements
-		return super::process(event);
-	}
-
-	return false;
+	if (MainDisplay::subscreen)
+		return MainDisplay::subscreen->process(event);
+	// keep processing child elements
+	return super::process(event);
 }
 
 void MainDisplay::render(Element* parent)
@@ -322,6 +196,8 @@ void MainDisplay::exit()
 
 void quit()
 {
+	DownloadQueue::quit();
+
 	IMG_Quit();
 	TTF_Quit();
 

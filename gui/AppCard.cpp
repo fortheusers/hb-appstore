@@ -24,7 +24,7 @@ void AppCard::update()
 	// create the layout of the app card (all relative)
 
 	// icon, and look up cached image to load
-	ImageElement* icon = new ImageElement((ImageCache::cache_path + this->package->pkg_name + "/icon.png").c_str());
+	AppIcon* icon = new AppIcon(this->package);
 	icon->position(this->x, this->y);
 	icon->resize(256, this->height - 45);
 

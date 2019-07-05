@@ -7,6 +7,8 @@
 #include "Sidebar.hpp"
 #include "TextElement.hpp"
 
+#pragma once
+
 #define TOTAL_SORTS 5 // alphabetical (with updates at top), downloads, last updated, size, shuffled
 #define RECENT 0
 #define POPULARITY 1

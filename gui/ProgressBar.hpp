@@ -1,5 +1,7 @@
 #include "Element.hpp"
 
+#pragma once
+
 class ProgressBar : public Element
 {
 public:

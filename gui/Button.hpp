@@ -1,6 +1,8 @@
 #include "ImageElement.hpp"
 #include "TextElement.hpp"
 
+#pragma once
+
 class Button : public Element
 {
 public:

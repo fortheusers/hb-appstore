@@ -2,6 +2,18 @@
 
 #define MAX_PARALLEL_DOWNLOADS	4
 
+DownloadQueue* DownloadQueue::downloadQueue = NULL;
+
+void DownloadQueue::init()
+{
+	downloadQueue = new DownloadQueue();
+}
+
+void DownloadQueue::quit()
+{
+	delete downloadQueue;
+}
+
 static size_t WriteCallback(char *data, size_t n, size_t l, void *userp)
 {
 	DownloadOperation *download = (DownloadOperation *)userp;

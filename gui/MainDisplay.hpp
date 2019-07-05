@@ -1,3 +1,5 @@
+#pragma once
+
 #include "AppList.hpp"
 #include "DownloadQueue.hpp"
 #include "Element.hpp"
@@ -34,8 +36,6 @@ public:
 	void update();
 	void exit();
 
-	void iconDownloadComplete(DownloadOperation *download);
-
 	TextElement* notice = NULL;
 
 	static SDL_Renderer* mainRenderer;
@@ -44,7 +44,6 @@ public:
 
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;
-	DownloadQueue *downloadQueue = NULL;
 	bool error = false;
 
 	int lastFrameTime = 99;
@@ -53,15 +52,6 @@ public:
 #if defined(MUSIC)
 	Mix_Music* music;
 #endif
-
-	bool showingSplash = true;
-
-private:
-	ProgressBar* pbar;
-
-	int completeDownloads = 0;
-	int totalDownloads = 0;
-	int percentDownloads = -1;
 };
 
 void quit();

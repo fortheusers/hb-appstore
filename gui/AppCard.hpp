@@ -1,5 +1,6 @@
 #include "libget/src/Package.hpp"
 
+#include "AppIcon.hpp"
 #include "ImageElement.hpp"
 #include "TextElement.hpp"
 

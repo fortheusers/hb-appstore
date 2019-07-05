@@ -44,6 +44,11 @@ public:
 	// process finished and queued downloads
 	int process();
 
+	// static instance
+	static void init();
+	static void quit();
+	static DownloadQueue* downloadQueue;
+
 private:
 	// start a transfer operation
 	void transferStart(DownloadOperation *download);
