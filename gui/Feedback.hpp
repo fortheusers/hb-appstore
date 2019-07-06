@@ -2,7 +2,6 @@
 #define FEEDBACKSCREEN_H_
 
 #include "libget/src/Get.hpp"
-#include "ImageElement.hpp"
 #include "Keyboard.hpp"
 #include "TextElement.hpp"
 

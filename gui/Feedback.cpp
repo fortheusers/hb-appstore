@@ -1,7 +1,8 @@
 #include "Feedback.hpp"
 #include "AppCard.hpp"
 #include "Button.hpp"
-#include "AppIcon.hpp"
+#include "ImagePkg.hpp"
+#include "ImageFile.hpp"
 #include "MainDisplay.hpp"
 #include "TextElement.hpp"
 
@@ -35,7 +36,7 @@ void Feedback::refresh()
 
 	AppCard card(package);
 
-	AppIcon* icon = new AppIcon(package);
+	Image* icon = ImagePkg::iconImage(package);
 	icon->position(50, 160);
 	icon->resize(256, card.height - 45); // TODO: extract method for icon height, in common with wiiu/switch
 	elements.push_back(icon);

@@ -5,7 +5,7 @@ Sidebar::Sidebar()
 {
 	// a sidebar consists of:
 	//		a collection of category labels (TextElements),
-	//		and an image (ImageElement) and a logo (TextElement)
+	//		and an image (ImageFile) and a logo (TextElement)
 
 	// it also can process input if the cursor goes over it, or a touch
 
@@ -15,7 +15,7 @@ Sidebar::Sidebar()
 	// elements 0 through TOTAL_CATS are the sidebar texts (for highlighting)
 	for (int x = 0; x < TOTAL_CATS; x++)
 	{
-		ImageElement* icon = new ImageElement((std::string(ROMFS "res/") + cat_value[x] + ".png").c_str());
+		ImageFile* icon = new ImageFile(std::string(ROMFS) + "res/" + cat_value[x] + ".png");
 		icon->resize(40, 40);
 		icon->position(30, 150 + x * 70 - 5);
 		this->elements.push_back(icon);
@@ -26,7 +26,7 @@ Sidebar::Sidebar()
 	}
 
 	// create image in top left
-	ImageElement* logo = new ImageElement(ROMFS "res/icon.png");
+	ImageFile* logo = new ImageFile(std::string(ROMFS) + "res/icon.png");
 	logo->resize(40, 40);
 	logo->position(30, 50);
 	this->elements.push_back(logo);
@@ -40,7 +40,7 @@ Sidebar::Sidebar()
 	this->elements.push_back(subtitle);
 
 	// small indicator to switch to advanced view using L
-	ImageElement* hider = new ImageElement(ROMFS "res/button-l-outline.png");
+	ImageFile* hider = new ImageFile(std::string(ROMFS) + "res/button-l-outline.png");
 	hider->resize(20, 20);
 	hider->position(270, 685);
 	this->elements.push_back(hider);

@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <unordered_map>
 
-struct IconData
+struct ImageData
 {
 	SDL_Texture *texture;
 	SDL_Color firstPixel;
@@ -22,7 +22,7 @@ public:
 
 	// a map of all SDL surfaces that have been displayed
 	static std::unordered_map<std::string, SDL_Texture*> cache;
-	static std::unordered_map<std::string, IconData> iconCaches;
+	static std::unordered_map<std::string, ImageData> imageCache;
 
 	// a map of pkg_names to version strings to know when icons are outdated
 	std::unordered_map<std::string, std::string> version_cache;

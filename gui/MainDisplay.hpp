@@ -4,9 +4,10 @@
 #include "DownloadQueue.hpp"
 #include "Element.hpp"
 #include "ImageCache.hpp"
-#include "ImageElement.hpp"
+#include "ImageFile.hpp"
 #include "TextElement.hpp"
 #include <unordered_map>
+#include "libget/src/Package.hpp"
 
 #if defined(MUSIC)
 #include <SDL2/SDL_mixer.h>
@@ -17,14 +18,6 @@
 #else
 #define ICON_SIZE 150
 #endif
-
-struct iconDownloadInfo
-{
-	Package *pkg;
-	bool isBanner;
-	iconDownloadInfo(Package *pkg, bool isBanner) :
-		pkg(pkg), isBanner(isBanner) {}
-};
 
 class MainDisplay : public Element
 {

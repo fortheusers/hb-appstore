@@ -112,7 +112,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	content->elements.push_back(reportIssue);
 	content->elements.push_back(moreByAuthor);
 
-	AppBanner* banner = new AppBanner(package);
+	Image* banner = ImagePkg::bannerImage(package);
 	banner->resize(787, 193);
 	banner->position(BANNER_X, BANNER_Y);
 	content->banner = banner;

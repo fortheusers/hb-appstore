@@ -2,7 +2,7 @@
 #define ABOUTSCREEN_H_
 
 #include "libget/src/Get.hpp"
-#include "ImageElement.hpp"
+#include "ImageFile.hpp"
 #include "ListElement.hpp"
 #include "TextElement.hpp"
 

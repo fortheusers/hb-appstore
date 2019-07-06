@@ -4,6 +4,8 @@
 #include <functional>
 #include <vector>
 
+#pragma once
+
 #define DEEP_HIGHLIGHT 200
 #define THICK_HIGHLIGHT 150
 #define HIGHLIGHT 100
@@ -14,8 +16,6 @@
 #else
 #define ROMFS ""
 #endif
-
-#pragma once
 
 class Element
 {

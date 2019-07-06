@@ -1,4 +1,4 @@
-#include "ImageElement.hpp"
+#include "ImageFile.hpp"
 #include "TextElement.hpp"
 
 #pragma once

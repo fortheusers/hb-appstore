@@ -4,11 +4,10 @@
 #include "libget/src/Get.hpp"
 #include "libget/src/Package.hpp"
 
-#include "ImageElement.hpp"
+#include "ImagePkg.hpp"
 #include "ListElement.hpp"
 #include "ProgressBar.hpp"
 #include "TextElement.hpp"
-#include "AppBanner.hpp"
 
 class AppList;
 
@@ -31,7 +30,7 @@ public:
 	Package* package;
 	Get* get;
 	AppList* appList;
-	ProgressBar* pbar = NULL;
+	ProgressBar* pbar = nullptr;
 	int highlighted = -1;
 
 	bool canLaunch = false;
@@ -57,7 +56,7 @@ class AppDetailsContent : public ListElement
 	void render(Element* parent);
 
 public:
-	AppBanner* banner = NULL;
+	Image* banner = nullptr;
 
 	// banner/text constants
 	int MARGIN = 60;

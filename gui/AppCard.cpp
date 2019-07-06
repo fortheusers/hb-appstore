@@ -9,10 +9,6 @@ AppCard::AppCard(Package* package)
 	this->width = 256;
 	this->height = ICON_SIZE + 45;
 
-#if defined(__WIIU__)
-	this->height = ICON_SIZE + 45;
-#endif
-
 	this->touchable = true;
 
 	// connect the action to the callback for this element, to be invoked when the touch event fires
@@ -24,7 +20,8 @@ void AppCard::update()
 	// create the layout of the app card (all relative)
 
 	// icon, and look up cached image to load
-	AppIcon* icon = new AppIcon(this->package);
+	Image* icon = ImagePkg::iconImage(package);
+
 	icon->position(this->x, this->y);
 	icon->resize(256, this->height - 45);
 
@@ -59,7 +56,7 @@ void AppCard::update()
 	this->elements.push_back(author);
 
 	// download status icon
-	ImageElement* statusicon = new ImageElement((ROMFS "res/" + std::string(package->statusString()) + ".png").c_str());
+	ImageFile* statusicon = new ImageFile(std::string(ROMFS) + "res/" + std::string(package->statusString()) + ".png");
 	statusicon->position(this->x + 4, this->y + icon->height + 10);
 	statusicon->resize(30, 30);
 	this->elements.push_back(statusicon);

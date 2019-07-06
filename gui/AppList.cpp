@@ -340,7 +340,7 @@ void AppList::update()
 		mute->action = std::bind(&AppList::toggleAudio, this);
 		this->elements.push_back(mute);
 
-		ImageElement* muteIcon = new ImageElement(ROMFS "res/mute.png");
+		ImageFile* muteIcon = new ImageFile(std::string(ROMFS) + "res/mute.png");
 		muteIcon->position(sort->x - 20 - mute->width + 5, settings->y + 5);
 		muteIcon->resize(32, 32);
 		this->elements.push_back(muteIcon);

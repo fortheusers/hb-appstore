@@ -1,7 +1,7 @@
 #include "libget/src/Package.hpp"
 
-#include "AppIcon.hpp"
-#include "ImageElement.hpp"
+#include "ImagePkg.hpp"
+#include "ImageFile.hpp"
 #include "TextElement.hpp"
 
 class AppCard : public Element

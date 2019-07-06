@@ -1,7 +1,7 @@
 #include "libget/src/Get.hpp"
 
 #include "AppDetails.hpp"
-#include "ImageElement.hpp"
+#include "ImageFile.hpp"
 #include "Keyboard.hpp"
 #include "ListElement.hpp"
 #include "Sidebar.hpp"
