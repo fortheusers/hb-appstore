@@ -100,10 +100,8 @@ MainDisplay::MainDisplay(Get* get)
 
 	this->error = this->error || !atLeastOneEnabled;
 
-	// the text above the progress bar
-	//	TextElement* pbar_text = new TextElement("Updating App Info...", 17);
-	//	pbar_text->position(550, 365);
-	//	this->elements.push_back(pbar_text);
+	// redraw after first creating MainDisplay
+	this->needsRedraw = true;
 
 	if (this->error)
 	{
@@ -134,8 +132,6 @@ MainDisplay::MainDisplay(Get* get)
 	AppList* applist = new AppList(this->get, sidebar);
 	this->elements.push_back(applist);
 	sidebar->appList = applist;
-
-	this->needsRedraw = true;
 }
 
 bool MainDisplay::process(InputEvents* event)
