@@ -1,3 +1,6 @@
 [submodule "libs/get"]
 	path = libs/get
 	url = https://github.com/vgmoose/get.git
+[submodule "libs/chesto"]
+	path = libs/chesto
+	url = https://github.com/vgmoose/chesto
