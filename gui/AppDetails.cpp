@@ -9,10 +9,12 @@
 #include "libget/src/Get.hpp"
 #include "libget/src/Utils.hpp"
 
+#include "chesto/src/Button.hpp"
+#include "chesto/src/RootDisplay.hpp"
+
 #include "AppDetails.hpp"
-#include "Button.hpp"
 #include "Feedback.hpp"
-#include "MainDisplay.hpp"
+#include "AppList.hpp"
 
 int AppDetails::lastFrameTime = 99;
 
@@ -192,7 +194,7 @@ void AppDetails::getSupported()
 {
 	Package* installer = get->lookup("NXthemes_Installer");
 	if (installer != NULL)
-		MainDisplay::subscreen = new AppDetails(installer, appList);
+		RootDisplay::subscreen = new AppDetails(installer, appList);
 }
 
 void AppDetails::back()
@@ -212,12 +214,12 @@ void AppDetails::moreByAuthor()
 	appList->update();
 	appList->y = 0;
 	appList->keyboard->hidden = true;
-	MainDisplay::subscreen = NULL; // TODO: clean up memory???
+	RootDisplay::subscreen = NULL; // TODO: clean up memory???
 }
 
 void AppDetails::leaveFeedback()
 {
-	MainDisplay::subscreen = new Feedback(this->package);
+	RootDisplay::subscreen = new Feedback(this->package);
 }
 
 bool AppDetails::process(InputEvents* event)
@@ -229,7 +231,7 @@ bool AppDetails::process(InputEvents* event)
 
 	if (event->pressed(B_BUTTON))
 	{
-		MainDisplay::subscreen = NULL;
+		RootDisplay::subscreen = NULL;
 		return true;
 	}
 
@@ -263,7 +265,7 @@ bool AppDetails::process(InputEvents* event)
 
 		// refresh the screen
 		this->wipeElements();
-		MainDisplay::subscreen = NULL;
+		RootDisplay::subscreen = NULL;
 
 		this->operating = false;
 		this->appList->update();
@@ -445,7 +447,7 @@ int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, dou
 	if (diff < 32 && amount != 1)
 		return 0;
 
-	AppDetails* popup = (AppDetails*)MainDisplay::subscreen;
+	AppDetails* popup = (AppDetails*)RootDisplay::subscreen;
 
 	// update the amount
 	if (popup != NULL)
@@ -498,36 +500,4 @@ bool AppDetailsContent::process(InputEvents* event)
 	}
 
 	return ret || ListElement::process(event);
-}
-
-Uint32 getpixel(SDL_Surface* surface, int x, int y)
-{
-	int bpp = surface->format->BytesPerPixel;
-	/* Here p is the address to the pixel we want to retrieve */
-	Uint8* p = (Uint8*)surface->pixels + y * surface->pitch + x * bpp;
-
-	switch (bpp)
-	{
-	case 1:
-		return *p;
-		break;
-
-	case 2:
-		return *(Uint16*)p;
-		break;
-
-	case 3:
-		if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-			return p[0] << 16 | p[1] << 8 | p[2];
-		else
-			return p[0] | p[1] << 8 | p[2] << 16;
-		break;
-
-	case 4:
-		return *(Uint32*)p;
-		break;
-
-	default:
-		return 0; /* shouldn't happen, but avoids warnings */
-	}
 }

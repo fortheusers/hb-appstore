@@ -1,9 +1,10 @@
 #include "Feedback.hpp"
 #include "AppCard.hpp"
-#include "Button.hpp"
-#include "ImageElement.hpp"
-#include "MainDisplay.hpp"
-#include "TextElement.hpp"
+
+#include "chesto/src/Button.hpp"
+#include "chesto/src/ImageElement.hpp"
+#include "chesto/src/RootDisplay.hpp"
+#include "chesto/src/TextElement.hpp"
 
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -108,5 +109,5 @@ void Feedback::submit()
 
 void Feedback::back()
 {
-	MainDisplay::subscreen = NULL; // todo: clean up memory
+	RootDisplay::subscreen = NULL; // todo: clean up memory
 }

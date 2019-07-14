@@ -1,9 +1,13 @@
+#include "AppList.hpp"
 #include "AboutScreen.hpp"
 #include "AppCard.hpp"
-#include "Button.hpp"
 #include "Keyboard.hpp"
-#include "MainDisplay.hpp"
+
+#include "chesto/src/Button.hpp"
+#include "chesto/src/RootDisplay.hpp"
+
 #include <SDL2/SDL2_gfxPrimitives.h>
+
 #include <algorithm>
 #include <cstdlib> // std::rand, std::srand
 #include <ctime>   // std::time
@@ -443,5 +447,5 @@ void AppList::toggleKeyboard()
 
 void AppList::launchSettings()
 {
-	MainDisplay::subscreen = new AboutScreen(this->get);
+	RootDisplay::subscreen = new AboutScreen(this->get);
 }
