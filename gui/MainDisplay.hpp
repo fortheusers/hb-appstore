@@ -1,5 +1,6 @@
 #include "AppList.hpp"
 #include "chesto/src/RootDisplay.hpp"
+#include "ImageCache.hpp"
 #include <unordered_map>
 
 #if defined(MUSIC)
@@ -22,6 +23,7 @@ public:
 	TextElement* notice = NULL;
 
 	Get* get = NULL;
+	ImageCache* imageCache = NULL;
 	bool error = false;
 
 	bool showingSplash = true;

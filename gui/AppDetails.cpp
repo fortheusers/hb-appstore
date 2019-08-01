@@ -15,6 +15,7 @@
 #include "AppDetails.hpp"
 #include "Feedback.hpp"
 #include "AppList.hpp"
+#include "ImageCache.hpp"
 
 int AppDetails::lastFrameTime = 99;
 
