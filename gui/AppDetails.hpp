@@ -4,10 +4,10 @@
 #include "libget/src/Get.hpp"
 #include "libget/src/Package.hpp"
 
-#include "ImageElement.hpp"
-#include "ListElement.hpp"
-#include "ProgressBar.hpp"
-#include "TextElement.hpp"
+#include "chesto/src/ImageElement.hpp"
+#include "chesto/src/ListElement.hpp"
+#include "chesto/src/ProgressBar.hpp"
+#include "chesto/src/TextElement.hpp"
 
 class AppList;
 
@@ -64,7 +64,5 @@ public:
 	int BANNER_X = MARGIN + 5;
 	int BANNER_Y = 140;
 };
-
-Uint32 getpixel(SDL_Surface* surface, int x, int y);
 
 #endif

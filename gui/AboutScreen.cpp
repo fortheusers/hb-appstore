@@ -4,10 +4,11 @@
 #include "libget/src/Get.hpp"
 #include "libget/src/Utils.hpp"
 
+#include "chesto/src/Button.hpp"
+#include "chesto/src/RootDisplay.hpp"
+
 #include "AboutScreen.hpp"
-#include "Button.hpp"
 #include "Feedback.hpp"
-#include "MainDisplay.hpp"
 
 
 AboutScreen::AboutScreen(Get* get)
@@ -83,7 +84,7 @@ void AboutScreen::render(Element* parent)
 
 void AboutScreen::back()
 {
-	MainDisplay::subscreen = NULL; // TODO: clean up memory?
+	RootDisplay::subscreen = NULL; // TODO: clean up memory?
 }
 
 void AboutScreen::removeEmptyFolders()
@@ -104,7 +105,7 @@ void AboutScreen::launchFeedback()
 	{
 		if (package->pkg_name == "appstore")
 		{
-			MainDisplay::subscreen = new Feedback(package);
+			RootDisplay::subscreen = new Feedback(package);
 			break;
 		}
 	}

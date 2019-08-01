@@ -2,9 +2,10 @@
 #define FEEDBACKSCREEN_H_
 
 #include "libget/src/Get.hpp"
-#include "ImageElement.hpp"
 #include "Keyboard.hpp"
-#include "TextElement.hpp"
+
+#include "chesto/src/ImageElement.hpp"
+#include "chesto/src/TextElement.hpp"
 
 class Feedback : public Element
 {

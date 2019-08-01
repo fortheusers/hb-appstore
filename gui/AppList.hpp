@@ -1,11 +1,12 @@
 #include "libget/src/Get.hpp"
 
+#include "chesto/src/ImageElement.hpp"
+#include "chesto/src/ListElement.hpp"
+#include "chesto/src/TextElement.hpp"
+
 #include "AppDetails.hpp"
-#include "ImageElement.hpp"
 #include "Keyboard.hpp"
-#include "ListElement.hpp"
 #include "Sidebar.hpp"
-#include "TextElement.hpp"
 
 #define TOTAL_SORTS 5 // alphabetical (with updates at top), downloads, last updated, size, shuffled
 #define RECENT 0

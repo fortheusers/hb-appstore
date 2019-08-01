@@ -1,7 +1,7 @@
 #include "libget/src/Package.hpp"
 
-#include "ImageElement.hpp"
-#include "TextElement.hpp"
+#include "chesto/src/ImageElement.hpp"
+#include "chesto/src/TextElement.hpp"
 
 class AppCard : public Element
 {

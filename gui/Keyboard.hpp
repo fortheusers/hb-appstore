@@ -1,5 +1,6 @@
-#include "Element.hpp"
-#include "TextElement.hpp"
+#include "chesto/src/Element.hpp"
+#include "chesto/src/TextElement.hpp"
+
 #include <SDL2/SDL_image.h>
 #pragma once
 
