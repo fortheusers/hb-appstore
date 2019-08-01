@@ -1,4 +1,5 @@
 GET		:= ./libs/get/src
+CHESTO		:= ./libs/chesto/src
 RAPIDJSON	:= ./libs/get/src/libs/rapidjson/include
 MINIZIP         := ./libs/get/src/libs/minizip
 TINYXML 	:= ./libs/get/src/libs/tinyxml
@@ -23,7 +24,7 @@ include $(DEVKITPRO)/wut/share/wut_rules
 #-------------------------------------------------------------------------------
 TARGET		:=	appstore
 BUILD		:=	build
-SOURCES		:=	. $(GET) $(MINIZIP) $(TINYXML) console gui
+SOURCES		:=	. $(GET) $(CHESTO) $(MINIZIP) $(TINYXML) console gui
 INCLUDES	:=	. $(RAPIDJSON) $(MINIZIP) $(TINYXML)
 ROMFS		:=	romfs
 
