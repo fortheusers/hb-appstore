@@ -2,6 +2,7 @@
 #include "AboutScreen.hpp"
 #include "AppCard.hpp"
 #include "Keyboard.hpp"
+#include "main.hpp"
 
 #include "chesto/src/Button.hpp"
 #include "chesto/src/RootDisplay.hpp"

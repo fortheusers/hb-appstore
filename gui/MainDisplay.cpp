@@ -2,7 +2,6 @@
 #include <switch.h>
 #define PLATFORM "Switch"
 #elif defined(__WIIU__)
-#include <romfs-wiiu.h>
 #define PLATFORM "Wii U"
 #else
 #define PLATFORM "Console"
@@ -13,16 +12,12 @@
 
 #include "MainDisplay.hpp"
 #include "AppCard.hpp"
+#include "main.hpp"
 
 MainDisplay::MainDisplay(Get* get)
 {
 	// start up main chesto deps (images+text+font+sound+rendering)
 	RootDisplay::super();
-
-// initialize romfs for switch/wiiu
-#if defined(SWITCH) || defined(__WIIU__)
-	romfsInit();
-#endif
 
 	this->get = get;
 
@@ -81,10 +76,10 @@ MainDisplay::MainDisplay(Get* get)
 		troubleshooting->position(380, 585);
 		this->elements.push_back(troubleshooting);
 
-		Button* quit = new Button("Quit", SELECT_BUTTON, false, 15);
-		quit->position(1130, 630);
-		quit->action = std::bind(&RootDisplay::exit, this);
-		this->elements.push_back(quit);
+		Button* btnQuit = new Button("Quit", SELECT_BUTTON, false, 15);
+		btnQuit->position(1130, 630);
+		btnQuit->action = quit;
+		this->elements.push_back(btnQuit);
 	}
 }
 

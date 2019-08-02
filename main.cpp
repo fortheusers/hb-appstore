@@ -3,6 +3,7 @@
 #endif
 
 #if defined(__WIIU__)
+#include <romfs-wiiu.h>
 #include <unistd.h>
 #endif
 
@@ -21,6 +22,13 @@
 #else
 #define DEFAULT_REPO "https://switch.apps.fortheusers.org"
 #endif
+
+static bool running = true;
+
+void quit()
+{
+	running = false;
+}
 
 int main(int argc, char* argv[])
 {
@@ -50,13 +58,17 @@ int main(int argc, char* argv[])
 	return console_main(get);
 #else
 
+	// initialize romfs for switch/wiiu
+#if defined(SWITCH) || defined(__WIIU__)
+	romfsInit();
+#endif
+
 	// initialize main title screen
 	MainDisplay* display = new MainDisplay(get);
 
 	// the main inuput handler
 	InputEvents* events = new InputEvents();
 
-	bool running = true;
 	while (running)
 	{
 		bool atLeastOneNewEvent = false;
@@ -96,7 +108,16 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	quit();
+	delete events;
+	delete display;
+	delete get;
+
+#if defined(__WIIU__)
+	romfsExit();
+#endif
+#if defined(SWITCH)
+	socketExit();
+#endif
 
 	return 0;
 #endif

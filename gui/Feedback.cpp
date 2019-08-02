@@ -1,6 +1,7 @@
 #include "Feedback.hpp"
 #include "AppCard.hpp"
 #include "ImageCache.hpp"
+#include "main.hpp"
 
 #include "chesto/src/Button.hpp"
 #include "chesto/src/ImageElement.hpp"

@@ -16,6 +16,7 @@
 #include "Feedback.hpp"
 #include "AppList.hpp"
 #include "ImageCache.hpp"
+#include "main.hpp"
 
 int AppDetails::lastFrameTime = 99;
 
@@ -358,7 +359,7 @@ bool AppDetails::themeInstall(char* installerPath)
 				themePaths.push_back(package->manifest->entries[i].path);
 			}
 		}
-		
+
 	}else{
 		printf("--> ERROR: no manifest found/manifest invalid at %s\n", ManifestPath.c_str());
 		return false;
