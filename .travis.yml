@@ -17,14 +17,14 @@ env:
 
 matrix:
   include:
-    - env: PLATFORM=buck
+    - env: PLATFORM=pc
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
-    - env: PLATFORM=pc
+    - env: PLATFORM=buck
   allow_failures:
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
-    - env: PLATFORM=pc
+    - env: PLATFORM=buck
 
 addons:
   apt:
