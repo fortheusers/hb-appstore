@@ -17,8 +17,7 @@ env:
 
 matrix:
   include:
-    - os: osx
-      env: PLATFORM=buck
+    - env: PLATFORM=buck
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
     - env: PLATFORM=pc
