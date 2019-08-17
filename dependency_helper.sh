@@ -32,6 +32,7 @@ case "${PLATFORM}" in
       sudo apt-get install -f
       wget -nc https://github.com/LoopPerfect/buckaroo/releases/download/v2.2.0/buckaroo-linux
       sudo install buckaroo-linux /usr/local/bin/buckaroo
+      sudo update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
     ;;
   switch)   # currently libnx
       setup_dkp_repo
