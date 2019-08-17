@@ -23,7 +23,8 @@ install_intel_deps () {
 setup_linuxbrew () {
   test -d $HOME/.linuxbrew/bin || git clone https://github.com/Linuxbrew/brew.git $HOME/.linuxbrew
   PATH="$HOME/.linuxbrew/bin:$PATH"
-  echo 'export PATH="$HOME/.linuxbrew/bin:$PATH"' >>~/.bash_profile
+  echo 'export PATH="$HOME/.linuxbrew/bin:$PATH"' >> ~/.bash_profile
+  source ~/.bash_profile
   export MANPATH="$(brew --prefix)/share/man:$MANPATH"
   export INFOPATH="$(brew --prefix)/share/info:$INFOPATH"
   brew --version
