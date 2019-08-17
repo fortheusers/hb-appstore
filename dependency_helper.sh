@@ -21,9 +21,9 @@ install_intel_deps () {
 }
 
 setup_linuxbrew () {
-  sudo apt-get -y install linuxbrew-wrapper
-  cp -rf brewbins/* .linuxbrew/bin || true
+  sudo apt-get -y install linuxbrew-wrapper build-essential
   echo | brew --version
+  cp -rf brewbins/* .linuxbrew/bin || true
 }
 
 case "${PLATFORM}" in
