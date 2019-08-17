@@ -23,7 +23,8 @@ install_intel_deps () {
 setup_linuxbrew () {
   test -d $HOME/.linuxbrew/bin || git clone https://github.com/Linuxbrew/brew.git $HOME/.linuxbrew
   sudo ln -s $HOME/.linuxbrew/bin/brew /usr/local/bin/brew
-  echo | sudo brew --version
+  brew --version
+  mkdir -p /usr/local/var/homebrew
   sudo chown -R $(whoami) /usr/local/var/homebrew
 }
 
