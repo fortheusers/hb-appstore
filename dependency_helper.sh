@@ -21,12 +21,7 @@ install_intel_deps () {
 }
 
 setup_linuxbrew () {
-  test -d $HOME/.linuxbrew/bin || git clone https://github.com/Linuxbrew/brew.git $HOME/.linuxbrew
-  PATH="$HOME/.linuxbrew/bin:$PATH"
-  echo 'export PATH="$HOME/.linuxbrew/bin:$PATH"' >> ~/.bash_profile
-  source ~/.bash_profile
-  export MANPATH="$(brew --prefix)/share/man:$MANPATH"
-  export INFOPATH="$(brew --prefix)/share/info:$INFOPATH"
+  sudo apt-get -y install linuxbrew-wrapper
   brew --version
 }
 
@@ -42,9 +37,8 @@ case "${PLATFORM}" in
       brew install buck
       buck --version
 
-      wget -nc -P $HOME/downloads https://github.com/LoopPerfect/buckaroo/releases/download/v2.2.0/buckaroo-linux
-      sudo install buckaroo-linux /usr/local/bin/buckaroo
-      sudo update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+      wget -nc -P ./downloads https://github.com/LoopPerfect/buckaroo/releases/download/v2.2.0/buckaroo-linux
+      sudo install ./downloads/buckaroo-linux /usr/local/bin/buckaroo
     ;;
   switch)   # currently libnx
       setup_dkp_repo
