@@ -4,6 +4,11 @@ sudo: required
 os: linux
 dist: xenial
 
+cache:
+  directories:
+    - /home/travis/.linuxbrew/Cellar/buck
+    - /home/travis/downloads
+
 env:
   global:
     - DEVKITPRO=/opt/devkitpro
@@ -12,7 +17,8 @@ env:
 
 matrix:
   include:
-    - env: PLATFORM=buck
+    - os: osx
+      env: PLATFORM=buck
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
     - env: PLATFORM=pc
