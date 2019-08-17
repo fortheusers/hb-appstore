@@ -31,4 +31,4 @@ install:
   - ./dependency_helper.sh
 
 script:
-  - if [[ "$PLATFORM == "buck" ]]; then buckaroo install && buck build :hb-appstore; else make -f Makefile.${PLATFORM}; fi
+  - if [[ "${PLATFORM} == "buck" ]]; then buckaroo install && buck build :hb-appstore; else make -f Makefile.${PLATFORM}; fi

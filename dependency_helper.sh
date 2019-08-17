@@ -17,7 +17,7 @@ setup_dkp_repo () {
 }
 
 install_intel_deps () {
-  sudo apt-get -y install wget libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++ libssl1.0-dev
+  sudo apt-get -y install wget libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++
 }
 
 case "${PLATFORM}" in
@@ -30,7 +30,7 @@ case "${PLATFORM}" in
       sudo dpkg -i buck.*.deb
       sudo apt-get install -f
       wget -nc https://github.com/LoopPerfect/buckaroo/releases/download/v2.2.0/buckaroo-linux
-      install buckaroo-linux /usr/local/bin/buckaroo
+      sudo install buckaroo-linux /usr/local/bin/buckaroo
     ;;
   switch)   # currently libnx
       setup_dkp_repo
