@@ -12,12 +12,14 @@ env:
 
 matrix:
   include:
-    - env: PLATFORM=pc
+    - env: PLATFORM=buck
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
+    - env: PLATFORM=pc
   allow_failures:
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
+    - env: PLATFORM=pc
 
 addons:
   apt:
@@ -29,4 +31,4 @@ install:
   - ./dependency_helper.sh
 
 script:
-  - make -f Makefile.${PLATFORM}
+  - if [[ "$PLATFORM == "buck" ]]; then buckaroo install && buck build :hb-appstore; else make -f Makefile.${PLATFORM}; fi

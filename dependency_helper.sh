@@ -16,9 +16,21 @@ setup_dkp_repo () {
   # sudo pacman-key --lsign F7FD5492264BB9D0
 }
 
+install_intel_deps () {
+  sudo apt-get -y install wget libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++ libssl1.0-dev
+}
+
 case "${PLATFORM}" in
   pc)
-    sudo apt-get -y install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++
+      install_intel_deps
+    ;;
+  buck)
+      install_intel_deps
+      wget -nc https://github.com/facebook/buck/releases/download/v2019.06.17.01/buck.2019.06.17.01_all.deb
+      sudo dpkg -i buck.*.deb
+      sudo apt-get install -f
+      wget -nc https://github.com/LoopPerfect/buckaroo/releases/download/v2.2.0/buckaroo-linux
+      install buckaroo-linux /usr/local/bin/buckaroo
     ;;
   switch)   # currently libnx
       setup_dkp_repo
