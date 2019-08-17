@@ -31,4 +31,4 @@ install:
   - ./dependency_helper.sh
 
 script:
-  - make -f Makefile.${PLATFORM}
+  - ./build.sh
