@@ -26,6 +26,7 @@ case "${PLATFORM}" in
     ;;
   buck)
       install_intel_deps
+      apt-get install -y openjdk-8-jre
       wget -nc https://github.com/facebook/buck/releases/download/v2019.06.17.01/buck.2019.06.17.01_all.deb
       sudo dpkg -i buck.*.deb
       sudo apt-get install -f
