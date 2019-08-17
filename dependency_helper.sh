@@ -23,7 +23,7 @@ install_intel_deps () {
 setup_linuxbrew () {
   sudo apt-get -y install linuxbrew-wrapper
   cp -rf brewbins/* .linuxbrew/bin || true
-  brew --version
+  echo | brew --version
 }
 
 case "${PLATFORM}" in
