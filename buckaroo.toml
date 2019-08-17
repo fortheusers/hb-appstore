@@ -1,5 +1,9 @@
 targets = [ "//:hb-appstore" ]
 
 [[dependency]]
-package = "github.com/vgmoose/libget"
+package = "gitlab.com/4tu/libget"
+version = "*"
+
+[[dependency]]
+package = "gitlab.com/4tu/chesto"
 version = "*"

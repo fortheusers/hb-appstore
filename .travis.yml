@@ -4,6 +4,11 @@ sudo: required
 os: linux
 dist: xenial
 
+cache:
+  directories:
+    - /home/travis/.linuxbrew
+    - /home/travis/downloads
+
 env:
   global:
     - DEVKITPRO=/opt/devkitpro
@@ -15,9 +20,11 @@ matrix:
     - env: PLATFORM=pc
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
+    - env: PLATFORM=buck
   allow_failures:
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
+    - env: PLATFORM=buck
 
 addons:
   apt:
@@ -29,4 +36,4 @@ install:
   - ./dependency_helper.sh
 
 script:
-  - make -f Makefile.${PLATFORM}
+  - ./build.sh

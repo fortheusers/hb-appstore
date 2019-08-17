@@ -16,9 +16,34 @@ setup_dkp_repo () {
   # sudo pacman-key --lsign F7FD5492264BB9D0
 }
 
+install_intel_deps () {
+  sudo apt-get -y install wget git libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++
+}
+
+setup_linuxbrew () {
+  mkdir ~/.linuxbrew/Homebrew
+  git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew
+  mkdir ~/.linuxbrew/bin
+  ln -s ./linuxbrew/Homebrew/bin/brew ~/.linuxbrew/bin
+  sudo ln -s $HOME/.linuxbrew/bin/brew /usr/local/bin/brew
+  sudo chown -R $(whoami) /usr/local/
+  brew --version
+}
+
 case "${PLATFORM}" in
   pc)
-    sudo apt-get -y install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++
+      install_intel_deps
+    ;;
+  buck)
+      install_intel_deps
+      setup_linuxbrew
+
+      brew tap facebook/fb
+      brew install buck
+      buck --version
+
+      wget -nc -P ./downloads https://github.com/LoopPerfect/buckaroo/releases/download/v2.2.0/buckaroo-linux
+      sudo install ./downloads/buckaroo-linux /usr/local/bin/buckaroo
     ;;
   switch)   # currently libnx
       setup_dkp_repo
