@@ -6,7 +6,7 @@ dist: xenial
 
 cache:
   directories:
-    - /home/travis/brewbins
+    - /home/travis/.linuxbrew
     - /home/travis/downloads
 
 env:

@@ -21,10 +21,9 @@ install_intel_deps () {
 }
 
 setup_linuxbrew () {
-  sudo apt-get -y install linuxbrew-wrapper build-essential
+  test -d $HOME/.linuxbrew/bin || git clone https://github.com/Linuxbrew/brew.git $HOME/.linuxbrew
+  ln -s $HOME/.linuxbrew/bin/brew /usr/local/bin/brew
   echo | brew --version
-  echo | brew doctor
-  cp -rf brewbins/* .linuxbrew/bin || true
 }
 
 case "${PLATFORM}" in
@@ -38,8 +37,6 @@ case "${PLATFORM}" in
       brew tap facebook/fb
       brew install buck
       buck --version
-      rm -rf brewbins || true
-      cp -rf .linuxbrew/bin brewbins
 
       wget -nc -P ./downloads https://github.com/LoopPerfect/buckaroo/releases/download/v2.2.0/buckaroo-linux
       sudo install ./downloads/buckaroo-linux /usr/local/bin/buckaroo
