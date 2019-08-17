@@ -1,7 +1,11 @@
-manifest = "02bd53055e1fd24871475225442c9efde237659038616c62e1a3ffb8545a1700"
+manifest = "94ceaa7e6f37bf3db45f5313668f740704686e96e357beb4b0148070b98d1db9"
 
 [[dependency]]
-package = "github.com/vgmoose/libget"
+package = "gitlab.com/4tu/chesto"
+target = "//:chesto"
+
+[[dependency]]
+package = "gitlab.com/4tu/libget"
 target = "//:libget"
 
 [lock."github.com/buckaroo-pm/madler-zlib"]
@@ -20,6 +24,10 @@ revision = "2e9b639463f3483c761ea94a14b57a253425ee1f"
 versions = [ "branch=master" ]
 revision = "172dabe81beabe3f4dce71d66a5ff9251ef9ef11"
 
-[lock."github.com/vgmoose/libget"]
+[lock."gitlab.com/4tu/chesto"]
 versions = [ "branch=master" ]
-revision = "52c8cd46883a23319f1c1463011a5b40d3ab2b26"
+revision = "023e4daa18e46e0c73ffe0d6e0dc7dbc87373ea4"
+
+[lock."gitlab.com/4tu/libget"]
+versions = [ "branch=master" ]
+revision = "01d5d28c293b98800dee7460479f367ede8d62db"
