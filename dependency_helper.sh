@@ -17,7 +17,16 @@ setup_dkp_repo () {
 }
 
 install_intel_deps () {
-  sudo apt-get -y install wget libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++
+  sudo apt-get -y install wget git libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++
+}
+
+setup_linuxbrew () {
+  test -d $HOME/.linuxbrew/bin || git clone https://github.com/Linuxbrew/brew.git $HOME/.linuxbrew
+  PATH="$HOME/.linuxbrew/bin:$PATH"
+  echo 'export PATH="$HOME/.linuxbrew/bin:$PATH"' >>~/.bash_profile
+  export MANPATH="$(brew --prefix)/share/man:$MANPATH"
+  export INFOPATH="$(brew --prefix)/share/info:$INFOPATH"
+  brew --version
 }
 
 case "${PLATFORM}" in
@@ -26,10 +35,12 @@ case "${PLATFORM}" in
     ;;
   buck)
       install_intel_deps
-      apt-get install -y openjdk-8-jre
-      wget -nc https://github.com/facebook/buck/releases/download/v2019.06.17.01/buck.2019.06.17.01_all.deb
-      sudo dpkg -i buck.*.deb
-      sudo apt-get install -f
+      setup_linuxbrew
+
+      brew tap facebook/fb
+      brew install buck
+      buck --version
+
       wget -nc https://github.com/LoopPerfect/buckaroo/releases/download/v2.2.0/buckaroo-linux
       sudo install buckaroo-linux /usr/local/bin/buckaroo
       sudo update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
