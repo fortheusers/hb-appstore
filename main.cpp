@@ -9,6 +9,7 @@
 
 #include "libget/src/Get.hpp"
 #include "libget/src/Utils.hpp"
+#include "chesto/src/DownloadQueue.hpp"
 
 #if defined(NOGUI)
 #include "console/Input.hpp"
@@ -47,6 +48,7 @@ int main(int argc, char* argv[])
 	if (stat(ELF_PATH, &sbuff) == 0)
 		std::rename(ELF_PATH, RPX_PATH);
 #endif
+
 	init_networking();
 
 	// create main get object
@@ -63,6 +65,8 @@ int main(int argc, char* argv[])
 	romfsInit();
 #endif
 
+	DownloadQueue::init();
+
 	// initialize main title screen
 	MainDisplay* display = new MainDisplay(get);
 
@@ -75,6 +79,9 @@ int main(int argc, char* argv[])
 		bool viewChanged = false;
 
 		int frameStart = SDL_GetTicks();
+
+		// update download queue
+		DownloadQueue::downloadQueue->process();
 
 		// get any new input events
 		while (events->update())
@@ -111,6 +118,8 @@ int main(int argc, char* argv[])
 	delete events;
 	delete display;
 	delete get;
+
+	DownloadQueue::quit();
 
 #if defined(__WIIU__)
 	romfsExit();
