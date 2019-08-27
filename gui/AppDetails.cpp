@@ -11,6 +11,7 @@
 
 #include "chesto/src/Button.hpp"
 #include "chesto/src/RootDisplay.hpp"
+#include "chesto/src/NetImageElement.hpp"
 
 #include "AppDetails.hpp"
 #include "Feedback.hpp"
@@ -116,25 +117,31 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	content->elements.push_back(reportIssue);
 	content->elements.push_back(moreByAuthor);
 
-	ImageElement* banner = new ImageElement((ImageCache::cache_path + package->pkg_name + "/screen.png").c_str());
-	//    banner->resize(848, 208);
-	//    banner->resize(727, 179);
+#if defined(__WIIU__)
+	// Use an icon banner
+	NetImageElement* banner = new NetImageElement(package->getIconUrl().c_str(), []{
+		// if the icon fails to load, use the default icon
+		ImageElement *defaultIcon = new ImageElement(ROMFS "res/default.png");
+		defaultIcon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+		return defaultIcon;
+	});
+	banner->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+#else
+	// Load the banner from network
+	NetImageElement *banner = new NetImageElement(package->getBannerUrl().c_str(), [package]{
+		// If the banner fails to load, use an icon banner
+		NetImageElement* icon = new NetImageElement(package->getIconUrl().c_str(), []{
+			// if even the icon fails to load, use the default icon
+			ImageElement *defaultIcon = new ImageElement(ROMFS "res/default.png");
+			defaultIcon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+			return defaultIcon;
+		});
+		icon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+		return icon;
+	});
+#endif
 	banner->resize(787, 193);
-
 	banner->position(BANNER_X, BANNER_Y);
-
-	if (banner->imgSurface == NULL)
-	{
-		// if banner is missing, use the app's icon instead
-		delete banner;
-		banner = new ImageElement((ImageCache::cache_path + package->pkg_name + "/icon.png").c_str(), true);
-		banner->resize(256, ICON_SIZE);
-		banner->position(BANNER_X + 787 / 2 - 256 / 2, BANNER_Y);
-		content->useIconBanner = true;
-	}
-
-	content->banner = banner;
-
 	content->elements.push_back(banner);
 
 	TextElement* title2 = new TextElement(package->author.c_str(), 27, &gray);
@@ -473,15 +480,6 @@ void AppDetailsContent::render(Element* parent)
 		this->parent = parent;
 
 	this->renderer = parent->renderer;
-
-	// if we're using an icon banner, draw a background based on the icon
-	if (useIconBanner && banner != NULL && banner->imgSurface != NULL && banner->firstPixel != NULL)
-	{
-		SDL_Rect banner_bg = { BANNER_X, BANNER_Y + parent->y + this->y, 787, ICON_SIZE };
-		SDL_Color color = *(banner->firstPixel);
-		SDL_SetRenderDrawColor(parent->renderer, color.r, color.g, color.b, 0xFF);
-		SDL_RenderFillRect(parent->renderer, &banner_bg);
-	}
 
 	super::render(this);
 }

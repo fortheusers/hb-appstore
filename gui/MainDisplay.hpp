@@ -1,5 +1,6 @@
 #include "AppList.hpp"
 #include "chesto/src/RootDisplay.hpp"
+#include "chesto/src/TextElement.hpp"
 #include "ImageCache.hpp"
 #include <unordered_map>
 
@@ -17,8 +18,6 @@ class MainDisplay : public RootDisplay
 {
 public:
 	MainDisplay(Get* get);
-	bool process(InputEvents* event);
-	void render(Element* parent);
 
 	TextElement* notice = NULL;
 
@@ -27,4 +26,6 @@ public:
 	bool error = false;
 
 	bool showingSplash = true;
+
+	int count = 0;
 };

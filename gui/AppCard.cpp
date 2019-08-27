@@ -1,17 +1,14 @@
 #include "AppCard.hpp"
 #include "MainDisplay.hpp"
 
-AppCard::AppCard(Package* package)
+AppCard::AppCard(Package* package, AppList* list)
 {
+	this->list = list;
 	this->package = package;
 
 	// fixed width+height of one app card
 	this->width = 256;
 	this->height = ICON_SIZE + 45;
-
-#if defined(__WIIU__)
-	this->height = ICON_SIZE + 45;
-#endif
 
 	this->touchable = true;
 
@@ -23,10 +20,16 @@ void AppCard::update()
 {
 	// create the layout of the app card (all relative)
 
-	// icon, and look up cached image to load
-	ImageElement* icon = new ImageElement((ImageCache::cache_path + this->package->pkg_name + "/icon.png").c_str());
+	// If a parent list was passed, the icon will be loaded when
+	// its close to being shown on the screen
+	iconFetch = !list;
+	icon = new NetImageElement(package->getIconUrl().c_str(), []{
+			return new ImageElement(ROMFS "res/default.png");
+		},
+		iconFetch
+	);
 	icon->position(this->x, this->y);
-	icon->resize(256, this->height - 45);
+	icon->resize(256, ICON_SIZE);
 
 	this->elements.push_back(icon);
 
@@ -48,13 +51,13 @@ void AppCard::update()
 	// app name
 	int w, h;
 	TextElement* appname = new TextElement(package->title.c_str(), size + 3, &black);
-	SDL_QueryTexture(appname->textSurface, NULL, NULL, &w, &h);
+	appname->getTextureSize(&w, &h);
 	appname->position(this->x + 245 - w, this->y + icon->height + 5);
 	this->elements.push_back(appname);
 
 	// author
 	TextElement* author = new TextElement(package->author.c_str(), size, &gray);
-	SDL_QueryTexture(author->textSurface, NULL, NULL, &w, &h);
+	author->getTextureSize(&w, &h);
 	author->position(this->x + 245 - w, this->y + icon->height + 25);
 	this->elements.push_back(author);
 
@@ -65,15 +68,31 @@ void AppCard::update()
 	this->elements.push_back(statusicon);
 }
 
+// Trigger the icon download (if the icon wasn't already cached)
+// when the icon is near the visible part of the screen
+void AppCard::handleIconLoad()
+{
+	if (iconFetch)
+		return;
+
+	int twoCardsHeight = (this->height + 15) * 2;
+
+	if ((list->y + this->y + this->height) < -twoCardsHeight)
+		return;
+	if ((list->y + this->y) > (SCREEN_HEIGHT + twoCardsHeight))
+		return;
+
+	// the icon is either visible or ofscreen within 2 rows,
+	// so the download can be started
+	icon->fetch();
+
+	iconFetch = true;
+}
+
 void AppCard::render(Element* parent)
 {
-	// grab and store the parent while we have it, and if we need it
-	if (this->parent == NULL)
-	{
-		this->parent = parent;
-		this->xOff = this->parent->x;
-		this->yOff = this->parent->y;
-	}
+	this->xOff = parent->x;
+	this->yOff = parent->y;
 
 	// TODO: don't render this card if it's going to be offscreen anyway according to the parent (AppList)
 	//	if (((AppList*)parent)->scrollOffset)
@@ -84,23 +103,27 @@ void AppCard::render(Element* parent)
 
 void AppCard::displaySubscreen()
 {
-	// received a click on this app, add a subscreen under the parent
-	// (parent of AppCard should be AppList)
-	if (!this->parent) return;
+	if (!list)
+		return;
 
-	AppList* appList = ((AppList*)this->parent);
-	MainDisplay::subscreen = new AppDetails(this->package, appList);
-	if (!appList->touchMode)
-		((AppDetails*)MainDisplay::subscreen)->highlighted = 0; // show cursor if we're not in touch mode
+	// received a click on this app, add a subscreen under the parent
+	AppDetails *appDetails = new AppDetails(this->package, list);
+
+	if (!list->touchMode)
+		appDetails->highlighted = 0; // show cursor if we're not in touch mode
+
+	MainDisplay::subscreen = appDetails;
 }
 
 bool AppCard::process(InputEvents* event)
 {
-	if (this->parent == NULL)
-		return false;
+	if (list)
+	{
+		handleIconLoad();
 
-	this->xOff = this->parent->x;
-	this->yOff = this->parent->y;
+		this->xOff = this->list->x;
+		this->yOff = this->list->y;
+	}
 
 	return super::process(event);
 }

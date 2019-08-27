@@ -273,7 +273,7 @@ void AppList::update()
 					continue;
 			}
 
-			AppCard* card = new AppCard(sorted[x]);
+			AppCard* card = new AppCard(sorted[x], this);
 			card->index = count;
 
 			this->elements.push_back(card);
