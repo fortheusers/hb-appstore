@@ -10,12 +10,12 @@ TINYXML_O := tinystr.o tinyxml.o tinyxmlerror.o tinyxmlparser.o
 
 all:
 	gcc -c $(MINIZIP)/*.c
-	g++ -g -std=gnu++14 *.cpp ./console/*.cpp ./gui/*.cpp -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx $(GET)/*.cpp $(CHESTO)/*.cpp $(MINIZIP_O) -I . -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.bin -fstack-protector-all -DPC
+	g++ -g -std=gnu++14 *.cpp ./console/*.cpp ./gui/*.cpp -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx $(GET)/*.cpp $(CHESTO)/*.cpp $(MINIZIP_O) -I . -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -lcurl -lz -o appstore.bin -fstack-protector-all -DPC -DNETWORK
 
 macos:
 	gcc -c $(MINIZIP)/*.c
 	g++ -c $(TINYXML)/*.cpp
-	g++ -g -std=gnu++14 *.cpp -lSDL2 -lSDL2main -lSDL2_gfx -lSDL2_image -lSDL2_ttf -framework Cocoa ./console/*.cpp ./gui/*.cpp $(GET)/*.cpp $(CHESTO)/*.cpp $(MINIZIP_O) $(TINYXML_O) -I . -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -I $(TINYXML) -lcurl -lz -o appstore.exe -fstack-protector-all -O0 -DPC
+	g++ -g -std=gnu++14 *.cpp -lSDL2 -lSDL2main -lSDL2_gfx -lSDL2_image -lSDL2_ttf -framework Cocoa ./console/*.cpp ./gui/*.cpp $(GET)/*.cpp $(CHESTO)/*.cpp $(MINIZIP_O) $(TINYXML_O) -I . -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -I $(TINYXML) -lcurl -lz -o appstore.exe -fstack-protector-all -O0 -DPC -DNETWORK
 
 clean:
 	rm *.o *.bin
