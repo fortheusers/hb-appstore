@@ -24,8 +24,4 @@ public:
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;
 	bool error = false;
-
-	bool showingSplash = true;
-
-	int count = 0;
 };
