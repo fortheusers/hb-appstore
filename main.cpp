@@ -18,11 +18,7 @@
 #include "gui/MainDisplay.hpp"
 #endif
 
-#if defined(__WIIU__)
-#define DEFAULT_REPO "https://wiiu.apps.fortheusers.org"
-#else
-#define DEFAULT_REPO "https://switch.apps.fortheusers.org"
-#endif
+#include "main.hpp"
 
 static bool running = true;
 
@@ -51,10 +47,10 @@ int main(int argc, char* argv[])
 
 	init_networking();
 
+#if defined(NOGUI)
 	// create main get object
 	Get* get = new Get("./.get/", DEFAULT_REPO);
 
-#if defined(NOGUI)
 	// if NOGUI variable defined, use the console's main method
 	int console_main(Get*);
 	return console_main(get);
@@ -68,7 +64,7 @@ int main(int argc, char* argv[])
 	DownloadQueue::init();
 
 	// initialize main title screen
-	MainDisplay* display = new MainDisplay(get);
+	MainDisplay* display = new MainDisplay();
 
 	// the main inuput handler
 	InputEvents* events = new InputEvents();
@@ -93,7 +89,7 @@ int main(int argc, char* argv[])
 
 		// one more event update if nothing changed or there were no previous events seen
 		// needed to non-input related processing that might update the screen to take place
-		if (!atLeastOneNewEvent && !viewChanged)
+		if ((!atLeastOneNewEvent && !viewChanged) || display->showingSplash)
 		{
 			events->update();
 			viewChanged |= display->process(events);
@@ -117,7 +113,6 @@ int main(int argc, char* argv[])
 
 	delete events;
 	delete display;
-	delete get;
 
 	DownloadQueue::quit();
 
