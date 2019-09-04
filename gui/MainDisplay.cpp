@@ -27,7 +27,6 @@ MainDisplay::MainDisplay()
 	elements.push_back(title);
 
 	TextElement* loading = new TextElement("Loading...", 40);
-	loading->getTextureSize(&w, &h);
 	loading->position(549, 365);
 	elements.push_back(loading);
 
