@@ -1,5 +1,5 @@
 # Homebrew App Store
-[![GPLv3 License](https://img.shields.io/badge/license-GPLv3-blue.svg?style=flat-square)](https://opensource.org/licenses/GPL-3.0) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome!-tomato.svg?style=flat-square)](http://makeapullrequest.com) [![travis](https://img.shields.io/travis/vgmoose/hb-appstore.svg?label=travis&style=flat-square)](https://travis-ci.org/vgmoose/hb-appstore) [![discord](https://img.shields.io/discord/339118412414582786.svg?color=blueviolet&label=discord&style=flat-square)](https://discordapp.com/invite/F2PKpEj) 	[![twitter](https://img.shields.io/twitter/follow/wiiubru.svg?label=twitter&style=flat-square)](https://twitter.com/wiiubru)
+[![Financial Contributors on Open Collective](https://opencollective.com/hb-appstore/all/badge.svg?label=financial+contributors)](https://opencollective.com/hb-appstore) [![GPLv3 License](https://img.shields.io/badge/license-GPLv3-blue.svg?style=flat-square)](https://opensource.org/licenses/GPL-3.0) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome!-tomato.svg?style=flat-square)](http://makeapullrequest.com) [![travis](https://img.shields.io/travis/vgmoose/hb-appstore.svg?label=travis&style=flat-square)](https://travis-ci.org/vgmoose/hb-appstore) [![discord](https://img.shields.io/discord/339118412414582786.svg?color=blueviolet&label=discord&style=flat-square)](https://discordapp.com/invite/F2PKpEj) 	[![twitter](https://img.shields.io/twitter/follow/wiiubru.svg?label=twitter&style=flat-square)](https://twitter.com/wiiubru)
 
 ![logo](logo.png)
 
@@ -78,6 +78,36 @@ git clone --recursive https://github.com/vgmoose/hb-appstore.git
 cd hb-appstore
 make -f Makefile.pc
 ```
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/vgmoose/hb-appstore/graphs/contributors"><img src="https://opencollective.com/hb-appstore/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/hb-appstore/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/hb-appstore"><img src="https://opencollective.com/hb-appstore/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/hb-appstore/contribute)]
+
+<a href="https://opencollective.com/hb-appstore/organization/0/website"><img src="https://opencollective.com/hb-appstore/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/hb-appstore/organization/1/website"><img src="https://opencollective.com/hb-appstore/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/hb-appstore/organization/2/website"><img src="https://opencollective.com/hb-appstore/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/hb-appstore/organization/3/website"><img src="https://opencollective.com/hb-appstore/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/hb-appstore/organization/4/website"><img src="https://opencollective.com/hb-appstore/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/hb-appstore/organization/5/website"><img src="https://opencollective.com/hb-appstore/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/hb-appstore/organization/6/website"><img src="https://opencollective.com/hb-appstore/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/hb-appstore/organization/7/website"><img src="https://opencollective.com/hb-appstore/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/hb-appstore/organization/8/website"><img src="https://opencollective.com/hb-appstore/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/hb-appstore/organization/9/website"><img src="https://opencollective.com/hb-appstore/organization/9/avatar.svg"></a>
 
 ### License
 This software is licensed under the GPLv3.
