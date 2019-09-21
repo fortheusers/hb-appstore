@@ -3,19 +3,26 @@ image: ubuntu:16.04
 Build:
   stage: build
   script:
+    - apt-get update && apt-get -y install sudo
+
     - export DEVKITPRO=/opt/devkitpro
     - export DEVKITPPC=/opt/devkitpro/devkitPPC
     - export WUT_ROOT=/opt/devkitpro/wut
+
     - PLATFORM=pc ./dependency_helper.sh
     - make -f Makefile.pc
+
     - PLATFORM=wiiu ./dependency_helper.sh
     - make -f Makefile.wiiu
+
     - PLATFORM=switch ./dependency_helper.sh
     - make -f Makefile.switch
+
   artifacts:
     paths:
       - appstore.bin
       - appstore.rpx
       - appstore.nro
+
   only:
     - master
