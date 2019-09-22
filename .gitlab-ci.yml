@@ -9,7 +9,7 @@ variables:
 
 .common: &common
   script:
-    - PLATFORM=$PLATFORM ./dependency_helper.sh
+    - ./dependency_helper.sh
     - make -f Makefile.$PLATFORM
   artifacts:
     paths:
