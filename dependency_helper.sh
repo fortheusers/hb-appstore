@@ -7,43 +7,28 @@
 # help if you are interested in seeing how the dependencies come together
 # on various platforms
 
+install_container_deps () {
+  apt-get update && apt-get install -y wget sudo libxml2 xz-utils lzma build-essential haveged
+  haveged &
+  touch /trustdb.gpg
+}
+
 setup_dkp_repo () {
-  # todo: containerize build in fedora, and use real pacman instead of dkp fork
   wget https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman.deb
   sudo dpkg -i devkitpro-pacman.deb
-
-  # sudo pacman-key --recv F7FD5492264BB9D0
-  # sudo pacman-key --lsign F7FD5492264BB9D0
 }
 
 install_intel_deps () {
-  sudo apt-get -y install wget git libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++
+  sudo apt-get -y install wget git libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++ libcurl4-openssl-dev
 }
 
-setup_linuxbrew () {
-  mkdir ~/.linuxbrew/Homebrew
-  git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew
-  mkdir ~/.linuxbrew/bin
-  ln -s ./linuxbrew/Homebrew/bin/brew ~/.linuxbrew/bin
-  sudo ln -s $HOME/.linuxbrew/bin/brew /usr/local/bin/brew
-  sudo chown -R $(whoami) /usr/local/
-  brew --version
-}
+if ! [ -x "$(command -v sudo)" ]; then
+  install_container_deps
+fi
 
 case "${PLATFORM}" in
   pc)
       install_intel_deps
-    ;;
-  buck)
-      install_intel_deps
-      setup_linuxbrew
-
-      brew tap facebook/fb
-      brew install buck
-      buck --version
-
-      wget -nc -P ./downloads https://github.com/LoopPerfect/buckaroo/releases/download/v2.2.0/buckaroo-linux
-      sudo install ./downloads/buckaroo-linux /usr/local/bin/buckaroo
     ;;
   switch)   # currently libnx
       setup_dkp_repo
