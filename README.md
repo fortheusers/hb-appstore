@@ -24,6 +24,8 @@ If you run into any issues and need help maintaining or setting up a libget repo
 ## Compilation instructions
 This program is written using SDL2 and has dependencies on libsdl, libcurl, and zlib. It also makes use of libget which is included in this repo as a submodule.
 
+You can get pre-compiled binaries for each platform under [Pipelines](https://gitlab.com/4TU/hb-appstore/pipelines) for a given commit. The download artifacts dropdown is to the right of the build passing status.
+
 ### Building for Switch (with libnx)
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
 2. Install devkitA64 and needed Switch dependencies via dkp-pacman:
