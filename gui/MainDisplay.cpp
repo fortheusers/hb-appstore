@@ -34,6 +34,12 @@ MainDisplay::MainDisplay(Get* get)
 
 	this->error = this->error || !atLeastOneEnabled;
 
+	#if defined(__WIIU__)
+	this->backgroundColor={0.33, 0.33, 0.43};
+	#else
+	this->backgroundColor={0.26, 0.27, 0.28};
+	#endif
+
 	// the progress bar
 	ProgressBar* pbar = new ProgressBar();
 	pbar->position(401, 380 - this->error * 290);

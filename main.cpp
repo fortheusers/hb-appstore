@@ -66,8 +66,9 @@ int main(int argc, char* argv[])
 	// initialize main title screen
 	MainDisplay* display = new MainDisplay(get);
 
-	// the main inuput handler
+	// the main input handler
 	InputEvents* events = new InputEvents();
+	events->quitaction = quit;
 
 	while (running)
 	{
