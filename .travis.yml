@@ -1,39 +1,18 @@
 language: cpp
-sudo: required
 
-os: linux
-dist: xenial
-
-cache:
-  directories:
-    - /home/travis/.linuxbrew
-    - /home/travis/downloads
-
-env:
-  global:
-    - DEVKITPRO=/opt/devkitpro
-    - DEVKITPPC=/opt/devkitpro/devkitPPC
-    - WUT_ROOT=/opt/devkitpro/wut
+services:
+  - docker
 
 matrix:
   include:
     - env: PLATFORM=pc
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
-    - env: PLATFORM=buck
-  allow_failures:
-    - env: PLATFORM=switch
-    - env: PLATFORM=wiiu
-    - env: PLATFORM=buck
-
-addons:
-  apt:
-    packages:
-      - git
-      - wget
-
-install:
-  - ./dependency_helper.sh
 
 script:
-  - ./build.sh
+  - docker run -e PLATFORM="$PLATFORM"
+               -e DEVKITPRO="/opt/devkitpro"
+               -e DEVKITPPC="$DEVKITPRO/devkitPPC"
+               -e WUT_ROOT="$DEVKITPRO/wut"
+               -v $(pwd):/code ubuntu:18.10
+               /bin/bash -c "cd /code && ./dependency_helper.sh && ./build.sh"
