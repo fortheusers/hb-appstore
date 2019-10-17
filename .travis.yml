@@ -1,13 +1,7 @@
 language: cpp
-sudo: required
 
-os: linux
-dist: xenial
-
-cache:
-  directories:
-    - /home/travis/.linuxbrew
-    - /home/travis/downloads
+services:
+  - docker
 
 env:
   global:
@@ -20,20 +14,9 @@ matrix:
     - env: PLATFORM=pc
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
-    - env: PLATFORM=buck
   allow_failures:
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
-    - env: PLATFORM=buck
 
-addons:
-  apt:
-    packages:
-      - git
-      - wget
-
-install:
-  - ./dependency_helper.sh
-
-script:
-  - ./build.sh
+before_install:
+  - docker run -d -e PLATFORM="$PLATFORM" -v $(pwd):/code ubuntu:18.10 /bin/bash -c "cd /code && ./dependency_helper.sh && ./build.sh"
