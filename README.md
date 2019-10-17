@@ -58,6 +58,25 @@ make -f Makefile.wiiu
 
 If all goes well, `appstore.rpx` should be sitting in the current directory.
 
+### Building with Docker
+Docker can be used to build for any of the three supported platforms, using the dependency helper scripts.
+
+1. Install docker
+2. Run the following, replacing `switch` with the target platform (one of `switch`, `wiiu`, or `pc`):
+```
+git clone https://github.com/vgmoose/hb-appstore.git
+cd hb-appstore
+docker run -e PLATFORM='switch' -v $(pwd):/code -it ubuntu:18.10 /bin/bash
+```
+3. You should now be in the container, run:
+```
+cd /code
+./dependency_helper.sh
+make -f Makefile.$PLATFORM
+```
+
+Depending on which platform you chose, `appstore.nro`, `appstore.rpx`, or `appstore.exe` should be in the cloned directory.
+
 ### Building for PC (with Buck)
 This project is moving towards [Buck](https://github.com/facebook/buck) to build and [Buckaroo](https://github.com/LoopPerfect/buckaroo/) for dependency management.
 
