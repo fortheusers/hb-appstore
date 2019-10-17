@@ -18,5 +18,5 @@ matrix:
     - env: PLATFORM=switch
     - env: PLATFORM=wiiu
 
-before_install:
-  - docker run -d -e PLATFORM="$PLATFORM" -v $(pwd):/code ubuntu:18.10 /bin/bash -c "cd /code && ./dependency_helper.sh && ./build.sh"
+script:
+  - docker run -e PLATFORM="$PLATFORM" -v $(pwd):/code ubuntu:18.10 /bin/bash -c "cd /code && ./dependency_helper.sh && ./build.sh"
