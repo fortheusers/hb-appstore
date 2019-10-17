@@ -19,9 +19,9 @@ matrix:
     - env: PLATFORM=wiiu
 
 script:
-  - docker run -e PLATFORM="$PLATFORM" \
-               -e DEVKITPRO="$DEVKITPRO" \
-               -e DEVKITPPC="$DEVKITPPC" \
-               -e WUT_ROOT="$WUT_ROOT" \
-               -v $(pwd):/code ubuntu:18.10 \
+  - docker run -e PLATFORM="$PLATFORM"
+               -e DEVKITPRO="$DEVKITPRO"
+               -e DEVKITPPC="$DEVKITPPC"
+               -e WUT_ROOT="$WUT_ROOT"
+               -v $(pwd):/code ubuntu:18.10
                /bin/bash -c "cd /code && ./dependency_helper.sh && ./build.sh"
