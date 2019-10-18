@@ -12,7 +12,7 @@ matrix:
 script:
   - docker run -e PLATFORM="$PLATFORM"
                -e DEVKITPRO="/opt/devkitpro"
-               -e DEVKITPPC="$DEVKITPRO/devkitPPC"
-               -e WUT_ROOT="$DEVKITPRO/wut"
+               -e DEVKITPPC="/opt/devkitpro/devkitPPC"
+               -e WUT_ROOT="/opt/devkitpro/wut"
                -v $(pwd):/code ubuntu:18.10
                /bin/bash -c "cd /code && ./dependency_helper.sh && ./build.sh"
