@@ -1,9 +1,0 @@
-targets = [ "//:hb-appstore" ]
-
-[[dependency]]
-package = "gitlab.com/4tu/libget"
-version = "*"
-
-[[dependency]]
-package = "gitlab.com/4tu/chesto"
-version = "*"

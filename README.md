@@ -40,17 +40,16 @@ docker run -e PLATFORM='switch' -v $(pwd):/code -it ubuntu:18.10 /bin/bash
 ```
 cd /code
 ./dependency_helper.sh
-make -f Makefile.$PLATFORM
+make
 ```
 
-Depending on which platform you chose, `appstore.nro`, `appstore.rpx`, or `appstore.exe` should be in the cloned directory.
-
+Depending on which platform you chose, `appstore.nro` or `appstore.rpx` should now be sitting in the cloned directory.
 
 ### Building for Switch (with libnx)
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
 2. Install devkitA64 and needed Switch dependencies via dkp-pacman:
 ```
-sudo dkp-pacman -S devkitA64 libnx switch-tools switch-curl switch-bzip2 switch-freetype switch-libjpeg-turbo switch-sdl2 switch-sdl2_gfx switch-sdl2_image switch-sdl2_ttf switch-zlib switch-libpng switch-mesa
+sudo dkp-pacman -S devkitA64 libnx switch-tools switch-curl switch-bzip2 switch-freetype switch-libjpeg-turbo switch-libwebp switch-sdl2 switch-sdl2_gfx switch-sdl2_image switch-sdl2_ttf switch-zlib switch-libpng switch-mesa
 ```
 3. Once it's all setup, recursively clone the repo and run make:
 ```
@@ -62,12 +61,11 @@ make -f Makefile.switch
 If all goes well, `appstore.nro` should be sitting in the current directory.
 
 ### Building for Wii U (with WUT)
-The below instructions are currently for Linux and macOS
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
 2. Setup [wiiu-fling](https://gitlab.com/QuarkTheAwesome/wiiu-fling#wiiu-fling) according to the instructions
-3. Install sdl2, wut, devkitPPC and other dependencies (on macOS, use `wut-osx` instead of `wut-linux`)
+3. Install devkitPPC and needed Wii U dependencies via dkp-pacman:
 ```
-sudo dkp-pacman -S wut-linux wiiu-sdl2 devkitPPC wiiu-libromfs wiiu-sdl2_gfx wiiu-sdl2_image wiiu-sdl2_ttf wiiu-sdl2_mixer ppc-zlib ppc-bzip2 ppc-freetype ppc-libpng ppc-mpg123 wiiu-curl-headers ppc-pkg-config wiiu-pkg-config
+sudo dkp-pacman -S wut wiiu-sdl2 devkitPPC wiiu-libromfs wiiu-sdl2_gfx wiiu-sdl2_image wiiu-sdl2_ttf wiiu-sdl2_mixer ppc-zlib ppc-bzip2 ppc-freetype ppc-mpg123 ppc-libpng wiiu-curl-headers ppc-pkg-config wiiu-pkg-config
 ```
 4. Once the environment is setup:
 ```
@@ -78,24 +76,10 @@ make -f Makefile.wiiu
 
 If all goes well, `appstore.rpx` should be sitting in the current directory.
 
-### Building for PC (with Buck)
-This project is moving towards [Buck](https://github.com/facebook/buck) to build and [Buckaroo](https://github.com/LoopPerfect/buckaroo/) for dependency management.
-
-1. Install a [precompiled Buck](https://github.com/facebook/buck/releases), and [precompiled Buckaroo](https://github.com/LoopPerfect/buckaroo/releases) for your platform, or build them from source
-2. Run the following:
+### Building for PC
+There's a makefile for building the SDL2 app on PC as well, primarily used for debugging and performance monitoring. Below instructions are for Ubuntu, but should be similar on other platforms:
 ```
-git clone https://github.com/vgmoose/hb-appstore.git
-cd hb-appstore
-buckaroo install
-buck build :hb-appstore
-```
-
-Currently sdl2 is manually linked in the `.buckconfig`, as a buckaroo port is not yet available, so SDL2 will need to be installed via the system package manager (see below). After running the above, there should be a binary sitting in `./buck-out/gen/hb-appstore`.
-
-#### Using GNU Makefile
-There's a separate makefile for building the SDL2 app for PC, if you don't want to try the Buck build. Below instructions are for Ubuntu, but should be similar on other platforms:
-```
-sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++ git
+sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++ libcurl4-openssl-dev
 git clone --recursive https://github.com/vgmoose/hb-appstore.git
 cd hb-appstore
 make -f Makefile.pc

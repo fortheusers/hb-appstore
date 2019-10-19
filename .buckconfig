@@ -1,3 +1,0 @@
-[cxx]
-  cxxflags = -std=gnu++14 -DPC
-  ldflags = -lSDL2 -lSDL2main -lSDL2_gfx -lSDL2_image -lSDL2_ttf
