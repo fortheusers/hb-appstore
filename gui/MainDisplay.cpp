@@ -30,14 +30,6 @@ MainDisplay::MainDisplay()
 	loading->position(549, 365);
 	elements.push_back(loading);
 
-	this->error = this->error || !atLeastOneEnabled;
-
-	#if defined(__WIIU__)
-	this->backgroundColor={0.33, 0.33, 0.43};
-	#else
-	this->backgroundColor={0.26, 0.27, 0.28};
-	#endif
-
 	// initial redraw to show the splash screen
 	needsRedraw = true;
 }
