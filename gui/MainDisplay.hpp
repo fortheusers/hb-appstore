@@ -1,5 +1,6 @@
 #include "AppList.hpp"
 #include "chesto/src/RootDisplay.hpp"
+#include "chesto/src/TextElement.hpp"
 #include "ImageCache.hpp"
 #include <unordered_map>
 
@@ -16,15 +17,17 @@
 class MainDisplay : public RootDisplay
 {
 public:
-	MainDisplay(Get* get);
+	MainDisplay();
 	bool process(InputEvents* event);
 	void render(Element* parent);
 
-	TextElement* notice = NULL;
+	void drawErrorScreen(std::string troubleshootingText);
 
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;
 	bool error = false;
+	bool atLeastOneEnabled = false;
 
 	bool showingSplash = true;
+	bool renderedSplash = false;
 };

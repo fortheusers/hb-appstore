@@ -9,6 +9,7 @@
 
 #include "libget/src/Get.hpp"
 #include "libget/src/Utils.hpp"
+#include "chesto/src/DownloadQueue.hpp"
 
 #if defined(NOGUI)
 #include "console/Input.hpp"
@@ -17,11 +18,7 @@
 #include "gui/MainDisplay.hpp"
 #endif
 
-#if defined(__WIIU__)
-#define DEFAULT_REPO "https://wiiu.apps.fortheusers.org"
-#else
-#define DEFAULT_REPO "https://switch.apps.fortheusers.org"
-#endif
+#include "main.hpp"
 
 static bool running = true;
 
@@ -47,12 +44,13 @@ int main(int argc, char* argv[])
 	if (stat(ELF_PATH, &sbuff) == 0)
 		std::rename(ELF_PATH, RPX_PATH);
 #endif
+
 	init_networking();
 
+#if defined(NOGUI)
 	// create main get object
 	Get* get = new Get("./.get/", DEFAULT_REPO);
 
-#if defined(NOGUI)
 	// if NOGUI variable defined, use the console's main method
 	int console_main(Get*);
 	return console_main(get);
@@ -63,8 +61,10 @@ int main(int argc, char* argv[])
 	romfsInit();
 #endif
 
+	DownloadQueue::init();
+
 	// initialize main title screen
-	MainDisplay* display = new MainDisplay(get);
+	MainDisplay* display = new MainDisplay();
 
 	// the main input handler
 	InputEvents* events = new InputEvents();
@@ -76,6 +76,9 @@ int main(int argc, char* argv[])
 		bool viewChanged = false;
 
 		int frameStart = SDL_GetTicks();
+
+		// update download queue
+		DownloadQueue::downloadQueue->process();
 
 		// get any new input events
 		while (events->update())
@@ -111,7 +114,8 @@ int main(int argc, char* argv[])
 
 	delete events;
 	delete display;
-	delete get;
+
+	DownloadQueue::quit();
 
 #if defined(__WIIU__)
 	romfsExit();

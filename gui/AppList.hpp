@@ -1,3 +1,5 @@
+#pragma once
+
 #include "libget/src/Get.hpp"
 
 #include "chesto/src/ImageElement.hpp"

@@ -1,12 +1,12 @@
 #include "Feedback.hpp"
-#include "AppCard.hpp"
 #include "ImageCache.hpp"
+#include "MainDisplay.hpp"
 #include "main.hpp"
 
 #include "chesto/src/Button.hpp"
-#include "chesto/src/ImageElement.hpp"
 #include "chesto/src/RootDisplay.hpp"
 #include "chesto/src/TextElement.hpp"
+#include "chesto/src/NetImageElement.hpp"
 
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -36,11 +36,11 @@ void Feedback::refresh()
 	elem->position(50, 30);
 	elements.push_back(elem);
 
-	AppCard card(package);
-
-	ImageElement* icon = new ImageElement((ImageCache::cache_path + package->pkg_name + "/icon.png").c_str());
+	NetImageElement *icon = new NetImageElement(package->getIconUrl().c_str(), []{
+		return new ImageElement(ROMFS "res/default.png");
+	});
 	icon->position(50, 160);
-	icon->resize(256, card.height - 45); // TODO: extract method for icon height, in common with wiiu/switch
+	icon->resize(256, ICON_SIZE);
 	elements.push_back(icon);
 
 	TextElement* feedback = new TextElement(this->message.c_str(), 23, NULL, false, 730);

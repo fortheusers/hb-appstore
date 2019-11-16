@@ -4,7 +4,6 @@
 #include "libget/src/Get.hpp"
 #include "libget/src/Package.hpp"
 
-#include "chesto/src/ImageElement.hpp"
 #include "chesto/src/ListElement.hpp"
 #include "chesto/src/ProgressBar.hpp"
 #include "chesto/src/TextElement.hpp"
@@ -56,9 +55,6 @@ class AppDetailsContent : public ListElement
 	void render(Element* parent);
 
 public:
-	bool useIconBanner = false;
-	ImageElement* banner = NULL;
-
 	// banner/text constants
 	int MARGIN = 60;
 	int BANNER_X = MARGIN + 5;
