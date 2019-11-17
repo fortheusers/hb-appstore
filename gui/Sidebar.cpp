@@ -39,8 +39,6 @@ Sidebar::Sidebar()
 	subtitle->position(105, 75);
 	this->elements.push_back(subtitle);
 
-  this->addHints();
-
 	// elasticCounter in this class is used to keep track of which element is being pressed down on in touch mode
 	// TODO: elasticCounter belongs to element and should really be renamed (it's for general purpose animations)
 	elasticCounter = -1;
@@ -164,8 +162,8 @@ void Sidebar::render(Element* parent)
 	SDL_SetRenderDrawColor(parent->renderer, 0x3b, 0x3c, 0x4e, 0xFF);
 #endif
 
-  if (this->showCurrentCategory)
-	  SDL_RenderFillRect(parent->renderer, &dimens);
+	if (this->showCurrentCategory)
+		SDL_RenderFillRect(parent->renderer, &dimens);
 
 	if (appList && appList->touchMode && this->elasticCounter >= 0)
 	{

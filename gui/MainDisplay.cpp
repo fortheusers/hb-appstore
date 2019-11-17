@@ -98,6 +98,7 @@ bool MainDisplay::process(InputEvents* event)
 		// set get instance to our applist
 		this->appList->get = get;
 		this->appList->update();
+		this->appList->sidebar->addHints();
 
 		return true;
 	}
@@ -120,7 +121,7 @@ int MainDisplay::updateLoader(void* clientp, double dltotal, double dlnow, doubl
 	// (never return early if it's 100% done)
 	if (diff < 32 && amount != 1)
 		return 0;
-
+	
 	MainDisplay* display = (MainDisplay*)RootDisplay::mainDisplay;
 	if (display->appList->spinner != NULL)
 		display->appList->spinner->angle += 10;
