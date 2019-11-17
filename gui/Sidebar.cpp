@@ -39,7 +39,16 @@ Sidebar::Sidebar()
 	subtitle->position(105, 75);
 	this->elements.push_back(subtitle);
 
-	// small indicator to switch to advanced view using L
+  this->addHints();
+
+	// elasticCounter in this class is used to keep track of which element is being pressed down on in touch mode
+	// TODO: elasticCounter belongs to element and should really be renamed (it's for general purpose animations)
+	elasticCounter = -1;
+}
+
+void Sidebar::addHints()
+{
+  // small indicator to switch to advanced view using L
 	ImageElement* hider = new ImageElement(ROMFS "res/button-l-outline.png");
 	hider->resize(20, 20);
 	hider->position(270, 685);
@@ -49,9 +58,7 @@ Sidebar::Sidebar()
 	hint->position(hider->x + hider->width + 5, hider->y);
 	this->elements.push_back(hint);
 
-	// elasticCounter in this class is used to keep track of which element is being pressed down on in touch mode
-	// TODO: elasticCounter belongs to element and should really be renamed (it's for general purpose animations)
-	elasticCounter = -1;
+  showCurrentCategory = true;
 }
 
 bool Sidebar::process(InputEvents* event)
@@ -157,7 +164,8 @@ void Sidebar::render(Element* parent)
 	SDL_SetRenderDrawColor(parent->renderer, 0x3b, 0x3c, 0x4e, 0xFF);
 #endif
 
-	SDL_RenderFillRect(parent->renderer, &dimens);
+  if (this->showCurrentCategory)
+	  SDL_RenderFillRect(parent->renderer, &dimens);
 
 	if (appList && appList->touchMode && this->elasticCounter >= 0)
 	{

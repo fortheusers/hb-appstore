@@ -29,6 +29,13 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	// initialize random numbers used for sorting
 	std::srand(unsigned(std::time(0)));
 
+  // initial loading message
+  ImageElement* spinner = new ImageElement(ROMFS "res/spinner.png");
+  spinner->position(395, 90);
+  spinner->resize(90, 90);
+  this->spinner = spinner;
+  this->elements.push_back(spinner);
+
 	// update current app listing
 	update();
 }
@@ -184,15 +191,22 @@ void AppList::render(Element* parent)
 	SDL_Rect dimens = { 0, 0, 920 + 260 * (R - 3), 720 };
 	dimens.x = this->x - 35;
 
-	SDL_SetRenderDrawColor(parent->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	SDL_RenderFillRect(parent->renderer, &dimens);
-	this->renderer = parent->renderer;
+  if (parent != NULL) {
+    SDL_SetRenderDrawColor(parent->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_RenderFillRect(parent->renderer, &dimens);
+    this->renderer = parent->renderer;
+  }
 
 	super::render(this);
 }
 
 void AppList::update()
 {
+  if (this->get == NULL)
+    return;
+
+  this->spinner = NULL;
+
 	// if there's a keyboard, get its current highlighted positions
 	int kRow = -1, kIndex = -1;
 	if (this->keyboard)
@@ -262,6 +276,7 @@ void AppList::update()
 		// OR it's *not* any of the other categories, and we're on misc
 		if ((curCategoryValue == "_all" || curCategoryValue == sorted[x]->category || curCategoryValue == "_search") || curCategoryValue == "_misc")
 		{
+
 			if (curCategoryValue == "_misc")
 			{
 				bool matchedCat = false;

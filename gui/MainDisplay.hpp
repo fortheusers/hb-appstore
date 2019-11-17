@@ -25,8 +25,13 @@ public:
 
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;
+
+  AppList* appList = NULL;
+
 	bool error = false;
 	bool atLeastOneEnabled = false;
+
+	static int updateLoader(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow);
 
 	bool showingSplash = true;
 	bool renderedSplash = false;

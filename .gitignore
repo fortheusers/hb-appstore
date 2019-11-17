@@ -1,2 +1,6 @@
 *.DS_Store
 *.o
+appstore.*
+.gitignore
+repos.json
+settings.json

@@ -15,12 +15,16 @@ public:
 	std::string currentCatName();
 	std::string currentCatValue();
 
+  void addHints();
+
 	std::string searchQuery = "";
 
 	AppList* appList = NULL;
 
 	void render(Element* parent);
 	bool process(InputEvents* event);
+
+  bool showCurrentCategory = false;
 
 	// the currently selected category index
 	int curCategory = 1; // 1 is all apps

@@ -16,27 +16,22 @@
 
 MainDisplay::MainDisplay()
 {
-	// draw a static splash screen while fetching repos metadata
-	ImageElement* icon = new ImageElement(ROMFS "res/icon.png");
-	icon->position(330, 255);
-	icon->resize(70, 70);
-	elements.push_back(icon);
+	// add in the sidebar, footer, and main app listing
+	Sidebar* sidebar = new Sidebar();
+	elements.push_back(sidebar);
 
-	TextElement* title = new TextElement("Homebrew App Store", 50);
-	title->position(415, 255);
-	elements.push_back(title);
+	AppList* appList = new AppList(NULL, sidebar);
+	elements.push_back(appList);
+	sidebar->appList = appList;
+	this->appList = appList;
 
-	TextElement* loading = new TextElement("Loading...", 40);
-	loading->position(549, 365);
-	elements.push_back(loading);
-
-	// initial redraw to show the splash screen
 	needsRedraw = true;
 }
 
 void MainDisplay::drawErrorScreen(std::string troubleshootingText)
 {
 	wipeElements();
+	this->appList = NULL;
 
 	ImageElement* icon = new ImageElement(ROMFS "res/icon.png");
 	icon->position(470, 25);
@@ -76,6 +71,8 @@ bool MainDisplay::process(InputEvents* event)
 	{
 		showingSplash = false;
 
+		networking_callback = MainDisplay::updateLoader;
+
 		// fetch repositories metadata
 		get = new Get("./.get/", DEFAULT_REPO);
 
@@ -98,22 +95,38 @@ bool MainDisplay::process(InputEvents* event)
 			return true;
 		}
 
-		// remove the splash screen elements
-		wipeElements();
-
-		// add in the sidebar, footer, and main app listing
-		Sidebar* sidebar = new Sidebar();
-		elements.push_back(sidebar);
-
-		AppList* applist = new AppList(get, sidebar);
-		elements.push_back(applist);
-		sidebar->appList = applist;
-
-		needsRedraw = true;
+		// set get instance to our applist
+		this->appList->get = get;
+		this->appList->update();
 
 		return true;
 	}
 
 	// parent stuff
 	return RootDisplay::process(event);
+}
+
+
+int MainDisplay::updateLoader(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow)
+{
+	int now = SDL_GetTicks();
+	int diff = now - AppDetails::lastFrameTime;
+
+	if (dltotal == 0) dltotal = 1;
+
+	double amount = dlnow / dltotal;
+
+	// don't update the GUI too frequently here, it slows down downloading
+	// (never return early if it's 100% done)
+	if (diff < 32 && amount != 1)
+		return 0;
+
+	MainDisplay* display = (MainDisplay*)RootDisplay::mainDisplay;
+	if (display->appList->spinner != NULL)
+		display->appList->spinner->angle += 10;
+	display->render(NULL);
+
+	AppDetails::lastFrameTime = SDL_GetTicks();
+
+	return 0;
 }

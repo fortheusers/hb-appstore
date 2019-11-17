@@ -29,6 +29,8 @@ public:
 	Sidebar* sidebar = NULL;
 	Keyboard* keyboard = NULL;
 
+  ImageElement* spinner = NULL;
+
 	void toggleKeyboard();
 	void cycleSort();
 	void reorient();
