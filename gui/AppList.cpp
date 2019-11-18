@@ -274,6 +274,8 @@ void AppList::update()
 
 	for (int x = 0; x < sorted.size(); x++)
 	{
+		// networking_callback(0, 0, 0, 0, 0);
+
 		// if we're on all categories, or this package matches the current category (or it's a search (prefiltered))
 		// OR it's *not* any of the other categories, and we're on misc
 		if ((curCategoryValue == "_all" || curCategoryValue == sorted[x]->category || curCategoryValue == "_search") || curCategoryValue == "_misc")

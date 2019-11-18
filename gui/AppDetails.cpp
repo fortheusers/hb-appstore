@@ -235,8 +235,8 @@ bool AppDetails::process(InputEvents* event)
 {
 
 	// don't process any keystrokes if an operation is in progress
-	if (this->operating)
-		return false;
+//	if (this->operating)
+//		return false;
 
 	if (event->pressed(B_BUTTON))
 	{
@@ -249,6 +249,12 @@ bool AppDetails::process(InputEvents* event)
 		this->operating = true;
 		// event->key.keysym.sym = SDLK_z;
 		event->update();
+		
+		// description of what we're doing
+		
+		TextElement* description = new TextElement("Downloading package...", 30);
+		description->position(10, 10);
+		this->elements.push_back(description);
 
 		// add a progress bar to the screen to be drawn
 		this->pbar = new ProgressBar();
@@ -466,10 +472,15 @@ int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, dou
 
 		// force render the element right here (and it's progress bar too)
 		if (popup->parent != NULL)
+		{
+			InputEvents* events = new InputEvents();
+			while (events->update())
+				popup->parent->process(events);
 			popup->parent->render(NULL);
+		}
 	}
 
-	AppDetails::lastFrameTime = now;
+	AppDetails::lastFrameTime = SDL_GetTicks();
 
 	return 0;
 }
