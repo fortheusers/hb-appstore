@@ -77,7 +77,7 @@ AboutScreen::AboutScreen(Get* get)
 	credit("VGMoose", "2467473", "vgmoose", "vgmoose");
 	credit("rw-r-r_0644", "18355947", "rw_r_r_0644", "rw-r-r-0644");
 	credit("crc32", "7893269", "crc32_", "crc-32");
-	credit("CompuCat", "12215288", "therealcompucat", "compucat");
+	credit("CompuCat", "12215288", NULL, NULL, "compucat", NULL, "compucat.me");
 	credit("Quarky", "8533313", NULL, NULL, "quarktheawesome", NULL, "heyquark.com");
 	credit("Whovian9369", "5240754", NULL, NULL, "whovian9369");
 
