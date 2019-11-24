@@ -1,12 +1,12 @@
 #include <sstream>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
-#include "libget/src/Get.hpp"
-#include "libget/src/Utils.hpp"
+#include "../libs/get/src/Get.hpp"
+#include "../libs/get/src/Utils.hpp"
 
-#include "chesto/src/Button.hpp"
-#include "chesto/src/RootDisplay.hpp"
-#include "chesto/src/NetImageElement.hpp"
+#include "../libs/chesto/src/Button.hpp"
+#include "../libs/chesto/src/RootDisplay.hpp"
+#include "../libs/chesto/src/NetImageElement.hpp"
 
 
 #include "AboutScreen.hpp"
@@ -62,7 +62,7 @@ AboutScreen::AboutScreen(Get* get)
   ftuLogo->resize(140, 140);
   this->elements.push_back(ftuLogo);
 
-	const char* blurb = "Licensed under the GPLv3 license. This app is free and open source because the users (like you!) deserve it.\n\n\Let's support homebrew and the right to control what software we run on our own devices!";
+	const char* blurb = "Licensed under the GPLv3 license. This app is free and open source because the users (like you!) deserve it.\n\nLet's support homebrew and the right to control what software we run on our own devices!";
 
 	TextElement* creds = new TextElement(blurb, 20, &black, false, 1240);
 	creds->position(100, 170);
@@ -175,7 +175,7 @@ void AboutScreen::credit(const char* username,
 	for (int x=0; x<6; x++) {
 		if (handles[x] == NULL) continue;
 
-		ImageElement* icon = new ImageElement(((std::string(ROMFS "res/") + icons[x]) + ".png").c_str());
+		ImageElement* icon = new ImageElement(((std::string(RAMFS "res/") + icons[x]) + ".png").c_str());
 		icon->resize(20, 20);
 		icon->position(myX + 110, myY + 45 + socialCount*25);
 		this->elements.push_back(icon);

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "libget/src/Package.hpp"
+#include "../libs/get/src/Package.hpp"
 
-#include "chesto/src/RootDisplay.hpp"
-#include "chesto/src/ImageElement.hpp"
-#include "chesto/src/NetImageElement.hpp"
-#include "chesto/src/TextElement.hpp"
+#include "../libs/chesto/src/RootDisplay.hpp"
+#include "../libs/chesto/src/ImageElement.hpp"
+#include "../libs/chesto/src/NetImageElement.hpp"
+#include "../libs/chesto/src/TextElement.hpp"
 
 #include "AppList.hpp"
 

@@ -1,5 +1,5 @@
-#include "libget/src/Get.hpp"
-#include "libget/src/Utils.hpp"
+#include "../libs/get/src/Get.hpp"
+#include "../libs/get/src/Utils.hpp"
 
 #include "Input.hpp"
 #include "Menu.hpp"

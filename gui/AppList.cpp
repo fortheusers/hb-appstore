@@ -4,10 +4,10 @@
 #include "Keyboard.hpp"
 #include "main.hpp"
 
-#include "libget/src/Utils.hpp"
+#include "../libs/get/src/Utils.hpp"
 
-#include "chesto/src/Button.hpp"
-#include "chesto/src/RootDisplay.hpp"
+#include "../libs/chesto/src/Button.hpp"
+#include "../libs/chesto/src/RootDisplay.hpp"
 
 #include <SDL2/SDL2_gfxPrimitives.h>
 
@@ -32,7 +32,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	std::srand(unsigned(std::time(0)));
 
   // initial loading message
-  ImageElement* spinner = new ImageElement(ROMFS "res/spinner.png");
+  ImageElement* spinner = new ImageElement(RAMFS "res/spinner.png");
   spinner->position(395, 90);
   spinner->resize(90, 90);
   this->spinner = spinner;
@@ -364,7 +364,7 @@ void AppList::update()
 		mute->action = std::bind(&AppList::toggleAudio, this);
 		this->elements.push_back(mute);
 
-		ImageElement* muteIcon = new ImageElement(ROMFS "res/mute.png");
+		ImageElement* muteIcon = new ImageElement(RAMFS "res/mute.png");
 		muteIcon->position(sort->x - 20 - mute->width + 5, settings->y + 5);
 		muteIcon->resize(32, 32);
 		this->elements.push_back(muteIcon);

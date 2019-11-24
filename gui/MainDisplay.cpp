@@ -7,9 +7,9 @@
 #define PLATFORM "Console"
 #endif
 
-#include "libget/src/Get.hpp"
-#include "libget/src/Utils.hpp"
-#include "chesto/src/Button.hpp"
+#include "../libs/get/src/Get.hpp"
+#include "../libs/get/src/Utils.hpp"
+#include "../libs/chesto/src/Button.hpp"
 
 #include "MainDisplay.hpp"
 #include "main.hpp"
@@ -33,7 +33,7 @@ void MainDisplay::drawErrorScreen(std::string troubleshootingText)
 	wipeElements();
 	this->appList = NULL;
 
-	ImageElement* icon = new ImageElement(ROMFS "res/icon.png");
+	ImageElement* icon = new ImageElement(RAMFS "res/icon.png");
 	icon->position(470, 25);
 	icon->resize(35, 35);
 	this->elements.push_back(icon);

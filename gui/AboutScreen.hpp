@@ -1,11 +1,11 @@
 #ifndef ABOUTSCREEN_H_
 #define ABOUTSCREEN_H_
 
-#include "libget/src/Get.hpp"
+#include "../libs/get/src/Get.hpp"
 
-#include "chesto/src/ImageElement.hpp"
-#include "chesto/src/ListElement.hpp"
-#include "chesto/src/TextElement.hpp"
+#include "../libs/chesto/src/ImageElement.hpp"
+#include "../libs/chesto/src/ListElement.hpp"
+#include "../libs/chesto/src/TextElement.hpp"
 
 class AboutScreen : public ListElement
 {

@@ -21,6 +21,7 @@ LINKER_FLAGS = -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -lcurl -lz
 
 OBJS := $(patsubst %.cpp,%.o,$(wildcard $(SRC)))
 
+RAMFS_DIR		:=	resin
 
 all: $(OBJS)
 	gcc -c $(MINIZIP)/*.c
@@ -28,11 +29,6 @@ all: $(OBJS)
 
 %.o: %.cpp
 	$(CXX) $(COMPILER_FLAGS) $(INCLUDE_DIRS) $< -c -o $@ -fstack-protector-all
-
-macos:
-	gcc -c $(MINIZIP)/*.c
-	g++ -c $(TINYXML)/*.cpp
-	g++ -g -std=gnu++14 *.cpp -lSDL2 -lSDL2main -lSDL2_gfx -lSDL2_image -lSDL2_ttf -framework Cocoa ./console/*.cpp ./gui/*.cpp $(GET)/*.cpp $(CHESTO)/*.cpp $(MINIZIP_O) $(TINYXML_O) -I . -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -I $(TINYXML) -lcurl -lz -o appstore.exe -fstack-protector-all -O0 -DPC -DNETWORK
 
 clean:
 	rm -f $(OBJS) $(OBJ_NAME)

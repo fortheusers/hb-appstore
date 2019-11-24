@@ -1,5 +1,6 @@
 GET		:= ./libs/get/src
 CHESTO		:= ./libs/chesto/src
+RESINFS := ./libs/chesto/libs/resinfs
 RAPIDJSON	:= ./libs/get/src/libs/rapidjson/include
 MINIZIP         := ./libs/get/src/libs/minizip
 TINYXML 	:= ./libs/get/src/libs/tinyxml
@@ -24,9 +25,9 @@ include $(DEVKITPRO)/wut/share/wut_rules
 #-------------------------------------------------------------------------------
 TARGET		:=	appstore
 BUILD		:=	build
-SOURCES		:=	. $(GET) $(CHESTO) $(MINIZIP) $(TINYXML) console gui
-INCLUDES	:=	. $(RAPIDJSON) $(MINIZIP) $(TINYXML)
-ROMFS		:=	romfs
+SOURCES		:=	. $(GET) $(RESINFS)/source $(CHESTO) $(MINIZIP) $(TINYXML) console gui
+INCLUDES	:=	. $(RAPIDJSON) $(MINIZIP) $(TINYXML) $(RESINFS)/include
+RAMFS_DIR		:=	resin
 
 #-------------------------------------------------------------------------------
 # options for code generation
@@ -35,7 +36,7 @@ CFLAGS		:=	-g -Wall -O2 -ffunction-sections \
 			-ffast-math \
 			$(MACHDEP)
 
-CFLAGS		+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -DMUSIC -DNETWORK -D_XOPEN_SOURCE
+CFLAGS		+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -DUSE_FILE32API -DNOCRYPT -DINPUT_JOYSTICK -DMUSIC -DNETWORK -D_XOPEN_SOURCE -DUSE_RAMFS
 
 CXXFLAGS	:=	$(CFLAGS) -std=gnu++14
 
@@ -111,7 +112,7 @@ else
 #-------------------------------------------------------------------------------
 # romfs
 #-------------------------------------------------------------------------------
-include $(PORTLIBS_PATH)/wiiu/share/romfs-wiiu.mk
+include $(PWD)/libs/chesto/libs/resinfs/share/romfs-wiiu.mk
 CFLAGS		+=	$(ROMFS_CFLAGS)
 CXXFLAGS	+=	$(ROMFS_CFLAGS)
 LIBS		+=	$(ROMFS_LIBS)

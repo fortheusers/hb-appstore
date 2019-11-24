@@ -7,9 +7,9 @@
 #include <unistd.h>
 #endif
 
-#include "libget/src/Get.hpp"
-#include "libget/src/Utils.hpp"
-#include "chesto/src/DownloadQueue.hpp"
+#include "libs/get/src/Get.hpp"
+#include "libs/get/src/Utils.hpp"
+#include "libs/chesto/src/DownloadQueue.hpp"
 
 #if defined(NOGUI)
 #include "console/Input.hpp"
@@ -55,11 +55,6 @@ int main(int argc, char* argv[])
 	int console_main(Get*);
 	return console_main(get);
 #else
-
-	// initialize romfs for switch/wiiu
-#if defined(SWITCH) || defined(__WIIU__)
-	romfsInit();
-#endif
 
 	DownloadQueue::init();
 
@@ -117,9 +112,6 @@ int main(int argc, char* argv[])
 
 	DownloadQueue::quit();
 
-#if defined(__WIIU__)
-	romfsExit();
-#endif
 #if defined(SWITCH)
 	socketExit();
 #endif

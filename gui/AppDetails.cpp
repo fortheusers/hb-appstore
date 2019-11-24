@@ -6,12 +6,12 @@
 #include <switch.h>
 #endif
 
-#include "libget/src/Get.hpp"
-#include "libget/src/Utils.hpp"
+#include "../libs/get/src/Get.hpp"
+#include "../libs/get/src/Utils.hpp"
 
-#include "chesto/src/Button.hpp"
-#include "chesto/src/RootDisplay.hpp"
-#include "chesto/src/NetImageElement.hpp"
+#include "../libs/chesto/src/Button.hpp"
+#include "../libs/chesto/src/RootDisplay.hpp"
+#include "../libs/chesto/src/NetImageElement.hpp"
 
 #include "AppDetails.hpp"
 #include "Feedback.hpp"
@@ -121,7 +121,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	// Use an icon banner
 	NetImageElement* banner = new NetImageElement(package->getIconUrl().c_str(), []{
 		// if the icon fails to load, use the default icon
-		ImageElement *defaultIcon = new ImageElement(ROMFS "res/default.png");
+		ImageElement *defaultIcon = new ImageElement(RAMFS "res/default.png");
 		defaultIcon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
 		return defaultIcon;
 	});
@@ -132,7 +132,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 		// If the banner fails to load, use an icon banner
 		NetImageElement* icon = new NetImageElement(package->getIconUrl().c_str(), []{
 			// if even the icon fails to load, use the default icon
-			ImageElement *defaultIcon = new ImageElement(ROMFS "res/default.png");
+			ImageElement *defaultIcon = new ImageElement(RAMFS "res/default.png");
 			defaultIcon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
 			return defaultIcon;
 		});
@@ -346,11 +346,7 @@ bool AppDetails::process(InputEvents* event)
 
 void AppDetails::preInstallHook()
 {
-#if defined(SWITCH)
-	// if we're going to modify the appstore itself, we need to exit romfs so we can change the nro on disk
-	if (this->package->pkg_name == "appstore")
-		romfsExit();
-#endif
+  // is there an echo in here?
 }
 
 bool AppDetails::themeInstall(char* installerPath)

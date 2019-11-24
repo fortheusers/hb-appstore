@@ -1,4 +1,4 @@
-#include "libget/src/Get.hpp"
+#include "../libs/get/src/Get.hpp"
 #include "Console.hpp"
 
 #define SPLASH 1

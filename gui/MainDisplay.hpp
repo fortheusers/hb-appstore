@@ -1,6 +1,6 @@
 #include "AppList.hpp"
-#include "chesto/src/RootDisplay.hpp"
-#include "chesto/src/TextElement.hpp"
+#include "../libs/chesto/src/RootDisplay.hpp"
+#include "../libs/chesto/src/TextElement.hpp"
 #include "ImageCache.hpp"
 #include <unordered_map>
 

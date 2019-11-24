@@ -3,10 +3,10 @@
 #include "MainDisplay.hpp"
 #include "main.hpp"
 
-#include "chesto/src/Button.hpp"
-#include "chesto/src/RootDisplay.hpp"
-#include "chesto/src/TextElement.hpp"
-#include "chesto/src/NetImageElement.hpp"
+#include "../libs/chesto/src/Button.hpp"
+#include "../libs/chesto/src/RootDisplay.hpp"
+#include "../libs/chesto/src/TextElement.hpp"
+#include "../libs/chesto/src/NetImageElement.hpp"
 
 #include <curl/curl.h>
 #include <curl/easy.h>
@@ -37,7 +37,7 @@ void Feedback::refresh()
 	elements.push_back(elem);
 
 	NetImageElement *icon = new NetImageElement(package->getIconUrl().c_str(), []{
-		return new ImageElement(ROMFS "res/default.png");
+		return new ImageElement(RAMFS "res/default.png");
 	});
 	icon->position(50, 160);
 	icon->resize(256, ICON_SIZE);

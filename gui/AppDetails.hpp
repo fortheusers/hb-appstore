@@ -1,12 +1,12 @@
 #ifndef APPDETAILS_H_
 #define APPDETAILS_H_
 
-#include "libget/src/Get.hpp"
-#include "libget/src/Package.hpp"
+#include "../libs/get/src/Get.hpp"
+#include "../libs/get/src/Package.hpp"
 
-#include "chesto/src/ListElement.hpp"
-#include "chesto/src/ProgressBar.hpp"
-#include "chesto/src/TextElement.hpp"
+#include "../libs/chesto/src/ListElement.hpp"
+#include "../libs/chesto/src/ProgressBar.hpp"
+#include "../libs/chesto/src/TextElement.hpp"
 
 class AppList;
 

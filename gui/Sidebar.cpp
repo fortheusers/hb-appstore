@@ -15,7 +15,7 @@ Sidebar::Sidebar()
 	// elements 0 through TOTAL_CATS are the sidebar texts (for highlighting)
 	for (int x = 0; x < TOTAL_CATS; x++)
 	{
-		ImageElement* icon = new ImageElement((std::string(ROMFS "res/") + cat_value[x] + ".png").c_str());
+		ImageElement* icon = new ImageElement((std::string(RAMFS "res/") + cat_value[x] + ".png").c_str());
 		icon->resize(40, 40);
 		icon->position(30, 150 + x * 70 - 5);
 		this->elements.push_back(icon);
@@ -26,7 +26,7 @@ Sidebar::Sidebar()
 	}
 
 	// create image in top left
-	ImageElement* logo = new ImageElement(ROMFS "res/icon.png");
+	ImageElement* logo = new ImageElement(RAMFS "res/icon.png");
 	logo->resize(40, 40);
 	logo->position(30, 50);
 	this->elements.push_back(logo);
@@ -47,7 +47,7 @@ Sidebar::Sidebar()
 void Sidebar::addHints()
 {
   // small indicator to switch to advanced view using L
-	ImageElement* hider = new ImageElement(ROMFS "res/button-l-outline.png");
+	ImageElement* hider = new ImageElement(RAMFS "res/button-l-outline.png");
 	hider->resize(20, 20);
 	hider->position(270, 685);
 	this->elements.push_back(hider);

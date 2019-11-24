@@ -1,10 +1,10 @@
 #pragma once
 
-#include "libget/src/Get.hpp"
+#include "../libs/get/src/Get.hpp"
 
-#include "chesto/src/ImageElement.hpp"
-#include "chesto/src/ListElement.hpp"
-#include "chesto/src/TextElement.hpp"
+#include "../libs/chesto/src/ImageElement.hpp"
+#include "../libs/chesto/src/ListElement.hpp"
+#include "../libs/chesto/src/TextElement.hpp"
 
 #include "AppDetails.hpp"
 #include "Keyboard.hpp"

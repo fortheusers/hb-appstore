@@ -1,5 +1,6 @@
 GET		:= ./libs/get/src
 CHESTO		:= ./libs/chesto/src
+RESINFS := ./libs/chesto/libs/resinfs
 RAPIDJSON	:= ./libs/get/src/libs/rapidjson/include
 MINIZIP         := ./libs/get/src/libs/minizip
 
@@ -36,15 +37,15 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	appstore
 BUILD		:=	build
-SOURCES		:=	. $(GET) $(CHESTO) $(MINIZIP) console gui
-INCLUDES	:=	. $(RAPIDJSON) $(MINIZIP)
-ROMFS         := romfs
+SOURCES		:=	. $(GET) $(RESINFS)/source $(CHESTO) $(MINIZIP) console gui
+INCLUDES	:=	. $(RAPIDJSON) $(MINIZIP) $(RESINFS)/include
+RAMFS_DIR         := resin
 EXEFS_SRC	:=	exefs_src
 
 APP_TITLE	:= hb App Store
 APP_AUTHOR 	:= vgmoose
 APP_VERSION 	:= 2.1
-ICON		:= romfs/res/icon.jpg
+ICON		:= resin/res/icon.jpg
 #APP_TITLEID := is the titleID of the app stored in the .nacp file (Optional)
 
 #---------------------------------------------------------------------------------
@@ -56,7 +57,7 @@ CFLAGS	:=	-g -Wall -O2 \
 			-ffast-math \
 			$(ARCH) $(DEFINES)
 
-CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DUSE_FILE32API -DNOSTYLUS -DNETWORK -D_XOPEN_SOURCE
+CFLAGS	+=	$(INCLUDE) -DSWITCH -D__LIBNX__ -DUSE_FILE32API -DNOSTYLUS -DNETWORK -D_XOPEN_SOURCE -DUSE_RAMFS
 
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++14
@@ -144,10 +145,6 @@ ifneq ($(APP_TITLEID),)
 	export NACPFLAGS += --titleid=$(APP_TITLEID)
 endif
 
-ifneq ($(ROMFS),)
-	export NROFLAGS += --romfsdir=$(CURDIR)/$(ROMFS)
-endif
-
 .PHONY: $(BUILD) clean all
 
 #---------------------------------------------------------------------------------
@@ -155,7 +152,7 @@ all: $(BUILD)
 
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
-	@rm ./res/music.mp3 || true		# switch build won't use music (yet)
+	@rm ./resin/res/music.mp3 || true		# switch build won't use music (yet)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile.switch
 
 #---------------------------------------------------------------------------------
@@ -168,6 +165,17 @@ clean:
 #---------------------------------------------------------------------------------
 else
 .PHONY:	all
+
+#-------------------------------------------------------------------------------
+# romfs
+#-------------------------------------------------------------------------------
+include $(PWD)/libs/chesto/libs/resinfs/share/romfs-wiiu.mk
+CFLAGS		+=	$(ROMFS_CFLAGS)
+CXXFLAGS	+=	$(ROMFS_CFLAGS)
+LIBS		+=	$(ROMFS_LIBS)
+OFILES		+=	$(ROMFS_TARGET)
+#-------------------------------------------------------------------------------
+
 
 DEPENDS	:=	$(OFILES:.o=.d)
 
