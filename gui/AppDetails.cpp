@@ -235,8 +235,8 @@ bool AppDetails::process(InputEvents* event)
 {
 
 	// don't process any keystrokes if an operation is in progress
-//	if (this->operating)
-//		return false;
+	if (this->operating)
+		return false;
 
 	if (event->pressed(B_BUTTON))
 	{
@@ -416,13 +416,7 @@ bool AppDetails::launchFile(char* path, char* context)
 
 void AppDetails::postInstallHook()
 {
-#if defined(SWITCH)
-	fsdevCommitDevice("sdmc");
-	// only exit if the target package is the appstore, and it wasn't being removed
-	// (if it was removed, romfs is still unmounted and fonts will have issues but it gives them a chance to reinstall)
-	if (this->package->status != INSTALLED && this->package->pkg_name == "appstore")
-		quit();
-#endif
+  // nothing!!
 }
 
 void AppDetails::render(Element* parent)
