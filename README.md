@@ -10,7 +10,7 @@ To run this program, a Nintendo Switch with access to the Homebrew Menu is requi
 Extract the latest [hb-appstore](https://github.com/vgmoose/hb-appstore/releases) to `sd:/switch/appstore/`, and run "hb App Store" from within hbmenu. When you're done, you can press the Minus (-) button to exit.
 
 ### Nintendo Wii U
-To run this program, a Wii U with access to the Homebrew Launcher is required. This can be done on any firmware. To run the Homebrew Launcher, see the tutorial [here](https://wiiu.hacks.guide).
+To run this program, a Wii U with access to the Homebrew Launcher is required. This can be done on any firmware, for compatibility check at [ismywiiupatched.com](https://ismywiiupatched.com). To run the Homebrew Launcher, see the tutorial [here](https://wiiu.hacks.guide).
 
 Extract the latest [hb-appstore](https://github.com/vgmoose/hb-appstore/releases) to `sd:/wiiu/apps/appstore/`, and run "hb App Store" from within Homebrew Launcher. When you're done, you can press the Minus (-) button to exit.
 
