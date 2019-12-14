@@ -57,7 +57,10 @@ AboutScreen::AboutScreen(Get* get)
 	subtitle->position(MARGIN, 80);
 	this->elements.push_back(subtitle);
 
-  NetImageElement* ftuLogo = new NetImageElement(AVATAR_URL "40721862");
+  NetImageElement* ftuLogo = new NetImageElement(AVATAR_URL "40721862", []{
+    return new ImageElement(RAMFS "res/4TU.png");
+  });
+
   ftuLogo->position(375, 15);
   ftuLogo->resize(140, 140);
   this->elements.push_back(ftuLogo);
@@ -69,7 +72,7 @@ AboutScreen::AboutScreen(Get* get)
 	this->elements.push_back(creds);
 
 	// argument order:
-	// username, githubIdOrImageUrl, twitter, github, gitlab, patreon, url, discord
+	// username, githubId, twitter, github, gitlab, patreon, url, discord, directAvatarURL
 	// only first two social points will be used
 
 	credHead("Repo Maintainance and Development", "These are the primary people responsible for actively maintaining and developing the Homebrew App Store. If there's a problem, these are the ones to get in touch with!");
@@ -93,7 +96,7 @@ AboutScreen::AboutScreen(Get* get)
 	credHead("Interface Development and Design", "In one way or another, everyone in this category provided information regarding core functionality, quality-of-life changes, or the design of the user interface.");
 	credit("exelix", "13405476", "exelix11", "exelix11");
 	credit("Xortroll", "33005497", NULL, "xortroll", NULL, "xortroll");
-	credit("Ave", "https://gitlab.com/uploads/-/system/user/avatar/584369/avatar.png", NULL, NULL, "a", NULL, "ave.zone");
+	credit("Ave", "584369", NULL, NULL, "a", NULL, "ave.zone", NULL, "https://gitlab.com/uploads/-/system/user/avatar/584369/avatar.png");
 	credit("LyfeOnEdge", "26140376", NULL, "lyfeonedge", NULL, NULL, NULL, "Lyfe#1555");
 	credit("Román", "57878194", NULL, NULL, NULL, NULL, NULL, "Román#6630");
 	credit("Jaames", "9112876", "rakujira", "jaames");
@@ -107,6 +110,7 @@ AboutScreen::AboutScreen(Get* get)
 	credit("yellows8", "585494", "yellows8");
 	credit("ReSwitched", "26338222", NULL, "reswitched", NULL, NULL, "reswitched.team");
 	credit("exjam", "1302758", NULL, "exjam");
+  credit("brett19", "1621627", NULL, "brett19");
 
 	credHead("Homebrew Community Special Thanks", "Awesome people within the community whose work, words, or actions in some way inspired this program to exist in the manner it does.");
 	credit("misson20000", "616626", NULL, "misson20000", NULL, NULL, NULL, "misson20000#0752");
@@ -139,13 +143,14 @@ void AboutScreen::credHead(const char* header, const char* blurb)
 }
 
 void AboutScreen::credit(const char* username,
-												const char* githubIdOrUrl,
+												const char* githubId,
 												const char* twitter,
 												const char* github,
 												const char* gitlab,
 												const char* patreon,
 												const char* url,
-												const char* discord)
+												const char* discord,
+                        const char* directAvatarUrl)
 {
 	int X = 40;
 	int Y = 310;
@@ -156,9 +161,11 @@ void AboutScreen::credit(const char* username,
 	int myX = creditCount % 4 * 300 + X;
 	int myY = creditCount / 4 * 160 + Y;
 
-	NetImageElement* userLogo = new NetImageElement((std::string(AVATAR_URL) + githubIdOrUrl + "?s=100").c_str(), [githubIdOrUrl]{
-			return new NetImageElement(githubIdOrUrl);
-		});
+  auto avatar = directAvatarUrl ? directAvatarUrl : (std::string(AVATAR_URL) + githubId + "?s=100").c_str();
+
+	NetImageElement* userLogo = new NetImageElement(directAvatarUrl != NULL ? directAvatarUrl : ((std::string(AVATAR_URL) + githubId + "?s=100").c_str()), [githubId]{
+    return new ImageElement((std::string(RAMFS "res/pfp_cache/") + githubId).c_str());
+  });
   userLogo->position(myX, myY);
   userLogo->resize(100, 100);
   this->elements.push_back(userLogo);
@@ -211,17 +218,6 @@ void AboutScreen::back()
 {
 	RootDisplay::subscreen = NULL; // TODO: clean up memory?
 }
-
-// void AboutScreen::removeEmptyFolders()
-// {
-// 	remove_empty_dirs(ROOT_PATH, 0);
-// }
-
-// void AboutScreen::wipeCache()
-// {
-// 	// clear out versions
-// 	std::remove(".get/tmp/cache/versions.json");
-// }
 
 void AboutScreen::launchFeedback()
 {
