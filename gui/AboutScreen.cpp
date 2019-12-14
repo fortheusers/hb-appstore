@@ -156,7 +156,7 @@ void AboutScreen::credit(const char* username,
 	int myX = creditCount % 4 * 300 + X;
 	int myY = creditCount / 4 * 160 + Y;
 
-	NetImageElement* userLogo = new NetImageElement((std::string(AVATAR_URL) + githubIdOrUrl).c_str(), [githubIdOrUrl]{
+	NetImageElement* userLogo = new NetImageElement((std::string(AVATAR_URL) + githubIdOrUrl + "?s=100").c_str(), [githubIdOrUrl]{
 			return new NetImageElement(githubIdOrUrl);
 		});
   userLogo->position(myX, myY);
