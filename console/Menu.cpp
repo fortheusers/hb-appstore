@@ -23,7 +23,7 @@ void Menu::display()
 {
 	if (this->screen == SPLASH)
 	{
-		console->drawString(9, 21, "Homebrew App Store (Preview!)");
+		console->drawString(9, 21, "Homebrew App Store (Recovery Mode)");
 		console->drawColorString(9, 26, "thanks to:", 0xcc, 0xcc, 0xcc);
 		console->drawColorString(15, 27, "vgmoose, pwsincd, rw-r-r_0644, zarklord", 0xcc, 0xcc, 0xcc);
 		console->drawColorString(9, 32, "Press [A] to continue", 0xff, 0xff, 0x00);
@@ -33,7 +33,7 @@ void Menu::display()
 	{
 		// draw the top bar
 		console->fillRect(0, 0, 80, 1, 255, 255, 0);
-		console->drawColorString(80 / 2 - 15, 0, "Homebrew App Store Preview", 0, 0, 0);
+		console->drawColorString(80 / 2 - 15, 0, "Homebrew App Store Recovery", 0, 0, 0);
 
 		// draw bottom bar
 		console->fillRect(0, 44, 80, 1, 255, 255, 0);
@@ -115,8 +115,9 @@ void Menu::display()
 		else
 			console->drawColorString(5, 5, "Removing package...", 0xff, 0xff, 0x00);
 
-		console->drawString(5, 6, "No progress bar yet!");
 		console->drawString(5, 7, "github.com/vgmoose/appstorenx/issues");
+
+    console->drawString(5, 9, "No progress bar in this mode!");
 	}
 
 	if (this->screen == INSTALL_SUCCESS || this->screen == INSTALL_FAILED)

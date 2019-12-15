@@ -11,12 +11,10 @@
 #include "libs/get/src/Utils.hpp"
 #include "libs/chesto/src/DownloadQueue.hpp"
 
-#if defined(NOGUI)
+#include "gui/MainDisplay.hpp"
+
 #include "console/Input.hpp"
 #include "console/Menu.hpp"
-#else
-#include "gui/MainDisplay.hpp"
-#endif
 
 #include "main.hpp"
 
@@ -36,7 +34,7 @@ int main(int argc, char* argv[])
 #define HBAS_PATH ROOT_PATH "wiiu/apps/appstore"
 #define ELF_PATH HBAS_PATH "/hbas.elf"
 #define RPX_PATH HBAS_PATH "/appstore.rpx"
-    mkdir(HBAS_PATH, 0700);
+  mkdir(HBAS_PATH, 0700);
 	chdir(HBAS_PATH);
 
 	// "migrate" old elf users over to rpx (should've been done last version)
@@ -47,14 +45,23 @@ int main(int argc, char* argv[])
 
 	init_networking();
 
-#if defined(NOGUI)
-	// create main get object
-	Get* get = new Get("./.get/", DEFAULT_REPO);
+  bool cliMode = false;
+#ifdef NOGUI
+  cliMode = true;
+#endif
+  for (int x=0; x<argc; x++)
+    if (std::string("--recovery") == argv[x])
+      cliMode = true;
 
-	// if NOGUI variable defined, use the console's main method
-	int console_main(Get*);
-	return console_main(get);
-#else
+  if (cliMode)
+  {
+    // create main get object
+    Get* get = new Get("./.get/", DEFAULT_REPO);
+
+    // if NOGUI variable defined, use the console's main method
+    int console_main(Get*);
+    return console_main(get);
+  }
 
 	DownloadQueue::init();
 
@@ -117,5 +124,4 @@ int main(int argc, char* argv[])
 #endif
 
 	return 0;
-#endif
 }
