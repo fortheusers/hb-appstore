@@ -316,6 +316,13 @@ void AppList::update()
 				continue;
 		}
 
+    if (curCategoryValue == "_all")
+    {
+      // hide themes from all
+      if (package->category == "theme")
+        continue;
+    }
+
 		// create and position the AppCard for the package
 		appCards.emplace_back(package, this);
 		AppCard& card = appCards.back();
