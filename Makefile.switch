@@ -153,6 +153,7 @@ all: $(BUILD)
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
 	@rm ./resin/res/music.mp3 || true		# switch build won't use music (yet)
+	@rm -rf ./resin/res/pfp_cache || true		# switch build uses net images
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile.switch
 
 #---------------------------------------------------------------------------------

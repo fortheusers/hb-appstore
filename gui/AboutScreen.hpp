@@ -15,7 +15,7 @@ struct CreditHead
 
 struct Credit
 {
-	NetImageElement* userLogo;
+	Texture* userLogo;
 	TextElement* name;
 	struct
 	{

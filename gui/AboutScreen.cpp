@@ -39,16 +39,6 @@ AboutScreen::AboutScreen(Get* get)
 	cancel.action = std::bind(&AboutScreen::back, this);
 	super::append(&cancel);
 
-	// Button* cleanup = new Button("Cleanup Empty Folders", Y_BUTTON, true, 21);
-	// cleanup->position(30, 500);
-	// cleanup->action = std::bind(&AboutScreen::removeEmptyFolders, this);
-	// super::append(cleanup);
-
-	// Button* cache = new Button("Delete Image Cache", X_BUTTON, true, 21, cleanup->width);
-	// cache->position(30, cleanup->y + cleanup->height + 25);
-	// cache->action = std::bind(&AboutScreen::wipeCache, this);
-	// super::append(cache);
-
 	int MARGIN = 550;
 
 	feedback.position(MARGIN + 500, 30);
@@ -176,10 +166,12 @@ void AboutScreen::credit(const char* username,
 	auto cred = credits.emplace(credits.end());
 
 	auto avatar = directAvatarUrl ? directAvatarUrl : (std::string(AVATAR_URL) + githubId + "?s=100").c_str();
-	cred->userLogo = new NetImageElement(directAvatarUrl != NULL ? directAvatarUrl : ((std::string(AVATAR_URL) + githubId + "?s=100").c_str()), [githubId]{
-			return new ImageElement((std::string(RAMFS "res/pfp_cache/") + githubId).c_str());
-		});
-	cred->userLogo->position(myX, myY);
+  #if !defined(__WIIU__)
+	  cred->userLogo = new NetImageElement(directAvatarUrl != NULL ? directAvatarUrl : ((std::string(AVATAR_URL) + githubId + "?s=100").c_str()));
+  #else
+    cred->userLogo = new ImageElement((std::string(RAMFS "res/pfp_cache/") + githubId).c_str());
+  #endif
+  cred->userLogo->position(myX, myY);
 	cred->userLogo->resize(100, 100);
 	super::append(cred->userLogo);
 
