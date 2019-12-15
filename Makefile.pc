@@ -31,4 +31,4 @@ all: $(OBJS)
 	$(CXX) $(COMPILER_FLAGS) $(INCLUDE_DIRS) $< -c -o $@ -fstack-protector-all
 
 clean:
-	rm -f $(OBJS) $(OBJ_NAME)
+	rm -f $(OBJS) $(OBJ_NAME) $(MINIZIP_O)
