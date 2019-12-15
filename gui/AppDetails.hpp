@@ -4,16 +4,50 @@
 #include "../libs/get/src/Get.hpp"
 #include "../libs/get/src/Package.hpp"
 
+#include "../libs/chesto/src/Button.hpp"
 #include "../libs/chesto/src/ListElement.hpp"
 #include "../libs/chesto/src/ProgressBar.hpp"
 #include "../libs/chesto/src/TextElement.hpp"
+#include "../libs/chesto/src/NetImageElement.hpp"
 
 class AppList;
+
+
+class AppDetailsContent : public ListElement
+{
+public:
+	AppDetailsContent(Package *package);
+	bool process(InputEvents* event);
+	void render(Element* parent);
+
+	Button reportIssue;
+	Button moreByAuthor;
+
+	SDL_Color gray = { 0x50, 0x50, 0x50, 0xff };
+	SDL_Color black = { 0x00, 0x00, 0x00, 0xff };
+
+private:
+	// banner/text constants
+	const int MARGIN = 60;
+	const int BANNER_X = MARGIN + 5;
+	const int BANNER_Y = 140;
+
+	TextElement title;
+	TextElement title2;
+	TextElement details;
+	TextElement changelog;
+	NetImageElement banner;
+};
+
 
 class AppDetails : public Element
 {
 public:
 	AppDetails(Package* package, AppList* appList);
+	~AppDetails();
+
+	std::string getPackageDetails(Package* package);
+	const char *getAction(Package* package);
 	bool process(InputEvents* event);
 	void render(Element* parent);
 	bool launchFile(char* path, char* context);
@@ -47,18 +81,20 @@ public:
 
 	void preInstallHook();
 	void postInstallHook();
+
+	ProgressBar downloadProgress;
+
+private:
+	Button download;
+	Button cancel;
+#if defined(SWITCH)
+	Button* start = nullptr;
+	TextElement* errorText = nullptr;
+#endif
+	TextElement details;
+	AppDetailsContent content;
+	TextElement downloadStatus;
 };
 
-class AppDetailsContent : public ListElement
-{
-	bool process(InputEvents* event);
-	void render(Element* parent);
-
-public:
-	// banner/text constants
-	int MARGIN = 60;
-	int BANNER_X = MARGIN + 5;
-	int BANNER_Y = 140;
-};
 
 #endif

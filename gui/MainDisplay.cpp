@@ -9,53 +9,25 @@
 
 #include "../libs/get/src/Get.hpp"
 #include "../libs/get/src/Utils.hpp"
-#include "../libs/chesto/src/Button.hpp"
 
 #include "MainDisplay.hpp"
 #include "main.hpp"
 
 MainDisplay::MainDisplay()
+	: appList(NULL, &sidebar)
 {
 	// add in the sidebar, footer, and main app listing
-	Sidebar* sidebar = new Sidebar();
-	elements.push_back(sidebar);
+	sidebar.appList = &appList;
 
-	AppList* appList = new AppList(NULL, sidebar);
-	elements.push_back(appList);
-	sidebar->appList = appList;
-	this->appList = appList;
+	super::append(&sidebar);
+	super::append(&appList);
 
 	needsRedraw = true;
 }
 
-void MainDisplay::drawErrorScreen(std::string troubleshootingText)
+MainDisplay::~MainDisplay()
 {
-	wipeElements();
-	this->appList = NULL;
-
-	ImageElement* icon = new ImageElement(RAMFS "res/icon.png");
-	icon->position(470, 25);
-	icon->resize(35, 35);
-	this->elements.push_back(icon);
-
-	TextElement* title = new TextElement("Homebrew App Store", 50 - 25);
-	title->position(515, 25);
-	this->elements.push_back(title);
-
-	TextElement* errorMessage = new TextElement("Couldn't connect to the Internet!", 40);
-	errorMessage->position(345, 305);
-	elements.push_back(errorMessage);
-
-	TextElement* troubleshooting = new TextElement((std::string("Troubleshooting:\n") + troubleshootingText).c_str(), 20, NULL, false, 600);
-	troubleshooting->position(380, 585);
-	elements.push_back(troubleshooting);
-
-	Button* btnQuit = new Button("Quit", SELECT_BUTTON, false, 15);
-	btnQuit->position(1130, 630);
-	btnQuit->action = quit;
-	elements.push_back(btnQuit);
-
-	needsRedraw = true;
+	delete get;
 }
 
 void MainDisplay::render(Element* parent)
@@ -85,20 +57,22 @@ bool MainDisplay::process(InputEvents* event)
 
 		if (error)
 		{
-			drawErrorScreen(std::string("Perform a connection test in the " PLATFORM " System Settings\nEnsure DNS isn't blocking: ") + get->repos[0]->url);
+			RootDisplay::switchSubscreen(new ErrorScreen(std::string("Perform a connection test in the " PLATFORM " System Settings\nEnsure DNS isn't blocking: ") + get->repos[0]->url));
 			return true;
 		}
 
 		if (!atLeastOneEnabled)
 		{
-			drawErrorScreen("No enabled repos found, check ./get/repos.json\nMake sure repo has at least one package");
+			RootDisplay::switchSubscreen(new ErrorScreen("No enabled repos found, check ./get/repos.json\nMake sure repo has at least one package"));
 			return true;
 		}
 
+		networking_callback = nullptr;
+
 		// set get instance to our applist
-		this->appList->get = get;
-		this->appList->update();
-		this->appList->sidebar->addHints();
+		appList.get = get;
+		appList.update();
+		appList.sidebar->addHints();
 
 		return true;
 	}
@@ -121,13 +95,37 @@ int MainDisplay::updateLoader(void* clientp, double dltotal, double dlnow, doubl
 	// (never return early if it's 100% done)
 	if (diff < 32 && amount != 1)
 		return 0;
-	
+
 	MainDisplay* display = (MainDisplay*)RootDisplay::mainDisplay;
-	if (display->appList->spinner != NULL)
-		display->appList->spinner->angle += 10;
+	if (display->appList.spinner != NULL)
+		display->appList.spinner->angle += 10;
 	display->render(NULL);
 
 	AppDetails::lastFrameTime = SDL_GetTicks();
 
 	return 0;
+}
+
+
+ErrorScreen::ErrorScreen(std::string troubleshootingText)
+	: icon(RAMFS "res/icon.png")
+	, title("Homebrew App Store", 50 - 25)
+	, errorMessage("Couldn't connect to the Internet!", 40)
+	, troubleshooting((std::string("Troubleshooting:\n") + troubleshootingText).c_str(), 20, NULL, false, 600)
+	, btnQuit("Quit", SELECT_BUTTON, false, 15)
+{
+	icon.position(470, 25);
+	icon.resize(35, 35);
+	title.position(515, 25);
+	errorMessage.position(345, 305);
+	troubleshooting.position(380, 585);
+	btnQuit.position(1130, 630);
+
+	btnQuit.action = quit;
+
+	super::append(&icon);
+	super::append(&title);
+	super::append(&errorMessage);
+	super::append(&troubleshooting);
+	super::append(&btnQuit);
 }

@@ -2,6 +2,9 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 Sidebar::Sidebar()
+	: logo(RAMFS "res/icon.png")
+	, title("Homebrew App Store", 22)
+	, subtitle("GPLv3 License", 18)
 {
 	// a sidebar consists of:
 	//		a collection of category labels (TextElements),
@@ -15,48 +18,60 @@ Sidebar::Sidebar()
 	// elements 0 through TOTAL_CATS are the sidebar texts (for highlighting)
 	for (int x = 0; x < TOTAL_CATS; x++)
 	{
-		ImageElement* icon = new ImageElement((std::string(RAMFS "res/") + cat_value[x] + ".png").c_str());
-		icon->resize(40, 40);
-		icon->position(30, 150 + x * 70 - 5);
-		this->elements.push_back(icon);
+		category[x].icon = new ImageElement((std::string(RAMFS "res/") + cat_value[x] + ".png").c_str());
+		category[x].icon->resize(40, 40);
+		category[x].icon->position(30, 150 + x * 70 - 5);
+		super::append(category[x].icon);
 
-		TextElement* category = new TextElement(cat_names[x], 25);
-		category->position(105, 150 + x * 70);
-		this->elements.push_back(category);
+		category[x].name = new TextElement(cat_names[x], 25);
+		category[x].name->position(105, 150 + x * 70);
+		super::append(category[x].name);
 	}
 
 	// create image in top left
-	ImageElement* logo = new ImageElement(RAMFS "res/icon.png");
-	logo->resize(40, 40);
-	logo->position(30, 50);
-	this->elements.push_back(logo);
+	logo.resize(40, 40);
+	logo.position(30, 50);
+	super::append(&logo);
 
 	// create title for logo, top left
-	TextElement* title = new TextElement("Homebrew App Store", 22);
-	title->position(105, 45);
-	this->elements.push_back(title);
-	TextElement* subtitle = new TextElement("GPLv3 License", 18);
-	subtitle->position(105, 75);
-	this->elements.push_back(subtitle);
+	title.position(105, 45);
+	super::append(&title);
+
+	subtitle.position(105, 75);
+	super::append(&subtitle);
 
 	// elasticCounter in this class is used to keep track of which element is being pressed down on in touch mode
 	// TODO: elasticCounter belongs to element and should really be renamed (it's for general purpose animations)
 	elasticCounter = -1;
 }
 
+Sidebar::~Sidebar()
+{
+	super::removeAll();
+	for (int x = 0; x < TOTAL_CATS; x++)
+	{
+		delete category[x].icon;
+		delete category[x].name;
+	}
+	if (hider)
+		delete hider;
+	if (hint)
+		delete hint;
+}
+
 void Sidebar::addHints()
 {
-  // small indicator to switch to advanced view using L
-	ImageElement* hider = new ImageElement(RAMFS "res/button-l-outline.png");
+	// small indicator to switch to advanced view using L
+	hider = new ImageElement(RAMFS "res/button-l-outline.png");
 	hider->resize(20, 20);
 	hider->position(270, 685);
-	this->elements.push_back(hider);
+	super::append(hider);
 
-	TextElement* hint = new TextElement("Hide", 15);
+	hint = new TextElement("Hide", 15);
 	hint->position(hider->x + hider->width + 5, hider->y);
-	this->elements.push_back(hint);
+	super::append(hint);
 
-  showCurrentCategory = true;
+	showCurrentCategory = true;
 }
 
 bool Sidebar::process(InputEvents* event)

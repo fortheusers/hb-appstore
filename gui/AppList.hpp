@@ -2,13 +2,18 @@
 
 #include "../libs/get/src/Get.hpp"
 
+#include "../libs/chesto/src/Button.hpp"
 #include "../libs/chesto/src/ImageElement.hpp"
 #include "../libs/chesto/src/ListElement.hpp"
 #include "../libs/chesto/src/TextElement.hpp"
 
+#include "AppCard.hpp"
 #include "AppDetails.hpp"
 #include "Keyboard.hpp"
 #include "Sidebar.hpp"
+
+#include <random>
+#include <list>
 
 #define TOTAL_SORTS 5 // alphabetical (with updates at top), downloads, last updated, size, shuffled
 #define RECENT 0
@@ -21,23 +26,19 @@ class AppList : public ListElement
 {
 public:
 	AppList(Get* get, Sidebar* sidebar);
+	~AppList();
+
 	bool process(InputEvents* event);
 	void render(Element* parent);
 	void update();
 
 	Get* get = NULL;
 	Sidebar* sidebar = NULL;
-	Keyboard* keyboard = NULL;
-
-  ImageElement* spinner = NULL;
 
 	void toggleKeyboard();
 	void cycleSort();
 	void reorient();
 	void toggleAudio();
-	void exit();
-
-	const char* applySortOrder(std::vector<Package*>* packages);
 
 	bool touchMode = true;
 
@@ -50,4 +51,30 @@ public:
 	int sortMode = RECENT;
 
 	void launchSettings();
+
+	Keyboard keyboard;
+	ImageElement* spinner = nullptr;
+
+private:
+	bool sortCompare(const Package* left, const Package* right);
+	std::random_device randDevice;
+
+	// the title of this category (from the sidebar)
+	static SDL_Color black, gray;
+	static const char* sortingDescriptions[TOTAL_SORTS];
+
+	TextElement* sortBlurb = nullptr;
+	TextElement* category = nullptr;
+	Button quitBtn;
+	Button creditsBtn;
+	Button sortBtn;
+	Button keyboardBtn;
+
+#if defined(MUSIC)
+	Button muteBtn;
+	ImageElement muteIcon;
+#endif
+
+	// list of visible app cards
+	std::list<AppCard> appCards;
 };

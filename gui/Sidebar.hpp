@@ -11,6 +11,7 @@ class Sidebar : public ListElement
 {
 public:
 	Sidebar();
+	~Sidebar();
 
 	std::string currentCatName();
 	std::string currentCatValue();
@@ -38,4 +39,18 @@ public:
 	const char* cat_names[TOTAL_CATS] = { "Search", "All Apps", "Games", "Emulators", "Tools", "Advanced", "Themes", "Misc" };
 	const char* cat_value[TOTAL_CATS] = { "_search", "_all", "game", "emu", "tool", "advanced", "theme", "_misc" };
 #endif
+
+private:
+	struct
+	{
+		ImageElement* icon;
+		TextElement* name;
+	} category[TOTAL_CATS];
+
+	ImageElement logo;
+	TextElement title;
+	TextElement subtitle;
+
+	ImageElement* hider = nullptr;
+	TextElement* hint = nullptr;
 };
