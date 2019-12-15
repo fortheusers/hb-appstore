@@ -32,6 +32,7 @@ public:
 
 	Get* get = NULL;
 	void render(Element* parent);
+  bool process(InputEvents* event);
 
 	// button bindings
 	void back();

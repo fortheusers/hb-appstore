@@ -227,6 +227,13 @@ void AboutScreen::render(Element* parent)
 	super::render(this);
 }
 
+bool AboutScreen::process(InputEvents* event)
+{
+  bool ret = false;
+  ret |= ListElement::processUpDown(event);
+  return ret || ListElement::process(event);
+}
+
 void AboutScreen::back()
 {
 	RootDisplay::switchSubscreen(nullptr);

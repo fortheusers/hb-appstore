@@ -501,18 +501,9 @@ void AppDetailsContent::render(Element* parent)
 
 bool AppDetailsContent::process(InputEvents* event)
 {
-	int SPEED = 60;
 	bool ret = false;
 
-	// handle up and down for the scroll view
-	if (event->isKeyDown())
-	{
-		// scroll the view
-		this->y += (SPEED * event->held(UP_BUTTON) - SPEED * event->held(DOWN_BUTTON));
-		if (this->y > 0)
-			this->y = 0;
-		ret |= event->held(UP_BUTTON) || event->held(DOWN_BUTTON);
-	}
+	ret |= ListElement::processUpDown(event);
 
 	return ret || ListElement::process(event);
 }
