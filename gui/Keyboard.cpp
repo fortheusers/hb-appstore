@@ -237,7 +237,7 @@ void Keyboard::updateSize()
 	// can change quickly
 	int kXPad = (int)((30 / 400.0) * width);
 	int kXOff = (int)((22 / 400.0) * width);
-	int kYPad = (int)((14 / 400.0) * width);
+	int kYPad = (int)((33 / 400.0) * width);
 	int kYOff = (int)((33 / 400.0) * width);
 
 	this->textSize = 0.9375 * keyWidth;
@@ -256,7 +256,7 @@ void Keyboard::updateSize()
 	for (int x = 0; x < rowsCount; x++)
 	{
 		TextElement* rowText = new TextElement(rows[x].c_str(), textSize, &gray, true);
-		rowText->position(kXPad + x * kXOff, kYPad + x * kYOff);
+		rowText->position(kXPad + x * kXOff, kYPad + x * kYOff - (rowText->height / 2));
 		super::append(rowText);
 	}
 
