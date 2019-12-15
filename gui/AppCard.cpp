@@ -1,11 +1,26 @@
 #include "AppCard.hpp"
+#include "AppList.hpp"
 #include "MainDisplay.hpp"
 
-AppCard::AppCard(Package* package, AppList* list)
-{
-	this->list = list;
-	this->package = package;
+#define TEXT_SIZE	13
 
+SDL_Color AppCard::gray = { 80, 80, 80, 0xff };
+SDL_Color AppCard::black = { 0, 0, 0, 0xff };
+
+AppCard::AppCard(Package* package, AppList* list)
+	: package(package)
+	, list(list)
+	, icon(package->getIconUrl().c_str(), []{
+				return new ImageElement(RAMFS "res/default.png");
+			},
+			!list
+		)
+	, version(("v. " + package->version).c_str(), TEXT_SIZE, &gray)
+	, status(package->statusString(), TEXT_SIZE, &gray)
+	, appname(package->title.c_str(), TEXT_SIZE + 3, &black)
+	, author(package->author.c_str(), TEXT_SIZE, &gray)
+	, statusicon((RAMFS "res/" + std::string(package->statusString()) + ".png").c_str())
+{
 	// fixed width+height of one app card
 	this->width = 256;
 	this->height = ICON_SIZE + 45;
@@ -14,58 +29,36 @@ AppCard::AppCard(Package* package, AppList* list)
 
 	// connect the action to the callback for this element, to be invoked when the touch event fires
 	this->action = std::bind(&AppCard::displaySubscreen, this);
+
+	// create the layout of the app card (all relative)
+	icon.resize(256, ICON_SIZE);
+	statusicon.resize(30, 30);
+
+	super::append(&icon);
+	super::append(&version);
+	super::append(&status);
+	super::append(&appname);
+	super::append(&author);
+	super::append(&statusicon);
 }
 
 void AppCard::update()
 {
-	// create the layout of the app card (all relative)
-
-	// If a parent list was passed, the icon will be loaded when
-	// its close to being shown on the screen
-	iconFetch = !list;
-	icon = new NetImageElement(package->getIconUrl().c_str(), []{
-			return new ImageElement(RAMFS "res/default.png");
-		},
-		iconFetch
-	);
-	icon->position(this->x, this->y);
-	icon->resize(256, ICON_SIZE);
-
-	this->elements.push_back(icon);
-
-	int size = 13;
-
-	SDL_Color gray = { 80, 80, 80, 0xff };
-	SDL_Color black = { 0, 0, 0, 0xff };
-
-	// version
-	TextElement* version = new TextElement(("v. " + package->version).c_str(), size, &gray);
-	version->position(this->x + 40, this->y + icon->height + 10);
-	this->elements.push_back(version);
-
-	// status string
-	TextElement* status = new TextElement(package->statusString(), size, &gray);
-	status->position(this->x + 40, this->y + icon->height + 25);
-	this->elements.push_back(status);
-
-	// app name
 	int w, h;
-	TextElement* appname = new TextElement(package->title.c_str(), size + 3, &black);
-	appname->getTextureSize(&w, &h);
-	appname->position(this->x + 245 - w, this->y + icon->height + 5);
-	this->elements.push_back(appname);
 
-	// author
-	TextElement* author = new TextElement(package->author.c_str(), size, &gray);
-	author->getTextureSize(&w, &h);
-	author->position(this->x + 245 - w, this->y + icon->height + 25);
-	this->elements.push_back(author);
+	// update the position of the elements
 
-	// download status icon
-	ImageElement* statusicon = new ImageElement((RAMFS "res/" + std::string(package->statusString()) + ".png").c_str());
-	statusicon->position(this->x + 4, this->y + icon->height + 10);
-	statusicon->resize(30, 30);
-	this->elements.push_back(statusicon);
+	icon.position(this->x, this->y);
+	version.position(this->x + 40, this->y + icon.height + 10);
+	status.position(this->x + 40, this->y + icon.height + 25);
+
+	appname.getTextureSize(&w, &h);
+	appname.position(this->x + 245 - w, this->y + icon.height + 5);
+
+	author.getTextureSize(&w, &h);
+	author.position(this->x + 245 - w, this->y + icon.height + 25);
+
+	statusicon.position(this->x + 4, this->y + icon.height + 10);
 }
 
 // Trigger the icon download (if the icon wasn't already cached)
@@ -84,7 +77,7 @@ void AppCard::handleIconLoad()
 
 	// the icon is either visible or ofscreen within 2 rows,
 	// so the download can be started
-	icon->fetch();
+	icon.fetch();
 
 	iconFetch = true;
 }
@@ -112,7 +105,7 @@ void AppCard::displaySubscreen()
 	if (!list->touchMode)
 		appDetails->highlighted = 0; // show cursor if we're not in touch mode
 
-	MainDisplay::subscreen = appDetails;
+	MainDisplay::switchSubscreen(appDetails);
 }
 
 bool AppCard::process(InputEvents* event)

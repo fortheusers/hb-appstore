@@ -1,6 +1,7 @@
 #include "AppList.hpp"
 #include "../libs/chesto/src/RootDisplay.hpp"
 #include "../libs/chesto/src/TextElement.hpp"
+#include "../libs/chesto/src/Button.hpp"
 #include "ImageCache.hpp"
 #include <unordered_map>
 
@@ -18,6 +19,8 @@ class MainDisplay : public RootDisplay
 {
 public:
 	MainDisplay();
+	~MainDisplay();
+
 	bool process(InputEvents* event);
 	void render(Element* parent);
 
@@ -26,8 +29,6 @@ public:
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;
 
-  AppList* appList = NULL;
-
 	bool error = false;
 	bool atLeastOneEnabled = false;
 
@@ -35,4 +36,21 @@ public:
 
 	bool showingSplash = true;
 	bool renderedSplash = false;
+
+private:
+	Sidebar sidebar;
+	AppList appList;
+};
+
+class ErrorScreen : public Element
+{
+public:
+	ErrorScreen(std::string troubleshootingText);
+
+private:
+	ImageElement icon;
+	TextElement title;
+	TextElement errorMessage;
+	TextElement troubleshooting;
+	Button btnQuit;
 };

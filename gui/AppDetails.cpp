@@ -9,9 +9,7 @@
 #include "../libs/get/src/Get.hpp"
 #include "../libs/get/src/Utils.hpp"
 
-#include "../libs/chesto/src/Button.hpp"
 #include "../libs/chesto/src/RootDisplay.hpp"
-#include "../libs/chesto/src/NetImageElement.hpp"
 
 #include "AppDetails.hpp"
 #include "Feedback.hpp"
@@ -22,41 +20,25 @@
 int AppDetails::lastFrameTime = 99;
 
 AppDetails::AppDetails(Package* package, AppList* appList)
+	: package(package)
+	, get(appList->get)
+	, appList(appList)
+	, downloadProgress()
+	, download(getAction(package), A_BUTTON, true, 30)
+	, cancel("Cancel", B_BUTTON, true, 30, download.width)
+	, details(getPackageDetails(package).c_str(), 20, &white, false, 300)
+	, content(package)
+	, downloadStatus("Downloading package...", 30)
 {
-	this->package = package;
-	this->get = appList->get;
-	this->appList = appList;
-
-	const char* action;
-	switch (package->status)
-	{
-	case GET:
-		action = "Download";
-		break;
-	case UPDATE:
-		action = "Update";
-		break;
-	case INSTALLED:
-		action = "Remove";
-		break;
-	case LOCAL:
-		action = "Reinstall";
-		break;
-	default:
-		action = "?";
-	}
-
 	// TODO: show current app status somewhere
 
 	// download/update/remove button (2)
 
-	Button* download = new Button(action, A_BUTTON, true, 30);
-	download->position(970, 550);
-	download->action = std::bind(&AppDetails::proceed, this);
+	download.position(970, 550);
+	download.action = std::bind(&AppDetails::proceed, this);
 
-	Button* cancel = new Button("Cancel", B_BUTTON, true, 30, download->width);
-	cancel->position(970, 630);
-	cancel->action = std::bind(&AppDetails::back, this);
+	cancel.position(970, 630);
+	cancel.action = std::bind(&AppDetails::back, this);
 
 #if defined(SWITCH)
 	// display an additional launch/install button if the package is installed,  and has a binary or is a theme
@@ -66,8 +48,8 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 
 	if (package->status != GET && (hasBinary || isTheme))
 	{
-		download->position(970, 470);
-		cancel->position(970, 630);
+		download.position(970, 470);
+		cancel.position(970, 630);
 
 		const char* buttonLabel = "Launch";
 		bool injectorPresent = false;
@@ -84,97 +66,86 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 		{
 			this->canLaunch = true;
 
-			Button* start = new Button(buttonLabel, START_BUTTON, true, 30, download->width);
+			start = new Button(buttonLabel, START_BUTTON, true, 30, download.width);
 			start->position(970, 550);
 			start->action = std::bind(&AppDetails::launch, this);
-			this->elements.push_back(start);
+			super::append(start);
 		}
 	}
 #endif
 
-	this->elements.push_back(cancel);
-	this->elements.push_back(download);
+	super::append(&download);
+	super::append(&cancel);
+
+	// more details
+
+	details.position(940, 50);
+	super::append(&details);
 
 	// the scrollable portion of the app details page
-	AppDetailsContent* content = new AppDetailsContent();
-	this->elements.push_back(content);
+	content.moreByAuthor.action = std::bind(&AppDetails::moreByAuthor, this);
+	content.reportIssue.action = std::bind(&AppDetails::leaveFeedback, this);
+	super::append(&content);
 
-	int MARGIN = content->MARGIN;
-	int BANNER_X = content->BANNER_X;
-	int BANNER_Y = content->BANNER_Y;
 
-	TextElement* title = new TextElement(package->title.c_str(), 35, &black);
-	title->position(MARGIN, 30);
-	content->elements.push_back(title);
+	// download informations (not visible until the download is started)
+	downloadStatus.position(10, 10);
 
-	Button* moreByAuthor = new Button("More by Author", X_BUTTON);
+	downloadProgress.width = 740;
+	downloadProgress.position(1280 / 2 - downloadProgress.width / 2, 720 / 2 - 5);
+	downloadProgress.color = 0xff0000ff;
+	downloadProgress.dimBg = true;
+}
 
-	Button* reportIssue = new Button("Report Issue", Y_BUTTON);
-	reportIssue->position(920 - MARGIN - reportIssue->width, 45);
-	moreByAuthor->position(reportIssue->x - 20 - moreByAuthor->width, 45);
-	moreByAuthor->action = std::bind(&AppDetails::moreByAuthor, this);
-	reportIssue->action = std::bind(&AppDetails::leaveFeedback, this);
-	content->elements.push_back(reportIssue);
-	content->elements.push_back(moreByAuthor);
-
-#if defined(__WIIU__)
-	// Use an icon banner
-	NetImageElement* banner = new NetImageElement(package->getIconUrl().c_str(), []{
-		// if the icon fails to load, use the default icon
-		ImageElement *defaultIcon = new ImageElement(RAMFS "res/default.png");
-		defaultIcon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
-		return defaultIcon;
-	});
-	banner->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
-#else
-	// Load the banner from network
-	NetImageElement *banner = new NetImageElement(package->getBannerUrl().c_str(), [package]{
-		// If the banner fails to load, use an icon banner
-		NetImageElement* icon = new NetImageElement(package->getIconUrl().c_str(), []{
-			// if even the icon fails to load, use the default icon
-			ImageElement *defaultIcon = new ImageElement(RAMFS "res/default.png");
-			defaultIcon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
-			return defaultIcon;
-		});
-		icon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
-		return icon;
-	});
+AppDetails::~AppDetails()
+{
+#if defined(SWITCH)
+	if (start)
+	{
+		super::remove(start);
+		delete start;
+	}
+	if (errorText)
+	{
+		super::remove(errorText);
+		delete errorText;
+	}
 #endif
-	banner->resize(787, 193);
-	banner->position(BANNER_X, BANNER_Y);
-	content->elements.push_back(banner);
+}
 
-	TextElement* title2 = new TextElement(package->author.c_str(), 27, &gray);
-	title2->position(MARGIN, 80);
-	content->elements.push_back(title2);
-
-	// the main description (wrapped text)
-	TextElement* details = new TextElement(package->long_desc.c_str(), 20, &black, false, 740);
-	details->position(MARGIN + 30, banner->y + banner->height + 22);
-	content->elements.push_back(details);
-
-	TextElement* changelog = new TextElement((std::string("Changelog:\n") + package->changelog).c_str(), 20, &black, false, 740);
-	changelog->position(MARGIN + 30, details->y + details->height + 30);
-	content->elements.push_back(changelog);
-
+std::string AppDetails::getPackageDetails(Package* package)
+{
 	// lots of details that we know about the package
 	std::stringstream more_details;
 	more_details << "Title: " << package->title << "\n"
-				 << package->short_desc << "\n\n"
-				 << "Author: " << package->author << "\n"
-				 << "Version: " << package->version << "\n"
-				 << "License: " << package->license << "\n\n"
-				 << "Package: " << package->pkg_name << "\n"
-				 << "Downloads: " << package->downloads << "\n"
-				 << "Updated: " << package->updated << "\n\n"
-				 << "Download size: " << package->download_size << " KB\n"
-				 << "Install size: " << package->extracted_size << " KB\n";
+	<< package->short_desc << "\n\n"
+	<< "Author: " << package->author << "\n"
+	<< "Version: " << package->version << "\n"
+	<< "License: " << package->license << "\n\n"
+	<< "Package: " << package->pkg_name << "\n"
+	<< "Downloads: " << package->downloads << "\n"
+	<< "Updated: " << package->updated << "\n\n"
+	<< "Download size: " << package->download_size << " KB\n"
+	<< "Install size: " << package->extracted_size << " KB\n";
+	return more_details.str();
+}
 
-	auto mdeets = more_details.str();
-
-	TextElement* more_details_elem = new TextElement(mdeets.c_str(), 20, &white, false, 300);
-	more_details_elem->position(940, 50);
-	this->elements.push_back(more_details_elem);
+const char *AppDetails::getAction(Package* package)
+{
+	switch (package->status)
+	{
+		case GET:
+			return "Download";
+		case UPDATE:
+			return "Update";
+		case INSTALLED:
+			return "Remove";
+		case LOCAL:
+			return "Reinstall";
+		default:
+			break;
+	}
+	return "?";
 }
 
 // TODO: make one push event function to bind instead of X separeate ones
@@ -203,7 +174,7 @@ void AppDetails::getSupported()
 {
 	Package* installer = get->lookup("NXthemes_Installer");
 	if (installer != NULL)
-		RootDisplay::subscreen = new AppDetails(installer, appList);
+		RootDisplay::switchSubscreen(new AppDetails(installer, appList));
 }
 
 void AppDetails::back()
@@ -222,13 +193,13 @@ void AppDetails::moreByAuthor()
 	appList->sidebar->curCategory = 0;
 	appList->update();
 	appList->y = 0;
-	appList->keyboard->hidden = true;
-	RootDisplay::subscreen = NULL; // TODO: clean up memory???
+	appList->keyboard.hidden = true;
+	RootDisplay::switchSubscreen(nullptr);
 }
 
 void AppDetails::leaveFeedback()
 {
-	RootDisplay::subscreen = new Feedback(this->package);
+	RootDisplay::switchSubscreen(new Feedback(this->package));
 }
 
 bool AppDetails::process(InputEvents* event)
@@ -240,7 +211,7 @@ bool AppDetails::process(InputEvents* event)
 
 	if (event->pressed(B_BUTTON))
 	{
-		RootDisplay::subscreen = NULL;
+		RootDisplay::switchSubscreen(nullptr);
 		return true;
 	}
 
@@ -249,20 +220,10 @@ bool AppDetails::process(InputEvents* event)
 		this->operating = true;
 		// event->key.keysym.sym = SDLK_z;
 		event->update();
-		
-		// description of what we're doing
-		
-		TextElement* description = new TextElement("Downloading package...", 30);
-		description->position(10, 10);
-		this->elements.push_back(description);
 
-		// add a progress bar to the screen to be drawn
-		this->pbar = new ProgressBar();
-		pbar->width = 740;
-		pbar->position(1280 / 2 - this->pbar->width / 2, 720 / 2 - 5);
-		pbar->color = 0xff0000ff;
-		pbar->dimBg = true;
-		this->elements.push_back(pbar);
+		// description of what we're doing
+		super::append(&downloadStatus);
+		super::append(&downloadProgress);
 
 		// setup progress bar callback
 		networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
@@ -279,8 +240,7 @@ bool AppDetails::process(InputEvents* event)
 		postInstallHook();
 
 		// refresh the screen
-		this->wipeElements();
-		RootDisplay::subscreen = NULL;
+		RootDisplay::switchSubscreen(nullptr);
 
 		this->operating = false;
 		this->appList->update();
@@ -328,9 +288,9 @@ bool AppDetails::process(InputEvents* event)
 		if (!successLaunch)
 		{
 			printf("Failed to launch.");
-			TextElement* errorText = new TextElement("Couldn't launch app", 24, &red, false, 300);
+			errorText = new TextElement("Couldn't launch app", 24, &red, false, 300);
 			errorText->position(970, 430);
-			this->elements.push_back(errorText);
+			super::append(errorText);
 			this->canLaunch = false;
 		}
 		return true;
@@ -457,8 +417,7 @@ int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, dou
 	// update the amount
 	if (popup != NULL)
 	{
-		if (popup->pbar != NULL)
-			popup->pbar->percent = amount;
+		popup->downloadProgress.percent = amount;
 
 		// force render the element right here (and it's progress bar too)
 		if (popup->parent != NULL)
@@ -473,6 +432,61 @@ int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, dou
 	AppDetails::lastFrameTime = SDL_GetTicks();
 
 	return 0;
+}
+
+AppDetailsContent::AppDetailsContent(Package *package)
+	: reportIssue("Report Issue", Y_BUTTON)
+	, moreByAuthor("More by Author", X_BUTTON)
+	, title(package->title.c_str(), 35, &black)
+	, title2(package->author.c_str(), 27, &gray)
+	, details(package->long_desc.c_str(), 20, &black, false, 740)
+	, changelog((std::string("Changelog:\n") + package->changelog).c_str(), 20, &black, false, 740)
+#if defined(__WIIU__) // Use an icon banner
+	, banner(package->getIconUrl().c_str(), []{
+			// if the icon fails to load, use the default icon
+			ImageElement *defaultIcon = new ImageElement(RAMFS "res/default.png");
+			defaultIcon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+			return defaultIcon;
+		})
+#else // Load the banner from network
+	, banner(package->getBannerUrl().c_str(), [package]{
+			// If the banner fails to load, use an icon banner
+			NetImageElement* icon = new NetImageElement(package->getIconUrl().c_str(), []{
+				// if even the icon fails to load, use the default icon
+				ImageElement *defaultIcon = new ImageElement(RAMFS "res/default.png");
+				defaultIcon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+				return defaultIcon;
+			});
+			icon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+			return icon;
+		})
+#endif
+{
+	title.position(MARGIN, 30);
+	super::append(&title);
+
+	reportIssue.position(920 - MARGIN - reportIssue.width, 45);
+	super::append(&reportIssue);
+
+	moreByAuthor.position(reportIssue.x - 20 - moreByAuthor.width, 45);
+	super::append(&moreByAuthor);
+
+#if defined(__WIIU__)
+	banner.setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+#endif
+	banner.resize(787, 193);
+	banner.position(BANNER_X, BANNER_Y);
+	super::append(&banner);
+
+	title2.position(MARGIN, 80);
+	super::append(&title2);
+
+	// the main description (wrapped text)
+	details.position(MARGIN + 30, banner.y + banner.height + 22);
+	super::append(&details);
+
+	changelog.position(MARGIN + 30, details.y + details.height + 30);
+	super::append(&changelog);
 }
 
 void AppDetailsContent::render(Element* parent)

@@ -3,16 +3,12 @@
 #include "Feedback.hpp"
 
 Keyboard::Keyboard(AppList* appList, std::string* myText, Feedback* feedback)
+	: appList(appList)
+	, feedback(feedback)
+	, myText(myText)
 {
 	this->x = 372;
 	this->y = 417;
-
-	if (appList && appList->R == 4)
-		this->x = 240;
-
-	this->appList = appList;
-	this->feedback = feedback;
-	this->myText = myText;
 
 	// set touchmode based on applist if it's present
 	if (appList)
@@ -217,7 +213,9 @@ bool Keyboard::process(InputEvents* event)
 
 void Keyboard::updateSize()
 {
-	this->elements.clear();
+	for (auto &i : this->elements)
+		delete i;
+	super::removeAll();
 
 	this->width = 900;
 	this->height = (304 / 900.0) * width;
@@ -252,19 +250,14 @@ void Keyboard::updateSize()
 	dWidth = (int)(1.4125 * textSize);
 	sWidth = (int)(1.91875 * textSize);
 
-	// set up the three rows into one vector
-	this->rows = std::vector<std::string>();
-	rows.push_back(row1);
-	rows.push_back(row2);
-	rows.push_back(row3);
 	SDL_Color gray = { 0x52, 0x52, 0x52, 0xff };
 
 	// go through and draw each of the three rows at the right position
-	for (int x = 0; x < rows.size(); x++)
+	for (int x = 0; x < rowsCount; x++)
 	{
 		TextElement* rowText = new TextElement(rows[x].c_str(), textSize, &gray, true);
 		rowText->position(kXPad + x * kXOff, kYPad + x * kYOff);
-		this->elements.push_back(rowText);
+		super::append(rowText);
 	}
 
 	// these are local variables, similar to how the other ones are global events
@@ -276,11 +269,11 @@ void Keyboard::updateSize()
 
 	TextElement* delButton = new TextElement("DEL", textSize2, &gray, false);
 	delButton->position(dPos2, dHeight2);
-	this->elements.push_back(delButton);
+	super::append(delButton);
 
 	TextElement* spaceButton = new TextElement("SPACE", textSize2, &gray, false);
 	spaceButton->position(sPos2, dHeight2);
-	this->elements.push_back(spaceButton);
+	super::append(spaceButton);
 }
 
 void Keyboard::type(int y, int x)
@@ -316,7 +309,7 @@ void Keyboard::updateView()
 
 Keyboard::~Keyboard()
 {
-	// during deconstructor,
-	if (this->appList != NULL)
-		this->appList->keyboard = NULL;
+	for (auto &i : this->elements)
+		delete i;
+	super::removeAll();
 }

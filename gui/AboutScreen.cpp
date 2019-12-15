@@ -14,62 +14,59 @@
 
 #define AVATAR_URL "https://avatars.githubusercontent.com/u/"
 
-AboutScreen::AboutScreen(Get* get)
-{
-	this->get = get;
 
-	SDL_Color red = { 0xFF, 0x00, 0x00, 0xff };
-	SDL_Color gray = { 0x50, 0x50, 0x50, 0xff };
-	SDL_Color black = { 0x00, 0x00, 0x00, 0xff };
-	SDL_Color white = { 0xFF, 0xFF, 0xFF, 0xff };
+SDL_Color AboutScreen::black = { 0x00, 0x00, 0x00, 0xff };
+SDL_Color AboutScreen::gray = { 0x50, 0x50, 0x50, 0xff };
+
+AboutScreen::AboutScreen(Get* get)
+	: get(get)
+	, cancel("Go Back", B_BUTTON, false, 29)
+	, feedback("Leave Feedback", A_BUTTON, false, 17)
+	, title("Homebrew App Store", 35, &black)
+	, subtitle("by fortheusers.org", 25, &black)
+	, ftuLogo(AVATAR_URL "40721862", []{
+	        return new ImageElement(RAMFS "res/4TU.png");
+        })
+	, creds("Licensed under the GPLv3 license. This app is free and open source because the users (like you!) deserve it.\n\nLet's support homebrew and the right to control what software we run on our own devices!",
+			20, &black, false, 1240)
+{
 
 	// TODO: show current app status somewhere
 
 	// download/update/remove button (2)
 
-	Button* cancel = new Button("Go Back", B_BUTTON, false, 29);
-	cancel->position(30, 30);
-	cancel->action = std::bind(&AboutScreen::back, this);
-	this->elements.push_back(cancel);
+	cancel.position(30, 30);
+	cancel.action = std::bind(&AboutScreen::back, this);
+	super::append(&cancel);
 
 	// Button* cleanup = new Button("Cleanup Empty Folders", Y_BUTTON, true, 21);
 	// cleanup->position(30, 500);
 	// cleanup->action = std::bind(&AboutScreen::removeEmptyFolders, this);
-	// this->elements.push_back(cleanup);
+	// super::append(cleanup);
 
 	// Button* cache = new Button("Delete Image Cache", X_BUTTON, true, 21, cleanup->width);
 	// cache->position(30, cleanup->y + cleanup->height + 25);
 	// cache->action = std::bind(&AboutScreen::wipeCache, this);
-	// this->elements.push_back(cache);
+	// super::append(cache);
 
 	int MARGIN = 550;
 
-	Button* feedback = new Button("Leave Feedback", A_BUTTON, false, 17);
-	feedback->position(MARGIN + 500, 30);
-	feedback->action = std::bind(&AboutScreen::launchFeedback, this);
-	this->elements.push_back(feedback);
+	feedback.position(MARGIN + 500, 30);
+	feedback.action = std::bind(&AboutScreen::launchFeedback, this);
+	super::append(&feedback);
 
-	TextElement* title = new TextElement("Homebrew App Store", 35, &black);
-	title->position(MARGIN, 40);
-	this->elements.push_back(title);
+	title.position(MARGIN, 40);
+	super::append(&title);
 
-	TextElement* subtitle = new TextElement("by fortheusers.org", 25, &black);
-	subtitle->position(MARGIN, 80);
-	this->elements.push_back(subtitle);
+	subtitle.position(MARGIN, 80);
+	super::append(&subtitle);
 
-  NetImageElement* ftuLogo = new NetImageElement(AVATAR_URL "40721862", []{
-    return new ImageElement(RAMFS "res/4TU.png");
-  });
+	ftuLogo.position(375, 15);
+	ftuLogo.resize(140, 140);
+	super::append(&ftuLogo);
 
-  ftuLogo->position(375, 15);
-  ftuLogo->resize(140, 140);
-  this->elements.push_back(ftuLogo);
-
-	const char* blurb = "Licensed under the GPLv3 license. This app is free and open source because the users (like you!) deserve it.\n\nLet's support homebrew and the right to control what software we run on our own devices!";
-
-	TextElement* creds = new TextElement(blurb, 20, &black, false, 1240);
-	creds->position(100, 170);
-	this->elements.push_back(creds);
+	creds.position(100, 170);
+	super::append(&creds);
 
 	// argument order:
 	// username, githubId, twitter, github, gitlab, patreon, url, discord, directAvatarURL
@@ -125,19 +122,37 @@ AboutScreen::AboutScreen(Get* get)
 	credit("Marionumber1", "775431", "MrMarionumber1");
 }
 
+AboutScreen::~AboutScreen()
+{
+	super::removeAll();
+	for (auto& i : creditHeads)
+	{
+		delete i.text;
+		delete i.desc;
+	}
+	for (auto& i : credits)
+	{
+		delete i.userLogo;
+		delete i.name;
+		delete i.social[0].icon;
+		delete i.social[0].link;
+		delete i.social[1].icon;
+		delete i.social[1].link;
+	}
+}
+
 void AboutScreen::credHead(const char* header, const char* blurb)
 {
-	SDL_Color black = { 0x00, 0x00, 0x00, 0xff };
-	SDL_Color gray = { 0x50, 0x50, 0x50, 0xff };
+	auto head = creditHeads.emplace(creditHeads.end());
 
 	creditCount += (4 - creditCount%4) % 4;
-	TextElement* text = new TextElement(header, 30, &black);
-	text->position(40, 250 + 60 + creditCount / 4 * 160);
-	this->elements.push_back(text);
+	head->text = new TextElement(header, 30, &black);
+	head->text->position(40, 250 + 60 + creditCount / 4 * 160);
+	super::append(head->text);
 
-	TextElement* desc = new TextElement(blurb, 23, &gray, false, 1200);
-	desc->position(40, 250 + 105 + creditCount / 4 * 160);
-	this->elements.push_back(desc);
+	head->desc = new TextElement(blurb, 23, &gray, false, 1200);
+	head->desc->position(40, 250 + 105 + creditCount / 4 * 160);
+	super::append(head->desc);
 
 	creditCount += 4;
 }
@@ -150,29 +165,27 @@ void AboutScreen::credit(const char* username,
 												const char* patreon,
 												const char* url,
 												const char* discord,
-                        const char* directAvatarUrl)
+												const char* directAvatarUrl)
 {
 	int X = 40;
 	int Y = 310;
 
-	SDL_Color gray = { 0x50, 0x50, 0x50, 0xff };
-	SDL_Color black = { 0x00, 0x00, 0x00, 0xff };
-
 	int myX = creditCount % 4 * 300 + X;
 	int myY = creditCount / 4 * 160 + Y;
 
-  auto avatar = directAvatarUrl ? directAvatarUrl : (std::string(AVATAR_URL) + githubId + "?s=100").c_str();
+	auto cred = credits.emplace(credits.end());
 
-	NetImageElement* userLogo = new NetImageElement(directAvatarUrl != NULL ? directAvatarUrl : ((std::string(AVATAR_URL) + githubId + "?s=100").c_str()), [githubId]{
-    return new ImageElement((std::string(RAMFS "res/pfp_cache/") + githubId).c_str());
-  });
-  userLogo->position(myX, myY);
-  userLogo->resize(100, 100);
-  this->elements.push_back(userLogo);
+	auto avatar = directAvatarUrl ? directAvatarUrl : (std::string(AVATAR_URL) + githubId + "?s=100").c_str();
+	cred->userLogo = new NetImageElement(directAvatarUrl != NULL ? directAvatarUrl : ((std::string(AVATAR_URL) + githubId + "?s=100").c_str()), [githubId]{
+			return new ImageElement((std::string(RAMFS "res/pfp_cache/") + githubId).c_str());
+		});
+	cred->userLogo->position(myX, myY);
+	cred->userLogo->resize(100, 100);
+	super::append(cred->userLogo);
 
-	TextElement* name = new TextElement(username, 27, &black);
-	name->position(myX + 110, myY);
-	this->elements.push_back(name);
+	cred->name = new TextElement(username, 27, &black);
+	cred->name->position(myX + 110, myY);
+	super::append(cred->name);
 
 	int socialCount = 0;
 
@@ -182,14 +195,14 @@ void AboutScreen::credit(const char* username,
 	for (int x=0; x<6; x++) {
 		if (handles[x] == NULL) continue;
 
-		ImageElement* icon = new ImageElement(((std::string(RAMFS "res/") + icons[x]) + ".png").c_str());
-		icon->resize(20, 20);
-		icon->position(myX + 110, myY + 45 + socialCount*25);
-		this->elements.push_back(icon);
+		cred->social[socialCount].icon = new ImageElement(((std::string(RAMFS "res/") + icons[x]) + ".png").c_str());
+		cred->social[socialCount].icon->resize(20, 20);
+		cred->social[socialCount].icon->position(myX + 110, myY + 45 + socialCount*25);
+		super::append(cred->social[socialCount].icon);
 
-		TextElement* link = new TextElement(handles[x], 14, &gray);
-		link->position(myX + 140, myY + 45 + socialCount*25);
-		this->elements.push_back(link);
+		cred->social[socialCount].link = new TextElement(handles[x], 14, &gray);
+		cred->social[socialCount].link->position(myX + 140, myY + 45 + socialCount*25);
+		super::append(cred->social[socialCount].link);
 
 		socialCount++;
 
@@ -216,7 +229,7 @@ void AboutScreen::render(Element* parent)
 
 void AboutScreen::back()
 {
-	RootDisplay::subscreen = NULL; // TODO: clean up memory?
+	RootDisplay::switchSubscreen(nullptr);
 }
 
 void AboutScreen::launchFeedback()
@@ -226,7 +239,7 @@ void AboutScreen::launchFeedback()
 	{
 		if (package->pkg_name == "appstore")
 		{
-			RootDisplay::subscreen = new Feedback(package);
+			RootDisplay::switchSubscreen(new Feedback(package));
 			break;
 		}
 	}

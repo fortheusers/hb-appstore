@@ -7,7 +7,7 @@
 #include "../libs/chesto/src/NetImageElement.hpp"
 #include "../libs/chesto/src/TextElement.hpp"
 
-#include "AppList.hpp"
+class AppList;
 
 class AppCard : public Element
 {
@@ -21,9 +21,24 @@ public:
 
 	Package* package;
 	AppList* list;
-	NetImageElement* icon;
 	bool iconFetch = false;
 
 	// the number of which package this is in the list
 	int index;
+
+private:
+	static SDL_Color gray, black;
+
+	// app icon
+	NetImageElement icon;
+	// version
+	TextElement version;
+	// status string
+	TextElement status;
+	// app name
+	TextElement appname;
+	// author
+	TextElement author;
+	// download status icon
+	ImageElement statusicon;
 };
