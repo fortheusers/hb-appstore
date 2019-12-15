@@ -88,6 +88,10 @@ int main(int argc, char* argv[])
 			// process the inputs of the supplied event
 			viewChanged |= display->process(events);
 			atLeastOneNewEvent = true;
+
+      // if we see a minus, exit immediately!
+      if (events->pressed(SELECT_BUTTON))
+        quit();
 		}
 
 		// one more event update if nothing changed or there were no previous events seen

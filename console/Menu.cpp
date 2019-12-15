@@ -115,7 +115,7 @@ void Menu::display()
 		else
 			console->drawColorString(5, 5, "Removing package...", 0xff, 0xff, 0x00);
 
-		console->drawString(5, 7, "github.com/vgmoose/appstorenx/issues");
+		console->drawString(5, 7, "gitlab.com/4TU/hb-appstore/issues");
 
     console->drawString(5, 9, "No progress bar in this mode!");
 	}
