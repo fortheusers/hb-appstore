@@ -1,9 +1,9 @@
 #pragma once
 
 #if defined(__WIIU__)
-#define DEFAULT_REPO "https://wiiu.apps.fortheusers.org"
+#define DEFAULT_REPO "http://wiiubru.com/appstore"
 #else
-#define DEFAULT_REPO "https://switch.apps.fortheusers.org"
+#define DEFAULT_REPO "http://switchbru.com/appstore"
 #endif
 
 void quit();
