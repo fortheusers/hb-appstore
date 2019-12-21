@@ -28,6 +28,7 @@ MainDisplay::MainDisplay()
 MainDisplay::~MainDisplay()
 {
 	delete get;
+	delete spinner;
 }
 
 void MainDisplay::render(Element* parent)
@@ -42,6 +43,12 @@ bool MainDisplay::process(InputEvents* event)
 	if (!RootDisplay::subscreen && showingSplash && renderedSplash && event->noop)
 	{
 		showingSplash = false;
+
+		// initial loading spinner
+		spinner = new ImageElement(RAMFS "res/spinner.png");
+		spinner->position(795, 90);
+		spinner->resize(90, 90);
+		super::append(spinner);
 
 		networking_callback = MainDisplay::updateLoader;
 
@@ -68,6 +75,11 @@ bool MainDisplay::process(InputEvents* event)
 		}
 
 		networking_callback = nullptr;
+
+		// remove spinner
+		super::remove(spinner);
+		delete spinner;
+		spinner = nullptr;
 
 		// set get instance to our applist
 		appList.get = get;
@@ -97,8 +109,8 @@ int MainDisplay::updateLoader(void* clientp, double dltotal, double dlnow, doubl
 		return 0;
 
 	MainDisplay* display = (MainDisplay*)RootDisplay::mainDisplay;
-	if (display->appList.spinner != NULL)
-		display->appList.spinner->angle += 10;
+	if (display->spinner)
+		display->spinner->angle += 10;
 	display->render(NULL);
 
 	AppDetails::lastFrameTime = SDL_GetTicks();

@@ -54,7 +54,6 @@ public:
 	void launchSettings();
 
 	Keyboard keyboard;
-	ImageElement* spinner = nullptr;
 
 private:
 	bool sortCompare(const Package* left, const Package* right);

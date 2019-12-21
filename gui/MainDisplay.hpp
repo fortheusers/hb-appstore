@@ -36,6 +36,7 @@ public:
 
 	bool showingSplash = true;
 	bool renderedSplash = false;
+	ImageElement *spinner = nullptr;
 
 private:
 	Sidebar sidebar;

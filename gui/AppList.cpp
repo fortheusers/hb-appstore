@@ -52,12 +52,6 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	// search buttons
 	keyboardBtn.action = std::bind(&AppList::toggleKeyboard, this);
 
-	// initial loading spinner
-	spinner = new ImageElement(RAMFS "res/spinner.png");
-	spinner->position(395, 90);
-	spinner->resize(90, 90);
-	super::append(spinner);
-
 	// update current app listing
 	update();
 }
@@ -90,7 +84,7 @@ bool AppList::process(InputEvents* event)
 	// also make sure the children elements exist before trying the keyboard
 	// AND we're actually on the search category
 	// also if we're not in touchmode, always go in here regardless of any button presses (user can only interact with keyboard)
-	bool keyboardIsShowing = !spinner && sidebar && sidebar->curCategory == 0 && !keyboard.hidden;
+	bool keyboardIsShowing = sidebar && sidebar->curCategory == 0 && !keyboard.hidden;
 	if (keyboardIsShowing && ((event->isTouchDown() && event->touchIn(keyboard.x, keyboard.y, keyboard.width, keyboard.height)) || !touchMode))
 	{
 		ret |= keyboard.process(event);
@@ -210,7 +204,6 @@ bool AppList::process(InputEvents* event)
 
 AppList::~AppList()
 {
-	delete spinner;
 	delete category;
 	delete sortBlurb;
 }
@@ -281,8 +274,6 @@ void AppList::update()
 
 	// destroy old elements
 	appCards.clear();
-	delete spinner;
-	spinner = nullptr;
 	delete category;
 	category = nullptr;
 	delete sortBlurb;
