@@ -2,10 +2,8 @@
 #include "AppList.hpp"
 #include "Feedback.hpp"
 
-Keyboard::Keyboard(AppList* appList, std::string* myText, Feedback* feedback)
+Keyboard::Keyboard(AppList* appList)
 	: appList(appList)
-	, feedback(feedback)
-	, myText(myText)
 {
 	this->x = 372;
 	this->y = 417;
@@ -93,7 +91,7 @@ void Keyboard::render(Element* parent)
 bool Keyboard::process(InputEvents* event)
 {
 	// don't do anything if we're hidden, or there's a sidebar and it's active
-	if (hidden || (appList && appList->sidebar->highlighted >= 0))
+	if (hidden || (appList && appList->sidebar->highlighted >= 0) || event->noop)
 		return false;
 
 	if (event->isTouchDown())
@@ -133,7 +131,7 @@ bool Keyboard::process(InputEvents* event)
 				{
 					if (index < 0) backspace();
 					if (index > 6) space();
-					updateView();
+					inputChanged();
 					return true;
 				}
 				type(curRow, index);
@@ -141,7 +139,7 @@ bool Keyboard::process(InputEvents* event)
 
 			if (event->held(B_BUTTON))
 			{
-				if (myText->empty() && appList)
+				if (textInput.empty() && appList)
 				{
 					appList->toggleKeyboard();
 					return true;
@@ -149,7 +147,7 @@ bool Keyboard::process(InputEvents* event)
 				backspace();
 			}
 
-			updateView();
+			inputChanged();
 			return true;
 		}
 
@@ -200,7 +198,7 @@ bool Keyboard::process(InputEvents* event)
 			}
 
 			if (ret)
-				updateView();
+				inputChanged();
 
 			return ret;
 		}
@@ -278,33 +276,29 @@ void Keyboard::updateSize()
 
 void Keyboard::type(int y, int x)
 {
-	myText->push_back(std::tolower(rows[y][x * 2]));
+	textInput.push_back(std::tolower(rows[y][x * 2]));
 }
 
 void Keyboard::backspace()
 {
-	if (!myText->empty())
-		myText->pop_back();
+	if (!textInput.empty())
+		textInput.pop_back();
 }
 
 void Keyboard::space()
 {
-	myText->append(" ");
+	textInput.append(" ");
 }
 
-void Keyboard::updateView()
+const std::string& Keyboard::getTextInput()
 {
-	if (appList != NULL)
-	{
-		// update search results
-		this->appList->y = 0;
-		this->appList->needsUpdate = true;
-	}
-	else if (feedback != NULL)
-	{
-		// TODO: do this a more generic way (TypeableElement?) instead of passing in as more params
-		this->feedback->needsRefresh = true;
-	}
+	return textInput;
+}
+
+void Keyboard::inputChanged()
+{
+	if (inputCallback)
+		inputCallback();
 }
 
 Keyboard::~Keyboard()

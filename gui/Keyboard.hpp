@@ -11,13 +11,23 @@ class AppList;
 class Keyboard : public Element
 {
 public:
-	Keyboard(AppList* appList, std::string* myText, Feedback* feedback = NULL);
+	Keyboard(AppList* appList = NULL);
 	~Keyboard();
 	void render(Element* parent);
 	bool process(InputEvents* event);
 
 	// setup field variables
 	void updateSize();
+
+	// get text inputed on the keyboard so far
+	const std::string& getTextInput();
+
+	// keyboard input callback
+	std::function<void()> inputCallback;
+
+private:
+	// text inputed by the keyboard
+	std::string textInput;
 
 	// draw a qwerty keyboard
 	static const int rowsCount = 3;
@@ -27,9 +37,6 @@ public:
 		"A S D F G H J K L",
 		"Z X C V B N M",
 	};
-
-	// the pointer to the text for this keyboard to modify
-	std::string* myText;
 
 	// the currently selected row and index
 	int curRow = -1;
@@ -60,10 +67,9 @@ public:
 	bool touchMode = true;
 
 	AppList* appList = NULL;
-	Feedback* feedback = NULL;
 
 	void space();
 	void backspace();
 	void type(int y, int x);
-	void updateView();
+	void inputChanged();
 };

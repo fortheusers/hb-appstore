@@ -20,7 +20,7 @@ SDL_Color AppList::gray = { 0x50, 0x50, 0x50, 0xff };
 AppList::AppList(Get* get, Sidebar* sidebar)
 	: get(get)			// the main get instance that contains repo info and stuff
 	, sidebar(sidebar)	// the sidebar, which will store the currently selected category info
-	, keyboard(this, &this->sidebar->searchQuery)
+	, keyboard(this)
 	, quitBtn("Quit", SELECT_BUTTON, false, 15)
 	, creditsBtn("Credits", X_BUTTON, false, 15)
 	, sortBtn("Adjust Sort", Y_BUTTON, false, 15)
@@ -51,6 +51,9 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 
 	// search buttons
 	keyboardBtn.action = std::bind(&AppList::toggleKeyboard, this);
+
+	// keyboard input callback
+	keyboard.inputCallback = std::bind(&AppList::keyboardInputCallback, this);
 
 	// category text
 	category.setSize(28);
@@ -379,6 +382,13 @@ void AppList::reorient()
 	// remove a highilight if it exists (TODO: extract method, we use this everywehre)
 	if (this->highlighted >= 0 && this->highlighted < this->elements.size() && this->elements[this->highlighted])
 		this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
+}
+
+void AppList::keyboardInputCallback()
+{
+	sidebar->searchQuery = keyboard.getTextInput();
+	this->y = 0;
+	needsUpdate = true;
 }
 
 void AppList::cycleSort()
