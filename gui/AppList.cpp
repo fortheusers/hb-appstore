@@ -52,6 +52,14 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	// search buttons
 	keyboardBtn.action = std::bind(&AppList::toggleKeyboard, this);
 
+	// category text
+	category.setSize(28);
+	category.setColor(black);
+
+	// sort mode text
+	sortBlurb.setSize(15);
+	sortBlurb.setColor(gray);
+
 	// update current app listing
 	update();
 }
@@ -202,12 +210,6 @@ bool AppList::process(InputEvents* event)
 	return ret;
 }
 
-AppList::~AppList()
-{
-	delete category;
-	delete sortBlurb;
-}
-
 void AppList::render(Element* parent)
 {
 	if (this->parent == NULL)
@@ -274,10 +276,6 @@ void AppList::update()
 
 	// destroy old elements
 	appCards.clear();
-	delete category;
-	category = nullptr;
-	delete sortBlurb;
-	sortBlurb = nullptr;
 
 	// the current category value from the sidebar
 	std::string curCategoryValue = sidebar->currentCatValue();
@@ -310,12 +308,12 @@ void AppList::update()
 				continue;
 		}
 
-    if (curCategoryValue == "_all")
-    {
-      // hide themes from all
-      if (package->category == "theme")
-        continue;
-    }
+		if (curCategoryValue == "_all")
+		{
+			// hide themes from all
+			if (package->category == "theme")
+			continue;
+		}
 
 		// create and position the AppCard for the package
 		appCards.emplace_back(package, this);
@@ -341,9 +339,10 @@ void AppList::update()
 		super::append(&keyboard);
 
 		// category text
-		category = new TextElement((std::string("Search: \"") + sidebar->searchQuery + "\"").c_str(), 28, &black);
-		category->position(20, 90);
-		super::append(category);
+		category.position(20, 90);
+		category.setText(std::string("Search: \"") + sidebar->searchQuery + "\"");
+		category.update();
+		super::append(&category);
 	}
 	else
 	{
@@ -360,14 +359,16 @@ void AppList::update()
 #endif
 
 		// category text
-		category = new TextElement(sidebar->currentCatName().c_str(), 28, &black);
-		category->position(20, 90);
-		super::append(category);
+		category.position(20, 90);
+		category.setText(sidebar->currentCatName());
+		category.update();
+		super::append(&category);
 
 		// add the search type next to the category in a gray font
-		sortBlurb = new TextElement(sortingDescriptions[sortMode], 15, &gray);
-		sortBlurb->position(category->x + category->width + 15, category->y + 12);
-		super::append(sortBlurb);
+		sortBlurb.position(category.x + category.width + 15, category.y + 12);
+		sortBlurb.setText(sortingDescriptions[sortMode]);
+		sortBlurb.update();
+		super::append(&sortBlurb);
 	}
 
 	needsUpdate = false;

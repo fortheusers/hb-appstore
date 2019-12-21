@@ -26,7 +26,6 @@ class AppList : public ListElement
 {
 public:
 	AppList(Get* get, Sidebar* sidebar);
-	~AppList();
 
 	bool process(InputEvents* event);
 	void render(Element* parent);
@@ -63,8 +62,8 @@ private:
 	static SDL_Color black, gray;
 	static const char* sortingDescriptions[TOTAL_SORTS];
 
-	TextElement* sortBlurb = nullptr;
-	TextElement* category = nullptr;
+	TextElement sortBlurb;
+	TextElement category;
 	Button quitBtn;
 	Button creditsBtn;
 	Button sortBtn;

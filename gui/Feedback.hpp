@@ -13,7 +13,6 @@ class Feedback : public Element
 {
 public:
 	Feedback(Package* package);
-	~Feedback();
 
 	bool process(InputEvents* event);
 
@@ -35,11 +34,10 @@ private:
 	Button quit;
 	Button send;
 	TextElement response;
+	TextElement feedback;
 #if defined(__WIIU__)
 	TextElement hint;
 #endif
-
-	TextElement* feedback = nullptr;
 };
 
 #endif

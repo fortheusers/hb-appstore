@@ -42,21 +42,17 @@ Feedback::Feedback(Package* package)
 	response.position(860, 20);
 	super::append(&response);
 
+	feedback.setSize(23);
+	feedback.setWrappedWidth(730);
+	feedback.position(390, 140);
+	super::append(&feedback);
+
 #if defined(__WIIU__)
 	hint.position(50, 120);
 	super::append(&hint);
 #endif
 
 	this->refresh();
-}
-
-Feedback::~Feedback()
-{
-	if (feedback)
-	{
-		super::remove(feedback);
-		delete feedback;
-	}
 }
 
 bool Feedback::process(InputEvents* event)
@@ -69,16 +65,8 @@ bool Feedback::process(InputEvents* event)
 
 void Feedback::refresh()
 {
-	if (feedback)
-	{
-		super::remove(feedback);
-		delete feedback;
-	}
-
-	feedback = new TextElement(this->message.c_str(), 23, NULL, false, 730);
-	feedback->position(390, 140);
-	super::append(feedback);
-
+	feedback.setText(message);
+	feedback.update();
 	needsRefresh = false;
 }
 
