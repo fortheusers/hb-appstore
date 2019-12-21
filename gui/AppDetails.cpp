@@ -28,7 +28,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	, cancel("Cancel", B_BUTTON, true, 30, download.width)
 	, details(getPackageDetails(package).c_str(), 20, &white, false, 300)
 	, content(package)
-	, downloadStatus("Downloading package...", 30)
+	, downloadStatus("Download Status", 30, &white)
 {
 	// TODO: show current app status somewhere
 
@@ -87,14 +87,13 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	content.reportIssue.action = std::bind(&AppDetails::leaveFeedback, this);
 	super::append(&content);
 
-
-	// download informations (not visible until the download is started)
-	downloadStatus.position(10, 10);
-
 	downloadProgress.width = 740;
 	downloadProgress.position(1280 / 2 - downloadProgress.width / 2, 720 / 2 - 5);
 	downloadProgress.color = 0xff0000ff;
 	downloadProgress.dimBg = true;
+
+  // download informations (not visible until the download is started)
+	downloadStatus.position(1280 / 2 - downloadProgress.width / 2, 720 / 2 - 70);
 }
 
 AppDetails::~AppDetails()
@@ -222,11 +221,12 @@ bool AppDetails::process(InputEvents* event)
 		event->update();
 
 		// description of what we're doing
-		super::append(&downloadStatus);
 		super::append(&downloadProgress);
+    super::append(&downloadStatus);
 
 		// setup progress bar callback
 		networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
+		libget_status_callback = AppDetails::updatePopupStatus;
 
 		// if we're installing ourselves, we need to quit after on switch
 		preInstallHook();
@@ -376,7 +376,8 @@ bool AppDetails::launchFile(char* path, char* context)
 
 void AppDetails::postInstallHook()
 {
-  // nothing!!
+	networking_callback = nullptr;
+	libget_status_callback = nullptr;
 }
 
 void AppDetails::render(Element* parent)
@@ -396,6 +397,39 @@ void AppDetails::render(Element* parent)
 
 	// draw all elements
 	super::render(this);
+}
+
+int AppDetails::updatePopupStatus(int status, int num, int num_total)
+{
+	auto screen = RootDisplay::subscreen;
+	std::stringstream statusText;
+
+	if (screen != NULL)
+	{
+		AppDetails* popup = (AppDetails*)screen;
+		Package* package = popup->package;
+
+		if (status < 0 || status >= 5) return 0;
+		const char* statuses[5] = { "Downloading ", "Installing ", "Removing ", "Reloading Metadata", "Syncing Packages"};
+
+		statusText << statuses[status];
+
+		if (status <= STATUS_REMOVING)
+			statusText << package->title;
+
+		statusText << "...";
+
+		if (num_total != 1)
+		{
+			// num_total for this operation isn't 1, so let's display a counter in parens
+			// (for instance, with multiple repos)
+			statusText << " (" << num << "/" << num_total << ")";
+		}
+
+		popup->downloadStatus.setText(statusText.str());
+		popup->downloadStatus.update();
+	}
+	return 0;
 }
 
 int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow)
