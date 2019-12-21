@@ -15,19 +15,16 @@ public:
 	Feedback(Package* package);
 
 	bool process(InputEvents* event);
-
 	bool needsRefresh = false;
 
-	void refresh();
 	Package* package = NULL;
-
-	std::string message = "";
-	bool touchMode = false;
 
 	void submit();
 	void back();
 
 private:
+	void keyboardInputCallback();
+
 	TextElement title;
 	NetImageElement icon;
 	Keyboard keyboard;

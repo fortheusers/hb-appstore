@@ -10,10 +10,8 @@
 
 Feedback::Feedback(Package* package)
 	: package(package)
-	, message("")
 	, title((std::string("Leaving feedback for: \"") + package->title + "\"").c_str(), 25)
 	, icon(package->getIconUrl().c_str(), []{ return new ImageElement(RAMFS "res/default.png"); })
-	, keyboard(NULL, &message, this)
 	, quit("Discard", Y_BUTTON, true, 24)
 	, send("Submit", X_BUTTON, true, 24)
 	, response("If you need to send more detailed feedback, please email us at fight@fortheusers.org", 20, NULL, false, 360)
@@ -28,6 +26,7 @@ Feedback::Feedback(Package* package)
 	icon.resize(256, ICON_SIZE);
 	super::append(&icon);
 
+	keyboard.inputCallback = std::bind(&Feedback::keyboardInputCallback, this);
 	keyboard.x = 200;
 	super::append(&keyboard);
 
@@ -51,23 +50,25 @@ Feedback::Feedback(Package* package)
 	hint.position(50, 120);
 	super::append(&hint);
 #endif
-
-	this->refresh();
 }
 
 bool Feedback::process(InputEvents* event)
 {
 	bool ret = super::process(event);
+
 	if (needsRefresh)
-		refresh();
+	{
+		feedback.setText(keyboard.getTextInput());
+		feedback.update();
+		needsRefresh = false;
+	}
+
 	return ret;
 }
 
-void Feedback::refresh()
+void Feedback::keyboardInputCallback()
 {
-	feedback.setText(message);
-	feedback.update();
-	needsRefresh = false;
+	needsRefresh = true;
 }
 
 void Feedback::submit()
@@ -85,7 +86,7 @@ void Feedback::submit()
 	if (curl)
 	{
 		curl_easy_setopt(curl, CURLOPT_URL, "http://switchbru.com/appstore/feedback");
-		std::string fields = std::string("name=") + userKey + "&package=" + package->pkg_name + "&message=" + this->message;
+		std::string fields = std::string("name=") + userKey + "&package=" + package->pkg_name + "&message=" + keyboard.getTextInput();
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, fields.c_str());
 
 		res = curl_easy_perform(curl);

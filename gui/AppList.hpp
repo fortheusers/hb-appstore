@@ -58,6 +58,8 @@ private:
 	bool sortCompare(const Package* left, const Package* right);
 	std::random_device randDevice;
 
+	void keyboardInputCallback();
+
 	// the title of this category (from the sidebar)
 	static SDL_Color black, gray;
 	static const char* sortingDescriptions[TOTAL_SORTS];
