@@ -59,6 +59,14 @@ Feedback::~Feedback()
 	}
 }
 
+bool Feedback::process(InputEvents* event)
+{
+	bool ret = super::process(event);
+	if (needsRefresh)
+		refresh();
+	return ret;
+}
+
 void Feedback::refresh()
 {
 	if (feedback)
@@ -70,6 +78,8 @@ void Feedback::refresh()
 	feedback = new TextElement(this->message.c_str(), 23, NULL, false, 730);
 	feedback->position(390, 140);
 	super::append(feedback);
+
+	needsRefresh = false;
 }
 
 void Feedback::submit()

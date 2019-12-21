@@ -298,12 +298,12 @@ void Keyboard::updateView()
 	{
 		// update search results
 		this->appList->y = 0;
-		this->appList->update();
+		this->appList->needsUpdate = true;
 	}
 	else if (feedback != NULL)
 	{
 		// TODO: do this a more generic way (TypeableElement?) instead of passing in as more params
-		this->feedback->refresh();
+		this->feedback->needsRefresh = true;
 	}
 }
 

@@ -15,6 +15,10 @@ public:
 	Feedback(Package* package);
 	~Feedback();
 
+	bool process(InputEvents* event);
+
+	bool needsRefresh = false;
+
 	void refresh();
 	Package* package = NULL;
 

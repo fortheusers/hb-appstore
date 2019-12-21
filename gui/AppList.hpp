@@ -41,6 +41,7 @@ public:
 	void toggleAudio();
 
 	bool touchMode = true;
+	bool needsUpdate = false;
 
 	// the total number of apps displayed in this list
 	int totalCount = 0;

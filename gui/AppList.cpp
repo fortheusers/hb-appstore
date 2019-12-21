@@ -202,6 +202,9 @@ bool AppList::process(InputEvents* event)
 
 	ret |= ListElement::process(event);
 
+	if (needsUpdate)
+		update();
+
 	return ret;
 }
 
@@ -375,6 +378,8 @@ void AppList::update()
 		sortBlurb->position(category->x + category->width + 15, category->y + 12);
 		super::append(sortBlurb);
 	}
+
+	needsUpdate = false;
 }
 
 void AppList::reorient()
