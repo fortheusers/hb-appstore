@@ -2,14 +2,17 @@
 #include "../libs/get/src/Utils.hpp"
 
 #include "../libs/chesto/src/InputEvents.hpp"
+#include "../libs/chesto/src/RootDisplay.hpp"
+
 #include "../main.hpp"
 
 #include "Menu.hpp"
 
-int console_main(InputEvents* input)
+int console_main(RootDisplay* rootDisplay, InputEvents* input)
 {
 	// initialize text console
-	Console* console = new Console();
+  SDL_DestroyRenderer(rootDisplay->renderer);
+	Console* console = new Console(rootDisplay->window);
 
 	// create main menu object
 	Menu* menu = new Menu(console);

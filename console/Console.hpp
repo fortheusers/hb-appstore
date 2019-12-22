@@ -4,7 +4,7 @@ class Console
 {
 public:
 	// console methods
-	Console();
+	Console(SDL_Window* window);
 	void background(int r, int g, int b);
 	void putAPixel(int x, int y, int r, int g, int b);
 	void fillRect(int x, int y, int width, int height, int r, int g, int b);

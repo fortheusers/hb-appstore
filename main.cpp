@@ -52,27 +52,26 @@ int main(int argc, char* argv[])
     if (std::string("--recovery") == argv[x])
       cliMode = true;
 
-	// init only sdl events, so we can see if some early buttons are held
-	if (SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_EVENTS) < 0)
-		return 1;
+  // initialize main title screen
+	MainDisplay* display = new MainDisplay();
 
 	// the main input handler
 	InputEvents* events = new InputEvents();
-	while (events->update()) {
-		cliMode |= (events->held(L_BUTTON) || events->held(R_BUTTON));
-	}
+  for (int x=0; x<10; x++) {
+    while (events->update()) {
+      cliMode |= (events->held(L_BUTTON) || events->held(R_BUTTON));
+    }
+    SDL_Delay(32);
+  }
 
   if (cliMode)
   {
     // if NOGUI variable defined, use the console's main method
-    int console_main(InputEvents*);
-    return console_main(events);
+    int console_main(RootDisplay*, InputEvents*);
+    return console_main(display, events);
   }
 
 	DownloadQueue::init();
-
-	// initialize main title screen
-	MainDisplay* display = new MainDisplay();
 
 	events->quitaction = quit;
 

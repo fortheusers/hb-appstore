@@ -27,7 +27,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	, download(getAction(package), A_BUTTON, true, 30)
 	, cancel("Cancel", B_BUTTON, true, 30, download.width)
 	, details(getPackageDetails(package).c_str(), 20, &white, false, 300)
-	, content(package)
+	, content(package, appList->useBannerIcons)
 	, downloadStatus("Download Status", 30, &white)
 {
 	// TODO: show current app status somewhere
@@ -468,22 +468,14 @@ int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, dou
 	return 0;
 }
 
-AppDetailsContent::AppDetailsContent(Package *package)
+AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	: reportIssue("Report Issue", Y_BUTTON)
 	, moreByAuthor("More by Author", X_BUTTON)
 	, title(package->title.c_str(), 35, &black)
 	, title2(package->author.c_str(), 27, &gray)
 	, details(package->long_desc.c_str(), 20, &black, false, 740)
 	, changelog((std::string("Changelog:\n") + package->changelog).c_str(), 20, &black, false, 740)
-#if defined(__WIIU__) // Use an icon banner
-	, banner(package->getIconUrl().c_str(), []{
-			// if the icon fails to load, use the default icon
-			ImageElement *defaultIcon = new ImageElement(RAMFS "res/default.png");
-			defaultIcon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
-			return defaultIcon;
-		})
-#else // Load the banner from network
-	, banner(package->getBannerUrl().c_str(), [package]{
+	, banner(useBannerIcons ? package->getBannerUrl().c_str() : package->getIconUrl().c_str(), [package]{
 			// If the banner fails to load, use an icon banner
 			NetImageElement* icon = new NetImageElement(package->getIconUrl().c_str(), []{
 				// if even the icon fails to load, use the default icon
@@ -494,7 +486,6 @@ AppDetailsContent::AppDetailsContent(Package *package)
 			icon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
 			return icon;
 		})
-#endif
 {
 	title.position(MARGIN, 30);
 	super::append(&title);
@@ -505,9 +496,9 @@ AppDetailsContent::AppDetailsContent(Package *package)
 	moreByAuthor.position(reportIssue.x - 20 - moreByAuthor.width, 45);
 	super::append(&moreByAuthor);
 
-#if defined(__WIIU__)
-	banner.setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
-#endif
+	if (!useBannerIcons)
+		banner.setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+
 	banner.resize(787, 193);
 	banner.position(BANNER_X, BANNER_Y);
 	super::append(&banner);

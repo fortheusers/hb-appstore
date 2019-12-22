@@ -49,6 +49,7 @@ public:
 	int R = 3;
 
 	int sortMode = RECENT;
+  bool useBannerIcons = true;
 
 	void launchSettings();
 

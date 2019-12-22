@@ -13,6 +13,10 @@
 #include <cstdlib> // std::rand, std::srand
 #include <ctime>   // std::time
 
+#if defined(SWITCH)
+#include <switch.h>
+#endif
+
 const char* AppList::sortingDescriptions[TOTAL_SORTS] = { "by most recent", "by download count", "alphabetically", "by size (descending)", "randomly" };
 SDL_Color AppList::black = { 0, 0, 0, 0xff };
 SDL_Color AppList::gray = { 0x50, 0x50, 0x50, 0xff };
@@ -62,6 +66,15 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	// sort mode text
 	sortBlurb.setSize(15);
 	sortBlurb.setColor(gray);
+
+#if defined(__WIIU__)
+  useBannerIcons = true;
+#elif defined(SWITCH)
+  // don't use banner icons if we're in applet mode
+  // they use up too much memory, and a lot of people only use applet mode
+  AppletType at = appletGetAppletType();
+  useBannerIcons = (at == AppletType_Application || at == AppletType_SystemApplication);
+#endif
 
 	// update current app listing
 	update();

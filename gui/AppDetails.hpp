@@ -16,7 +16,7 @@ class AppList;
 class AppDetailsContent : public ListElement
 {
 public:
-	AppDetailsContent(Package *package);
+	AppDetailsContent(Package *package, bool lowMemoryMode);
 	bool process(InputEvents* event);
 	void render(Element* parent);
 

@@ -1,19 +1,9 @@
 #include "Console.hpp"
 
-Console::Console()
+Console::Console(SDL_Window* window)
 {
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-	{
-		printf("SDL init failed: %s\n", SDL_GetError());
-		return;
-	}
-
-	printf("initialized SDL\n");
-
-	this->window = SDL_CreateWindow("n/a", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_WINDOW_SHOWN);
-	printf("created window\n");
-	this->window_surface = SDL_GetWindowSurface(this->window);
-
+	this->window = window;
+	this->window_surface = SDL_GetWindowSurface(window);
 	// make background black
 	this->background(0x42, 0x45, 0x48);
 }
