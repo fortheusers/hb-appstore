@@ -297,7 +297,6 @@ const std::string& Keyboard::getTextInput()
 
 void Keyboard::inputChanged()
 {
-  printf("input has changed\n");
 	if (inputCallback)
 		inputCallback();
 }

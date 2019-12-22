@@ -114,7 +114,9 @@ bool AppList::process(InputEvents* event)
 		ret |= keyboard.process(event);
 		if (event->isKeyDown() && event->held(Y_BUTTON))
 			ret |= ListElement::process(event); // continue processing ONLY if they're pressing Y
-		return ret;
+		
+    if (needsUpdate) update();
+    return ret;
 	}
 
 	int origHighlight = this->highlighted;
