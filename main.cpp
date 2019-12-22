@@ -26,8 +26,8 @@ void quit()
 
 int main(int argc, char* argv[])
 {
-//	consoleDebugInit(debugDevice_SVC);
-//	stdout = stderr; // for yuzu
+	// consoleDebugInit(debugDevice_SVC);
+	// stdout = stderr; // for yuzu
 
 #if defined(__WIIU__)
 #define HBAS_PATH ROOT_PATH "wiiu/apps/appstore"
@@ -43,6 +43,7 @@ int main(int argc, char* argv[])
 #endif
 
 	init_networking();
+  // nxlinkStdio();
 
   bool cliMode = false;
 #ifdef NOGUI
@@ -68,7 +69,8 @@ int main(int argc, char* argv[])
   {
     // if NOGUI variable defined, use the console's main method
     int console_main(RootDisplay*, InputEvents*);
-    return console_main(display, events);
+    console_main(display, events);
+    running = false;
   }
 
 	DownloadQueue::init();

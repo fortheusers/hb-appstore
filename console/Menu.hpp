@@ -2,7 +2,6 @@
 #include "Console.hpp"
 
 #define SPLASH 1
-#define CATEGORIES N / A
 #define LIST_MENU 2
 #define INSTALL_SCREEN 3
 

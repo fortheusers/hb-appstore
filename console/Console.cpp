@@ -11,7 +11,6 @@ Console::Console(SDL_Window* window)
 void Console::close()
 {
 	SDL_Delay(1);
-	//	SDL_Quit();
 }
 
 void Console::background(int r, int g, int b)

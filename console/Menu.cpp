@@ -39,7 +39,8 @@ void Menu::display()
 		console->drawColorString(0, 44, "[B] Back", 0xff, 0xff, 0xff);
   }
 
-	if (this->get == NULL && this->screen != SPLASH && this->screen != RECOVERY_OPTIONS && this->screen != INSTALL_SUCCESS)
+	if (this->get == NULL && this->screen != SPLASH && this->screen != RECOVERY_OPTIONS
+      && this->screen != INSTALL_SUCCESS && this->screen != INSTALL_FAILED)
 	{
 		// if libget isn't initialized, and we're trying to load a get-related screen, init it!
 		console->update();
@@ -149,7 +150,7 @@ void Menu::display()
 			console->drawColorString(3, 12, "Operation successful!", 0, 0xff, 0);
 		else
 		{
-			console->drawColorString(3, 11, "Operation failed", 0xff, 0, 0);
+			console->drawColorString(3, 10, "Operation failed", 0xff, 0, 0);
 			console->drawString(3, 12, "You can file an issue at gitlab.com/4tu/hb-appstore");
 		}
 

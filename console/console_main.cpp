@@ -25,7 +25,7 @@ int console_main(RootDisplay* rootDisplay, InputEvents* input)
 
 		// show the current menu screen
 		menu->display();
-		SDL_Delay(16);
+		SDL_Delay(4);
 
 		// update pressed buttons in input object
 		input->update();
@@ -77,9 +77,9 @@ int console_main(RootDisplay* rootDisplay, InputEvents* input)
           if (count == 3)
           {
             // reset data, and switch to recovery success screen
-            libget_reset_data(DEFAULT_GET_HOME);
+            bool success = libget_reset_data(DEFAULT_GET_HOME);
             menu->get = NULL;
-            menu->screen = INSTALL_SUCCESS;
+            menu->screen = success ? INSTALL_SUCCESS : INSTALL_FAILED;
             break;
           }
         }
