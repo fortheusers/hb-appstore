@@ -6,4 +6,6 @@
 #define DEFAULT_REPO "https://switchbru.com/appstore"
 #endif
 
+#define DEFAULT_GET_HOME "./.get/"
+
 void quit();

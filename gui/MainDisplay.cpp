@@ -53,7 +53,7 @@ bool MainDisplay::process(InputEvents* event)
 		networking_callback = MainDisplay::updateLoader;
 
 		// fetch repositories metadata
-		get = new Get("./.get/", DEFAULT_REPO);
+		get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO);
 
 		// go through all repos and if one has an error, set the error flag
 		for (auto repo : get->repos)

@@ -1,22 +1,15 @@
 #include "Menu.hpp"
+#include "../main.hpp"
 #include <algorithm>
 #include <sstream>
 
 using namespace std;
 
-Menu::Menu(Console* console, Get* get)
+Menu::Menu(Console* console)
 {
 	this->console = console;
-	this->get = get;
-
 	this->position = 0;
-
 	this->screen = SPLASH;
-
-	if (get->packages.size() > 0)
-		this->repoUrl = get->packages[0]->repoUrl->c_str();
-	else
-		this->repoUrl = "No packages found on any repos!";
 }
 
 void Menu::display()
@@ -26,7 +19,35 @@ void Menu::display()
 		console->drawString(9, 21, "Homebrew App Store (Recovery Mode)");
 		console->drawColorString(9, 26, "thanks to:", 0xcc, 0xcc, 0xcc);
 		console->drawColorString(15, 27, "vgmoose, pwsincd, rw-r-r_0644, zarklord", 0xcc, 0xcc, 0xcc);
-		console->drawColorString(9, 32, "Press [A] to continue", 0xff, 0xff, 0x00);
+		console->drawColorString(9, 32, "Press [A] to manage packages", 0xff, 0xff, 0x00);
+    console->drawColorString(9, 34, "Press [Y] to reset config data", 0xff, 0xff, 0x00);
+	}
+
+  if (this->screen == RECOVERY_OPTIONS)
+  {
+		console->fillRect(0, 0, 80, 1, 0, 0, 255);
+		console->drawColorString(80 / 2 - 12, 0, "Reset Configuration Data", 0xff, 0xff, 0xff);
+
+		console->drawString(9, 16, "If every FRENCH FRY were perfect");
+		console->drawString(9, 18, "we wouldn't have POTATO CHIPS!");
+
+		console->drawColorString(9, 23, "Hold [L]+[R]+[A] to reset configuration data", 0xff, 0xff, 0x00);
+
+		console->drawString(9, 28, "Report an issue at: gitlab.com/4tu/hb-appstore");
+
+		console->fillRect(0, 44, 80, 1, 0, 0, 255);
+		console->drawColorString(0, 44, "[B] Back", 0xff, 0xff, 0xff);
+  }
+
+	if (this->get == NULL && this->screen != SPLASH && this->screen != RECOVERY_OPTIONS && this->screen != INSTALL_SUCCESS)
+	{
+		// if libget isn't initialized, and we're trying to load a get-related screen, init it!
+		console->update();
+		console->drawString(3, 11, "Syncing package metadata...");
+		console->drawColorString(3, 13, "Just a moment!", 0, 0xcc, 0xcc);
+		console->update();
+		initGet();
+		return;
 	}
 
 	if (this->screen == LIST_MENU || this->screen == INSTALL_SCREEN)
@@ -67,7 +88,7 @@ void Menu::display()
 		}
 
 		std::stringstream footer;
-		footer << "Page " << this->position / PAGE_SIZE + 1 << " of " << get->packages.size() / PAGE_SIZE + 1;
+		footer << "Page " << this->position / PAGE_SIZE + 1 << " of " << (get->packages.size()-1) / PAGE_SIZE + 1;
 		console->drawString(34, 40, footer.str().c_str());
 		console->drawColorString(15, 42, "Use left/right and up/down to switch pages and apps", 0xcc, 0xcc, 0xcc);
 
@@ -115,9 +136,11 @@ void Menu::display()
 		else
 			console->drawColorString(5, 5, "Removing package...", 0xff, 0xff, 0x00);
 
-		console->drawString(5, 7, "gitlab.com/4TU/hb-appstore/issues");
+    console->drawString(5, 9, "No progress bar available in this mode");
+		console->drawColorString(5, 11, "Please wait!", 0, 0xcc, 0xcc);
 
-    console->drawString(5, 9, "No progress bar in this mode!");
+		console->drawString(5, 15, "Report an issue at: gitlab.com/4tu/hb-appstore");
+
 	}
 
 	if (this->screen == INSTALL_SUCCESS || this->screen == INSTALL_FAILED)
@@ -127,7 +150,7 @@ void Menu::display()
 		else
 		{
 			console->drawColorString(3, 11, "Operation failed", 0xff, 0, 0);
-			console->drawString(3, 12, "You can file an issue at github.com/vgmoose/appstorenx");
+			console->drawString(3, 12, "You can file an issue at gitlab.com/4tu/hb-appstore");
 		}
 
 		console->drawColorString(3, 14, "Press [A] to continue", 0xff, 0xff, 0x00);
@@ -136,8 +159,21 @@ void Menu::display()
 	console->update();
 }
 
+void Menu::initGet()
+{
+	// this is a blocking load
+	this->get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO);
+
+	if (get->packages.size() > 0)
+		this->repoUrl = get->packages[0]->repoUrl->c_str();
+	else
+		this->repoUrl = "No packages found on any repos!";
+}
+
 void Menu::moveCursor(int diff)
 {
+	if (this->get == NULL) return;
+
 	int old_position = position;
 	this->position += diff;
 

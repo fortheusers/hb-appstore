@@ -13,7 +13,6 @@
 
 #include "gui/MainDisplay.hpp"
 
-#include "console/Input.hpp"
 #include "console/Menu.hpp"
 
 #include "main.hpp"
@@ -53,14 +52,21 @@ int main(int argc, char* argv[])
     if (std::string("--recovery") == argv[x])
       cliMode = true;
 
+	// init only sdl events, so we can see if some early buttons are held
+	if (SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_EVENTS) < 0)
+		return 1;
+
+	// the main input handler
+	InputEvents* events = new InputEvents();
+	while (events->update()) {
+		cliMode |= (events->held(L_BUTTON) || events->held(R_BUTTON));
+	}
+
   if (cliMode)
   {
-    // create main get object
-    Get* get = new Get("./.get/", DEFAULT_REPO);
-
     // if NOGUI variable defined, use the console's main method
-    int console_main(Get*);
-    return console_main(get);
+    int console_main(InputEvents*);
+    return console_main(events);
   }
 
 	DownloadQueue::init();
@@ -68,8 +74,6 @@ int main(int argc, char* argv[])
 	// initialize main title screen
 	MainDisplay* display = new MainDisplay();
 
-	// the main input handler
-	InputEvents* events = new InputEvents();
 	events->quitaction = quit;
 
 	while (running)

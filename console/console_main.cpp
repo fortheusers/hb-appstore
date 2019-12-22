@@ -1,18 +1,18 @@
 #include "../libs/get/src/Get.hpp"
 #include "../libs/get/src/Utils.hpp"
 
-#include "Input.hpp"
+#include "../libs/chesto/src/InputEvents.hpp"
+#include "../main.hpp"
+
 #include "Menu.hpp"
 
-int console_main(Get* get)
+int console_main(InputEvents* input)
 {
 	// initialize text console
 	Console* console = new Console();
 
-	Input* input = new Input();
-
 	// create main menu object
-	Menu* menu = new Menu(console, get);
+	Menu* menu = new Menu(console);
 
 	bool running = true;
 
@@ -25,20 +25,20 @@ int console_main(Get* get)
 		SDL_Delay(16);
 
 		// update pressed buttons in input object
-		input->updateButtons();
+		input->update();
 
 		// if we're on the install screen, perform an install
 		if (menu->screen == INSTALLING || menu->screen == REMOVING)
 		{
-			Package* target = get->packages[menu->position];
+			Package* target = menu->get->packages[menu->position];
 
 			// install package
 			bool succeeded = false;
 
 			if (menu->screen == INSTALLING)
-				succeeded = get->install(target);
+				succeeded = menu->get->install(target);
 			else if (menu->screen == REMOVING)
-				succeeded = get->remove(target);
+				succeeded = menu->get->remove(target);
 
 			// change screen accordingly
 			if (succeeded)
@@ -47,30 +47,71 @@ int console_main(Get* get)
 				menu->screen = INSTALL_FAILED;
 		}
 
-		// send either A or B to the menu object, if held
-		if (input->held(BUTTON_A) || input->held(BUTTON_B))
-			menu->advanceScreen(input->held(BUTTON_A));
+    if (menu->screen == RECOVERY_OPTIONS)
+    {
+      // three bools to represent the L+R+A activation sequence
+      bool pressed[3] = { false, false, false };
+      int triggers[3] = { L_BUTTON, R_BUTTON, A_BUTTON };
 
-		if (menu->screen == INSTALL_SCREEN && input->held(BUTTON_X))
+      while (true)
+      {
+        input->update();
+
+        if (input->pressed(B_BUTTON))
+        {
+          menu->screen = SPLASH;
+          break;
+        }
+        else if (input->held(L_BUTTON | R_BUTTON | A_BUTTON))
+        {
+          int count = 0;
+          for (int x=0; x<3; x++)
+          {
+            pressed[x] |= input->held(triggers[x]);
+            count += pressed[x];
+          }
+
+          if (count == 3)
+          {
+            // reset data, and switch to recovery success screen
+            libget_reset_data(DEFAULT_GET_HOME);
+            menu->get = NULL;
+            menu->screen = INSTALL_SUCCESS;
+            break;
+          }
+        }
+        if (input->released(L_BUTTON | R_BUTTON | A_BUTTON))
+          // reset the pressed array since one of the three buttons was released
+          for (int x=0; x<3; x++)
+            pressed[x] = false;
+      }
+
+      continue;
+    }
+
+		// send either A or B to the menu object, if held
+		if (input->pressed(A_BUTTON) || input->pressed(B_BUTTON))
+			menu->advanceScreen(input->pressed(A_BUTTON));
+
+		if (menu->screen == INSTALL_SCREEN && input->pressed(X_BUTTON))
 			menu->screen = REMOVING;
 
 		// if minus is pressed, exit
-		if (input->held(BUTTON_MINUS))
+		if (input->pressed(SELECT_BUTTON) || input->pressed(START_BUTTON))
 			running = false;
 
-		// if B is pressed on the splash screen, exit
-		//		if (menu->screen == SPLASH && input->held(BUTTON_B))
-		//			running = false;
+		// if X is pressed on the splash screen, show advanced options
+    if (menu->screen == SPLASH && input->pressed(Y_BUTTON))
+      menu->screen = RECOVERY_OPTIONS;
 
 		// move cursor up or down depending on input
-		menu->moveCursor(-1 * (input->held(BUTTON_UP)) + (input->held(BUTTON_DOWN)));
+		menu->moveCursor(-1 * (input->pressed(UP_BUTTON)) + (input->pressed(DOWN_BUTTON)));
 
 		// move page PAGE_SIZE forward/backward depending on input
-		menu->moveCursor(-1 * PAGE_SIZE * input->held(BUTTON_LEFT) + PAGE_SIZE * input->held(BUTTON_RIGHT));
+		menu->moveCursor(-1 * PAGE_SIZE * input->pressed(LEFT_BUTTON) + PAGE_SIZE * input->pressed(RIGHT_BUTTON));
 	}
 
 	console->close();
-	input->close();
 
 	return 0;
 }
