@@ -12,6 +12,7 @@ int console_main(RootDisplay* rootDisplay, InputEvents* input)
 {
 	// initialize text console
   SDL_DestroyRenderer(rootDisplay->renderer);
+  rootDisplay->renderer = NULL;
 	Console* console = new Console(rootDisplay->window);
 
 	// create main menu object

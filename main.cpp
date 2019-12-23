@@ -5,6 +5,10 @@
 #if defined(__WIIU__)
 #include <romfs-wiiu.h>
 #include <unistd.h>
+
+
+#include <unistd.h>
+#include <sys/iosupport.h>
 #endif
 
 #include "libs/get/src/Get.hpp"
@@ -14,6 +18,7 @@
 #include "gui/MainDisplay.hpp"
 
 #include "console/Menu.hpp"
+
 
 #include "main.hpp"
 
@@ -30,6 +35,9 @@ int main(int argc, char* argv[])
 	// stdout = stderr; // for yuzu
 
 #if defined(__WIIU__)
+	// WHBLogUdpInit();
+	// WHBLogCafeInit();
+
 #define HBAS_PATH ROOT_PATH "wiiu/apps/appstore"
 #define ELF_PATH HBAS_PATH "/hbas.elf"
 #define RPX_PATH HBAS_PATH "/appstore.rpx"
@@ -39,7 +47,22 @@ int main(int argc, char* argv[])
 	// "migrate" old elf users over to rpx (should've been done last version)
 	struct stat sbuff;
 	if (stat(ELF_PATH, &sbuff) == 0)
-		std::rename(ELF_PATH, RPX_PATH);
+	{
+		// hbas.elf exists... what should we do about it?
+		if (stat(RPX_PATH, &sbuff) == 0)
+		{
+			// rpx is here, we can just delete hbas.elf
+			// if we really have to, we can have wiiu-hbas.elf later for nostalgic people for the old version
+			int re = std::remove(ELF_PATH);
+			printf("Status removing folder... %d, %d: %s\n", re, errno, strerror(errno));
+		}
+		else
+		{
+			// no rpx, let's move our elf there
+			int re = std::rename(ELF_PATH, RPX_PATH);
+			printf("Status renaming folder... %d, %d: %s\n", re, errno, strerror(errno));
+		}
+	}
 #endif
 
 	init_networking();
@@ -62,7 +85,7 @@ int main(int argc, char* argv[])
     while (events->update()) {
       cliMode |= (events->held(L_BUTTON) || events->held(R_BUTTON));
     }
-    SDL_Delay(32);
+    SDL_Delay(16);
   }
 
   if (cliMode)
@@ -72,6 +95,9 @@ int main(int argc, char* argv[])
     console_main(display, events);
     running = false;
   }
+	else
+		// start music (only if MUSIC defined)
+		display->initAndStartMusic();
 
 	DownloadQueue::init();
 
@@ -130,6 +156,10 @@ int main(int argc, char* argv[])
 
 #if defined(SWITCH)
 	socketExit();
+#endif
+
+#if defined(__WIIU__)
+	// WHBLogUdpDeinit();
 #endif
 
 	return 0;

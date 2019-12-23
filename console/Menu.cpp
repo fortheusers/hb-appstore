@@ -119,7 +119,7 @@ void Menu::display()
 
 		console->drawColorString(5, 12, "Press [A] to install this package", 0xff, 0xff, 0x00);
 
-		if (cur->status != GET)
+		if (cur->status != GET && cur->status != LOCAL)
 			console->drawColorString(5, 14, "Press [X] to remove this package", 0xff, 0xff, 0x00);
 
 		console->drawString(5, 16, "Press [B] to go back");
