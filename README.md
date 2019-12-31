@@ -54,6 +54,7 @@ Depending on which platform you chose, `appstore.nro` or `appstore.rpx` should n
 ```
 sudo dkp-pacman -S devkitA64 libnx switch-tools switch-curl switch-bzip2 switch-freetype switch-libjpeg-turbo switch-libwebp switch-sdl2 switch-sdl2_gfx switch-sdl2_image switch-sdl2_ttf switch-zlib switch-libpng switch-mesa
 ```
+2b. If on macOS: install gtar with: `brew install gnu-tar` (needed by resinfs)
 3. Once it's all setup, recursively clone the repo and run make:
 ```
 git clone --recursive https://github.com/vgmoose/hb-appstore.git
@@ -70,6 +71,7 @@ If all goes well, `appstore.nro` should be sitting in the current directory.
 ```
 sudo dkp-pacman -S wut wiiu-sdl2 devkitPPC wiiu-libromfs wiiu-sdl2_gfx wiiu-sdl2_image wiiu-sdl2_ttf wiiu-sdl2_mixer ppc-zlib ppc-bzip2 ppc-freetype ppc-mpg123 ppc-libpng wiiu-curl-headers ppc-pkg-config wiiu-pkg-config
 ```
+3b. If on macOS: install gtar with: `brew install gnu-tar` (needed by resinfs)
 4. Once the environment is setup:
 ```
 git clone --recursive https://github.com/vgmoose/hb-appstore.git

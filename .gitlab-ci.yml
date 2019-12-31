@@ -3,10 +3,6 @@ image: ubuntu:18.10
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-  DEVKITPRO: "/opt/devkitpro"
-  DEVKITPPC: "/opt/devkitpro/devkitPPC"
-  WUT_ROOT: "/opt/devkitpro/wut"
-
 .common: &common
   script:
     - ./dependency_helper.sh

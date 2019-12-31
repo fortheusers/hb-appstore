@@ -8,9 +8,9 @@ MINIZIP         := ./libs/get/src/libs/minizip
 .SUFFIXES:
 #---------------------------------------------------------------------------------
 
-ifeq ($(strip $(DEVKITPRO)),)
-$(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to devkitPro>")
-endif
+# default this environment variable
+DEVKITPRO ?= /opt/devkitpro
+export DEVKITPRO
 
 TOPDIR ?= $(CURDIR)
 include $(DEVKITPRO)/libnx/switch_rules
