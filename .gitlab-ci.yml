@@ -28,3 +28,9 @@ Switch:
   variables:
     PLATFORM: switch
     EXT: nro
+
+3ds:
+  <<: *common
+  variables:
+    PLATFORM: 3ds
+    EXT: 3dsx
