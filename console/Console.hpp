@@ -1,10 +1,10 @@
-#include <SDL2/SDL.h>
+#include "../libs/chesto/src/DrawUtils.hpp"
 
 class Console
 {
 public:
 	// console methods
-	Console(SDL_Window* window);
+	Console(CST_Window* window);
 	void background(int r, int g, int b);
 	void putAPixel(int x, int y, int r, int g, int b);
 	void fillRect(int x, int y, int width, int height, int r, int g, int b);
@@ -15,8 +15,8 @@ public:
 
 private:
 	// SDL graphics variables
-	SDL_Surface* window_surface;
-	SDL_Window* window;
+	CST_Surface* window_surface;
+	CST_Window* window;
 };
 
 void sleep(int s);
