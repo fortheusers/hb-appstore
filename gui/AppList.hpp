@@ -62,7 +62,7 @@ private:
 	void keyboardInputCallback();
 
 	// the title of this category (from the sidebar)
-	static SDL_Color black, gray;
+	static CST_Color black, gray;
 	static const char* sortingDescriptions[TOTAL_SORTS];
 
 	TextElement sortBlurb;

@@ -53,7 +53,7 @@ public:
   int creditCount = 0;
 
 private:
-	static SDL_Color black, gray;
+	static CST_Color black, gray;
 
 	Button cancel;
 	Button feedback;

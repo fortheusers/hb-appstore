@@ -4,8 +4,8 @@
 
 #define TEXT_SIZE	13
 
-SDL_Color AppCard::gray = { 80, 80, 80, 0xff };
-SDL_Color AppCard::black = { 0, 0, 0, 0xff };
+CST_Color AppCard::gray = { 80, 80, 80, 0xff };
+CST_Color AppCard::black = { 0, 0, 0, 0xff };
 
 AppCard::AppCard(Package* package, AppList* list)
 	: package(package)

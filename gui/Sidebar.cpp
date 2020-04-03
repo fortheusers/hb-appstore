@@ -1,5 +1,4 @@
 #include "AppList.hpp"
-#include <SDL2/SDL2_gfxPrimitives.h>
 
 Sidebar::Sidebar()
 	: logo(RAMFS "res/icon.png")
@@ -169,24 +168,30 @@ bool Sidebar::process(InputEvents* event)
 void Sidebar::render(Element* parent)
 {
 	// draw the light gray bg behind the active category
-	SDL_Rect dimens = { 0, 0, 400 - 260 * (appList->R - 3) - 35, 60 }; // TODO: extract this to a method too
+	CST_Rect dimens = { 0, 0, 400 - 260 * (appList->R - 3) - 35, 60 }; // TODO: extract this to a method too
 	dimens.y = 150 + this->curCategory * 70 - 15;					   // TODO: extract formula into method
 
-	SDL_SetRenderDrawColor(parent->renderer, 0x67, 0x6a, 0x6d, 0xFF);
 #if defined(__WIIU__)
-	SDL_SetRenderDrawColor(parent->renderer, 0x3b, 0x3c, 0x4e, 0xFF);
+	CST_Color consoleColor = { 0x3b, 0x3c, 0x4e, 0xFF };
+#elif defined(_3DS)
+	CST_Color consoleColor = { 0xe4, 0x00, 0x0f, 0xFF };
+#else
+	CST_Color consoleColor = { 0x67, 0x6a, 0x6d, 0xFF };
 #endif
 
+	CST_SetDrawColor(parent->renderer, consoleColor);
+
 	if (this->showCurrentCategory)
-		SDL_RenderFillRect(parent->renderer, &dimens);
+		CST_FillRect(parent->renderer, &dimens);
 
 	if (appList && appList->touchMode && this->elasticCounter >= 0)
 	{
-		SDL_Rect dimens2 = { 0, 0, 400, 60 };
+		CST_Rect dimens2 = { 0, 0, 400, 60 };
 		dimens2.y = 150 + this->elasticCounter * 70 - 15; // TODO: extract formula into method
-		SDL_SetRenderDrawBlendMode(parent->renderer, SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(parent->renderer, 0xad, 0xd8, 0xe6, 0x90); // TODO: matches the DEEP_HIGHLIGHT color
-		SDL_RenderFillRect(parent->renderer, &dimens2);
+		CST_SetDrawBlend(parent->renderer, true);
+		CST_Color highlight = { 0xad, 0xd8, 0xe6, 0x90 };
+		CST_SetDrawColor(parent->renderer, highlight); // TODO: matches the DEEP_HIGHLIGHT color
+		CST_FillRect(parent->renderer, &dimens2);
 	}
 
 	// draw the selected category, if one should be highlighted

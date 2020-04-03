@@ -11,7 +11,7 @@
 #include "../libs/get/src/Utils.hpp"
 
 #include "MainDisplay.hpp"
-#include "main.hpp"
+#include "../main.hpp"
 
 MainDisplay::MainDisplay()
 	: appList(NULL, &sidebar)
@@ -96,7 +96,7 @@ bool MainDisplay::process(InputEvents* event)
 
 int MainDisplay::updateLoader(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow)
 {
-	int now = SDL_GetTicks();
+	int now = CST_GetTicks();
 	int diff = now - AppDetails::lastFrameTime;
 
 	if (dltotal == 0) dltotal = 1;
@@ -113,7 +113,7 @@ int MainDisplay::updateLoader(void* clientp, double dltotal, double dlnow, doubl
 		display->spinner->angle += 10;
 	display->render(NULL);
 
-	AppDetails::lastFrameTime = SDL_GetTicks();
+	AppDetails::lastFrameTime = CST_GetTicks();
 
 	return 0;
 }

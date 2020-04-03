@@ -1,4 +1,3 @@
-#include <SDL2/SDL2_gfxPrimitives.h>
 #include <fstream>
 #include <sstream>
 
@@ -15,7 +14,7 @@
 #include "Feedback.hpp"
 #include "AppList.hpp"
 #include "ImageCache.hpp"
-#include "main.hpp"
+#include "../main.hpp"
 
 int AppDetails::lastFrameTime = 99;
 
@@ -147,26 +146,89 @@ const char *AppDetails::getAction(Package* package)
 	return "?";
 }
 
-// TODO: make one push event function to bind instead of X separeate ones
 void AppDetails::proceed()
 {
-	SDL_Event sdlevent;
-	sdlevent.type = SDL_KEYDOWN;
-	sdlevent.key.keysym.sym = SDLK_a;
-	sdlevent.key.repeat = 0;
-	SDL_PushEvent(&sdlevent);
+	if (this->operating) return;
+
+	this->operating = true;
+	// event->update();
+
+	// description of what we're doing
+	super::append(&downloadProgress);
+	super::append(&downloadStatus);
+
+	// setup progress bar callback
+	networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
+	libget_status_callback = AppDetails::updatePopupStatus;
+
+	// if we're installing ourselves, we need to quit after on switch
+	preInstallHook();
+
+	// install or remove this package based on the package status
+	if (this->package->status == INSTALLED)
+		get->remove(this->package);
+	else
+		get->install(this->package);
+
+	postInstallHook();
+
+	// refresh the screen
+	RootDisplay::switchSubscreen(nullptr);
+
+	this->operating = false;
+	this->appList->update();
 }
 
 void AppDetails::launch()
 {
-	if (!this->canLaunch)
-		return;
+	if (!this->canLaunch) return;
 
-	SDL_Event sdlevent;
-	sdlevent.type = SDL_KEYDOWN;
-	sdlevent.key.keysym.sym = SDLK_RETURN;
-	sdlevent.key.repeat = 0;
-	SDL_PushEvent(&sdlevent);
+#if defined(SWITCH)
+	char path[8 + strlen(package->binary.c_str())];
+
+	sprintf(path, "sdmc:/%s", package->binary.c_str());
+	printf("Launch path: %s\n", path);
+
+	FILE* file;
+	bool successLaunch = false;
+
+	if (package->category == "theme")
+	{
+		Package* installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
+		if (installer != NULL && installer->status != GET)
+		{
+			sprintf(path, "sdmc:/%s", installer->binary.c_str());
+			successLaunch = this->themeInstall(path);
+		}
+		else
+		{
+			successLaunch = true;
+			this->getSupported();
+		}
+	}
+	else
+	{
+		//Final check if path actually exists
+		if ((file = fopen(path, "r")))
+		{
+			fclose(file);
+			printf("Path OK, Launching...");
+			successLaunch = this->launchFile(path, path);
+		}
+		else
+			successLaunch = false;
+	}
+
+	if (!successLaunch)
+	{
+		printf("Failed to launch.");
+		errorText = new TextElement("Couldn't launch app", 24, &red, false, 300);
+		errorText->position(970, 430);
+		super::append(errorText);
+		this->canLaunch = false;
+	}
+	return true;
+#endif
 }
 
 void AppDetails::getSupported()
@@ -178,11 +240,9 @@ void AppDetails::getSupported()
 
 void AppDetails::back()
 {
-	SDL_Event sdlevent;
-	sdlevent.type = SDL_KEYDOWN;
-	sdlevent.key.keysym.sym = SDLK_b;
-	sdlevent.key.repeat = 0;
-	SDL_PushEvent(&sdlevent);
+	if (this->operating) return;
+
+	RootDisplay::switchSubscreen(nullptr);
 }
 
 void AppDetails::moreByAuthor()
@@ -203,102 +263,10 @@ void AppDetails::leaveFeedback()
 
 bool AppDetails::process(InputEvents* event)
 {
-
-	// don't process any keystrokes if an operation is in progress
-	if (this->operating)
-		return false;
-
-	if (event->pressed(B_BUTTON))
-	{
-		RootDisplay::switchSubscreen(nullptr);
-		return true;
-	}
-
-	if (event->pressed(A_BUTTON))
-	{
-		this->operating = true;
-		// event->key.keysym.sym = SDLK_z;
-		event->update();
-
-		// description of what we're doing
-		super::append(&downloadProgress);
-    super::append(&downloadStatus);
-
-		// setup progress bar callback
-		networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
-		libget_status_callback = AppDetails::updatePopupStatus;
-
-		// if we're installing ourselves, we need to quit after on switch
-		preInstallHook();
-
-		// install or remove this package based on the package status
-		if (this->package->status == INSTALLED)
-			get->remove(this->package);
-		else
-			get->install(this->package);
-
-		postInstallHook();
-
-		// refresh the screen
-		RootDisplay::switchSubscreen(nullptr);
-
-		this->operating = false;
-		this->appList->update();
-		return true;
-	}
-
-#if defined(SWITCH)
-	if (event->pressed(START_BUTTON) && this->canLaunch == true)
-	{
-		char path[8 + strlen(package->binary.c_str())];
-
-		sprintf(path, "sdmc:/%s", package->binary.c_str());
-		printf("Launch path: %s\n", path);
-
-		FILE* file;
-		bool successLaunch = false;
-
-		if (package->category == "theme")
-		{
-			Package* installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
-			if (installer != NULL && installer->status != GET)
-			{
-				sprintf(path, "sdmc:/%s", installer->binary.c_str());
-				successLaunch = this->themeInstall(path);
-			}
-			else
-			{
-				successLaunch = true;
-				this->getSupported();
-			}
-		}
-		else
-		{
-			//Final check if path actually exists
-			if ((file = fopen(path, "r")))
-			{
-				fclose(file);
-				printf("Path OK, Launching...");
-				successLaunch = this->launchFile(path, path);
-			}
-			else
-				successLaunch = false;
-		}
-
-		if (!successLaunch)
-		{
-			printf("Failed to launch.");
-			errorText = new TextElement("Couldn't launch app", 24, &red, false, 300);
-			errorText->position(970, 430);
-			super::append(errorText);
-			this->canLaunch = false;
-		}
-		return true;
-	}
-#endif
-
 	if (event->isTouchDown())
 		this->dragging = true;
+
+	if (this->operating) return false;
 
 	// if A or B were hit, we don't get down here (which is good, because the children buttons are just pushing A and B events)
 	return super::process(event);
@@ -388,12 +356,14 @@ void AppDetails::render(Element* parent)
 		this->parent = parent;
 
 	// draw white background
-	SDL_Rect dimens = { 0, 0, 920, 720 };
+	CST_Rect dimens = { 0, 0, 920, 720 };
 
-	SDL_SetRenderDrawColor(parent->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	SDL_RenderFillRect(parent->renderer, &dimens);
+	CST_Color  white = { 0xff, 0xff, 0xff, 0xff };
 
-	SDL_SetRenderDrawColor(parent->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	CST_SetDrawColor(parent->renderer, white);
+	CST_FillRect(parent->renderer, &dimens);
+
+	CST_SetDrawColor(parent->renderer, white);
 
 	// draw all elements
 	super::render(this);
@@ -434,7 +404,7 @@ int AppDetails::updatePopupStatus(int status, int num, int num_total)
 
 int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow)
 {
-	int now = SDL_GetTicks();
+	int now = CST_GetTicks();
 	int diff = now - AppDetails::lastFrameTime;
 
 	if (dltotal == 0) dltotal = 1;
@@ -463,7 +433,7 @@ int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, dou
 		}
 	}
 
-	AppDetails::lastFrameTime = SDL_GetTicks();
+	AppDetails::lastFrameTime = CST_GetTicks();
 
 	return 0;
 }

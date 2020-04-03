@@ -85,15 +85,17 @@ int main(int argc, char* argv[])
     while (events->update()) {
       cliMode |= (events->held(L_BUTTON) || events->held(R_BUTTON));
     }
-    SDL_Delay(16);
+    CST_Delay(16);
   }
 
   if (cliMode)
   {
+#ifndef _3DS
     // if NOGUI variable defined, use the console's main method
     int console_main(RootDisplay*, InputEvents*);
     console_main(display, events);
     running = false;
+#endif
   }
 	else
 		// start music (only if MUSIC defined)
@@ -108,7 +110,7 @@ int main(int argc, char* argv[])
 		bool atLeastOneNewEvent = false;
 		bool viewChanged = false;
 
-		int frameStart = SDL_GetTicks();
+		int frameStart = CST_GetTicks();
 
 		// update download queue
 		DownloadQueue::downloadQueue->process();
@@ -141,11 +143,11 @@ int main(int argc, char* argv[])
 			// delay for the remainder of the frame to keep up to 60fps
 			// (we only do this if we didn't draw to not waste energy
 			// if we did draw, then proceed immediately without waiting for smoother progress bars / scrolling)
-			int delayTime = (SDL_GetTicks() - frameStart);
+			int delayTime = (CST_GetTicks() - frameStart);
 			if (delayTime < 0)
 				delayTime = 0;
 			if (delayTime < 16)
-				SDL_Delay(16 - delayTime);
+				CST_Delay(16 - delayTime);
 		}
 	}
 
