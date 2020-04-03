@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 #if defined(MUSIC)
-#include <SDL2/CST_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #endif
 
 #if defined(__WIIU__)

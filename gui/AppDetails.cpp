@@ -227,7 +227,6 @@ void AppDetails::launch()
 		super::append(errorText);
 		this->canLaunch = false;
 	}
-	return true;
 #endif
 }
 
