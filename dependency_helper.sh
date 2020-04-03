@@ -36,7 +36,7 @@ case "${PLATFORM}" in
     ;;
   3ds)
       setup_dkp_repo
-      sudo dkp-pacmcan --noconfirm -S devkitARM 3ds-sdl 3ds-sdl_image 3ds-sdl_mixer 3ds-sdl_gfx 3ds-sdl_ttf libctru citro3d 3dstools 3ds-curl 3ds-mbedtls
+      sudo dkp-pacman --noconfirm -S devkitARM 3ds-sdl 3ds-sdl_image 3ds-sdl_mixer 3ds-sdl_gfx 3ds-sdl_ttf libctru citro3d 3dstools 3ds-curl 3ds-mbedtls
     ;;
   wiiu)   # uses wut
       setup_dkp_repo
