@@ -2,9 +2,11 @@
 .SUFFIXES:
 #---------------------------------------------------------------------------------
 
-ifeq ($(strip $(DEVKITARM)),)
-$(error "Please set DEVKITARM in your environment. export DEVKITARM=<path to>devkitARM")
-endif
+# default this environment variable
+DEVKITPRO ?= /opt/devkitpro
+DEVKITARM ?= $(DEVKITPRO)/devkitARM
+export DEVKITPRO
+export DEVKITARM
 
 TOPDIR ?= $(CURDIR)
 include $(DEVKITARM)/3ds_rules
