@@ -23,67 +23,71 @@ void Keyboard::render(Element* parent)
 	if (hidden)
 		return;
 
-	SDL_Rect dimens = { this->x, this->y, this->width, this->height };
+	CST_Rect dimens = { this->x, this->y, this->width, this->height };
 
 	this->window = parent->window;
 	this->renderer = parent->renderer;
 
-	SDL_SetRenderDrawColor(parent->renderer, 0xf9, 0xf9, 0xf9, 0xFF);
-	SDL_RenderFillRect(parent->renderer, &dimens);
+	CST_Color keyColor = { 0xf9, 0xf9, 0xf9, 0xFF };
+	CST_SetDrawColor(parent->renderer, keyColor);
+	CST_FillRect(parent->renderer, &dimens);
 
+	CST_Color keyColor2 = { 0xf4, 0xf4, 0xf4, 0xff };
 	for (int y = 0; y < 3; y++)
 		for (int x = 0; x < 10 - y - (y == 2); x++)
 		{
-			SDL_Rect dimens2 = { this->x + kXPad + x * kXOff + y * yYOff, this->y + kYPad + y * ySpacing, keyWidth, keyWidth };
-			SDL_SetRenderDrawColor(parent->renderer, 0xf4, 0xf4, 0xf4, 0xff);
-			SDL_RenderFillRect(parent->renderer, &dimens2);
+			CST_Rect dimens2 = { this->x + kXPad + x * kXOff + y * yYOff, this->y + kYPad + y * ySpacing, keyWidth, keyWidth };
+			CST_SetDrawColor(parent->renderer, keyColor2);
+			CST_FillRect(parent->renderer, &dimens2);
 		}
 
 	// if there's a highlighted piece set, color it in
 	if (curRow >= 0 || index >= 0)
 	{
-		SDL_Rect dimens2 = { this->x + kXPad + index * kXOff + curRow * yYOff, this->y + kYPad + curRow * ySpacing, keyWidth, keyWidth };
+		CST_Rect dimens2 = { this->x + kXPad + index * kXOff + curRow * yYOff, this->y + kYPad + curRow * ySpacing, keyWidth, keyWidth };
 
 		// if we're on DEL or SPACE, expand the dimens width of the highllighted button
 		if (curRow == 2 && index < 0)
 		{
-			SDL_Rect dimens3 = { this->x + dPos, this->y + dHeight, dWidth, textSize };
+			CST_Rect dimens3 = { this->x + dPos, this->y + dHeight, dWidth, textSize };
 			dimens2 = dimens3;
 		}
 		if (curRow == 2 && index > 6)
 		{
-			SDL_Rect dimens4 = { this->x + sPos, this->y + dHeight, sWidth, textSize };
+			CST_Rect dimens4 = { this->x + sPos, this->y + dHeight, sWidth, textSize };
 			dimens2 = dimens4;
 		}
 
+		CST_Color selectedColor = { 0xad, 0xd8, 0xe6, 0x90 };
 		// draw the currently selected tile if these index things are set
 		if (touchMode)
 		{
-			SDL_SetRenderDrawColor(parent->renderer, 0xad, 0xd8, 0xe6, 0x90); // TODO: matches the DEEP_HIGHLIGHT color
-			SDL_RenderFillRect(parent->renderer, &dimens2);
+			CST_SetDrawColor(parent->renderer, selectedColor); // TODO: matches the DEEP_HIGHLIGHT color
+			CST_FillRect(parent->renderer, &dimens2);
 		}
 		else
 		{
 			// border
 			for (int z = 4; z >= 0; z--)
 			{
-				SDL_SetRenderDrawColor(parent->renderer, 0x66 - z * 10, 0x7c + z * 20, 0x89 + z * 10, 0xFF);
+				CST_Color highlight = { 0x66 - z * 10, 0x7c + z * 20, 0x89 + z * 10, 0xFF };
+				CST_SetDrawColor(parent->renderer, highlight);
 				dimens2.x--;
 				dimens2.y--;
 				dimens2.w += 2;
 				dimens2.h += 2;
-				SDL_RenderDrawRect(parent->renderer, &dimens2);
+				CST_DrawRect(parent->renderer, &dimens2);
 			}
 		}
 	}
 
-	//   SDL_Rect dimens3 = {this->x+dPos, this->y + dHeight, dWidth, textSize};
-	//   SDL_SetRenderDrawColor(parent->renderer, 0xff, 0xaa, 0xaa, 0xff);
-	//   SDL_RenderFillRect(parent->renderer, &dimens3);
+	//   CST_Rect dimens3 = {this->x+dPos, this->y + dHeight, dWidth, textSize};
+	//   CST_SetDrawColor(parent->renderer, 0xff, 0xaa, 0xaa, 0xff);
+	//   CST_FillRect(parent->renderer, &dimens3);
 	//
-	//   SDL_Rect dimens4 = {this->x+sPos, this->y + dHeight, sWidth, textSize};
-	//   SDL_SetRenderDrawColor(parent->renderer, 0xff, 0xaa, 0xaa, 0xff);
-	//   SDL_RenderFillRect(parent->renderer, &dimens4);
+	//   CST_Rect dimens4 = {this->x+sPos, this->y + dHeight, sWidth, textSize};
+	//   CST_SetDrawColor(parent->renderer, 0xff, 0xaa, 0xaa, 0xff);
+	//   CST_FillRect(parent->renderer, &dimens4);
 
 	super::render(this);
 }
@@ -248,7 +252,7 @@ void Keyboard::updateSize()
 	dWidth = (int)(1.4125 * textSize);
 	sWidth = (int)(1.91875 * textSize);
 
-	SDL_Color gray = { 0x52, 0x52, 0x52, 0xff };
+	CST_Color gray = { 0x52, 0x52, 0x52, 0xff };
 
 	// go through and draw each of the three rows at the right position
 	for (int x = 0; x < rowsCount; x++)

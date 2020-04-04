@@ -27,7 +27,7 @@ public:
 	int index;
 
 private:
-	static SDL_Color gray, black;
+	static CST_Color gray, black;
 
 	// app icon
 	NetImageElement icon;

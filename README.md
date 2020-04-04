@@ -10,9 +10,13 @@ To run this program, a Nintendo Switch with access to the Homebrew Menu is requi
 Extract the latest [hb-appstore](https://github.com/vgmoose/hb-appstore/releases) to `sd:/switch/appstore/`, and run "hb App Store" from within hbmenu. When you're done, you can press the Minus (-) button to exit.
 
 ### Nintendo Wii U
-To run this program, a Wii U with access to the Homebrew Launcher is required. This can be done on any firmware, for compatibility check at [ismywiiupatched.com](https://ismywiiupatched.com). To run the Homebrew Launcher, see the tutorial [here](https://wiiu.hacks.guide).
+To run this program, a Wii U with access to the Homebrew Launcher is required. This can be done on any firmware, for compatibility check at [ismywiiupatched.com](https://ismywiiupatched.com). To run the Homebrew Launcher, see the tutorial [here](https://wiiuguide.xyz/).
 
 Extract the latest [hb-appstore](https://github.com/vgmoose/hb-appstore/releases) to `sd:/wiiu/apps/appstore/`, and run "hb App Store" from within Homebrew Launcher. When you're done, you can press the Minus (-) button to exit.
+
+### Nintendo 3DS
+To run this program, a 3DS  with access to the Homebrew Loader is required. This can be done on any firmware. To run the Homebrew Loader, see the tutorial [here](https://3ds.hacks.guide).
+
 
 ### Web and Desktop
 Web browsers can download files from the Homebrew App Store at [apps.fortheusers.org](https://apps.fortheusers.org). Source code: [hbas-frontend](https://gitlab.com/4TU/hbas-frontend)

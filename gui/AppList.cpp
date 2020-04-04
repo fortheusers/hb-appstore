@@ -1,13 +1,11 @@
 #include "AppList.hpp"
 #include "AboutScreen.hpp"
 #include "Keyboard.hpp"
-#include "main.hpp"
+#include "../main.hpp"
 
 #include "../libs/get/src/Utils.hpp"
 
 #include "../libs/chesto/src/RootDisplay.hpp"
-
-#include <SDL2/SDL2_gfxPrimitives.h>
 
 #include <algorithm>
 #include <cstdlib> // std::rand, std::srand
@@ -18,8 +16,8 @@
 #endif
 
 const char* AppList::sortingDescriptions[TOTAL_SORTS] = { "by most recent", "by download count", "alphabetically", "by size (descending)", "randomly" };
-SDL_Color AppList::black = { 0, 0, 0, 0xff };
-SDL_Color AppList::gray = { 0x50, 0x50, 0x50, 0xff };
+CST_Color AppList::black = { 0, 0, 0, 0xff };
+CST_Color AppList::gray = { 0x50, 0x50, 0x50, 0xff };
 
 AppList::AppList(Get* get, Sidebar* sidebar)
 	: get(get)			// the main get instance that contains repo info and stuff
@@ -234,12 +232,13 @@ void AppList::render(Element* parent)
 		this->parent = parent;
 
 	// draw a white background, 870 wide
-	SDL_Rect dimens = { 0, 0, 920 + 260 * (R - 3), 720 };
+	CST_Rect dimens = { 0, 0, 920 + 260 * (R - 3), 720 };
 	dimens.x = this->x - 35;
+	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 
   if (parent != NULL) {
-    SDL_SetRenderDrawColor(parent->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-    SDL_RenderFillRect(parent->renderer, &dimens);
+    CST_SetDrawColor(parent->renderer, white);
+    CST_FillRect(parent->renderer, &dimens);
     this->renderer = parent->renderer;
   }
 

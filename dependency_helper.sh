@@ -34,6 +34,10 @@ case "${PLATFORM}" in
       setup_dkp_repo
       sudo dkp-pacman --noconfirm -S devkitA64 libnx switch-tools switch-curl switch-bzip2 switch-freetype switch-libjpeg-turbo switch-libwebp switch-sdl2 switch-sdl2_gfx switch-sdl2_image switch-sdl2_ttf switch-zlib switch-libpng switch-mesa
     ;;
+  3ds)
+      setup_dkp_repo
+      sudo dkp-pacman --noconfirm -S devkitARM 3ds-sdl 3ds-sdl_image 3ds-sdl_mixer 3ds-sdl_gfx 3ds-sdl_ttf libctru citro3d 3dstools 3ds-curl 3ds-mbedtls
+    ;;
   wiiu)   # uses wut
       setup_dkp_repo
 

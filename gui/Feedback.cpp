@@ -1,7 +1,7 @@
 #include "Feedback.hpp"
 #include "ImageCache.hpp"
 #include "MainDisplay.hpp"
-#include "main.hpp"
+#include "../main.hpp"
 
 #include "../libs/chesto/src/RootDisplay.hpp"
 
