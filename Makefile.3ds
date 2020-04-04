@@ -52,7 +52,7 @@ CFLAGS	:=	-g -Wall -O0 -mword-relocations \
 			-fomit-frame-pointer -ffunction-sections \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS -DSDL1 -DNETWORK -DUSE_FILE32API -DNOCRYPT
+CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS -DSDL1 -DNETWORK -DUSE_FILE32API -DNOCRYPT -DUSE_RAMFS
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
 
@@ -156,11 +156,19 @@ ifeq ($(strip $(NO_SMDH)),)
 	export _3DSXFLAGS += --smdh=$(CURDIR)/$(TARGET).smdh
 endif
 
-ifneq ($(ROMFS),)
-	export _3DSXFLAGS += --romfs=$(CURDIR)/$(ROMFS)
-endif
-
 .PHONY: all clean
+
+#-------------------------------------------------------------------------------
+# romfs
+#-------------------------------------------------------------------------------
+include $(PWD)/libs/chesto/libs/resinfs/share/romfs-wiiu.mk
+CFLAGS		+=	$(ROMFS_CFLAGS)
+CXXFLAGS	+=	$(ROMFS_CFLAGS)
+LIBS		+=	$(ROMFS_LIBS)
+OFILES		+=	$(ROMFS_TARGET)
+#-------------------------------------------------------------------------------
+
+
 
 #---------------------------------------------------------------------------------
 all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES)
@@ -255,4 +263,3 @@ endef
 #---------------------------------------------------------------------------------------
 endif
 #---------------------------------------------------------------------------------------
-
