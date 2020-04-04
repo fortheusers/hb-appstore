@@ -11,37 +11,17 @@ export DEVKITARM
 TOPDIR ?= $(CURDIR)
 include $(DEVKITARM)/3ds_rules
 
-#---------------------------------------------------------------------------------
-# TARGET is the name of the output
-# BUILD is the directory where object files & intermediate files will be placed
-# SOURCES is a list of directories containing source code
-# DATA is a list of directories containing data files
-# INCLUDES is a list of directories containing header files
-# GRAPHICS is a list of directories containing graphics files
-# GFXBUILD is the directory where converted graphics files will be placed
-#   If set to $(BUILD), it will statically link in the converted
-#   files as if they were data files.
-#
-# NO_SMDH: if set to anything, no SMDH file is generated.
-# ROMFS is the directory which contains the RomFS, relative to the Makefile (Optional)
-# APP_TITLE is the name of the app stored in the SMDH file (Optional)
-# APP_DESCRIPTION is the description of the app stored in the SMDH file (Optional)
-# APP_AUTHOR is the author of the app stored in the SMDH file (Optional)
-# ICON is the filename of the icon (.png), relative to the project folder.
-#   If not set, it attempts to use one of the following (in this order):
-#     - <Project name>.png
-#     - icon.png
-#     - <libctru folder>/default_icon.png
-#---------------------------------------------------------------------------------
 TARGET		:=	appstore
 BUILD		:=	build
 SOURCES		:=	. libs/chesto/src libs/chesto/libs/resinfs/source libs/get/src libs/get/src/libs/minizip gui
 INCLUDES	:=	libs/chesto/src libs/chesto/libs/resinfs/include libs/libget/src libs/get/src/libs/rapidjson/include libs/get/src/libs/minizip
 RAMFS_DIR   := resin
 
-APP_TITLE	:= hb App Store
+APP_TITLE	:= HB App Store
+APP_DESCRIPTION := Download and manage homebrew apps on your 3DS
 APP_AUTHOR 	:= 4TU Team
-APP_VERSION := 2.3
+APP_VERSION := 2.2
+ICON		:= resin/res/icon_small.png
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -106,19 +86,6 @@ else
 endif
 #---------------------------------------------------------------------------------
 
-#---------------------------------------------------------------------------------
-ifeq ($(GFXBUILD),$(BUILD))
-#---------------------------------------------------------------------------------
-export T3XFILES :=  $(GFXFILES:.t3s=.t3x)
-#---------------------------------------------------------------------------------
-else
-#---------------------------------------------------------------------------------
-export ROMFS_T3XFILES	:=	$(patsubst %.t3s, $(GFXBUILD)/%.t3x, $(GFXFILES))
-export T3XHFILES		:=	$(patsubst %.t3s, $(BUILD)/%.h, $(GFXFILES))
-#---------------------------------------------------------------------------------
-endif
-#---------------------------------------------------------------------------------
-
 export OFILES_SOURCES 	:=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
 
 export OFILES_BIN	:=	$(addsuffix .o,$(BINFILES)) \
@@ -158,18 +125,6 @@ endif
 
 .PHONY: all clean
 
-#-------------------------------------------------------------------------------
-# romfs
-#-------------------------------------------------------------------------------
-include $(PWD)/libs/chesto/libs/resinfs/share/romfs-wiiu.mk
-CFLAGS		+=	$(ROMFS_CFLAGS)
-CXXFLAGS	+=	$(ROMFS_CFLAGS)
-LIBS		+=	$(ROMFS_LIBS)
-OFILES		+=	$(ROMFS_TARGET)
-#-------------------------------------------------------------------------------
-
-
-
 #---------------------------------------------------------------------------------
 all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile.3ds
@@ -193,13 +148,20 @@ clean:
 	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(GFXBUILD)
 
 #---------------------------------------------------------------------------------
-$(GFXBUILD)/%.t3x	$(BUILD)/%.h	:	%.t3s
-#---------------------------------------------------------------------------------
-	@echo $(notdir $<)
-	@tex3ds -i $< -H $(BUILD)/$*.h -d $(DEPSDIR)/$*.d -o $(GFXBUILD)/$*.t3x
-
-#---------------------------------------------------------------------------------
 else
+.PHONY: all
+
+#-------------------------------------------------------------------------------
+# romfs
+#-------------------------------------------------------------------------------
+include $(PWD)/libs/chesto/libs/resinfs/share/romfs-wiiu.mk
+CFLAGS		+=	$(ROMFS_CFLAGS)
+CXXFLAGS	+=	$(ROMFS_CFLAGS)
+LIBS		+=	$(ROMFS_LIBS)
+OFILES		+=	$(ROMFS_TARGET)
+#-------------------------------------------------------------------------------
+
+DEPENDS         :=      $(OFILES:.o=.d)
 
 #---------------------------------------------------------------------------------
 # main targets

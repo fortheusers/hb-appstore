@@ -15,26 +15,6 @@ export DEVKITPRO
 TOPDIR ?= $(CURDIR)
 include $(DEVKITPRO)/libnx/switch_rules
 
-#---------------------------------------------------------------------------------
-# TARGET is the name of the output
-# BUILD is the directory where object files & intermediate files will be placed
-# SOURCES is a list of directories containing source code
-# DATA is a list of directories containing data files
-# INCLUDES is a list of directories containing header files
-# EXEFS_SRC is the optional input directory containing data copied into exefs, if anything this normally should only contain "main.npdm".
-#
-# NO_ICON: if set to anything, do not use icon.
-# NO_NACP: if set to anything, no .nacp file is generated.
-# APP_TITLE is the name of the app stored in the .nacp file (Optional)
-# APP_AUTHOR is the author of the app stored in the .nacp file (Optional)
-# APP_VERSION is the version of the app stored in the .nacp file (Optional)
-# APP_TITLEID is the titleID of the app stored in the .nacp file (Optional)
-# ICON is the filename of the icon (.jpg), relative to the project folder.
-#   If not set, it attempts to use one of the following (in this order):
-#     - <Project name>.jpg
-#     - icon.jpgK
-#     - <libnx folder>/default_icon.jpg
-#---------------------------------------------------------------------------------
 TARGET		:=	appstore
 BUILD		:=	build
 SOURCES		:=	. $(GET) $(RESINFS)/source $(CHESTO) $(MINIZIP) console gui
@@ -176,7 +156,6 @@ CXXFLAGS	+=	$(ROMFS_CFLAGS)
 LIBS		+=	$(ROMFS_LIBS)
 OFILES		+=	$(ROMFS_TARGET)
 #-------------------------------------------------------------------------------
-
 
 DEPENDS	:=	$(OFILES:.o=.d)
 

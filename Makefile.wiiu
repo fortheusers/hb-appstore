@@ -5,10 +5,6 @@ RAPIDJSON	:= ./libs/get/src/libs/rapidjson/include
 MINIZIP         := ./libs/get/src/libs/minizip
 TINYXML 	:= ./libs/get/src/libs/tinyxml
 
-#-------------------------------------------------------------------------------
-.SUFFIXES:
-#-------------------------------------------------------------------------------
-
 # default this environment variable
 DEVKITPRO ?= /opt/devkitpro
 DEVKITPPC ?= $(DEVKITPRO)/devkitPPC
@@ -20,13 +16,6 @@ export WUT_ROOT
 TOPDIR ?= $(CURDIR)
 include $(DEVKITPRO)/wut/share/wut_rules
 
-#-------------------------------------------------------------------------------
-# TARGET is the name of the output
-# BUILD is the directory where object files & intermediate files will be placed
-# SOURCES is a list of directories containing source code
-# INCLUDES is a list of directories containing header files
-# ROMFS is a folder to generate app's romfs
-#-------------------------------------------------------------------------------
 TARGET		:=	appstore
 BUILD		:=	build
 SOURCES		:=	. $(GET) $(RESINFS)/source $(CHESTO) $(MINIZIP) $(TINYXML) console gui

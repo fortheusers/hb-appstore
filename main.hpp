@@ -2,6 +2,8 @@
 
 #if defined(__WIIU__)
 #define DEFAULT_REPO "https://wiiubru.com/appstore"
+#elif defined(_3DS)
+#define DEFAULT_REPO "https://3ds.apps.fortheusers.org"
 #else
 #define DEFAULT_REPO "https://switchbru.com/appstore"
 #endif
