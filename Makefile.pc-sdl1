@@ -11,7 +11,7 @@ TINYXML_O := tinystr.o tinyxml.o tinyxmlerror.o tinyxmlparser.o
 # Compiler options
 CXX = g++
 # Source files
-SRC = $(wildcard *.cpp) $(wildcard ./console/*.cpp) $(wildcard ./gui/*.cpp) $(wildcard $(CHESTO)/*.cpp) $(wildcard $(GET)/*.cpp)
+SRC = $(wildcard *.cpp) $(wildcard ./gui/*.cpp) $(wildcard $(CHESTO)/*.cpp) $(wildcard $(GET)/*.cpp)
 # Output object
 OBJ_NAME = appstore.bin
 # Options, etc

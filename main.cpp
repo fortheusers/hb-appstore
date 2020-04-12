@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 
   if (cliMode)
   {
-#ifndef _3DS
+#ifndef SDL1
     // if NOGUI variable defined, use the console's main method
     int console_main(RootDisplay*, InputEvents*);
     console_main(display, events);
