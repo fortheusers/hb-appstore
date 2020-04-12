@@ -86,8 +86,6 @@ public:
 	ProgressBar downloadProgress;
 
 private:
-	Button download;
-	Button cancel;
 #if defined(SWITCH)
 	Button* start = nullptr;
 	TextElement* errorText = nullptr;
@@ -95,6 +93,9 @@ private:
 	TextElement details;
 	AppDetailsContent content;
 	TextElement downloadStatus;
+
+  Button download;
+	Button cancel;
 };
 
 

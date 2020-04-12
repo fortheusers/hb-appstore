@@ -103,6 +103,7 @@ bool Sidebar::process(InputEvents* event)
 		if (this->highlighted >= TOTAL_CATS) this->highlighted = TOTAL_CATS - 1;
 	}
 
+#if !defined(_3DS) && !defined(_3DS_MOCK)
 	// saw click down, set dragging state
 	if (event->isTouchDown())
 	{
@@ -125,6 +126,7 @@ bool Sidebar::process(InputEvents* event)
 
 		return true;
 	}
+#endif
 
 	// detect if a click is on one of the sidebar elements
 	// (or we saw the A button be pressed)
@@ -167,6 +169,10 @@ bool Sidebar::process(InputEvents* event)
 
 void Sidebar::render(Element* parent)
 {
+#if defined(_3DS) || defined(_3DS_MOCK)
+  // no sidebar on 3ds
+  return;
+#endif
 	// draw the light gray bg behind the active category
 	CST_Rect dimens = { 0, 0, 400 - 260 * (appList->R - 3) - 35, 60 }; // TODO: extract this to a method too
 	dimens.y = 150 + this->curCategory * 70 - 15;					   // TODO: extract formula into method
