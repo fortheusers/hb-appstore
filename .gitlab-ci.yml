@@ -40,3 +40,9 @@ Switch:
   variables:
     PLATFORM: 3ds
     EXT: 3dsx
+
+Wii:
+  <<: *common
+  variables:
+    PLATFORM: wii
+    EXT: dol
