@@ -289,7 +289,7 @@ void AppList::update()
 		return;
 
 #if defined(_3DS) || defined(_3DS_MOCK)
-  R = 1;  // force 1 app card a time
+  R = 3;  // force 3 app cards at time
   this->x = 45; // no sidebar
 #endif
 	// remove elements
@@ -340,7 +340,7 @@ void AppList::update()
 		appCards.emplace_back(package, this);
 		AppCard& card = appCards.back();
 		card.index = appCards.size() - 1;
-		card.position(25 + (card.index % R) * 265, 145 + (card.height + 15) * (card.index / R));
+		card.position(25 + (card.index % R) * (card.width + 9 / SCALER), 145 + (card.height + 15) * (card.index / R));
 		card.update();
 		super::append(&card);
 	}

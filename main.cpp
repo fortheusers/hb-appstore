@@ -85,6 +85,8 @@ int main(int argc, char* argv[])
     while (events->update()) {
       cliMode |= (events->held(L_BUTTON) || events->held(R_BUTTON));
     }
+
+    // small delay for recovery mode input
     CST_Delay(16);
   }
 

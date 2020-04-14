@@ -22,14 +22,6 @@
 #define SIZE 3
 #define RANDOM 4
 
-#if defined(_3DS) || defined(_3DS_MOCK)
-#define PANE_WIDTH 300
-#define SCALER 2
-#else
-#define PANE_WIDTH 720
-#define SCALER 1
-#endif
-
 class AppList : public ListElement
 {
 public:

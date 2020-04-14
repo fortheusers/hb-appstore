@@ -23,11 +23,11 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	, get(appList->get)
 	, appList(appList)
 	, downloadProgress()
-	, download(getAction(package), A_BUTTON, true, 30)
-	, cancel("Cancel", B_BUTTON, true, 30, download.width)
+	, download(getAction(package), A_BUTTON, true, 30 / SCALER)
+	, cancel("Cancel", B_BUTTON, true, 30 / SCALER, download.width)
 	, details(getPackageDetails(package).c_str(), 20, &white, false, 300)
 	, content(package, appList->useBannerIcons)
-	, downloadStatus("Download Status", 30, &white)
+	, downloadStatus("Download Status", 30 / SCALER, &white)
 {
 	// TODO: show current app status somewhere
 
@@ -40,7 +40,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	cancel.action = std::bind(&AppDetails::back, this);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
-  download.position(SCREEN_WIDTH / 2 - download.width / 2, 330);
+  download.position(SCREEN_WIDTH / 2 - download.width / 2, 360);
   cancel.position(SCREEN_WIDTH / 2 - cancel.width / 2, 410);
 #endif
 
@@ -97,7 +97,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	downloadProgress.dimBg = true;
 
   // download informations (not visible until the download is started)
-	downloadStatus.position(SCREEN_WIDTH / 2 - downloadProgress.width / 2, PANE_WIDTH / 2 - 70);
+	downloadStatus.position(SCREEN_WIDTH / 2 - downloadProgress.width / 2, PANE_WIDTH / 2 - 70 / SCALER);
 }
 
 AppDetails::~AppDetails()

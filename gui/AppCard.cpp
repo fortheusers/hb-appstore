@@ -22,7 +22,7 @@ AppCard::AppCard(Package* package, AppList* list)
 	, statusicon((RAMFS "res/" + std::string(package->statusString()) + ".png").c_str())
 {
 	// fixed width+height of one app card
-	this->width = 256;
+	this->width = 256;  // + 9px margins
 	this->height = ICON_SIZE + 45;
 
 	this->touchable = true;
@@ -31,16 +31,21 @@ AppCard::AppCard(Package* package, AppList* list)
 	this->action = std::bind(&AppCard::displaySubscreen, this);
 
 	// create the layout of the app card (all relative)
-#ifndef _3DS
-	icon.resize(256, ICON_SIZE);
-#else
+#if defined(_3DS) || defined(_3DS_MOCK)
 	icon.resize(ICON_SIZE, ICON_SIZE);
+  this->width = 85;
+#else
+  icon.resize(256, ICON_SIZE);
 #endif
 	statusicon.resize(30 / SCALER, 30 / SCALER);
 
 	super::append(&icon);
+
+#if !defined(_3DS) && !defined(_3DS_MOCK)
 	super::append(&version);
 	super::append(&status);
+#endif
+
 	super::append(&appname);
 	super::append(&author);
 	super::append(&statusicon);
@@ -56,11 +61,13 @@ void AppCard::update()
 	version.position(this->x + 40, this->y + icon.height + 10);
 	status.position(this->x + 40, this->y + icon.height + 25);
 
+  int spacer = this->width - 11; // 245 on 720p
+
 	appname.getTextureSize(&w, &h);
-	appname.position(this->x + 245 - w, this->y + icon.height + 5);
+	appname.position(this->x + spacer - w, this->y + icon.height + 5);
 
 	author.getTextureSize(&w, &h);
-	author.position(this->x + 245 - w, this->y + icon.height + 25);
+	author.position(this->x + spacer - w, this->y + icon.height + 25);
 
 	statusicon.position(this->x + 4, this->y + icon.height + 10);
 }
