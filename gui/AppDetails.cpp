@@ -18,14 +18,6 @@
 
 int AppDetails::lastFrameTime = 99;
 
-#if defined(_3DS) || defined(_3DS_MOCK)
-#define PANE_WIDTH 300
-#define SCALER 2
-#else
-#define PANE_WIDTH 720
-#define SCALER 1
-#endif
-
 AppDetails::AppDetails(Package* package, AppList* appList)
 	: package(package)
 	, get(appList->get)

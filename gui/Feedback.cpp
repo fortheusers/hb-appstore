@@ -23,7 +23,11 @@ Feedback::Feedback(Package* package)
 	super::append(&title);
 
 	icon.position(50, 160);
+#if defined(_3DS) || defined(_3DS_MOCK)
+  icon.resize(ICON_SIZE, ICON_SIZE);
+#else
 	icon.resize(256, ICON_SIZE);
+#endif
 	super::append(&icon);
 
 	keyboard.inputCallback = std::bind(&Feedback::keyboardInputCallback, this);

@@ -2,7 +2,7 @@
 #include "AppList.hpp"
 #include "MainDisplay.hpp"
 
-#define TEXT_SIZE	13
+#define TEXT_SIZE	13 / SCALER
 
 CST_Color AppCard::gray = { 80, 80, 80, 0xff };
 CST_Color AppCard::black = { 0, 0, 0, 0xff };
@@ -31,8 +31,12 @@ AppCard::AppCard(Package* package, AppList* list)
 	this->action = std::bind(&AppCard::displaySubscreen, this);
 
 	// create the layout of the app card (all relative)
+#ifndef _3DS
 	icon.resize(256, ICON_SIZE);
-	statusicon.resize(30, 30);
+#else
+	icon.resize(ICON_SIZE, ICON_SIZE);
+#endif
+	statusicon.resize(30 / SCALER, 30 / SCALER);
 
 	super::append(&icon);
 	super::append(&version);
@@ -88,7 +92,9 @@ void AppCard::render(Element* parent)
 	this->yOff = parent->y;
 
 	// TODO: don't render this card if it's going to be offscreen anyway according to the parent (AppList)
-	//	if (((AppList*)parent)->scrollOffset)
+	CST_Rect rect = { this->xOff + this->x, this->yOff + this->y, this->width, this->height };
+  if (CST_isRectOffscreen(&rect))
+    return;
 
 	// render all the subelements of this card
 	super::render(parent);
