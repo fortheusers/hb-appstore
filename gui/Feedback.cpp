@@ -5,8 +5,10 @@
 
 #include "../libs/chesto/src/RootDisplay.hpp"
 
+#ifndef NETWORK_MOCK
 #include <curl/curl.h>
 #include <curl/easy.h>
+#endif
 
 Feedback::Feedback(Package* package)
 	: package(package)
@@ -77,6 +79,7 @@ void Feedback::keyboardInputCallback()
 
 void Feedback::submit()
 {
+#ifndef NETWORK_MOCK
 	CURL* curl;
 	CURLcode res;
 
@@ -98,6 +101,7 @@ void Feedback::submit()
 		/* always cleanup */
 		curl_easy_cleanup(curl);
 	}
+#endif
 
 	// close this window
 	this->back();
