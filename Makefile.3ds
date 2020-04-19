@@ -18,7 +18,7 @@ INCLUDES	:=	libs/chesto/src libs/chesto/libs/resinfs/include libs/libget/src lib
 RAMFS_DIR   := resin
 
 APP_TITLE	:= HB App Store
-APP_DESCRIPTION := Download and manage homebrew apps on your 3DS
+APP_DESCRIPTION := Download and manage homebrew apps
 APP_AUTHOR 	:= 4TU Team
 APP_VERSION := 2.2
 ICON		:= resin/res/icon_small.png

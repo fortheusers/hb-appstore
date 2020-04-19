@@ -2,7 +2,7 @@
 #include "AppList.hpp"
 #include "MainDisplay.hpp"
 
-#define TEXT_SIZE	13
+#define TEXT_SIZE	13 / SCALER
 
 CST_Color AppCard::gray = { 80, 80, 80, 0xff };
 CST_Color AppCard::black = { 0, 0, 0, 0xff };
@@ -22,7 +22,7 @@ AppCard::AppCard(Package* package, AppList* list)
 	, statusicon((RAMFS "res/" + std::string(package->statusString()) + ".png").c_str())
 {
 	// fixed width+height of one app card
-	this->width = 256;
+	this->width = 256;  // + 9px margins
 	this->height = ICON_SIZE + 45;
 
 	this->touchable = true;
@@ -31,12 +31,21 @@ AppCard::AppCard(Package* package, AppList* list)
 	this->action = std::bind(&AppCard::displaySubscreen, this);
 
 	// create the layout of the app card (all relative)
-	icon.resize(256, ICON_SIZE);
-	statusicon.resize(30, 30);
+#if defined(_3DS) || defined(_3DS_MOCK)
+	icon.resize(ICON_SIZE, ICON_SIZE);
+  this->width = 85;
+#else
+  icon.resize(256, ICON_SIZE);
+#endif
+	statusicon.resize(30 / SCALER, 30 / SCALER);
 
 	super::append(&icon);
+
+#if !defined(_3DS) && !defined(_3DS_MOCK)
 	super::append(&version);
 	super::append(&status);
+#endif
+
 	super::append(&appname);
 	super::append(&author);
 	super::append(&statusicon);
@@ -52,11 +61,13 @@ void AppCard::update()
 	version.position(this->x + 40, this->y + icon.height + 10);
 	status.position(this->x + 40, this->y + icon.height + 25);
 
+  int spacer = this->width - 11; // 245 on 720p
+
 	appname.getTextureSize(&w, &h);
-	appname.position(this->x + 245 - w, this->y + icon.height + 5);
+	appname.position(this->x + spacer - w, this->y + icon.height + 5);
 
 	author.getTextureSize(&w, &h);
-	author.position(this->x + 245 - w, this->y + icon.height + 25);
+	author.position(this->x + spacer - w, this->y + icon.height + 25);
 
 	statusicon.position(this->x + 4, this->y + icon.height + 10);
 }
@@ -88,7 +99,9 @@ void AppCard::render(Element* parent)
 	this->yOff = parent->y;
 
 	// TODO: don't render this card if it's going to be offscreen anyway according to the parent (AppList)
-	//	if (((AppList*)parent)->scrollOffset)
+	CST_Rect rect = { this->xOff + this->x, this->yOff + this->y, this->width, this->height };
+  if (CST_isRectOffscreen(&rect))
+    return;
 
 	// render all the subelements of this card
 	super::render(parent);

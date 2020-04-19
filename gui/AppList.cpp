@@ -288,6 +288,10 @@ void AppList::update()
 	if (!get)
 		return;
 
+#if defined(_3DS) || defined(_3DS_MOCK)
+  R = 3;  // force 3 app cards at time
+  this->x = 45; // no sidebar
+#endif
 	// remove elements
 	super::removeAll();
 
@@ -336,15 +340,20 @@ void AppList::update()
 		appCards.emplace_back(package, this);
 		AppCard& card = appCards.back();
 		card.index = appCards.size() - 1;
-		card.position(25 + (card.index % R) * 265, 145 + (card.height + 15) * (card.index / R));
+		card.position(25 + (card.index % R) * (card.width + 9 / SCALER), 145 + (card.height + 15) * (card.index / R));
 		card.update();
 		super::append(&card);
 	}
 	totalCount = appCards.size();
 
 	// add quit button
-	quitBtn.position(720 + 260 * (R - 3), 70);
+	quitBtn.position(SCREEN_HEIGHT + 260 * (R - 3), 70);
+
+#if defined(_3DS) || defined(_3DS_MOCK)
+  quitBtn.position(SCREEN_WIDTH - quitBtn.width - 5, 20);
+#else
 	super::append(&quitBtn);
+#endif
 
 	// update the view for the current category
 	if (curCategoryValue == "_search")

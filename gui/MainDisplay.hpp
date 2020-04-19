@@ -9,12 +9,6 @@
 #include <SDL2/SDL_mixer.h>
 #endif
 
-#if defined(__WIIU__)
-#define ICON_SIZE 90
-#else
-#define ICON_SIZE 150
-#endif
-
 class MainDisplay : public RootDisplay
 {
 public:

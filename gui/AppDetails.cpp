@@ -23,11 +23,11 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	, get(appList->get)
 	, appList(appList)
 	, downloadProgress()
-	, download(getAction(package), A_BUTTON, true, 30)
-	, cancel("Cancel", B_BUTTON, true, 30, download.width)
+	, download(getAction(package), A_BUTTON, true, 30 / SCALER)
+	, cancel("Cancel", B_BUTTON, true, 30 / SCALER, download.width)
 	, details(getPackageDetails(package).c_str(), 20, &white, false, 300)
 	, content(package, appList->useBannerIcons)
-	, downloadStatus("Download Status", 30, &white)
+	, downloadStatus("Download Status", 30 / SCALER, &white)
 {
 	// TODO: show current app status somewhere
 
@@ -38,6 +38,11 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 
 	cancel.position(970, 630);
 	cancel.action = std::bind(&AppDetails::back, this);
+
+#if defined(_3DS) || defined(_3DS_MOCK)
+  download.position(SCREEN_WIDTH / 2 - download.width / 2, 360);
+  cancel.position(SCREEN_WIDTH / 2 - cancel.width / 2, 410);
+#endif
 
 #if defined(SWITCH)
 	// display an additional launch/install button if the package is installed,  and has a binary or is a theme
@@ -73,9 +78,6 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	}
 #endif
 
-	super::append(&download);
-	super::append(&cancel);
-
 	// more details
 
 	details.position(940, 50);
@@ -86,13 +88,16 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	content.reportIssue.action = std::bind(&AppDetails::leaveFeedback, this);
 	super::append(&content);
 
-	downloadProgress.width = 740;
-	downloadProgress.position(1280 / 2 - downloadProgress.width / 2, 720 / 2 - 5);
+  super::append(&download);
+	super::append(&cancel);
+
+	downloadProgress.width = PANE_WIDTH;
+	downloadProgress.position(SCREEN_WIDTH / 2 - downloadProgress.width / 2, PANE_WIDTH / 2 - 5);
 	downloadProgress.color = 0xff0000ff;
 	downloadProgress.dimBg = true;
 
   // download informations (not visible until the download is started)
-	downloadStatus.position(1280 / 2 - downloadProgress.width / 2, 720 / 2 - 70);
+	downloadStatus.position(SCREEN_WIDTH / 2 - downloadProgress.width / 2, PANE_WIDTH / 2 - 70 / SCALER);
 }
 
 AppDetails::~AppDetails()
@@ -355,7 +360,7 @@ void AppDetails::render(Element* parent)
 		this->parent = parent;
 
 	// draw white background
-	CST_Rect dimens = { 0, 0, 920, 720 };
+	CST_Rect dimens = { 0, 0, 920, PANE_WIDTH };
 
 	CST_Color  white = { 0xff, 0xff, 0xff, 0xff };
 
@@ -442,8 +447,8 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	, moreByAuthor("More by Author", X_BUTTON)
 	, title(package->title.c_str(), 35, &black)
 	, title2(package->author.c_str(), 27, &gray)
-	, details(package->long_desc.c_str(), 20, &black, false, 740)
-	, changelog((std::string("Changelog:\n") + package->changelog).c_str(), 20, &black, false, 740)
+	, details(package->long_desc.c_str(), 20 / SCALER, &black, false, PANE_WIDTH + 20 / SCALER)
+	, changelog((std::string("Changelog:\n") + package->changelog).c_str(), 20 / SCALER, &black, false, PANE_WIDTH + 20 / SCALER)
 	, banner(useBannerIcons ? package->getBannerUrl().c_str() : package->getIconUrl().c_str(), [package]{
 			// If the banner fails to load, use an icon banner
 			NetImageElement* icon = new NetImageElement(package->getIconUrl().c_str(), []{
@@ -468,18 +473,18 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	if (!useBannerIcons)
 		banner.setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
 
-	banner.resize(787, 193);
-	banner.position(BANNER_X, BANNER_Y);
+	banner.resize(767 / SCALER, 193 / SCALER);
+	banner.position(BANNER_X / SCALER, BANNER_Y);
 	super::append(&banner);
 
 	title2.position(MARGIN, 80);
 	super::append(&title2);
 
 	// the main description (wrapped text)
-	details.position(MARGIN + 30, banner.y + banner.height + 22);
+	details.position((MARGIN / SCALER + 30), banner.y + banner.height + 22);
 	super::append(&details);
 
-	changelog.position(MARGIN + 30, details.y + details.height + 30);
+	changelog.position((MARGIN / SCALER + 30), details.y + details.height + 30);
 	super::append(&changelog);
 }
 

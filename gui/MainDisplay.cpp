@@ -50,6 +50,11 @@ bool MainDisplay::process(InputEvents* event)
 		spinner->resize(90, 90);
 		super::append(spinner);
 
+#if defined(_3DS) || defined(_3DS_MOCK)
+  spinner->resize(40, 40);
+  spinner->position(SCREEN_WIDTH / 2 - spinner->width / 2, 70);
+#endif
+
 		networking_callback = MainDisplay::updateLoader;
 
 		// fetch repositories metadata

@@ -6,10 +6,12 @@ services:
 matrix:
   include:
     - env: PLATFORM=pc
-    - env: PLATFORM=switch
+    - env: PLATFORM=pc-sdl1
     - env: PLATFORM=wiiu
+    - env: PLATFORM=switch
+    - env: PLATFORM=3ds
 
 script:
   - docker run -e PLATFORM="$PLATFORM"
-               -v $(pwd):/code ubuntu:18.10
+               -v $(pwd):/code ubuntu:18.04
                /bin/bash -c "cd /code && ./dependency_helper.sh && ./build.sh"

@@ -5,8 +5,10 @@
 
 #include "../libs/chesto/src/RootDisplay.hpp"
 
+#ifndef NETWORK_MOCK
 #include <curl/curl.h>
 #include <curl/easy.h>
+#endif
 
 Feedback::Feedback(Package* package)
 	: package(package)
@@ -23,7 +25,11 @@ Feedback::Feedback(Package* package)
 	super::append(&title);
 
 	icon.position(50, 160);
+#if defined(_3DS) || defined(_3DS_MOCK)
+  icon.resize(ICON_SIZE, ICON_SIZE);
+#else
 	icon.resize(256, ICON_SIZE);
+#endif
 	super::append(&icon);
 
 	keyboard.inputCallback = std::bind(&Feedback::keyboardInputCallback, this);
@@ -73,6 +79,7 @@ void Feedback::keyboardInputCallback()
 
 void Feedback::submit()
 {
+#ifndef NETWORK_MOCK
 	CURL* curl;
 	CURLcode res;
 
@@ -94,6 +101,7 @@ void Feedback::submit()
 		/* always cleanup */
 		curl_easy_cleanup(curl);
 	}
+#endif
 
 	// close this window
 	this->back();
