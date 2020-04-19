@@ -43,7 +43,7 @@ case "${PLATFORM}" in
     ;;
   wii)
       setup_dkp_repo
-      sudo dkp-pacman --noconfirm -S devkitPPC libogc ppc-zlib ppc-bzip2 ppc-freetype ppc-mpg123 ppc-libpng ppc-pkg-config ppc-libvorbisidec ppc-libjpeg-turbo libfat-ogc
+      sudo dkp-pacman --noconfirm -S devkitPPC libogc gamecube-tools ppc-zlib ppc-bzip2 ppc-freetype ppc-mpg123 ppc-libpng ppc-pkg-config ppc-libvorbisidec ppc-libjpeg-turbo libfat-ogc
 
       # one day replace with pacman: https://github.com/dborth/sdl-wii/issues/54
       sudo apt-get -y install wget git
