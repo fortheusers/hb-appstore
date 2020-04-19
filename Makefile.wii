@@ -7,7 +7,6 @@
 #---------------------------------------------------------------------------------
 .SECONDARY:
 #---------------------------------------------------------------------------------
-
 DEVKITPRO ?= /opt/devkitpro
 DEVKITPPC ?= $(DEVKITPRO)/devkitPPC
 export DEVKITPRO
@@ -31,7 +30,7 @@ RAMFS_DIR		:=	resin
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS		=	-g -O2 -Wall $(MACHDEP) $(INCLUDE) -DSDL1 -DNETWORK_MOCK -DWII -DUSE_FILE32API
+CFLAGS		=	-g -O2 -Wall $(MACHDEP) $(INCLUDE) -DSDL1 -DNETWORK_MOCK -DWII -DUSE_FILE32API -DUSE_RAMFS
 CXXFLAGS	=	$(CFLAGS)
 
 LDFLAGS	=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
@@ -55,6 +54,8 @@ ifneq ($(BUILD),$(notdir $(CURDIR)))
 #---------------------------------------------------------------------------------
 
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
+
+export TOPDIR	:=	$(CURDIR)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 					$(foreach dir,$(DATA),$(CURDIR)/$(dir)) \
@@ -120,6 +121,16 @@ run:
 
 #---------------------------------------------------------------------------------
 else
+
+#-------------------------------------------------------------------------------
+# romfs
+#-------------------------------------------------------------------------------
+include $(PWD)/libs/chesto/libs/resinfs/share/romfs-wiiu.mk
+CFLAGS		+=	$(ROMFS_CFLAGS)
+CXXFLAGS	+=	$(ROMFS_CFLAGS)
+LIBS		+=	$(ROMFS_LIBS)
+OFILES		+=	$(ROMFS_TARGET)
+#-------------------------------------------------------------------------------
 
 #---------------------------------------------------------------------------------
 # main targets
