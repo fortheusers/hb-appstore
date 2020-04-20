@@ -25,6 +25,11 @@ Web browsers can download files from the Homebrew App Store at [apps.fortheusers
 
 Desktop platforms (Windows, MacOS, and Linux), can use @LyfeOnEdge's [unofficial-appstore](https://github.com/LyfeOnEdge/unofficial-appstore), or their alternative program: [HBUpdater](https://github.com/LyfeOnEdge/HBUpdater)
 
+### 3DS and Wii
+There are work-in-progress ports to 3DS and Wii, with varying degrees of feature support. These can be compiled using the instructions below, but aren't yet ready to be used by most users.
+
+If you would like to help maintain repos for these platforms, or contribute code / ideas, please feel free to make a PR or contact us on the [4TU Discord](https://discordapp.com/invite/F2PKpEj)!
+
 ## Maintaining a repo
 See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for setting up a repository. Everything is designed to be statically hosted. If there's no repo provided in the `repos.json` config file, then it will generate a default one pointing to [switchbru.com/appstore](http://switchbru.com/appstore/).
 
@@ -91,7 +96,7 @@ If all goes well, `appstore.rpx` should be sitting in the current directory.
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
 2. Install devkitARM and needed 3DS dependencies via dkp-pacman:
 ```
-sudo dkp-pacman -S 3ds-sdl 3ds-sdl_image 3ds-sdl_mixer 3ds-sdl_gfx 3ds-sdl_ttf libctru citro3d 3dstools 3ds-curl 3ds-mbedtls
+sudo dkp-pacman --noconfirm -S devkitPPC libogc gamecube-tools ppc-zlib ppc-bzip2 ppc-freetype ppc-mpg123 ppc-libpng ppc-pkg-config ppc-libvorbisidec ppc-libjpeg-turbo libfat-ogc
 ```
 3. *If on macOS*: install gtar with: `brew install gnu-tar` (needed by resinfs)
 4. Once it's all setup, recursively clone the repo and run make:
@@ -102,6 +107,22 @@ make -f Makefile.3ds
 ```
 
 If all goes well, `appstore.3dsx` should be sitting in the current directory.
+
+### Building for Wii (with libogc)
+1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
+2. Install devkitPPC and needed Wii dependencies via dkp-pacman:
+```
+sudo dkp-pacman -S 3ds-sdl 3ds-sdl_image 3ds-sdl_mixer 3ds-sdl_gfx 3ds-sdl_ttf libctru citro3d 3dstools 3ds-curl 3ds-mbedtls
+```
+3. *If on macOS*: install gtar with: `brew install gnu-tar` (needed by resinfs)
+4. Once it's all setup, recursively clone the repo and run make:
+```
+git clone --recursive https://github.com/vgmoose/hb-appstore.git
+cd hb-appstore
+make -f Makefile.wii
+```
+
+If all goes well, `appstore.dol` should be sitting in the current directory.
 
 ### Building for PC
 There's a makefile for building the SDL2 app on PC as well, primarily used for debugging and performance monitoring. Below instructions are for Ubuntu, but should be similar on other platforms:
