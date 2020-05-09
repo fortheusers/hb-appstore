@@ -9,7 +9,7 @@
         "sources": [ "gui", "console" ]
     },
     "lang.cpp": {
-        "lib": [ "sdl2", "sdl2_gfx" ],
+        "lib": [ "SDL2", "SDL2_gfx" ],
         "cpp-standard": "gnu++14",
         "cxxflags": [ "-Wno-narrowing", "-DPC" ]
     }
