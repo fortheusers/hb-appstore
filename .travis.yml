@@ -13,5 +13,5 @@ matrix:
 
 script:
   - docker run -e PLATFORM="$PLATFORM"
-               -v $(pwd):/code ubuntu:18.04
+               -v $(pwd):/code ubuntu:20.04
                /bin/bash -c "cd /code && ./dependency_helper.sh && ./build.sh"

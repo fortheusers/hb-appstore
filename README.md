@@ -92,7 +92,7 @@ This project exists thanks to all the people who contribute!
 #### Financial Contributors
 Become a [financial contributor](https://opencollective.com/fortheusers/contribute) and help us sustain our community!
 
-<a href="https://opencollective.com/hb-appstore"><img src="https://opencollective.com/fortheusers/individuals.svg?width=890"></a>
+<a href="https://opencollective.com/fortheusers"><img src="https://opencollective.com/fortheusers/individuals.svg?width=890"></a>
 
 #### Organizations
 Support this project with your organization. Your logo will show up here with a link to your website.

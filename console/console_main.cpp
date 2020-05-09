@@ -4,7 +4,7 @@
 #include "../libs/chesto/src/InputEvents.hpp"
 #include "../libs/chesto/src/RootDisplay.hpp"
 
-#include "../main.hpp"
+#include "../gui/main.hpp"
 
 #include "Menu.hpp"
 

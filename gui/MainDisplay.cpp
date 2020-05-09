@@ -11,7 +11,7 @@
 #include "../libs/get/src/Utils.hpp"
 
 #include "MainDisplay.hpp"
-#include "../main.hpp"
+#include "main.hpp"
 
 MainDisplay::MainDisplay()
 	: appList(NULL, &sidebar)

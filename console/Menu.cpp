@@ -1,5 +1,5 @@
 #include "Menu.hpp"
-#include "../main.hpp"
+#include "../gui/main.hpp"
 #include <algorithm>
 #include <sstream>
 

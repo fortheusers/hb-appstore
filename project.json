@@ -1,0 +1,17 @@
+{
+    "id": "hbas",
+    "type": "application",
+    "value": {
+        "author": "4TU Team",
+        "description": "Download homebrew apps with a UI",
+        "language": "c++",
+        "use": [ "get", "chesto" ],
+        "sources": [ "gui", "console" ]
+    },
+    "lang.cpp": {
+        "lib": [ "sdl2", "sdl2_gfx" ],
+        "cpp-standard": "gnu++14",
+        "cxxflags": [ "-Wno-narrowing", "-DPC" ]
+    }
+}
+

@@ -11,13 +11,13 @@
 #include <sys/iosupport.h>
 #endif
 
-#include "libs/get/src/Get.hpp"
-#include "libs/get/src/Utils.hpp"
-#include "libs/chesto/src/DownloadQueue.hpp"
+#include "../libs/get/src/Get.hpp"
+#include "../libs/get/src/Utils.hpp"
+#include "../libs/chesto/src/DownloadQueue.hpp"
 
-#include "gui/MainDisplay.hpp"
+#include "../gui/MainDisplay.hpp"
 
-#include "console/Menu.hpp"
+#include "../console/Menu.hpp"
 
 
 #include "main.hpp"
