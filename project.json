@@ -5,11 +5,11 @@
         "author": "4TU Team",
         "description": "Download homebrew apps with a UI",
         "language": "c++",
-        "use": [ "get", "chesto" ],
         "sources": [ "gui", "console" ]
     },
     "lang.cpp": {
-        "lib": [ "SDL2", "SDL2_gfx" ],
+        "lib": [ "SDL2", "SDL2_image", "SDL2_ttf", "SDL2_gfx", "z", "curl" ],
+        "static-lib": [ "get", "chesto" ],
         "cpp-standard": "gnu++14",
         "cxxflags": [ "-Wno-narrowing", "-DPC" ]
     }
