@@ -57,19 +57,19 @@ void AppCard::update()
 
 	// update the position of the elements
 
-	icon.position(this->x, this->y);
-	version.position(this->x + 40, this->y + icon.height + 10);
-	status.position(this->x + 40, this->y + icon.height + 25);
+	icon.position(0, 0);
+	version.position(40, icon.height + 10);
+	status.position(40, icon.height + 25);
 
   int spacer = this->width - 11; // 245 on 720p
 
 	appname.getTextureSize(&w, &h);
-	appname.position(this->x + spacer - w, this->y + icon.height + 5);
+	appname.position(spacer - w, icon.height + 5);
 
 	author.getTextureSize(&w, &h);
-	author.position(this->x + spacer - w, this->y + icon.height + 25);
+	author.position(spacer - w, icon.height + 25);
 
-	statusicon.position(this->x + 4, this->y + icon.height + 10);
+	statusicon.position(4, icon.height + 10);
 }
 
 // Trigger the icon download (if the icon wasn't already cached)
@@ -81,7 +81,7 @@ void AppCard::handleIconLoad()
 
 	int twoCardsHeight = (this->height + 15) * 2;
 
-	if ((list->y + this->y + this->height) < -twoCardsHeight)
+	if ((list->y + this->height) < -twoCardsHeight)
 		return;
 	if ((list->y + this->y) > (SCREEN_HEIGHT + twoCardsHeight))
 		return;

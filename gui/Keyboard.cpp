@@ -8,6 +8,8 @@ Keyboard::Keyboard(AppList* appList)
 	this->x = 372;
 	this->y = 417;
 
+	this->isAbsolute = true;
+
 	// set touchmode based on applist if it's present
 	if (appList)
 		touchMode = appList->touchMode;
@@ -89,7 +91,7 @@ void Keyboard::render(Element* parent)
 	//   CST_SetDrawColor(parent->renderer, 0xff, 0xaa, 0xaa, 0xff);
 	//   CST_FillRect(parent->renderer, &dimens4);
 
-	super::render(this);
+	super::render(parent);
 }
 
 bool Keyboard::process(InputEvents* event)
@@ -257,7 +259,7 @@ void Keyboard::updateSize()
 	// go through and draw each of the three rows at the right position
 	for (int x = 0; x < rowsCount; x++)
 	{
-		TextElement* rowText = new TextElement(rows[x].c_str(), textSize, &gray, true);
+		Element* rowText = new TextElement(rows[x].c_str(), textSize, &gray, true);
 		rowText->position(kXPad + x * kXOff, kYPad + x * kYOff - (rowText->height / 2));
 		super::append(rowText);
 	}
@@ -269,11 +271,11 @@ void Keyboard::updateSize()
 
 	int textSize2 = (int)((16 / 400.0) * width);
 
-	TextElement* delButton = new TextElement("DEL", textSize2, &gray, false);
+	Element* delButton = new TextElement("DEL", textSize2, &gray, false);
 	delButton->position(dPos2, dHeight2);
 	super::append(delButton);
 
-	TextElement* spaceButton = new TextElement("SPACE", textSize2, &gray, false);
+	Element* spaceButton = new TextElement("SPACE", textSize2, &gray, false);
 	spaceButton->position(sPos2, dHeight2);
 	super::append(spaceButton);
 }

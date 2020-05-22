@@ -93,7 +93,7 @@ bool AppList::process(InputEvents* event)
 	// must be done before keyboard stuff to properly switch modes
 	if (event->isTouchDown())
 	{
-		// remove a highilight if it exists (TODO: same as an above if statement)
+		// remove a highlight if it exists (TODO: same as an above if statement)
 		if (this->highlighted >= 0 && this->highlighted < this->elements.size() && this->elements[this->highlighted])
 			this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
 
@@ -242,7 +242,7 @@ void AppList::render(Element* parent)
     this->renderer = parent->renderer;
   }
 
-	super::render(this);
+	super::render(parent);
 }
 
 bool AppList::sortCompare(const Package* left, const Package* right)

@@ -58,6 +58,20 @@ Feedback::Feedback(Package* package)
 #endif
 }
 
+void Feedback::render(Element* parent)
+{
+
+	// draw a white background, 870 wiz
+	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
+
+	  if (parent != NULL) {
+    CST_SetDrawColor(parent->renderer, white);
+    this->renderer = parent->renderer;
+  }
+
+	return super::render(parent);
+}
+
 bool Feedback::process(InputEvents* event)
 {
 	bool ret = super::process(event);

@@ -216,7 +216,7 @@ void AboutScreen::render(Element* parent)
 	CST_FillRect(parent->renderer, &dimens);
 	this->renderer = parent->renderer;
 
-	super::render(this);
+	super::render(parent);
 }
 
 bool AboutScreen::process(InputEvents* event)

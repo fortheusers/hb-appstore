@@ -35,6 +35,8 @@ void MainDisplay::render(Element* parent)
 {
 	if (showingSplash)
 		renderedSplash = true;
+
+	renderBackground(true);
 	RootDisplay::render(parent);
 }
 
