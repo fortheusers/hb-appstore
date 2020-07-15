@@ -1,3 +1,5 @@
+Specific instructions for various platforms are covered here!
+
 ### Building for Switch (with libnx)
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
 2. Install devkitA64 and needed Switch dependencies via dkp-pacman:
@@ -16,7 +18,7 @@ If all goes well, `appstore.nro` should be sitting in the current directory.
 
 ### Building for Wii U (with WUT)
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
-2. Setup [wiiu-fling](https://gitlab.com/QuarkTheAwesome/wiiu-fling#wiiu-fling) according to the instructions
+2. Setup [wiiu-fling](https://gitlab.com/QuarkTheAwesome/wiiu-fling#wiiu-fling) according to the instructions (**NOTICE**: at this time of writing the fling repo's will need to go above the dkp ones in order to properly build with SDL)
 3. Install devkitPPC and needed Wii U dependencies via dkp-pacman:
 ```
 sudo dkp-pacman -S wut wiiu-sdl2 devkitPPC wiiu-libromfs wiiu-sdl2_gfx wiiu-sdl2_image wiiu-sdl2_ttf wiiu-sdl2_mixer ppc-zlib ppc-bzip2 ppc-freetype ppc-mpg123 ppc-libpng wiiu-curl-headers ppc-pkg-config wiiu-pkg-config

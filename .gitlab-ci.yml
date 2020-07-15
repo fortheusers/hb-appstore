@@ -1,4 +1,4 @@
-image: ubuntu:18.04
+image: archlinux
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
