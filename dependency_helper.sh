@@ -22,10 +22,10 @@ export HAS_SUDO="$(command -v sudo)"
 main_platform_logic () {
   case "${PLATFORM}" in
     pc)
-        sudo pacman --noconfirm -S sdl2
+        sudo pacman --noconfirm -S sdl2 sdl2_image sdl2_gfx sdl2_ttf
       ;;
     pc-sdl1)
-        sudo pacman --noconfirm -S sdl
+        sudo pacman --noconfirm -S sdl sdl_image sdl_gfx sdl_ttf
       ;;
     switch) # currently libnx
         setup_dkp_repo
