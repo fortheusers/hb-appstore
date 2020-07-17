@@ -16,7 +16,7 @@ SRC = $(wildcard *.cpp) $(wildcard ./gui/*.cpp) $(wildcard $(CHESTO)/*.cpp) $(wi
 OBJ_NAME = appstore.bin
 # Options, etc
 COMPILER_FLAGS = -g -std=gnu++14 -DPC -DSDL1 -DNETWORK -Wno-narrowing
-INCLUDE_DIRS = -I . -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include
+INCLUDE_DIRS = -I . -I $(RAPIDJSON) -I $(MINIZIP) -I /usr/local/include -I /usr/include/SDL
 LINKER_FLAGS = -lSDL -lSDLmain -lSDL_image -lSDL_ttf -lSDL_gfx -lcurl -lz
 
 OBJS := $(patsubst %.cpp,%.o,$(wildcard $(SRC)))
