@@ -72,11 +72,11 @@ setup_deb_sdl_deps () {
 }
 
 setup_fling_repo () {
-  setup_dkp_repo
-
   # trust quarky signing keys
   sudo ${DKP}pacman-key --recv 6F986ED22C5B9003
   sudo ${DKP}pacman-key --lsign 6F986ED22C5B9003
+
+  setup_dkp_repo
 
   sudo echo "
     [wiiu-fling]
