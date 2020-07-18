@@ -57,6 +57,7 @@ main_platform_logic () {
 install_container_deps () {
   if [ ! -z $HAS_PACMAN ]; then
     pacman --noconfirm -Syuu && pacman --noconfirm -Sy wget sudo base-devel jq git strongswan
+    echo "keyserver keys.gnupg.net" >> /etc/pacman.d/gnupg/gpg.conf
     pacman-key --init
   else
     apt-get update && apt-get install -y wget sudo libxml2 xz-utils lzma build-essential haveged
