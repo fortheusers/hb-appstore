@@ -1,11 +1,10 @@
-image: archlinux
+image: registry.gitlab.com/4tu/spheal
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 .common: &common
   script:
-    - ./dependency_helper.sh
     - make -f Makefile.$PLATFORM
   artifacts:
     paths:

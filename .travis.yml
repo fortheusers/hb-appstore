@@ -10,10 +10,5 @@ matrix:
     - env: PLATFORM=switch
     - env: PLATFORM=3ds
 script:
-  - docker run -e PLATFORM="$PLATFORM"
-               -e VPN_INFO="$VPN_INFO" --cap-add=NET_ADMIN 
-               -v $(pwd):/code archlinux
-               /bin/bash -c "cd /code && ./dependency_helper.sh && ./build.sh"
-env:
-  global:
-    - secure: uRXzxPetw4ia+tEH1gLU2NDph8116AQUkUZn0sSlDKkOsvYhdEUkMdrPlKLqpD6Wn5kwEemSSpwTVpmfQO8/k0H3DCHnJc8ynb3UZyVIvNs84KYTY5wWGNgKABXVt/TlyJmK2S2YHheJgQJ1StMjUPPMCGJFL4R4D1vfBSHGd21ons2XLO14f/CghedVDuBffAg1gZnqtA7ZfWCWzxzisaxTcSLU98MyvCokZcT1Xk5ODqUPKK0DO95XXxY8jyJtOcLpvnwfP4/iYWjytTfEcuJpSK30DGsiryDO45+FSXjCScyiiblBXRJIGw+Fgn5gOOuFBy/LBb04R5v0leR9Qf8cPdqRjFxGpODVJ/lJ1j5Y4Ix8PZSRHTFZT3rWSkuK4Z2dMdbTv3xtDPmjAkOMC90LTz8K1N2xhxIZT+1HqMA6UpgKl1TjMr3xGuLkA1cwaYlbREPHT5iFx+7HaF/M2+O2k3AFmKwDtXzfUngHn1CjjwXAXEUg6M502al731IIJIWbCePVUVLk2RAM2S5IYMsKNyCgsFXMu5VBTBnaIR7TDaJQsDED2zNruoJzeQJxfxCmrsFOHqbA9dAe9sdoq+4+cXshrluOypPNY5A6PBdspkWEkKLpAzTnO7zt3zIs6sjXt39ThQXQwCuxzCr/KqtrOw1mwzN7tiyHAm1zlYs=
+  - docker run -v $(pwd):/code archlinux
+               /bin/bash -c "cd /code && make -f Makefile.$PLATFORM"
