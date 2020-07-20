@@ -10,5 +10,5 @@ matrix:
     - env: PLATFORM=switch
     - env: PLATFORM=3ds
 script:
-  - docker run -v $(pwd):/code archlinux
+  - docker run -v $(pwd):/code registry.gitlab.com/4tu/spheal
                /bin/bash -c "cd /code && make -f Makefile.$PLATFORM"

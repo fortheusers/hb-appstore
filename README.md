@@ -46,9 +46,10 @@ The easiest way to build is to use a docker container. Docker can be used to bui
 1. Install [Docker](https://www.docker.com)
 2. Run the following, replacing `switch` with the target platform (one of `switch`, `wiiu`, or `pc`):
 ```
-git clone https://github.com/vgmoose/hb-appstore.git
+git clone --recursive https://github.com/vgmoose/hb-appstore.git
 cd hb-appstore
-docker run -e PLATFORM='switch' -v $(pwd):/code -it ubuntu:18.10 /bin/bash
+export PLATFORM=switch    # or wiiu, 3ds, wii, pc, pc-sdl1
+docker run -v $(pwd):/code -it registry.gitlab.com/4tu/spheal "cd /code && make -f Makefile.$PLATFORM"
 ```
 3. You should now be in the container, run:
 ```
