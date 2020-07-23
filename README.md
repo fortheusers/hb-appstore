@@ -1,7 +1,7 @@
 # Homebrew App Store
 [![GPLv3 License](https://img.shields.io/badge/license-GPLv3-blue.svg?style=flat-square)](https://opensource.org/licenses/GPL-3.0)
 [![gitlab ci](https://gitlab.com/4TU/hb-appstore/badges/master/pipeline.svg?style=flat-square)](https://gitlab.com/4TU/hb-appstore/pipelines)
-[![travis](https://img.shields.io/travis/vgmoose/hb-appstore.svg?label=travis&style=flat-square)](https://travis-ci.org/vgmoose/hb-appstore)
+[![travis](https://img.shields.io/travis/fortheusers/hb-appstore.svg?label=travis&style=flat-square)](https://travis-ci.org/fortheusers/hb-appstore)
 [![Financial Contributors on Open Collective](https://opencollective.com/fortheusers/all/badge.svg?label=financial+contributors&style=flat-square)](https://opencollective.com/fortheusers)
 [![discord](https://img.shields.io/discord/339118412414582786.svg?color=blueviolet&label=discord&style=flat-square)](https://discordapp.com/invite/F2PKpEj)
 [![twitter](https://img.shields.io/twitter/follow/wiiubru.svg?label=twitter&style=flat-square)](https://twitter.com/wiiubru)
@@ -13,12 +13,12 @@ A graphical frontend to the [get package manager](https://github.com/vgmoose/lib
 ### Nintendo Switch
 To run this program, a Nintendo Switch with access to the Homebrew Menu is required. This can be done on most Switches manufactured before July 2018, for compatibility check your serial number at [ismyswitchpatched.com](https://ismyswitchpatched.com). To run hbmenu, see the tutorial [here](https://guide.sdsetup.com/).
 
-Extract the latest [hb-appstore](https://github.com/vgmoose/hb-appstore/releases) to `sd:/switch/appstore/`, and run "hb App Store" from within hbmenu. When you're done, you can press the Minus (-) button to exit.
+Extract the latest [hb-appstore](https://github.com/fortheusers/hb-appstore/releases) to `sd:/switch/appstore/`, and run "hb App Store" from within hbmenu. When you're done, you can press the Minus (-) button to exit.
 
 ### Nintendo Wii U
 To run this program, a Wii U with access to the Homebrew Launcher is required. This can be done on any firmware, for compatibility check at [ismywiiupatched.com](https://ismywiiupatched.com). To run the Homebrew Launcher, see the tutorial [here](https://wiiuguide.xyz/).
 
-Extract the latest [hb-appstore](https://github.com/vgmoose/hb-appstore/releases) to `sd:/wiiu/apps/appstore/`, and run "hb App Store" from within Homebrew Launcher. When you're done, you can press the Minus (-) button to exit.
+Extract the latest [hb-appstore](https://github.com/fortheusers/hb-appstore/releases) to `sd:/wiiu/apps/appstore/`, and run "hb App Store" from within Homebrew Launcher. When you're done, you can press the Minus (-) button to exit.
 
 ### Web and Desktop
 Web browsers can download files from the Homebrew App Store at [apps.fortheusers.org](https://apps.fortheusers.org). Source code: [hbas-frontend](https://gitlab.com/4TU/hbas-frontend)
@@ -46,7 +46,7 @@ The easiest way to build is to use a docker container. Docker can be used to bui
 1. Install [Docker](https://www.docker.com)
 2. Run the following, replacing `switch` with the target platform (one of `switch`, `wiiu`, or `pc`):
 ```
-git clone --recursive https://github.com/vgmoose/hb-appstore.git
+git clone --recursive https://github.com/fortheusers/hb-appstore.git
 cd hb-appstore
 export PLATFORM=switch    # or wiiu, 3ds, wii, pc, pc-sdl1
 docker run -v $(pwd):/code -it registry.gitlab.com/4tu/spheal "cd /code && make -f Makefile.$PLATFORM"
@@ -76,7 +76,7 @@ This software is licensed under the GPLv3.
 - [Compucat](https://github.com/compucat)
 
 ## Contributing
-If you have some functionality that you'd like to see feel free to discuss it on an [issues page](https://github.com/vgmoose/hb-appstore/issues), or if you already have an implementation or desire that you'd like to see, feel free to fork and make a [pull request](https://github.com/vgmoose/hb-appstore/pulls)!
+If you have some functionality that you'd like to see feel free to discuss it on an [issues page](https://github.com/fortheusers/hb-appstore/issues), or if you already have an implementation or desire that you'd like to see, feel free to fork and make a [pull request](https://github.com/fortheusers/hb-appstore/pulls)!
 
 For code contributions, it's not required, but running a clang-format before making a PR helps to clean up styling issues:
 ```
@@ -88,7 +88,7 @@ find . \( -name "*.cpp" -or -name "*.hpp" \) -not -path "./libs/*" -exec clang-f
 #### Code Contributors
 
 This project exists thanks to all the people who contribute!
-<a href="https://github.com/vgmoose/hb-appstore/graphs/contributors"><img src="https://opencollective.com/fortheusers/contributors.svg?width=890&button=false" /></a>
+<a href="https://github.com/fortheusers/hb-appstore/graphs/contributors"><img src="https://opencollective.com/fortheusers/contributors.svg?width=890&button=false" /></a>
 
 #### Financial Contributors
 Become a [financial contributor](https://opencollective.com/fortheusers/contribute) and help us sustain our community!
