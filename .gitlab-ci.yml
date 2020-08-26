@@ -20,7 +20,7 @@ PC-sdl1:
   <<: *common
   variables:
     PLATFORM: pc-sdl1
-    EXIT: bin
+    EXT: bin
 
 WiiU:
   <<: *common
