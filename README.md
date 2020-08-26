@@ -49,13 +49,7 @@ The easiest way to build is to use a docker container. Docker can be used to bui
 git clone --recursive https://github.com/fortheusers/hb-appstore.git
 cd hb-appstore
 export PLATFORM=switch    # or wiiu, 3ds, wii, pc, pc-sdl1
-docker run -v $(pwd):/code -it registry.gitlab.com/4tu/spheal "cd /code && make -f Makefile.$PLATFORM"
-```
-3. You should now be in the container, run:
-```
-cd /code
-./dependency_helper.sh
-make
+docker run -v $(pwd):/code -it registry.gitlab.com/4tu/spheal /bin/bash -c "cd /code && make -f Makefile.$PLATFORM"
 ```
 
 Depending on which platform you chose, `appstore.nro` or `appstore.rpx` should now be sitting in the cloned directory.
