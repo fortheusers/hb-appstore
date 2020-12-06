@@ -4,3 +4,4 @@ appstore.*
 .gitignore
 repos.json
 settings.json
+build/*

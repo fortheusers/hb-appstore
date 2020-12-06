@@ -36,7 +36,7 @@ CXXFLAGS	:=	$(CFLAGS) -std=gnu++14
 ASFLAGS		:=	-g $(MACHDEP)
 LDFLAGS		:=	-g $(MACHDEP) $(RPXSPECS) -Wl,-Map,$(notdir $*.map)
 
-LIBS		:=	-lSDL2_ttf -lSDL2_mixer -lSDL2_gfx -lSDL2_image -lSDL2 -lfreetype -lpng -lmpg123 -lbz2 -ljpeg -lz -lwut
+LIBS		:=	-lSDL2_ttf -lSDL2_mixer -lSDL2_gfx -lSDL2_image -lSDL2 -lfreetype -lpng -lmpg123 -lbz2 -ljpeg -lz -lwut	
 
 #-------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level
@@ -105,7 +105,7 @@ else
 #-------------------------------------------------------------------------------
 # romfs
 #-------------------------------------------------------------------------------
-include $(PWD)/libs/chesto/libs/resinfs/share/romfs-wiiu.mk
+include $(TOPDIR)/libs/chesto/libs/resinfs/share/romfs-wiiu.mk
 CFLAGS		+=	$(ROMFS_CFLAGS)
 CXXFLAGS	+=	$(ROMFS_CFLAGS)
 LIBS		+=	$(ROMFS_LIBS)

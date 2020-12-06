@@ -6,6 +6,11 @@
 #include <romfs-wiiu.h>
 #include <unistd.h>
 
+#include <sysapp/launch.h>
+#include <whb/log.h>
+#include <whb/log_cafe.h>
+#include <whb/log_udp.h>
+#include <proc_ui/procui.h>
 
 #include <unistd.h>
 #include <sys/iosupport.h>
@@ -26,8 +31,38 @@ static bool running = true;
 
 void quit()
 {
+#ifdef __WIIU__
+	SYSLaunchMenu();
+#else
 	running = false;
+#endif
 }
+
+#ifdef __WIIU__
+
+bool CheckRunning(){
+    switch(ProcUIProcessMessages(true))
+    {
+        case PROCUI_STATUS_EXITING:
+        {
+            return false;
+        }
+        case PROCUI_STATUS_RELEASE_FOREGROUND:
+        {
+            ProcUIDrawDoneRelease();
+            break;
+        }
+        case PROCUI_STATUS_IN_FOREGROUND:
+        {
+            break;
+        }
+        case PROCUI_STATUS_IN_BACKGROUND:
+        default:
+            break;
+    }
+    return true;
+}
+#endif
 
 int main(int argc, char* argv[])
 {
@@ -109,6 +144,12 @@ int main(int argc, char* argv[])
 
 	while (running)
 	{
+#ifdef __WIIU__
+		if(!CheckRunning()){
+            exit(0);
+            break;
+        }
+#endif
 		bool atLeastOneNewEvent = false;
 		bool viewChanged = false;
 
