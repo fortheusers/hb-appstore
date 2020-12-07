@@ -39,28 +39,13 @@ void quit()
 }
 
 #ifdef __WIIU__
-
-bool CheckRunning(){
-    switch(ProcUIProcessMessages(true))
-    {
-        case PROCUI_STATUS_EXITING:
-        {
-            return false;
-        }
-        case PROCUI_STATUS_RELEASE_FOREGROUND:
-        {
-            ProcUIDrawDoneRelease();
-            break;
-        }
-        case PROCUI_STATUS_IN_FOREGROUND:
-        {
-            break;
-        }
-        case PROCUI_STATUS_IN_BACKGROUND:
-        default:
-            break;
-    }
-    return true;
+// proc ui will block if it keeps control
+void processWiiUHomeOverlay() {
+		auto status = ProcUIProcessMessages(true);
+    if (status == PROCUI_STATUS_EXITING)
+			exit(0);
+		else if (status == PROCUI_STATUS_RELEASE_FOREGROUND)
+			ProcUIDrawDoneRelease();
 }
 #endif
 
@@ -141,17 +126,25 @@ int main(int argc, char* argv[])
 	DownloadQueue::init();
 
 	events->quitaction = quit;
+	
+#ifdef __WIIU__
+	// setup procui callback for resuming application to force a chesto render
+	// https://stackoverflow.com/a/56145528 and http://bannalia.blogspot.com/2016/07/passing-capturing-c-lambda-functions-as.html
+	auto updateDisplay = +[](void* display) -> unsigned int {
+		((MainDisplay*)display)->futureRedrawCounter = 10;
+		return 0;
+	};
+	ProcUIRegisterCallback(PROCUI_CALLBACK_ACQUIRE, updateDisplay, display, 100);
+#endif
 
 	while (running)
 	{
-#ifdef __WIIU__
-		if(!CheckRunning()){
-            exit(0);
-            break;
-        }
-#endif
 		bool atLeastOneNewEvent = false;
 		bool viewChanged = false;
+
+		#ifdef __WIIU__
+		processWiiUHomeOverlay();
+		#endif
 
 		int frameStart = CST_GetTicks();
 
