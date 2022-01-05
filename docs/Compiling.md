@@ -11,7 +11,7 @@ sudo dkp-pacman -S devkitA64 libnx switch-tools switch-curl switch-bzip2 switch-
 ```
 git clone --recursive https://github.com/vgmoose/hb-appstore.git
 cd hb-appstore
-make -f Makefile.switch
+make switch
 ```
 
 If all goes well, `appstore.nro` should be sitting in the current directory.

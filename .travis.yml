@@ -6,9 +6,10 @@ matrix:
     - env: PLATFORM=pc
     - env: PLATFORM=pc-sdl1
     - env: PLATFORM=wiiu
-    - env: PLATFORM=wii
     - env: PLATFORM=switch
     - env: PLATFORM=3ds
+  allow_failures:
+    - env: PLATFORM=wii
 script:
   - docker run -v $(pwd):/code registry.gitlab.com/4tu/spheal
-               /bin/bash -c "cd /code && make -f Makefile.$PLATFORM"
+               /bin/bash -c "cd /code && make $PLATFORM"
