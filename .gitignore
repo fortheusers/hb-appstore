@@ -6,3 +6,4 @@ repos.json
 settings.json
 build/*
 sdroot
+build_*
