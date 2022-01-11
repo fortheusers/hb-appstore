@@ -31,6 +31,7 @@ void quit()
 #ifdef __WIIU__
 	SYSLaunchMenu();
 #endif
+	RootDisplay::mainDisplay->isRunning = false;
 }
 
 #ifdef __WIIU__
@@ -101,6 +102,7 @@ int main(int argc, char* argv[])
 	if (cliMode) {
 #ifndef SDL1
 		// if NOGUI variable defined, use the console's main method
+		// TODO: process InputEvents outside of MainDisplay, which might have more requirements
 		int console_main(RootDisplay*, InputEvents*);
 		console_main(display, events);
 #endif
