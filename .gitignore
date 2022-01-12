@@ -7,3 +7,8 @@ settings.json
 build/*
 sdroot
 build_*
+*.dol
+*.3dsx
+*.rpx
+*.nro
+*.elf
