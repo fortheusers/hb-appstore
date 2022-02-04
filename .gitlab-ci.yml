@@ -5,7 +5,7 @@ variables:
 
 .common: &common
   script:
-    - make -f Makefile.$PLATFORM
+    - make $PLATFORM
   artifacts:
     paths:
       - appstore.$EXT
@@ -20,7 +20,7 @@ PC-sdl1:
   <<: *common
   variables:
     PLATFORM: pc-sdl1
-    EXT: bin
+    EXT: bin-sdl1
 
 WiiU:
   <<: *common

@@ -8,11 +8,19 @@
 
 #include "Menu.hpp"
 
+/**
+ * This main method serves as an alternative to the chesto
+ * rendering logic (and predates it) and serves as an alternate
+ * method to access installed homebrew 
+ **/
 int console_main(RootDisplay* rootDisplay, InputEvents* input)
 {
-	// initialize text console
-  SDL_DestroyRenderer(rootDisplay->renderer);
-  rootDisplay->renderer = NULL;
+	// initialize SDL console, ditch Chesto SDL renderer
+#ifndef SDL1
+	SDL_DestroyRenderer(rootDisplay->renderer);
+#endif
+
+	rootDisplay->renderer = NULL;
 	Console* console = new Console(rootDisplay->window);
 
 	// create main menu object

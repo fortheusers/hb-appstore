@@ -1,10 +1,10 @@
 #include "AppList.hpp"
 #include "AboutScreen.hpp"
-#include "Keyboard.hpp"
 #include "main.hpp"
 
 #include "../libs/get/src/Utils.hpp"
 
+#include "../libs/chesto/src/EKeyboard.hpp"
 #include "../libs/chesto/src/RootDisplay.hpp"
 
 #include <algorithm>
@@ -22,7 +22,6 @@ CST_Color AppList::gray = { 0x50, 0x50, 0x50, 0xff };
 AppList::AppList(Get* get, Sidebar* sidebar)
 	: get(get)			// the main get instance that contains repo info and stuff
 	, sidebar(sidebar)	// the sidebar, which will store the currently selected category info
-	, keyboard(this)
 	, quitBtn("Quit", SELECT_BUTTON, false, 15)
 	, creditsBtn("Credits", X_BUTTON, false, 15)
 	, sortBtn("Adjust Sort", Y_BUTTON, false, 15)
@@ -55,7 +54,10 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	keyboardBtn.action = std::bind(&AppList::toggleKeyboard, this);
 
 	// keyboard input callback
-	keyboard.inputCallback = std::bind(&AppList::keyboardInputCallback, this);
+	keyboard.typeAction = std::bind(&AppList::keyboardInputCallback, this);
+	keyboard.preventEnterAndTab = true;
+	keyboard.width = 700;
+	keyboard.updateSize();
 
 	// category text
 	category.setSize(28);
@@ -109,6 +111,7 @@ bool AppList::process(InputEvents* event)
 	bool keyboardIsShowing = sidebar && sidebar->curCategory == 0 && !keyboard.hidden;
 	if (keyboardIsShowing && ((event->isTouchDown() && event->touchIn(keyboard.x, keyboard.y, keyboard.width, keyboard.height)) || !touchMode))
 	{
+		// wow I'm surprised this still works with the chesto keyboard
 		ret |= keyboard.process(event);
 		if (event->isKeyDown() && event->held(Y_BUTTON))
 			ret |= ListElement::process(event); // continue processing ONLY if they're pressing Y

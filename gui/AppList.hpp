@@ -6,10 +6,10 @@
 #include "../libs/chesto/src/ImageElement.hpp"
 #include "../libs/chesto/src/ListElement.hpp"
 #include "../libs/chesto/src/TextElement.hpp"
+#include "../libs/chesto/src/EKeyboard.hpp"
 
 #include "AppCard.hpp"
 #include "AppDetails.hpp"
-#include "Keyboard.hpp"
 #include "Sidebar.hpp"
 
 #include <random>
@@ -53,7 +53,7 @@ public:
 
 	void launchSettings();
 
-	Keyboard keyboard;
+	EKeyboard keyboard;
 
 private:
 	bool sortCompare(const Package* left, const Package* right);

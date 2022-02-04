@@ -2,12 +2,12 @@
 #define FEEDBACKSCREEN_H_
 
 #include "../libs/get/src/Get.hpp"
-#include "Keyboard.hpp"
 
 #include "../libs/chesto/src/Button.hpp"
 #include "../libs/chesto/src/ImageElement.hpp"
 #include "../libs/chesto/src/TextElement.hpp"
 #include "../libs/chesto/src/NetImageElement.hpp"
+#include "../libs/chesto/src/EKeyboard.hpp"
 
 class Feedback : public Element
 {
@@ -28,7 +28,7 @@ private:
 
 	TextElement title;
 	NetImageElement icon;
-	Keyboard keyboard;
+	EKeyboard keyboard;
 	Button quit;
 	Button send;
 	TextElement response;

@@ -14,9 +14,9 @@ Feedback::Feedback(Package* package)
 	: package(package)
 	, title((std::string("Leaving feedback for: \"") + package->title + "\"").c_str(), 25)
 	, icon(package->getIconUrl().c_str(), []{ return new ImageElement(RAMFS "res/default.png"); })
-	, quit("Discard", Y_BUTTON, true, 24)
-	, send("Submit", X_BUTTON, true, 24)
-	, response("If you need to send more detailed feedback, please email us at fight@fortheusers.org", 20, NULL, false, 360)
+	, quit("Discard", Y_BUTTON, false, 20)
+	, send("Submit", X_BUTTON, false, 20)
+	, response("If you need to send more detailed feedback, please email us at fight@fortheusers.org", 20, NULL, false, 460)
 #if defined(__WIIU__)
 	, hint("(btw you can press Minus to exit!)", 20, NULL)
 #endif
@@ -24,7 +24,7 @@ Feedback::Feedback(Package* package)
 	title.position(50, 30);
 	super::append(&title);
 
-	icon.position(50, 160);
+	icon.position(50, 100);
 #if defined(_3DS) || defined(_3DS_MOCK)
   icon.resize(ICON_SIZE, ICON_SIZE);
 #else
@@ -32,15 +32,16 @@ Feedback::Feedback(Package* package)
 #endif
 	super::append(&icon);
 
-	keyboard.inputCallback = std::bind(&Feedback::keyboardInputCallback, this);
-	keyboard.x = 200;
+	keyboard.typeAction = std::bind(&Feedback::keyboardInputCallback, this);
+	keyboard.preventEnterAndTab = true;
+	keyboard.updateSize();
 	super::append(&keyboard);
 
-	quit.position(470, 340);
+	quit.position(895, 240);
 	quit.action = std::bind(&Feedback::back, this);
 	super::append(&quit);
 
-	send.position(quit.x + quit.width + 25, quit.y);
+	send.position(quit.x + quit.width + 15, quit.y);
 	send.action = std::bind(&Feedback::submit, this);
 	super::append(&send);
 
@@ -49,7 +50,7 @@ Feedback::Feedback(Package* package)
 
 	feedback.setSize(23);
 	feedback.setWrappedWidth(730);
-	feedback.position(390, 140);
+	feedback.position(390, 100);
 	super::append(&feedback);
 
 #if defined(__WIIU__)
@@ -60,7 +61,6 @@ Feedback::Feedback(Package* package)
 
 void Feedback::render(Element* parent)
 {
-
 	// draw a white background, 870 wiz
 	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 

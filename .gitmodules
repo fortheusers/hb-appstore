@@ -1,6 +1,6 @@
 [submodule "libs/get"]
 	path = libs/get
-	url = https://gitlab.com/4TU/libget.git
+	url = https://gitlab.com/4tu/libget.git
 [submodule "libs/chesto"]
 	path = libs/chesto
-	url = https://gitlab.com/4TU/chesto.git
+	url = https://gitlab.com/4tu/chesto.git
