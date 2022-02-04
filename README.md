@@ -7,7 +7,7 @@
 [![twitter](https://img.shields.io/twitter/follow/wiiubru.svg?label=twitter&style=flat-square)](https://twitter.com/wiiubru)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome!-tomato.svg?style=flat-square)](http://makeapullrequest.com)
 
-A graphical frontend to the [get package manager](https://github.com/vgmoose/libget) for downloading and managing homebrew on video game consoles, such as the Nintendo Switch and Wii U. This is a replacement to the older [Wii U Homebrew App Store](https://github.com/vgmoose/wiiu-hbas).
+A [Chesto](https://gitlab.com/4TU/chesto)-based graphical frontend to the [get package manager](https://gitlab.com/4TU/libget) for downloading and managing homebrew on video game consoles, such as the Nintendo Switch and Wii U. This is a replacement to the older [Wii U Homebrew App Store](https://github.com/vgmoose/wiiu-hbas).
 
 ## Supported Platforms
 ### Nintendo Switch
@@ -36,25 +36,27 @@ See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for se
 If you run into any issues and need help maintaining or setting up a libget repo, feel free to get in touch with vgmoose at me@vgmoose.com or on Discord.
 
 ## Compilation instructions
-This program is written using SDL2 and has dependencies on libsdl, libcurl, and zlib. It also makes use of libget which is included in this repo as a submodule.
+This program is written using [chesto](https://gitlab.com/4TU/chesto) and has dependencies on libcurl, libget, and zlib. The chesto and libget libraries are included in this repo as submodules. SDL2 or SDL1 is also required depending on the target platform.
 
 You can get pre-compiled binaries for each platform under [Pipelines](https://gitlab.com/4TU/hb-appstore/pipelines) for a given commit. The download artifacts dropdown is to the right of the build passing status.
 
 ### Building with Docker
-The easiest way to build is to use a docker container. Docker can be used to build for any of the three supported platforms, using the dependency helper scripts. This is how the pre-compiled binaries are built.
+The easiest way to build is using the [Spheal](https://gitlab.com/4TU/spheal) x86_64 docker container. It uses this [dependency helper script](https://gitlab.com/4TU/spheal/-/blob/master/dependency_helper.sh) to be able to build for all supported platforms. This is how the pre-compiled binaries are built.
 
 1. Install [Docker](https://www.docker.com)
 2. Run the following, replacing `switch` with the target platform (one of `switch`, `wiiu`, or `pc`):
 ```
-git clone --recursive https://github.com/fortheusers/hb-appstore.git
+git clone --recursive https://gitlab.com/4TU/hb-appstore.git
 cd hb-appstore
 export PLATFORM=switch    # or wiiu, 3ds, wii, pc, pc-sdl1
-docker run -v $(pwd):/code -it registry.gitlab.com/4tu/spheal /bin/bash -c "cd /code && make -f Makefile.$PLATFORM"
+docker run -v $(pwd):/code -it registry.gitlab.com/4tu/spheal /bin/bash -c "cd /code && make $PLATFORM"
 ```
 
 Depending on which platform you chose, `appstore.nro` or `appstore.rpx` should now be sitting in the cloned directory.
 
-### Building for Specifc Platforms
+If you are using an M1 Mac, you may have more luck running [dependency_helper.sh](https://gitlab.com/4TU/spheal/-/blob/master/dependency_helper.sh) inside of an arm64 ubuntu container, or trying the platform-specific instructions below.
+
+### Building for Specific Platforms
 Compilation instructions for specific supported platforms (Switch, Wii U, 3DS, Wii) can be found in [Compiling.md](https://gitlab.com/4TU/hb-appstore/-/blob/master/docs/Compiling.md)
 
 ## License
@@ -68,6 +70,7 @@ This software is licensed under the GPLv3.
 - [rw-r-r_0644](https://github.com/rw-r-r-0644)
 - [crc32](https://github.com/crc-32)
 - [Compucat](https://github.com/compucat)
+- [NoahAbc12345](https://github.com/NoahAbc12345)
 
 ## Contributing
 If you have some functionality that you'd like to see feel free to discuss it on an [issues page](https://github.com/fortheusers/hb-appstore/issues), or if you already have an implementation or desire that you'd like to see, feel free to fork and make a [pull request](https://github.com/fortheusers/hb-appstore/pulls)!
