@@ -185,30 +185,30 @@ void Sidebar::render(Element* parent)
 	CST_Color consoleColor = { 0x67, 0x6a, 0x6d, 0xFF };
 #endif
 
-	CST_SetDrawColor(parent->renderer, consoleColor);
+	CST_SetDrawColor(RootDisplay::renderer, consoleColor);
 
 	if (this->showCurrentCategory)
-		CST_FillRect(parent->renderer, &dimens);
+		CST_FillRect(RootDisplay::renderer, &dimens);
 
 	if (appList && appList->touchMode && this->elasticCounter >= 0)
 	{
 		CST_Rect dimens2 = { 0, 0, 400, 60 };
 		dimens2.y = 150 + this->elasticCounter * 70 - 15; // TODO: extract formula into method
-		CST_SetDrawBlend(parent->renderer, true);
+		CST_SetDrawBlend(RootDisplay::renderer, true);
 		CST_Color highlight = { 0xad, 0xd8, 0xe6, 0x90 };
-		CST_SetDrawColor(parent->renderer, highlight); // TODO: matches the DEEP_HIGHLIGHT color
-		CST_FillRect(parent->renderer, &dimens2);
+		CST_SetDrawColor(RootDisplay::renderer, highlight); // TODO: matches the DEEP_HIGHLIGHT color
+		CST_FillRect(RootDisplay::renderer, &dimens2);
 	}
 
 	// draw the selected category, if one should be highlighted
 	if (this->highlighted >= 0)
 	{
 		int y = 150 + this->highlighted * 70 - 15;
-		//        rectangleRGBA(parent->renderer, 0, y, dimens.w, y + dimens.h, 0xff, 0x00, 0xff, 0xff);
+		//        rectangleRGBA(RootDisplay::renderer, 0, y, dimens.w, y + dimens.h, 0xff, 0x00, 0xff, 0xff);
 
 		for (int x = 0; x < 5; x++)
 		{
-			rectangleRGBA(parent->renderer, dimens.x + x, y + x, dimens.x + dimens.w - x, y + dimens.h - x, 0x66 - x * 10, 0x7c + x * 20, 0x89 + x * 10, 0xFF);
+			rectangleRGBA(RootDisplay::renderer, dimens.x + x, y + x, dimens.x + dimens.w - x, y + dimens.h - x, 0x66 - x * 10, 0x7c + x * 20, 0x89 + x * 10, 0xFF);
 		}
 	}
 

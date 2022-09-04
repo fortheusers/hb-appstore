@@ -240,9 +240,8 @@ void AppList::render(Element* parent)
 	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 
   if (parent != NULL) {
-    CST_SetDrawColor(parent->renderer, white);
-    CST_FillRect(parent->renderer, &dimens);
-    this->renderer = parent->renderer;
+    CST_SetDrawColor(RootDisplay::renderer, white);
+    CST_FillRect(RootDisplay::renderer, &dimens);
   }
 
 	super::render(parent);

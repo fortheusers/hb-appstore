@@ -1,4 +1,4 @@
-image: registry.gitlab.com/4tu/spheal
+image: ghcr.io/fortheusers/sealeo
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive

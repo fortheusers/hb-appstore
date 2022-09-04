@@ -354,8 +354,6 @@ void AppDetails::postInstallHook()
 
 void AppDetails::render(Element* parent)
 {
-	if (this->renderer == NULL)
-		this->renderer = parent->renderer;
 	if (this->parent == NULL)
 		this->parent = parent;
 
@@ -364,10 +362,10 @@ void AppDetails::render(Element* parent)
 
 	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 
-	CST_SetDrawColor(parent->renderer, white);
-	CST_FillRect(parent->renderer, &dimens);
+	CST_SetDrawColor(RootDisplay::renderer, white);
+	CST_FillRect(RootDisplay::renderer, &dimens);
 
-	CST_SetDrawColor(parent->renderer, white);
+	CST_SetDrawColor(RootDisplay::renderer, white);
 
 	// draw all elements
 	super::render(parent);
@@ -492,8 +490,6 @@ void AppDetailsContent::render(Element* parent)
 {
 	if (this->parent == NULL)
 		this->parent = parent;
-
-	this->renderer = parent->renderer;
 
 	ListElement::render(parent);
 }

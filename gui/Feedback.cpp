@@ -65,8 +65,7 @@ void Feedback::render(Element* parent)
 	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 
 	  if (parent != NULL) {
-    CST_SetDrawColor(parent->renderer, white);
-    this->renderer = parent->renderer;
+    CST_SetDrawColor(RootDisplay::renderer, white);
   }
 
 	return super::render(parent);
