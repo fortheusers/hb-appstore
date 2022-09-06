@@ -380,10 +380,17 @@ void AppList::update()
 		sortBtn.position(creditsBtn.x - 20 - sortBtn.width, quitBtn.y);
 		super::append(&sortBtn);
 #if defined(MUSIC)
-		muteBtn.position(sortBtn.x - 20 - muteBtn.width, quitBtn.y);
-		super::append(&muteBtn);
-		muteIcon.position(sortBtn.x - 20 - muteBtn.width + 5, quitBtn.y + 5);
-		super::append(&muteIcon);
+		auto rootDisplay = RootDisplay::mainDisplay;
+
+		if (rootDisplay->music) {
+			CST_FadeInMusic(rootDisplay);
+
+			muteBtn.position(sortBtn.x - 20 - muteBtn.width, quitBtn.y);
+			super::append(&muteBtn);
+			// reposition quit now that mute button is there
+			muteIcon.position(sortBtn.x - 20 - muteBtn.width + 5, quitBtn.y + 5);
+			super::append(&muteIcon);
+		}
 #endif
 
 		// category text

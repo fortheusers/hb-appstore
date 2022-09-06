@@ -28,46 +28,29 @@
 void quit()
 {
 #ifdef __WIIU__
+	// will exit via procui loop in RootDisplay
 	SYSLaunchMenu();
-#endif
+#else
 	RootDisplay::mainDisplay->isRunning = false;
+#endif
 }
 
 #ifdef __WIIU__
-void elfMigrateLogic()
+void wiiuSetPwd()
 {
 #define HBAS_PATH ROOT_PATH "wiiu/apps/appstore"
 #define ELF_PATH HBAS_PATH "/hbas.elf"
 #define RPX_PATH HBAS_PATH "/appstore.rpx"
+	// create and cd into the appstore directory
   	mkdir(HBAS_PATH, 0700);
 	chdir(HBAS_PATH);
-
-	// "migrate" old elf users over to rpx (should've been done last version)
-	struct stat sbuff;
-	if (stat(ELF_PATH, &sbuff) == 0)
-	{
-		// hbas.elf exists... what should we do about it?
-		if (stat(RPX_PATH, &sbuff) == 0)
-		{
-			// rpx is here, we can just delete hbas.elf
-			// if we really have to, we can have wiiu-hbas.elf later for nostalgic people for the old version
-			int re = std::remove(ELF_PATH);
-			printf("Status removing folder... %d, %d: %s\n", re, errno, strerror(errno));
-		}
-		else
-		{
-			// no rpx, let's move our elf there
-			int re = std::rename(ELF_PATH, RPX_PATH);
-			printf("Status renaming folder... %d, %d: %s\n", re, errno, strerror(errno));
-		}
-	}
 }
 #endif
 
 int main(int argc, char* argv[])
 {
 #if defined(__WIIU__)
-	elfMigrateLogic();
+	wiiuSetPwd();
 #endif
 	init_networking();
 
@@ -112,10 +95,6 @@ int main(int argc, char* argv[])
 	
 #if defined(SWITCH)
 	socketExit();
-#endif
-
-#if defined(__WIIU__)
-	// WHBLogUdpDeinit();
 #endif
 
 	return 0;
