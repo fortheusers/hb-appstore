@@ -24,6 +24,7 @@ Feedback::Feedback(Package* package)
 	title.position(50, 30);
 	super::append(&title);
 
+	icon.setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
 	icon.position(50, 100);
 #if defined(_3DS) || defined(_3DS_MOCK)
   icon.resize(ICON_SIZE, ICON_SIZE);

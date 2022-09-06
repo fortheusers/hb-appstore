@@ -177,14 +177,9 @@ void Sidebar::render(Element* parent)
 	CST_Rect dimens = { 0, 0, 400 - 260 * (appList->R - 3) - 35, 60 }; // TODO: extract this to a method too
 	dimens.y = 150 + this->curCategory * 70 - 15;					   // TODO: extract formula into method
 
-#if defined(__WIIU__)
-	CST_Color consoleColor = { 0x3b, 0x3c, 0x4e, 0xFF };
-#elif defined(_3DS)
-	CST_Color consoleColor = { 0xe4, 0x00, 0x0f, 0xFF };
-#else
-	CST_Color consoleColor = { 0x67, 0x6a, 0x6d, 0xFF };
-#endif
-
+	auto c = RootDisplay::mainDisplay->backgroundColor;
+	CST_Color consoleColor = { (int)(c.r * 255) + 0x25, (int)(c.g * 255) + 0x25, (int)(c.b * 255) + 0x25, 0xff };
+	// consoleColor.r = fmax(consoleColor.r, 0xff);
 	CST_SetDrawColor(RootDisplay::renderer, consoleColor);
 
 	if (this->showCurrentCategory)

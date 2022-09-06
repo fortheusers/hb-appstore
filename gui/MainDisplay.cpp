@@ -23,6 +23,8 @@ MainDisplay::MainDisplay()
 	super::append(&appList);
 
 	needsRedraw = true;
+
+	startMusic();
 }
 
 MainDisplay::~MainDisplay()

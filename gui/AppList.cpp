@@ -383,8 +383,6 @@ void AppList::update()
 		auto rootDisplay = RootDisplay::mainDisplay;
 
 		if (rootDisplay->music) {
-			CST_FadeInMusic(rootDisplay);
-
 			muteBtn.position(sortBtn.x - 20 - muteBtn.width, quitBtn.y);
 			super::append(&muteBtn);
 			// reposition quit now that mute button is there

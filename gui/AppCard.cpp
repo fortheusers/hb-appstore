@@ -31,6 +31,8 @@ AppCard::AppCard(Package* package, AppList* list)
 	this->action = std::bind(&AppCard::displaySubscreen, this);
 
 	// create the layout of the app card (all relative)
+	icon.setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+
 #if defined(_3DS) || defined(_3DS_MOCK)
 	icon.resize(ICON_SIZE, ICON_SIZE);
   this->width = 85;
