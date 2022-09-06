@@ -48,7 +48,8 @@ public:
 				const char* patreon = NULL,
 				const char* url = NULL,
 				const char* discord = NULL,
-				const char* directAvatarUrl = NULL);
+				const char* directAvatarUrl = NULL,
+				const char* youtube = NULL);
 
   int creditCount = 0;
 

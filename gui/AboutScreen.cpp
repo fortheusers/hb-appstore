@@ -65,19 +65,24 @@ AboutScreen::AboutScreen(Get* get)
 	credit("pwsincd", "20027105", NULL, "pwsincd", NULL, NULL, NULL, "pwsincd#9044");
 	credit("VGMoose", "2467473", "vgmoose", "vgmoose");
 	credit("rw-r-r_0644", "18355947", "rw_r_r_0644", "rw-r-r-0644");
+	credit("NoahAbc12345", "63483138", NULL, "NoahAbc12345");
 	credit("crc32", "7893269", "crc32_", "crc-32");
 	credit("CompuCat", "12215288", NULL, NULL, "compucat", NULL, "compucat.me");
 	credit("Quarky", "8533313", NULL, NULL, "quarktheawesome", NULL, "heyquark.com");
-	credit("Whovian9369", "5240754", NULL, NULL, "whovian9369");
 
 	credHead("Library Development and Support", "Without the contributions to open-source libraries and projects by these people, much of the functionality within this program wouldn't be possible.");
 	credit("Maschell", "8582508", "maschelldev", "maschell");
 	credit("brienj", "17801294", "xhp_creations", "xhp-creations");
 	credit("Dimok", "15055714", NULL, "dimok789");
+	credit("GaryOderNichts", "12049776", "GaryOderNichts", "GaryOderNichts");
 	credit("FIX94", "12349638", NULL, "FIX94", NULL, NULL, NULL, "FIX94#3446");
 	credit("Zarklord", "1622280", "zarklore", "zarklord");
 	credit("CreeperMario", "15356475", "CreeperMario258", "CreeperMario");
 	credit("Ep8Script", "27195853", "ep8script", "ep8script");
+
+	credHead("Music and Sound", "In the Wii U and Switch releases, these guys provide the chiptune melodies that play in the background. They make the app feel more alive, and are all-around awesome!");
+	credit("(T-T)b", "40721862", "ttbchiptunes", NULL, NULL, NULL, "t-tb.bandcamp.com", NULL, "https://f4.bcbits.com/img/a2723574369_16.jpg");
+	credit("drewinator4", "40721862", NULL, NULL, NULL, NULL, NULL, NULL, "https://i.ytimg.com/vi/Tb02CNlhkPA/hqdefault.jpg", "drewinator4");
 
 	credHead("Interface Development and Design", "In one way or another, everyone in this category provided information regarding core functionality, quality-of-life changes, or the design of the user interface.");
 	credit("exelix", "13405476", "exelix11", "exelix11");
@@ -96,13 +101,15 @@ AboutScreen::AboutScreen(Get* get)
 	credit("yellows8", "585494", "yellows8");
 	credit("ReSwitched", "26338222", NULL, "reswitched", NULL, NULL, "reswitched.team");
 	credit("exjam", "1302758", NULL, "exjam");
-  credit("brett19", "1621627", NULL, "brett19");
+	credit("brett19", "1621627", NULL, "brett19");
 
 	credHead("Homebrew Community Special Thanks", "Awesome people within the community whose work, words, or actions in some way inspired this program to exist in the manner it does.");
+	credit("Whovian9369", "5240754", NULL, NULL, "whovian9369");
 	credit("misson20000", "616626", NULL, "misson20000", NULL, NULL, NULL, "misson20000#0752");
 	credit("roblabla", "1069318", NULL, "roblabla", NULL, NULL, NULL, "roblabla#8145");
 	credit("tomGER", "25822956", "tumGER", "tumGER");
 	credit("m4xw", "13141469", "m4xwdev", "m4xw");
+	credit("vaguerant", "5259025", NULL, "vaguerant");
 	credit("Nikki", "3280345", "NWPlayer123", "NWPlayer123");
 	credit("shchmue", "7903403", NULL, "shchmue");
 	credit("CTCaer", "3665130", "CTCaer", "CTCaer");
@@ -154,7 +161,8 @@ void AboutScreen::credit(const char* username,
 												const char* patreon,
 												const char* url,
 												const char* discord,
-												const char* directAvatarUrl)
+												const char* directAvatarUrl,
+												const char* youtube)
 {
 	int X = 40;
 	int Y = 310;
@@ -180,10 +188,10 @@ void AboutScreen::credit(const char* username,
 
 	int socialCount = 0;
 
-	const char * handles[6] = { twitter, github, gitlab, patreon, url, discord };
-	const char * icons[6] = { "twitter", "github", "gitlab", "patreon", "url", "discord" };
+	const char * handles[7] = { twitter, github, gitlab, patreon, url, discord, youtube };
+	const char * icons[7] = { "twitter", "github", "gitlab", "patreon", "url", "discord", "youtube" };
 
-	for (int x=0; x<6; x++) {
+	for (int x=0; x<7; x++) {
 		if (handles[x] == NULL) continue;
 
 		cred->social[socialCount].icon = new ImageElement(((std::string(RAMFS "res/") + icons[x]) + ".png").c_str());
