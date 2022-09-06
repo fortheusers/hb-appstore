@@ -23,7 +23,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	, get(appList->get)
 	, appList(appList)
 	, downloadProgress()
-	, download(getAction(package), A_BUTTON, true, 30 / SCALER)
+	, download(getAction(package), package->status == INSTALLED ? X_BUTTON : A_BUTTON, true, 30 / SCALER)
 	, cancel("Cancel", B_BUTTON, true, 30 / SCALER, download.width)
 	, details(getPackageDetails(package).c_str(), 20, &white, false, 300)
 	, content(package, appList->useBannerIcons)
@@ -441,8 +441,8 @@ int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, dou
 }
 
 AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
-	: reportIssue("Report Issue", Y_BUTTON)
-	, moreByAuthor("More by Author", X_BUTTON)
+	: reportIssue("Report Issue", R_BUTTON)
+	, moreByAuthor("More by Author", Y_BUTTON)
 	, title(package->title.c_str(), 35, &black)
 	, title2(package->author.c_str(), 27, &gray)
 	, details(package->long_desc.c_str(), 20 / SCALER, &black, false, PANE_WIDTH + 20 / SCALER)
@@ -462,10 +462,15 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	title.position(MARGIN, 30);
 	super::append(&title);
 
-	reportIssue.position(920 - MARGIN - reportIssue.width, 45);
-	super::append(&reportIssue);
+	auto marginOffset = 920 - MARGIN;
 
-	moreByAuthor.position(reportIssue.x - 20 - moreByAuthor.width, 45);
+	if (package->status != GET) {
+		reportIssue.position(marginOffset - reportIssue.width, 45);
+		super::append(&reportIssue);
+		marginOffset = reportIssue.x - 20;
+	}
+
+	moreByAuthor.position(marginOffset - moreByAuthor.width, 45);
 	super::append(&moreByAuthor);
 
 	if (!useBannerIcons)
@@ -484,6 +489,9 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 
 	changelog.position((MARGIN / SCALER + 30), details.y + details.height + 30);
 	super::append(&changelog);
+
+	// view file list button
+
 }
 
 void AppDetailsContent::render(Element* parent)
