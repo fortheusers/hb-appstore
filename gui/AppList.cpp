@@ -8,6 +8,7 @@
 #include "../libs/chesto/src/RootDisplay.hpp"
 
 #include <algorithm>
+#include <filesystem>
 #include <cstdlib> // std::rand, std::srand
 #include <ctime>   // std::time
 
@@ -18,17 +19,21 @@
 const char* AppList::sortingDescriptions[TOTAL_SORTS] = { "by most recent", "by download count", "alphabetically", "by size (descending)", "randomly" };
 CST_Color AppList::black = { 0, 0, 0, 0xff };
 CST_Color AppList::gray = { 0x50, 0x50, 0x50, 0xff };
+CST_Color AppList::red = { 0xff, 0, 0, 0xff };
 
 AppList::AppList(Get* get, Sidebar* sidebar)
 	: get(get)			// the main get instance that contains repo info and stuff
 	, sidebar(sidebar)	// the sidebar, which will store the currently selected category info
 	, quitBtn("Quit", SELECT_BUTTON, false, 15)
-	, creditsBtn("Credits", X_BUTTON, false, 15)
+	, creditsBtn("Credits", START_BUTTON, false, 15)
 	, sortBtn("Adjust Sort", Y_BUTTON, false, 15)
 	, keyboardBtn("Toggle Keyboard", Y_BUTTON, false, 15)
+	, nowPlayingText(" ", 20, &black)
 #if defined(MUSIC)
-	, muteBtn(" ", 0, false, 15, 43)
+	, nowPlayingIcon(RAMFS "res/nowplaying.png")
+	, muteBtn(" ", X_BUTTON, false, 15, 90)
 	, muteIcon(RAMFS "res/mute.png")
+	, unmuteIcon(RAMFS "res/unmute.png")
 #endif
 {
 	this->x = 400 - 260 * (R - 3);
@@ -45,9 +50,12 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	// additional buttons
 	creditsBtn.action = std::bind(&AppList::launchSettings, this);
 	sortBtn.action = std::bind(&AppList::cycleSort, this);
+	
 #if defined(MUSIC)
 	muteBtn.action = std::bind(&AppList::toggleAudio, this);
 	muteIcon.resize(32, 32);
+	unmuteIcon.resize(32, 32);
+	nowPlayingIcon.resize(26, 26);
 #endif
 
 	// search buttons
@@ -74,6 +82,13 @@ AppList::AppList(Get* get, Sidebar* sidebar)
   // they use up too much memory, and a lot of people only use applet mode
   AppletType at = appletGetAppletType();
   useBannerIcons = (at == AppletType_Application || at == AppletType_SystemApplication);
+
+  if (!userBannerIcons) {
+	// applet mode, display a warning
+	nowPlayingText.setText("NOTICE: You are in Applet mode! Google \"Switch Applet Mode\" for more info.");
+	nowPlayingText.setColor(red);
+	nowPlayingText.update();
+  }
 #endif
 
 	// update current app listing
@@ -379,6 +394,8 @@ void AppList::update()
 		super::append(&creditsBtn);
 		sortBtn.position(creditsBtn.x - 20 - sortBtn.width, quitBtn.y);
 		super::append(&sortBtn);
+	
+
 #if defined(MUSIC)
 		auto rootDisplay = RootDisplay::mainDisplay;
 
@@ -386,8 +403,9 @@ void AppList::update()
 			muteBtn.position(sortBtn.x - 20 - muteBtn.width, quitBtn.y);
 			super::append(&muteBtn);
 			// reposition quit now that mute button is there
-			muteIcon.position(sortBtn.x - 20 - muteBtn.width + 5, quitBtn.y + 5);
-			super::append(&muteIcon);
+			muteIcon.position(sortBtn.x - 35 - muteIcon.width, quitBtn.y + 5);
+			unmuteIcon.position(sortBtn.x - 35 - muteIcon.width, quitBtn.y + 5);
+			Mix_PausedMusic() ? super::append(&muteIcon) : super::append(&unmuteIcon);
 		}
 #endif
 
@@ -402,7 +420,41 @@ void AppList::update()
 		sortBlurb.setText(sortingDescriptions[sortMode]);
 		sortBlurb.update();
 		super::append(&sortBlurb);
+
 	}
+
+	nowPlayingText.position((quitBtn.width + quitBtn.x) - nowPlayingText.width, 20);
+
+	auto rootDisplay = RootDisplay::mainDisplay;
+	
+#if defined(MUSIC)
+	if (rootDisplay->music) {
+		if (!Mix_PausedMusic()) {
+			// music is playing, get the title and artist 
+			const char* title = Mix_GetMusicTitle(rootDisplay->music);
+			const char* artist = Mix_GetMusicArtistTag(rootDisplay->music);
+			const char* album = Mix_GetMusicAlbumTag(rootDisplay->music);
+			
+			// now playing icon, and position
+			nowPlayingText.setText(
+				std::string("") + title +
+				((artist != std::string("")) ? (std::string(" by ") + artist) : "") +
+				((album != std::string("")) ? (std::string(" - ") + album) : "")
+			);
+			super::append(&nowPlayingIcon);
+		} else {
+			// no music playing
+			nowPlayingText.setText(" ");
+		}
+	}
+
+	nowPlayingText.update();
+	nowPlayingText.position((quitBtn.width + quitBtn.x) - nowPlayingText.width, 20); // TODO: copypasta position
+	nowPlayingIcon.position(nowPlayingText.x - 30, 20);
+
+	// now playing text (or applet warning)
+	super::append(&nowPlayingText);
+#endif
 
 	needsUpdate = false;
 }
@@ -452,6 +504,9 @@ void AppList::toggleAudio()
 		std::ofstream soundFile(SOUND_PATH);
 		soundFile.flush();
 	}
+
+	// redraw everything
+	update();
 #endif
 }
 

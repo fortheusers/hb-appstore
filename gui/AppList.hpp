@@ -49,7 +49,7 @@ public:
 	int R = 3;
 
 	int sortMode = RECENT;
-  bool useBannerIcons = true;
+	bool useBannerIcons = true;
 
 	void launchSettings();
 
@@ -62,7 +62,7 @@ private:
 	void keyboardInputCallback();
 
 	// the title of this category (from the sidebar)
-	static CST_Color black, gray;
+	static CST_Color black, gray, red;
 	static const char* sortingDescriptions[TOTAL_SORTS];
 
 	TextElement sortBlurb;
@@ -71,10 +71,13 @@ private:
 	Button creditsBtn;
 	Button sortBtn;
 	Button keyboardBtn;
+	TextElement nowPlayingText;
 
 #if defined(MUSIC)
 	Button muteBtn;
 	ImageElement muteIcon;
+	ImageElement unmuteIcon;
+	ImageElement nowPlayingIcon;
 #endif
 
 	// list of visible app cards
