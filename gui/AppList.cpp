@@ -136,6 +136,7 @@ bool AppList::process(InputEvents* event)
 	}
 
 	int origHighlight = this->highlighted;
+	auto mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;
 
 	// process some joycon input events
 	if (event->isKeyDown())
@@ -151,6 +152,8 @@ bool AppList::process(InputEvents* event)
 
 		if (event->held(A_BUTTON | B_BUTTON | UP_BUTTON | DOWN_BUTTON | LEFT_BUTTON | RIGHT_BUTTON))
 		{
+			auto currentSelected = this->highlighted;
+
 			// if we were in touch mode, draw the cursor in the applist
 			// and reset our position
 			if (this->touchMode)
@@ -182,6 +185,7 @@ bool AppList::process(InputEvents* event)
 			{
 				this->highlighted = -1;
 				this->sidebar->highlighted = this->sidebar->curCategory;
+				mainDisplay->playSFX();
 				return true;
 			}
 
@@ -199,6 +203,11 @@ bool AppList::process(InputEvents* event)
 
 			if (this->highlighted < 0) this->highlighted = 0;
 			if (this->highlighted >= (int)this->totalCount) this->highlighted = this->totalCount - 1;
+
+			if (currentSelected != this->highlighted) {
+				// we moved the cursor, so play a sound
+				mainDisplay->playSFX();
+			}
 		}
 	}
 
@@ -431,9 +440,10 @@ void AppList::update()
 	if (rootDisplay->music) {
 		if (!Mix_PausedMusic()) {
 			// music is playing, get the title and artist 
-			const char* title = Mix_GetMusicTitle(rootDisplay->music);
-			const char* artist = Mix_GetMusicArtistTag(rootDisplay->music);
-			const char* album = Mix_GetMusicAlbumTag(rootDisplay->music);
+			std::vector<std::string> info = CST_GetMusicInfo(rootDisplay->music);
+			const char* title = info[0].c_str();
+			const char* artist = info[1].c_str();
+			const char* album = info[2].c_str();
 			
 			// now playing icon, and position
 			nowPlayingText.setText(

@@ -39,6 +39,10 @@ MainDisplay::MainDisplay()
 		// muted, so pause the music that we started earlier
 		Mix_PauseMusic();
 	}
+
+	// load the sfx noise
+	click_sfx = Mix_LoadWAV(RAMFS "res/click.wav");
+
 #endif
 }
 
@@ -48,6 +52,16 @@ bool MainDisplay::getDefaultAudioStateForPlatform() {
 	return true;
 #endif
 	return false;
+}
+
+// plays an sfx interface-moving-noise, if sound isn't muted
+void MainDisplay::playSFX()
+{
+#ifdef MUSIC
+	if (this->music && !Mix_PausedMusic()) {
+		Mix_PlayChannel( -1, this->click_sfx, 0 );
+	}
+#endif
 }
 
 MainDisplay::~MainDisplay()
@@ -72,7 +86,12 @@ bool MainDisplay::process(InputEvents* event)
 		showingSplash = false;
 
 		// initial loading spinner
-		spinner = new ImageElement(RAMFS "res/spinner.png");
+		auto spinnerPath = RAMFS "res/spinner.png";
+#ifdef SWITCH
+		// switch gets a red spinner
+		spinnerPath = RAMFS "res/spinner_red.png";
+#endif
+		spinner = new ImageElement(spinnerPath);
 		spinner->position(795, 90);
 		spinner->resize(90, 90);
 		super::append(spinner);

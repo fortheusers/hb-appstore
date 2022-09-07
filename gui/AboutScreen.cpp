@@ -116,6 +116,9 @@ AboutScreen::AboutScreen(Get* get)
 	credit("SciresM", "8676005", "SciresM", "SciresM");
 	credit("Shinyquagsire", "1224096", "shinyquagsire", "shinyquagsire23");
 	credit("Marionumber1", "775431", "MrMarionumber1");
+	credit("Koopa", "13039555", "CodingKoopa", "CodingKoopa");
+	credit("jam1garner", "8260240", NULL, "jam1garner", NULL, NULL, "jam1.re");
+	credit("sirocyl", "944067", "sirocyl", "sirocyl");
 }
 
 AboutScreen::~AboutScreen()

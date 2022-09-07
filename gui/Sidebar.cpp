@@ -1,4 +1,4 @@
-#include "AppList.hpp"
+#include "MainDisplay.hpp"
 
 Sidebar::Sidebar()
 	: logo(RAMFS "res/icon.png")
@@ -78,6 +78,8 @@ bool Sidebar::process(InputEvents* event)
 	bool ret = false;
 	int origHighlighted = highlighted;
 
+	auto mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;
+
 	// process some joycon input events
 	if (event->isKeyDown())
 	{
@@ -92,6 +94,7 @@ bool Sidebar::process(InputEvents* event)
 			this->appList->highlighted = 0;
 			this->appList->y = 0; // reset scroll TODO: maintain scroll when switching between sidebar and app list
 			event->update();
+			mainDisplay->playSFX();
 			return true;
 		}
 
@@ -161,8 +164,10 @@ bool Sidebar::process(InputEvents* event)
 		return true;
 	}
 
-	if (origHighlighted != highlighted)
+	if (origHighlighted != highlighted) {
+		mainDisplay->playSFX();
 		ret |= true;
+	}
 
 	return ret;
 }

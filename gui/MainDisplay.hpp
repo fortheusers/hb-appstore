@@ -33,6 +33,11 @@ public:
 	bool renderedSplash = false;
 	ImageElement *spinner = nullptr;
 
+#if defined(MUSIC)
+	Mix_Chunk* click_sfx;
+	void playSFX();
+#endif
+
 private:
 	Sidebar sidebar;
 	AppList appList;
