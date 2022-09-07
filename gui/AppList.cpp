@@ -1,4 +1,4 @@
-#include "AppList.hpp"
+#include "MainDisplay.hpp"
 #include "AboutScreen.hpp"
 #include "main.hpp"
 
@@ -431,10 +431,27 @@ void AppList::cycleSort()
 void AppList::toggleAudio()
 {
 #if defined(MUSIC)
-	if (Mix_PausedMusic())
+
+	if (Mix_PausedMusic()) {
 		Mix_ResumeMusic();
-	else
+	} else {
 		Mix_PauseMusic();
+	}
+
+	auto isMusicAllowedByDefault = ((MainDisplay*)RootDisplay::mainDisplay)->getDefaultAudioStateForPlatform();
+	auto isMusicPlayingCurrently = !Mix_PausedMusic();
+	bool isSoundSettingDefaultBehavior = isMusicAllowedByDefault == isMusicPlayingCurrently; // music allowed + paused == inverted
+	
+	if (isSoundSettingDefaultBehavior) {
+		// the default sound behavior is desired, so delete the toggle file
+		if (std::filesystem::exists(SOUND_PATH)) {
+			std::filesystem::remove(SOUND_PATH);
+		}
+	} else {
+		// the sound behavior is toggled, create the toggle file
+		std::ofstream soundFile(SOUND_PATH);
+		soundFile.flush();
+	}
 #endif
 }
 

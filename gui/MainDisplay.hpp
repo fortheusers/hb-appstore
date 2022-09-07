@@ -19,6 +19,7 @@ public:
 	void render(Element* parent);
 
 	void drawErrorScreen(std::string troubleshootingText);
+	bool getDefaultAudioStateForPlatform();
 
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;

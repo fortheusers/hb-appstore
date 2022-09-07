@@ -6,7 +6,7 @@
 #else
 #define PLATFORM "Console"
 #endif
-
+#include <filesystem>
 #include "../libs/get/src/Get.hpp"
 #include "../libs/get/src/Utils.hpp"
 
@@ -24,7 +24,30 @@ MainDisplay::MainDisplay()
 
 	needsRedraw = true;
 
-	startMusic();
+#ifdef MUSIC
+	// load the music state from a config file
+	this->startMusic();
+
+	bool allowSound = getDefaultAudioStateForPlatform();
+
+	if (std::filesystem::exists(SOUND_PATH)) {
+		// invert our sound allowing setting, due to the existence of this file
+		allowSound = !allowSound;
+	}
+
+	if (!allowSound) {
+		// muted, so pause the music that we started earlier
+		Mix_PauseMusic();
+	}
+#endif
+}
+
+bool MainDisplay::getDefaultAudioStateForPlatform() {
+#ifdef __WIIU__
+// default to true, only for wiiu
+	return true;
+#endif
+	return false;
 }
 
 MainDisplay::~MainDisplay()

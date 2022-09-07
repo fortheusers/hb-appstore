@@ -18,6 +18,8 @@ jobs:
             ext: bin
           - platform: wiiu
             ext: rpx
+          - platform: wiiu
+            ext: wuhb
           - platform: switch
             ext: nro
           - platform: 3ds

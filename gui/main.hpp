@@ -8,6 +8,7 @@
 #define DEFAULT_REPO "https://switchbru.com/appstore"
 #endif
 
+#define SOUND_PATH "./.toggle_sound"
 #define DEFAULT_GET_HOME "./.get/"
 
 void quit();
