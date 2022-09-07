@@ -447,6 +447,7 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	, title2(package->author.c_str(), 27, &gray)
 	, details(package->long_desc.c_str(), 20 / SCALER, &black, false, PANE_WIDTH + 20 / SCALER)
 	, changelog((std::string("Changelog:\n") + package->changelog).c_str(), 20 / SCALER, &black, false, PANE_WIDTH + 20 / SCALER)
+	, showFiles("Show Installed Files List", L_BUTTON)
 	, banner(useBannerIcons ? package->getBannerUrl().c_str() : package->getIconUrl().c_str(), [package]{
 			// If the banner fails to load, use an icon banner
 			NetImageElement* icon = new NetImageElement(package->getIconUrl().c_str(), []{
@@ -487,11 +488,44 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	details.position((MARGIN / SCALER + 30), banner.y + banner.height + 22);
 	super::append(&details);
 
-	changelog.position((MARGIN / SCALER + 30), details.y + details.height + 30);
-	super::append(&changelog);
-
 	// view file list button
+	showFiles.position((MARGIN / SCALER + 30), details.y + details.height + 30);
+	showFiles.action = [this, package] {
+		std::stringstream allEntries;
 
+		if (showingFilesList) {
+			showFiles.updateText("Show Installed Files List");
+			changelog.setText((std::string("Changelog:\n") + package->changelog).c_str());
+			changelog.setFont(NORMAL);
+		} else {
+			showFiles.updateText("Hide Installed Files List");
+
+			// if it's an installed package, use the already installed manifest
+			if (package->status == INSTALLED || package->status == UPDATE) {
+				allEntries << "Currently Installed Files:\n";
+				for (auto &entry : package->manifest->entries) {
+					allEntries << entry.raw << "\n";
+				}
+				allEntries << "\n";
+			}
+
+			if (package->status != INSTALLED) {
+				// manifest is either non-local, or we need to display both
+				std::string data("");
+				downloadFileToMemory(package->getManifestUrl().c_str(), &data);
+				allEntries << "Manifest of Remote Files:\n" << data;
+			}
+
+			changelog.setText(std::string("") + allEntries.str().c_str());
+			changelog.setFont(MONOSPACED);
+		}
+		changelog.update();
+		showingFilesList = !showingFilesList;
+	};
+	super::append(&showFiles);
+
+	changelog.position((MARGIN / SCALER + 30), showFiles.y + showFiles.height + 30);
+	super::append(&changelog);
 }
 
 void AppDetailsContent::render(Element* parent)

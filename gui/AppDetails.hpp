@@ -37,6 +37,9 @@ private:
 	TextElement details;
 	TextElement changelog;
 	NetImageElement banner;
+	Button showFiles;
+
+	bool showingFilesList = false;
 };
 
 
