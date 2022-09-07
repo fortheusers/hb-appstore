@@ -13,12 +13,17 @@ A [Chesto](https://gitlab.com/4TU/chesto)-based graphical frontend to the [get p
 ### Nintendo Switch
 To run this program, a Nintendo Switch with access to the Homebrew Menu is required. This can be done on most Switches manufactured before July 2018, for compatibility check your serial number at [ismyswitchpatched.com](https://ismyswitchpatched.com). To run hbmenu, see the tutorial [here](https://guide.sdsetup.com/).
 
-Extract the latest [hb-appstore](https://github.com/fortheusers/hb-appstore/releases) to `sd:/switch/appstore/`, and run "hb App Store" from within hbmenu. When you're done, you can press the Minus (-) button to exit.
+Extract the latest [hb-appstore](https://github.com/fortheusers/hb-appstore/releases) to `sd:/switch/appstore/`, and run "hb App Store" from within hbmenu. When you're done, you can press the Home or Minus buttons to exit.
 
 ### Nintendo Wii U
 To run this program, a Wii U with access to the Homebrew Launcher is required. This can be done on any firmware, for compatibility check at [ismywiiupatched.com](https://ismywiiupatched.com). To run the Homebrew Launcher, see the tutorial [here](https://wiiuguide.xyz/).
 
-Extract the latest [hb-appstore](https://github.com/fortheusers/hb-appstore/releases) to `sd:/wiiu/apps/appstore/`, and run "hb App Store" from within Homebrew Launcher. When you're done, you can press the Minus (-) button to exit.
+Extract the latest [hb-appstore](https://github.com/fortheusers/hb-appstore/releases) to `sd:/wiiu/apps/appstore/`, and run "hb App Store" from within Homebrew Launcher. When you're done, you can press the Home or Minus buttons to exit.
+
+### Custom Music
+Place a mp3 file named `background.mp3` in one of the following two locations:
+- Wii U: `sd:/wiiu/apps/appstore/background.mp3`
+- Switch: `sd:/switch/appstore/background.mp3`
 
 ### Web and Desktop
 Web browsers can download files from the Homebrew App Store at [apps.fortheusers.org](https://apps.fortheusers.org). Source code: [hbas-frontend](https://gitlab.com/4TU/hbas-frontend)
@@ -52,7 +57,7 @@ export PLATFORM=switch    # or wiiu, 3ds, wii, pc, pc-sdl1
 docker run -v $(pwd):/code -it registry.gitlab.com/4tu/spheal /bin/bash -c "cd /code && make $PLATFORM"
 ```
 
-Depending on which platform you chose, `appstore.nro` or `appstore.rpx` should now be sitting in the cloned directory.
+Depending on which platform you chose, `appstore.nro` or `appstore.rpx` should now be sitting in the cloned directory. When building for Wii U, an `appstore.wuhb` file will also be present.
 
 If you are using an M1 Mac, you may have more luck running [dependency_helper.sh](https://gitlab.com/4TU/spheal/-/blob/master/dependency_helper.sh) inside of an arm64 ubuntu container, or trying the platform-specific instructions below.
 

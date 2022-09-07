@@ -1,9 +1,14 @@
 #include "MainDisplay.hpp"
 
+
+#ifndef APP_VERSION
+#define APP_VERSION "0.0.0"
+#endif
+
 Sidebar::Sidebar()
 	: logo(RAMFS "res/icon.png")
 	, title("Homebrew App Store", 22)
-	, subtitle("GPLv3 License", 18)
+	, subtitle("v" APP_VERSION " for " PLATFORM, 18)
 {
 	// a sidebar consists of:
 	//		a collection of category labels (TextElements),
@@ -28,7 +33,7 @@ Sidebar::Sidebar()
 	}
 
 	// create image in top left
-	logo.resize(40, 40);
+	logo.resize(45, 45);
 	logo.position(30, 50);
 	super::append(&logo);
 

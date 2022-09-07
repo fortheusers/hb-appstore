@@ -28,6 +28,12 @@ WiiU:
     PLATFORM: wiiu
     EXT: rpx
 
+WiiU-wuhb:
+  <<: *common
+  variables:
+    PLATFORM: wiiu
+    EXT: wuhb
+
 Switch:
   <<: *common
   variables:

@@ -1,10 +1,5 @@
 #if defined(SWITCH)
 #include <switch.h>
-#define PLATFORM "Switch"
-#elif defined(__WIIU__)
-#define PLATFORM "Wii U"
-#else
-#define PLATFORM "Console"
 #endif
 #include <filesystem>
 #include "../libs/get/src/Get.hpp"

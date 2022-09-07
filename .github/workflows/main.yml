@@ -39,4 +39,4 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: appstore.${{ matrix.ext }}
-        path: /__w/chesto/chesto/appstore.${{ matrix.ext }}
+        path: /__w/hb-appstore/hb-appstore/appstore.${{ matrix.ext }}

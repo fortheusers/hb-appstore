@@ -9,6 +9,19 @@
 #include <SDL2/SDL_mixer.h>
 #endif
 
+#if defined(SWITCH)
+#include <switch.h>
+#define PLATFORM "Switch"
+#elif defined(__WIIU__)
+#define PLATFORM "Wii U"
+#elif defined(_3DS)
+#define PLATFORM "3DS"
+#elif defined(WII)
+#define PLATFORM "Wii"
+#else
+#define PLATFORM "Generic"
+#endif
+
 class MainDisplay : public RootDisplay
 {
 public:
