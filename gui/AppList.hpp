@@ -78,6 +78,7 @@ private:
 	ImageElement muteIcon;
 	ImageElement unmuteIcon;
 	ImageElement nowPlayingIcon;
+	std::vector<std::string> musicInfo;
 #endif
 
 	// list of visible app cards

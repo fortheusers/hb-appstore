@@ -440,10 +440,11 @@ void AppList::update()
 	if (rootDisplay->music) {
 		if (!Mix_PausedMusic()) {
 			// music is playing, get the title and artist 
-			std::vector<std::string> info = CST_GetMusicInfo(rootDisplay->music);
-			const char* title = info[0].c_str();
-			const char* artist = info[1].c_str();
-			const char* album = info[2].c_str();
+			if (this->musicInfo.size() == 0)
+				this->musicInfo = CST_GetMusicInfo(rootDisplay->music);
+			const char* title = musicInfo[0].c_str();
+			const char* artist = musicInfo[1].c_str();
+			const char* album = musicInfo[2].c_str();
 			
 			// now playing icon, and position
 			nowPlayingText.setText(
