@@ -33,9 +33,10 @@ public:
 	bool renderedSplash = false;
 	ImageElement *spinner = nullptr;
 
+	void playSFX();
+
 #if defined(MUSIC)
 	Mix_Chunk* click_sfx;
-	void playSFX();
 #endif
 
 private:

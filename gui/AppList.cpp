@@ -83,7 +83,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
   AppletType at = appletGetAppletType();
   useBannerIcons = (at == AppletType_Application || at == AppletType_SystemApplication);
 
-  if (!userBannerIcons) {
+  if (!useBannerIcons) {
 	// applet mode, display a warning
 	nowPlayingText.setText("NOTICE: You are in Applet mode! Google \"Switch Applet Mode\" for more info.");
 	nowPlayingText.setColor(red);
