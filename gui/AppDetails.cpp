@@ -501,7 +501,8 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 			showFiles.updateText("Hide Installed Files List");
 
 			// if it's an installed package, use the already installed manifest
-			if (package->status == INSTALLED || package->status == UPDATE) {
+			// (LOCAL -> UPDATE packages won't have a manifest)
+			if ((package->status == INSTALLED || package->status == UPDATE) && package->manifest != NULL) {
 				allEntries << "Currently Installed Files:\n";
 				for (auto &entry : package->manifest->entries) {
 					allEntries << entry.raw << "\n";

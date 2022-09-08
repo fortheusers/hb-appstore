@@ -30,8 +30,9 @@ AppCard::AppCard(Package* package, AppList* list)
 	// connect the action to the callback for this element, to be invoked when the touch event fires
 	this->action = std::bind(&AppCard::displaySubscreen, this);
 
-	// create the layout of the app card (all relative)
 	icon.setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+
+	// create the layout of the app card (all relative)
 
 #if defined(_3DS) || defined(_3DS_MOCK)
 	icon.resize(ICON_SIZE, ICON_SIZE);
