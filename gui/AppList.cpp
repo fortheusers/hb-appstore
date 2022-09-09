@@ -28,6 +28,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	, creditsBtn("Credits", START_BUTTON, false, 15)
 	, sortBtn("Adjust Sort", Y_BUTTON, false, 15)
 	, keyboardBtn("Toggle Keyboard", Y_BUTTON, false, 15)
+	, backspaceBtn("Del", B_BUTTON, false, 15)
 	, nowPlayingText(" ", 20, &black)
 #if defined(MUSIC)
 	, nowPlayingIcon(RAMFS "res/nowplaying.png")
@@ -60,6 +61,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 
 	// search buttons
 	keyboardBtn.action = std::bind(&AppList::toggleKeyboard, this);
+	backspaceBtn.action = std::bind(&EKeyboard::backspace, &keyboard);
 
 	// keyboard input callback
 	keyboard.typeAction = std::bind(&AppList::keyboardInputCallback, this);
@@ -124,7 +126,7 @@ bool AppList::process(InputEvents* event)
 	// AND we're actually on the search category
 	// also if we're not in touchmode, always go in here regardless of any button presses (user can only interact with keyboard)
 	bool keyboardIsShowing = sidebar && sidebar->curCategory == 0 && !keyboard.hidden;
-	if (keyboardIsShowing && ((event->isTouchDown() && event->touchIn(keyboard.x, keyboard.y, keyboard.width, keyboard.height)) || !touchMode))
+	if (keyboardIsShowing && ((event->isTouchDown() && event->touchIn(keyboard.x, keyboard.y, keyboard.width + 305, keyboard.height + 200)) || !touchMode))
 	{
 		// wow I'm surprised this still works with the chesto keyboard
 		ret |= keyboard.process(event);
@@ -395,6 +397,9 @@ void AppList::update()
 		category.setText(std::string("Search: \"") + sidebar->searchQuery + "\"");
 		category.update();
 		super::append(&category);
+
+		backspaceBtn.position(keyboardBtn.x - 20 - backspaceBtn.width, quitBtn.y);
+		super::append(&backspaceBtn);
 	}
 	else
 	{

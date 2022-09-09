@@ -16,6 +16,7 @@ Feedback::Feedback(Package* package)
 	, icon(package->getIconUrl().c_str(), []{ return new ImageElement(RAMFS "res/default.png"); })
 	, quit("Discard", Y_BUTTON, false, 20)
 	, send("Submit", X_BUTTON, false, 20)
+	, backspaceBtn("Del", B_BUTTON, false, 15)
 	, response("If you need to send more detailed feedback, please email us at fight@fortheusers.org", 20, NULL, false, 460)
 #if defined(__WIIU__)
 	, hint("(btw you can press Minus to exit!)", 20, NULL)
@@ -45,6 +46,10 @@ Feedback::Feedback(Package* package)
 	send.position(quit.x + quit.width + 15, quit.y);
 	send.action = std::bind(&Feedback::submit, this);
 	super::append(&send);
+
+	backspaceBtn.position(quit.x - 15 - backspaceBtn.width, send.y);
+	backspaceBtn.action = std::bind(&EKeyboard::backspace, &keyboard);
+	super::append(&backspaceBtn);
 
 	response.position(860, 20);
 	super::append(&response);

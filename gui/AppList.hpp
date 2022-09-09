@@ -71,6 +71,7 @@ private:
 	Button creditsBtn;
 	Button sortBtn;
 	Button keyboardBtn;
+	Button backspaceBtn;
 	TextElement nowPlayingText;
 
 #if defined(MUSIC)

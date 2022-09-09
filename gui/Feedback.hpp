@@ -31,6 +31,7 @@ private:
 	EKeyboard keyboard;
 	Button quit;
 	Button send;
+	Button backspaceBtn;
 	TextElement response;
 	TextElement feedback;
 #if defined(__WIIU__)
