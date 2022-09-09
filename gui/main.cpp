@@ -89,9 +89,12 @@ int main(int argc, char* argv[])
 		console_main(display, events);
 #endif
 	}
-	else
+	else {
+		display->setupMusic();
+
 		// start primary app 
 		display->mainLoop();
+	}
 	
 #if defined(SWITCH)
 	socketExit();

@@ -30,6 +30,10 @@ int console_main(RootDisplay* rootDisplay, InputEvents* input)
 
 	while (running)
 	{
+#if defined(__WIIU__)
+		rootDisplay->processWiiUHomeOverlay();
+#endif
+
 		console->background(42, 37, 39);
 
 		// show the current menu screen
@@ -122,6 +126,10 @@ int console_main(RootDisplay* rootDisplay, InputEvents* input)
 		// move page PAGE_SIZE forward/backward depending on input
 		menu->moveCursor(-1 * PAGE_SIZE * input->pressed(LEFT_BUTTON) + PAGE_SIZE * input->pressed(RIGHT_BUTTON));
 	}
+
+#if defined(__WIIU__)
+		rootDisplay->processWiiUHomeOverlay();
+#endif
 
 	console->close();
 

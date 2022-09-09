@@ -15,7 +15,7 @@ AppCard::AppCard(Package* package, AppList* list)
 			},
 			!list
 		)
-	, version(("v. " + package->version).c_str(), TEXT_SIZE, &gray)
+	, version(("v" + package->version).c_str(), TEXT_SIZE, &gray)
 	, status(package->statusString(), TEXT_SIZE, &gray)
 	, appname(package->title.c_str(), TEXT_SIZE + 3, &black)
 	, author(package->author.c_str(), TEXT_SIZE, &gray)
@@ -81,17 +81,19 @@ void AppCard::handleIconLoad()
 {
 	if (iconFetch)
 		return;
+	
+	// printf("Y position: %d, %d, %d, %d - %s\n", list->y, this->y, this->height, SCREEN_HEIGHT, package->title.c_str());
 
-	int twoCardsHeight = (this->height + 15) * 2;
-
-	if ((list->y + this->height) < -twoCardsHeight)
-		return;
-	if ((list->y + this->y) > (SCREEN_HEIGHT + twoCardsHeight))
+	// don't try to load the icon if the card is not visible ("on screen, within height (one card)")
+	CST_Rect rect = { this->xOff + this->x, this->yOff + this->y - this->height, this->width, this->height };
+	if (CST_isRectOffscreen(&rect))
 		return;
 
 	// the icon is either visible or ofscreen within 2 rows,
 	// so the download can be started
 	icon.fetch();
+
+	// printf("Fetching icon for %s\n", package->title.c_str());
 
 	iconFetch = true;
 }
@@ -103,8 +105,8 @@ void AppCard::render(Element* parent)
 
 	// TODO: don't render this card if it's going to be offscreen anyway according to the parent (AppList)
 	CST_Rect rect = { this->xOff + this->x, this->yOff + this->y, this->width, this->height };
-  if (CST_isRectOffscreen(&rect))
-    return;
+	if (CST_isRectOffscreen(&rect))
+		return;
 
 	// render all the subelements of this card
 	super::render(parent);

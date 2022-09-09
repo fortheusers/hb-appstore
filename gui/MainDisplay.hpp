@@ -33,6 +33,7 @@ public:
 
 	void drawErrorScreen(std::string troubleshootingText);
 	bool getDefaultAudioStateForPlatform();
+	void setupMusic();
 
 	Get* get = NULL;
 	ImageCache* imageCache = NULL;

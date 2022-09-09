@@ -18,6 +18,11 @@ MainDisplay::MainDisplay()
 	super::append(&appList);
 
 	needsRedraw = true;
+}
+
+void MainDisplay::setupMusic() {
+	// initialize music (only if MUSIC defined)
+	this->initMusic();
 
 #ifdef MUSIC
 	// load the music state from a config file
