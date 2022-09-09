@@ -48,7 +48,9 @@ Feedback::Feedback(Package* package)
 	super::append(&send);
 
 	backspaceBtn.position(quit.x - 15 - backspaceBtn.width, send.y);
-	backspaceBtn.action = std::bind(&EKeyboard::backspace, &keyboard);
+	backspaceBtn.action = [this](void) {
+		this->keyboard.backspace();
+	};
 	super::append(&backspaceBtn);
 
 	response.position(860, 20);

@@ -61,7 +61,10 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 
 	// search buttons
 	keyboardBtn.action = std::bind(&AppList::toggleKeyboard, this);
-	backspaceBtn.action = std::bind(&EKeyboard::backspace, &keyboard);
+
+	backspaceBtn.action = [this](void) {
+		this->keyboard.backspace();
+	};
 
 	// keyboard input callback
 	keyboard.typeAction = std::bind(&AppList::keyboardInputCallback, this);
