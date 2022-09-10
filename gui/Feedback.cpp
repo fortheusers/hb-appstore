@@ -18,9 +18,6 @@ Feedback::Feedback(Package* package)
 	, send("Submit", X_BUTTON, false, 20)
 	, backspaceBtn("Del", B_BUTTON, false, 15)
 	, response("If you need to send more detailed feedback, please email us at fight@fortheusers.org", 20, NULL, false, 460)
-#if defined(__WIIU__)
-	, hint("(btw you can press Minus to exit!)", 20, NULL)
-#endif
 {
 	title.position(50, 30);
 	super::append(&title);
@@ -60,11 +57,6 @@ Feedback::Feedback(Package* package)
 	feedback.setWrappedWidth(730);
 	feedback.position(390, 100);
 	super::append(&feedback);
-
-#if defined(__WIIU__)
-	hint.position(50, 120);
-	super::append(&hint);
-#endif
 }
 
 void Feedback::render(Element* parent)

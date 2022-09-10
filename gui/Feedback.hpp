@@ -34,9 +34,6 @@ private:
 	Button backspaceBtn;
 	TextElement response;
 	TextElement feedback;
-#if defined(__WIIU__)
-	TextElement hint;
-#endif
 };
 
 #endif

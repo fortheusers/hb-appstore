@@ -133,8 +133,8 @@ bool AppList::process(InputEvents* event)
 	{
 		// wow I'm surprised this still works with the chesto keyboard
 		ret |= keyboard.process(event);
-		if (event->isKeyDown() && event->held(Y_BUTTON))
-			ret |= ListElement::process(event); // continue processing ONLY if they're pressing Y
+		if (event->isKeyDown() && (event->held(Y_BUTTON) || event->held(B_BUTTON)))
+			ret |= ListElement::process(event); // continue processing ONLY if they're pressing Y or B
 		
     if (needsUpdate) update();
     return ret;
@@ -146,7 +146,7 @@ bool AppList::process(InputEvents* event)
 	// process some joycon input events
 	if (event->isKeyDown())
 	{
-		if (keyboardIsShowing)
+		if (keyboardIsShowing && !event->held(B_BUTTON))
 		{
 			// keyboard is showing, but we'r epressing buttons, and we're down here, so set touch mode and get out
 			touchMode = false;
