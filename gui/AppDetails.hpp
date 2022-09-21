@@ -1,55 +1,9 @@
 #ifndef APPDETAILS_H_
 #define APPDETAILS_H_
 
-#include "../libs/get/src/Get.hpp"
-#include "../libs/get/src/Package.hpp"
-
-#include "../libs/chesto/src/Button.hpp"
-#include "../libs/chesto/src/ListElement.hpp"
-#include "../libs/chesto/src/ProgressBar.hpp"
-#include "../libs/chesto/src/TextElement.hpp"
-#include "../libs/chesto/src/NetImageElement.hpp"
-#include "../libs/chesto/src/Container.hpp"
+#include "AppDetailsContent.hpp"
 
 class AppList;
-
-
-class AppDetailsContent : public ListElement
-{
-public:
-	AppDetailsContent(Package *package, bool lowMemoryMode);
-	bool process(InputEvents* event);
-	void render(Element* parent);
-
-	Button reportIssue;
-	Button moreByAuthor;
-
-	CST_Color gray = { 0x50, 0x50, 0x50, 0xff };
-	CST_Color black = { 0x00, 0x00, 0x00, 0xff };
-	bool showingScreenshot = false;
-
-private:
-	// banner/text constants
-	const int MARGIN = 60;
-	const int BANNER_X = MARGIN + 5;
-	const int BANNER_Y = 140;
-
-	TextElement title;
-	TextElement title2;
-	TextElement details;
-	TextElement changelog;
-	NetImageElement banner;
-
-	Button showFiles;
-	Button showScreenshots;
-	Button viewSSButton;
-	Container screenshotsContainer;
-
-	bool showingFilesList = false;
-	bool showingScreenshots = false;
-	int curScreenIdx = 0;
-};
-
 
 class AppDetails : public Element
 {
@@ -81,8 +35,8 @@ public:
 
 	// the callback method to update the currently displayed pop up (and variables it needs)
 	static int updateCurrentlyDisplayedPopup(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow);
-  static int updatePopupStatus(int status, int num = 1, int num_total = 1);
-  static int lastFrameTime;
+	static int updatePopupStatus(int status, int num = 1, int num_total = 1);
+	static int lastFrameTime;
 
 	void proceed();
 	void back();
