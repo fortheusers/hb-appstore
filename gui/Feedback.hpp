@@ -32,6 +32,7 @@ private:
 	Button quit;
 	Button send;
 	Button backspaceBtn;
+	Button capsBtn;
 	TextElement response;
 	TextElement feedback;
 };

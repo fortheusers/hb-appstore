@@ -17,6 +17,7 @@ Feedback::Feedback(Package* package)
 	, quit("Discard", Y_BUTTON, false, 20)
 	, send("Submit", X_BUTTON, false, 20)
 	, backspaceBtn("Del", B_BUTTON, false, 15)
+	, capsBtn("Caps", L_BUTTON, false, 15)
 	, response("If you need to send more detailed feedback, please email us at fight@fortheusers.org", 20, NULL, false, 460)
 {
 	title.position(50, 30);
@@ -49,6 +50,13 @@ Feedback::Feedback(Package* package)
 		this->keyboard.backspace();
 	};
 	super::append(&backspaceBtn);
+
+	capsBtn.position(backspaceBtn.x - 15 - capsBtn.width, send.y);
+	capsBtn.action = [this](void) {
+		this->keyboard.capsOn = !this->keyboard.capsOn;
+		this->keyboard.updateSize();
+	};
+	super::append(&capsBtn);
 
 	response.position(860, 20);
 	super::append(&response);

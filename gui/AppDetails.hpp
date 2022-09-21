@@ -9,6 +9,7 @@
 #include "../libs/chesto/src/ProgressBar.hpp"
 #include "../libs/chesto/src/TextElement.hpp"
 #include "../libs/chesto/src/NetImageElement.hpp"
+#include "../libs/chesto/src/Container.hpp"
 
 class AppList;
 
@@ -25,6 +26,7 @@ public:
 
 	CST_Color gray = { 0x50, 0x50, 0x50, 0xff };
 	CST_Color black = { 0x00, 0x00, 0x00, 0xff };
+	bool showingScreenshot = false;
 
 private:
 	// banner/text constants
@@ -37,9 +39,15 @@ private:
 	TextElement details;
 	TextElement changelog;
 	NetImageElement banner;
+
 	Button showFiles;
+	Button showScreenshots;
+	Button viewSSButton;
+	Container screenshotsContainer;
 
 	bool showingFilesList = false;
+	bool showingScreenshots = false;
+	int curScreenIdx = 0;
 };
 
 
@@ -97,7 +105,7 @@ private:
 	AppDetailsContent content;
 	TextElement downloadStatus;
 
-  Button download;
+	Button download;
 	Button cancel;
 };
 
