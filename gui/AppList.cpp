@@ -135,6 +135,8 @@ bool AppList::process(InputEvents* event)
 		ret |= keyboard.process(event);
 		if (event->isKeyDown() && (event->held(Y_BUTTON) || event->held(B_BUTTON)))
 			ret |= ListElement::process(event); // continue processing ONLY if they're pressing Y or B
+		else if (event->noop)
+			ret |= ListElement::process(event); // continue processing if they're not pressing anything
 		
     if (needsUpdate) update();
     return ret;

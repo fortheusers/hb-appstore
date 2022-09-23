@@ -11,19 +11,27 @@
 #include "../libs/chesto/src/NetImageElement.hpp"
 #include "../libs/chesto/src/Container.hpp"
 
+#define SHOW_NEITHER 0
+#define SHOW_CHANGELOG 1
+#define SHOW_LIST_OF_FILES 2
+
 class AppDetailsContent : public ListElement
 {
 public:
 	AppDetailsContent(Package *package, bool lowMemoryMode);
 	bool process(InputEvents* event);
 	void render(Element* parent);
+	void switchExtraInfo(Package* package, int newState);
+	void slideUIDown(int heightOffset);
 
 	Button reportIssue;
 	Button moreByAuthor;
 
 	CST_Color gray = { 0x50, 0x50, 0x50, 0xff };
 	CST_Color black = { 0x00, 0x00, 0x00, 0xff };
+	
 	bool showingScreenshot = false;
+	bool expandedReadMore = false;
 
 private:
 	// banner/text constants
@@ -38,12 +46,11 @@ private:
 	NetImageElement banner;
 
 	Button showFiles;
-	Button showScreenshots;
+	Button showChangelog;
 	Button viewSSButton;
 	Container screenshotsContainer;
 
-	bool showingFilesList = false;
-	bool showingScreenshots = false;
+	int extraContentState = SHOW_NEITHER;
 	int curScreenIdx = 0;
 };
 #endif
