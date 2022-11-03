@@ -1,9 +1,8 @@
-{
-    "id": "hbas",
+"id": "ggs",
     "type": "application",
     "value": {
-        "author": "4TU Team",
-        "description": "Download homebrew apps with a UI",
+        "author": "4TU Team GuestDreemurr",
+        "description": "Download Homebrew Games with a EShop Style UI",
         "language": "c++",
         "sources": [ "gui", "console" ]
     },
@@ -14,4 +13,3 @@
         "cxxflags": [ "-Wno-narrowing", "-DPC" ]
     }
 }
-
