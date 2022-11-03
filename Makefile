@@ -1,8 +1,8 @@
-BINARY      := appstore
+BINARY      := gamestore
 
-APP_TITLE   := HB App Store
-APP_AUTHOR  := 4TU Team
-APP_VERSION := 2.3
+APP_TITLE   := Guest Game Store
+APP_AUTHOR  := 4TU Team GuestDreemurr
+APP_VERSION := 1.0
 
 SOURCES     += gui console
 
