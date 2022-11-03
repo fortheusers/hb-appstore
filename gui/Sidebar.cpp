@@ -7,7 +7,7 @@
 
 Sidebar::Sidebar()
 	: logo(RAMFS "res/icon.png")
-	, title("Homebrew App Store", 22)
+	, title("Guest's Game Store", 22)
 	, subtitle("v" APP_VERSION " for " PLATFORM, 18)
 {
 	// a sidebar consists of:
