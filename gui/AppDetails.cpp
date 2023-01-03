@@ -362,7 +362,7 @@ bool AppDetails::launchFile(char* path, char* context)
 		quit();
 		return true;
 	}
-#else if defined(__WIIU__)
+#elif defined(__WIIU__)
 	RPXLoaderStatus ret = RPXLoader_InitLibrary();
 	if (ret == RPX_LOADER_RESULT_SUCCESS)
 	{
