@@ -4,3 +4,6 @@
 [submodule "libs/chesto"]
 	path = libs/chesto
 	url = https://gitlab.com/4tu/chesto.git
+[submodule "libs/librpxloader"]
+	path = libs/librpxloader
+	url = https://github.com/wiiu-env/librpxloader.git
