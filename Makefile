@@ -6,5 +6,10 @@ APP_VERSION := 2.3
 
 SOURCES     += gui console
 
+ifeq (wiiu,$(MAKECMDGOALS))
+SOURCES   += libs/librpxloader/source
+INCLUDES  += ../libs/librpxloader/include
+endif
+
 include libs/get/Makefile
 include libs/chesto/Makefile

@@ -36,7 +36,7 @@ There are work-in-progress ports to 3DS and Wii, with varying degrees of feature
 If you would like to help maintain repos for these platforms, or contribute code / ideas, please feel free to make a PR or contact us on the [4TU Discord](https://discordapp.com/invite/F2PKpEj)!
 
 ## Maintaining a repo
-See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for setting up a repository. Everything is designed to be statically hosted. If there's no repo provided in the `repos.json` config file, then it will generate a default one pointing to [switchbru.com/appstore](http://switchbru.com/appstore/).
+See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for setting up a repository. Everything is designed to be statically hosted. If there's no repo provided in the `repos.json` config file, then it will generate a default one pointing to [switchbru.com/appstore](https://switchbru.com/appstore/).
 
 If you run into any issues and need help maintaining or setting up a libget repo, feel free to get in touch with vgmoose at me@vgmoose.com or on Discord.
 
@@ -46,7 +46,7 @@ This program is written using [chesto](https://gitlab.com/4TU/chesto) and has de
 You can get pre-compiled binaries for each platform under [Pipelines](https://gitlab.com/4TU/hb-appstore/pipelines) for a given commit. The download artifacts dropdown is to the right of the build passing status.
 
 ### Building with Docker
-The easiest way to build is using the [Spheal](https://gitlab.com/4TU/spheal) x86_64 docker container. It uses this [dependency helper script](https://gitlab.com/4TU/spheal/-/blob/master/dependency_helper.sh) to be able to build for all supported platforms. This is how the pre-compiled binaries are built.
+The easiest way to build is using the [Sealeo](https://github.com/fortheusers/sealeo) x86_64 docker container. It uses this [dependency helper script](https://github.com/fortheusers/sealeo/blob/main/dependency_helper.sh) to be able to build for all supported platforms. This is how the pre-compiled binaries are built.
 
 1. Install [Docker](https://www.docker.com)
 2. Run the following, replacing `switch` with the target platform (one of `switch`, `wiiu`, or `pc`):
@@ -54,12 +54,12 @@ The easiest way to build is using the [Spheal](https://gitlab.com/4TU/spheal) x8
 git clone --recursive https://gitlab.com/4TU/hb-appstore.git
 cd hb-appstore
 export PLATFORM=switch    # or wiiu, 3ds, wii, pc, pc-sdl1
-docker run -v $(pwd):/code -it registry.gitlab.com/4tu/spheal /bin/bash -c "cd /code && make $PLATFORM"
+docker run -v $(pwd):/code -it ghcr.io/fortheusers/sealeo /bin/bash -c "cd /code && make $PLATFORM"
 ```
 
 Depending on which platform you chose, `appstore.nro` or `appstore.rpx` should now be sitting in the cloned directory. When building for Wii U, an `appstore.wuhb` file will also be present.
 
-If you are using an M1 Mac, you may have more luck running [dependency_helper.sh](https://gitlab.com/4TU/spheal/-/blob/master/dependency_helper.sh) inside of an arm64 ubuntu container, or trying the platform-specific instructions below.
+If you are using an M1 Mac, you may have more luck running [dependency_helper.sh](https://github.com/fortheusers/sealeo/blob/main/dependency_helper.sh) inside of an arm64 ubuntu container, or trying the platform-specific instructions below.
 
 ### Building for Specific Platforms
 Compilation instructions for specific supported platforms (Switch, Wii U, 3DS, Wii) can be found in [Compiling.md](https://gitlab.com/4TU/hb-appstore/-/blob/master/docs/Compiling.md)

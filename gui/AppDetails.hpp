@@ -12,7 +12,7 @@ public:
 	~AppDetails();
 
 	std::string getPackageDetails(Package* package);
-	const char *getAction(Package* package);
+	const char* getAction(Package* package);
 	bool process(InputEvents* event);
 	void render(Element* parent);
 	bool launchFile(char* path, char* context);
@@ -50,6 +50,9 @@ public:
 
 	ProgressBar downloadProgress;
 
+	// on some platform + package combinations, we need to quit after installing
+	bool quitAfterInstall = false;
+
 private:
 #if defined(SWITCH)
 	Button* start = nullptr;
@@ -62,6 +65,5 @@ private:
 	Button download;
 	Button cancel;
 };
-
 
 #endif

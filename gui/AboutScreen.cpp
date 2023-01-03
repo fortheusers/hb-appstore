@@ -4,15 +4,13 @@
 #include "../libs/get/src/Utils.hpp"
 
 #include "../libs/chesto/src/Button.hpp"
-#include "../libs/chesto/src/RootDisplay.hpp"
 #include "../libs/chesto/src/NetImageElement.hpp"
-
+#include "../libs/chesto/src/RootDisplay.hpp"
 
 #include "AboutScreen.hpp"
 #include "Feedback.hpp"
 
 #define AVATAR_URL "https://avatars.githubusercontent.com/u/"
-
 
 CST_Color AboutScreen::black = { 0x00, 0x00, 0x00, 0xff };
 CST_Color AboutScreen::gray = { 0x50, 0x50, 0x50, 0xff };
@@ -23,11 +21,10 @@ AboutScreen::AboutScreen(Get* get)
 	, feedback("Leave Feedback", A_BUTTON, false, 17)
 	, title("Homebrew App Store", 35, &black)
 	, subtitle("by fortheusers.org", 25, &black)
-	, ftuLogo(AVATAR_URL "40721862", []{
-	        return new ImageElement(RAMFS "res/4TU.png");
-        })
+	, ftuLogo(AVATAR_URL "40721862", []
+		  { return new ImageElement(RAMFS "res/4TU.png"); })
 	, creds("Licensed under the GPLv3 license. This app is free and open source because the users (like you!) deserve it.\n\nLet's support homebrew and the right to control what software we run on our own devices!",
-			20, &black, false, 1240)
+		  20, &black, false, 1240)
 {
 
 	// TODO: show current app status somewhere
@@ -144,7 +141,7 @@ void AboutScreen::credHead(const char* header, const char* blurb)
 {
 	auto head = creditHeads.emplace(creditHeads.end());
 
-	creditCount += (4 - creditCount%4) % 4;
+	creditCount += (4 - creditCount % 4) % 4;
 	head->text = new TextElement(header, 30, &black);
 	head->text->position(40, 250 + 60 + creditCount / 4 * 160);
 	super::append(head->text);
@@ -157,15 +154,15 @@ void AboutScreen::credHead(const char* header, const char* blurb)
 }
 
 void AboutScreen::credit(const char* username,
-												const char* githubId,
-												const char* twitter,
-												const char* github,
-												const char* gitlab,
-												const char* patreon,
-												const char* url,
-												const char* discord,
-												const char* directAvatarUrl,
-												const char* youtube)
+	const char* githubId,
+	const char* twitter,
+	const char* github,
+	const char* gitlab,
+	const char* patreon,
+	const char* url,
+	const char* discord,
+	const char* directAvatarUrl,
+	const char* youtube)
 {
 	int X = 40;
 	int Y = 310;
@@ -187,19 +184,20 @@ void AboutScreen::credit(const char* username,
 
 	int socialCount = 0;
 
-	const char * handles[7] = { twitter, github, gitlab, patreon, url, discord, youtube };
-	const char * icons[7] = { "twitter", "github", "gitlab", "patreon", "url", "discord", "youtube" };
+	const char* handles[7] = { twitter, github, gitlab, patreon, url, discord, youtube };
+	const char* icons[7] = { "twitter", "github", "gitlab", "patreon", "url", "discord", "youtube" };
 
-	for (int x=0; x<7; x++) {
+	for (int x = 0; x < 7; x++)
+	{
 		if (handles[x] == NULL) continue;
 
 		cred->social[socialCount].icon = new ImageElement(((std::string(RAMFS "res/") + icons[x]) + ".png").c_str());
 		cred->social[socialCount].icon->resize(20, 20);
-		cred->social[socialCount].icon->position(myX + 110, myY + 45 + socialCount*25);
+		cred->social[socialCount].icon->position(myX + 110, myY + 45 + socialCount * 25);
 		super::append(cred->social[socialCount].icon);
 
 		cred->social[socialCount].link = new TextElement(handles[x], 14, &gray);
-		cred->social[socialCount].link->position(myX + 140, myY + 45 + socialCount*25);
+		cred->social[socialCount].link->position(myX + 140, myY + 45 + socialCount * 25);
 		super::append(cred->social[socialCount].link);
 
 		socialCount++;
@@ -227,9 +225,9 @@ void AboutScreen::render(Element* parent)
 
 bool AboutScreen::process(InputEvents* event)
 {
-  bool ret = false;
-  ret |= ListElement::processUpDown(event);
-  return ret || ListElement::process(event);
+	bool ret = false;
+	ret |= ListElement::processUpDown(event);
+	return ret || ListElement::process(event);
 }
 
 void AboutScreen::back()
@@ -242,7 +240,7 @@ void AboutScreen::launchFeedback()
 	// find the package corresponding to us
 	for (auto& package : this->get->packages)
 	{
-		if (package->pkg_name == "appstore")
+		if (package->pkg_name == APP_SHORTNAME)
 		{
 			RootDisplay::switchSubscreen(new Feedback(package));
 			break;

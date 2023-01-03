@@ -5,14 +5,18 @@
 #include <switch.h>
 #endif
 
+#if defined(__WIIU__)
+#include "../libs/librpxloader/include/rpxloader/rpxloader.h"
+#endif
+
 #include "../libs/get/src/Get.hpp"
 #include "../libs/get/src/Utils.hpp"
 
 #include "../libs/chesto/src/RootDisplay.hpp"
 
 #include "AppDetails.hpp"
-#include "Feedback.hpp"
 #include "AppList.hpp"
+#include "Feedback.hpp"
 #include "ImageCache.hpp"
 #include "main.hpp"
 
@@ -40,8 +44,8 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	cancel.action = std::bind(&AppDetails::back, this);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
-  download.position(SCREEN_WIDTH / 2 - download.width / 2, 360);
-  cancel.position(SCREEN_WIDTH / 2 - cancel.width / 2, 410);
+	download.position(SCREEN_WIDTH / 2 - download.width / 2, 360);
+	cancel.position(SCREEN_WIDTH / 2 - cancel.width / 2, 410);
 #endif
 
 #if defined(SWITCH)
@@ -88,7 +92,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	content.reportIssue.action = std::bind(&AppDetails::leaveFeedback, this);
 	super::append(&content);
 
-  super::append(&download);
+	super::append(&download);
 	super::append(&cancel);
 
 	downloadProgress.width = PANE_WIDTH;
@@ -96,7 +100,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 	downloadProgress.color = 0xff0000ff;
 	downloadProgress.dimBg = true;
 
-  // download informations (not visible until the download is started)
+	// download informations (not visible until the download is started)
 	downloadStatus.position(SCREEN_WIDTH / 2 - downloadProgress.width / 2, PANE_WIDTH / 2 - 70 / SCALER);
 }
 
@@ -121,32 +125,32 @@ std::string AppDetails::getPackageDetails(Package* package)
 	// lots of details that we know about the package
 	std::stringstream more_details;
 	more_details << "Title: " << package->title << "\n"
-	<< package->short_desc << "\n\n"
-	<< "Author: " << package->author << "\n"
-	<< "Version: " << package->version << "\n"
-	<< "License: " << package->license << "\n\n"
-	<< "Package: " << package->pkg_name << "\n"
-	<< "Downloads: " << package->downloads << "\n"
-	<< "Updated: " << package->updated << "\n\n"
-	<< "Download size: " << package->download_size << " KB\n"
-	<< "Install size: " << package->extracted_size << " KB\n";
+				 << package->short_desc << "\n\n"
+				 << "Author: " << package->author << "\n"
+				 << "Version: " << package->version << "\n"
+				 << "License: " << package->license << "\n\n"
+				 << "Package: " << package->pkg_name << "\n"
+				 << "Downloads: " << package->downloads << "\n"
+				 << "Updated: " << package->updated << "\n\n"
+				 << "Download size: " << package->download_size << " KB\n"
+				 << "Install size: " << package->extracted_size << " KB\n";
 	return more_details.str();
 }
 
-const char *AppDetails::getAction(Package* package)
+const char* AppDetails::getAction(Package* package)
 {
 	switch (package->status)
 	{
-		case GET:
-			return "Download";
-		case UPDATE:
-			return "Update";
-		case INSTALLED:
-			return "Remove";
-		case LOCAL:
-			return "Reinstall";
-		default:
-			break;
+	case GET:
+		return "Download";
+	case UPDATE:
+		return "Update";
+	case INSTALLED:
+		return "Remove";
+	case LOCAL:
+		return "Reinstall";
+	default:
+		break;
 	}
 	return "?";
 }
@@ -213,7 +217,7 @@ void AppDetails::launch()
 	}
 	else
 	{
-		//Final check if path actually exists
+		// Final check if path actually exists
 		if ((file = fopen(path, "r")))
 		{
 			fclose(file);
@@ -272,17 +276,29 @@ bool AppDetails::process(InputEvents* event)
 
 	if (this->operating) return false;
 
-	if (content.showingScreenshot) {
+	if (content.showingScreenshot)
+	{
 		// if the screenshot is displayed, it's kind of like a second subscreen, and eats all inputs
 		// TODO: this is a pattern chesto should handle better (like a stack of subscreens)
-		return elements[elements.size()-1]->process(event);
+		return elements[elements.size() - 1]->process(event);
 	}
 	return super::process(event);
 }
 
 void AppDetails::preInstallHook()
 {
-  // is there an echo in here?
+// if on wii u and installing ourselves, we need to unmount our WUHB and exit after
+#if defined(__WIIU__)
+	if (this->package->pkg_name == APP_SHORTNAME)
+	{
+		RPXLoaderStatus ret = RPXLoader_InitLibrary();
+		if (ret == RPX_LOADER_RESULT_SUCCESS)
+		{
+			// unmount ourselves
+			RPXLoader_UnmountCurrentRunningBundle();
+		}
+	}
+#endif
 }
 
 bool AppDetails::themeInstall(char* installerPath)
@@ -304,8 +320,9 @@ bool AppDetails::themeInstall(char* installerPath)
 				themePaths.push_back(package->manifest->entries[i].path);
 			}
 		}
-
-	}else{
+	}
+	else
+	{
 		printf("--> ERROR: no manifest found/manifest invalid at %s\n", ManifestPath.c_str());
 		return false;
 	}
@@ -339,13 +356,18 @@ bool AppDetails::themeInstall(char* installerPath)
 bool AppDetails::launchFile(char* path, char* context)
 {
 #if defined(SWITCH)
-	//If setnexload works without problems, quit to make loader open next nro
+	// If setnexload works without problems, quit to make loader open next nro
 	if (R_SUCCEEDED(envSetNextLoad(path, context)))
 	{
 		quit();
 		return true;
 	}
-	return false;
+#else if defined(__WIIU__)
+	RPXLoaderStatus ret = RPXLoader_InitLibrary();
+	if (ret == RPX_LOADER_RESULT_SUCCESS)
+	{
+		return RPXLoader_LaunchHomebrew(path) == RPX_LOADER_RESULT_SUCCESS;
+	}
 #endif
 	return false;
 }
@@ -354,6 +376,11 @@ void AppDetails::postInstallHook()
 {
 	networking_callback = nullptr;
 	libget_status_callback = nullptr;
+
+	if (quitAfterInstall)
+	{
+		RootDisplay::mainDisplay->events->quitaction();
+	}
 }
 
 void AppDetails::render(Element* parent)
@@ -443,4 +470,3 @@ int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, dou
 
 	return 0;
 }
-
