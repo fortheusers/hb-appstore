@@ -1,9 +1,9 @@
 [submodule "libs/get"]
 	path = libs/get
-	url = https://gitlab.com/4tu/libget.git
+	url = https://github.com/fortheusers/libget.git
 [submodule "libs/chesto"]
 	path = libs/chesto
-	url = https://gitlab.com/4tu/chesto.git
+	url = https://github.com/fortheusers/chesto.git
 [submodule "libs/librpxloader"]
 	path = libs/librpxloader
 	url = https://github.com/wiiu-env/librpxloader.git

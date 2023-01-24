@@ -9,7 +9,7 @@ sudo dkp-pacman -S devkitA64 libnx switch-tools switch-curl switch-bzip2 switch-
 3. *If on macOS*: install gtar with: `brew install gnu-tar` (needed by resinfs)
 4. Once it's all setup, recursively clone the repo and run make:
 ```
-git clone --recursive https://gitlab.com/4TU/hb-appstore.git
+git clone --recursive https://github.com/fortheusers/hb-appstore.git
 cd hb-appstore
 make switch
 ```
@@ -18,15 +18,14 @@ If all goes well, `appstore.nro` should be sitting in the current directory.
 
 ## Building for Wii U (with WUT)
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
-2. Setup [wiiu-fling](https://gitlab.com/QuarkTheAwesome/wiiu-fling#wiiu-fling) according to the instructions (**NOTICE**: at this time of writing the fling repo's will need to go above the dkp ones in order to properly build with SDL)
-3. Install devkitPPC and needed Wii U dependencies via dkp-pacman:
+2. Install devkitPPC and needed Wii U dependencies via dkp-pacman:
 ```
-sudo dkp-pacman -S wut wiiu-sdl2 devkitPPC wiiu-libromfs wiiu-sdl2_gfx wiiu-sdl2_image wiiu-sdl2_ttf wiiu-sdl2_mixer ppc-zlib ppc-bzip2 ppc-freetype ppc-mpg123 ppc-libpng wiiu-curl-headers ppc-pkg-config wiiu-pkg-config
+sudo dkp-pacman -S wut wiiu-sdl2 devkitPPC wiiu-sdl2_gfx wiiu-sdl2_image wiiu-sdl2_ttf wiiu-sdl2_mixer ppc-zlib ppc-bzip2 ppc-freetype ppc-mpg123 ppc-libpng ppc-pkg-config wiiu-pkg-config wut-tools wut wiiu-curl
 ```
-4. *If on macOS*: install gtar with: `brew install gnu-tar` (needed by resinfs)
-5. Once the environment is setup:
+3. *If on macOS*: install gtar with: `brew install gnu-tar` (needed by resinfs)
+4. Once the environment is setup:
 ```
-git clone --recursive https://gitlab.com/4TU/hb-appstore.git
+git clone --recursive https://github.com/fortheusers/hb-appstore.git
 cd hb-appstore
 make wiiu
 ```
@@ -42,7 +41,7 @@ sudo dkp-pacman --noconfirm -S devkitPPC libogc gamecube-tools ppc-zlib ppc-bzip
 3. *If on macOS*: install gtar with: `brew install gnu-tar` (needed by resinfs)
 4. Once it's all setup, recursively clone the repo and run make:
 ```
-git clone --recursive https://gitlab.com/4TU/hb-appstore.git
+git clone --recursive https://github.com/fortheusers/hb-appstore.git
 cd hb-appstore
 make 3ds
 ```
@@ -58,7 +57,7 @@ sudo dkp-pacman -S 3ds-sdl 3ds-sdl_image 3ds-sdl_mixer 3ds-sdl_gfx 3ds-sdl_ttf l
 3. *If on macOS*: install gtar with: `brew install gnu-tar` (needed by resinfs)
 4. Once it's all setup, recursively clone the repo and run make:
 ```
-git clone --recursive https://gitlab.com/4TU/hb-appstore.git
+git clone --recursive https://github.com/fortheusers/hb-appstore.git
 cd hb-appstore
 make wii
 ```
@@ -74,7 +73,7 @@ Both targets support the addition of `CFLAGS += -D_3DS_MOCK` in the Makefile to 
 The following produces `appstore.bin` in the current directory:
 ```
 sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++ libcurl4-openssl-dev
-git clone --recursive https://gitlab.com/4TU/hb-appstore.git
+git clone --recursive https://github.com/fortheusers/hb-appstore.git
 cd hb-appstore
 make pc
 ```
@@ -83,7 +82,7 @@ make pc
 The following produces `appstore.bin-sdl1` in the current directory:
 ```
 sudo apt-get install libsdl1.2-dev libsdl-ttf2.0-dev libsdl-image1.2-dev libsdl-gfx1.2-dev zlib1g-dev gcc g++ libcurl4-openssl-dev
-git clone --recursive https://gitlab.com/4TU/hb-appstore.git
+git clone --recursive https://github.com/fortheusers/hb-appstore.git
 cd hb-appstore
 make pc-sdl1
 ```

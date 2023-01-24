@@ -33,7 +33,7 @@ void Menu::display()
 
 		console->drawColorString(9, 23, "Hold [L]+[R]+[A] to reset configuration data", 0xff, 0xff, 0x00);
 
-		console->drawString(9, 28, "Report an issue at: gitlab.com/4tu/hb-appstore");
+		console->drawString(9, 28, "Report an issue at: github.com/fortheusers/hb-appstore");
 
 		console->fillRect(0, 44, 80, 1, 0, 0, 255);
 		console->drawColorString(0, 44, "[B] Back", 0xff, 0xff, 0xff);
@@ -140,7 +140,7 @@ void Menu::display()
     console->drawString(5, 9, "No progress bar available in this mode");
 		console->drawColorString(5, 11, "Please wait!", 0, 0xcc, 0xcc);
 
-		console->drawString(5, 15, "Report an issue at: gitlab.com/4tu/hb-appstore");
+		console->drawString(5, 15, "Report an issue at: github.com/fortheusers/hb-appstore");
 
 	}
 
@@ -151,7 +151,7 @@ void Menu::display()
 		else
 		{
 			console->drawColorString(3, 10, "Operation failed", 0xff, 0, 0);
-			console->drawString(3, 12, "You can file an issue at gitlab.com/4tu/hb-appstore");
+			console->drawString(3, 12, "You can file an issue at github.com/fortheusers/hb-appstore");
 		}
 
 		console->drawColorString(3, 14, "Press [A] to continue", 0xff, 0xff, 0x00);
