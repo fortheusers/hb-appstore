@@ -61,8 +61,8 @@ AboutScreen::AboutScreen(Get* get)
 	credHead("Repo Maintenance and Development", "These are the primary people responsible for actively maintaining and developing the Homebrew App Store. If there's a problem, these are the ones to get in touch with!");
 	credit("pwsincd", "20027105", NULL, "pwsincd", NULL, NULL, NULL, "pwsincd#9044");
 	credit("VGMoose", "2467473", "vgmoose", "vgmoose");
+	credit("Nightkingale", "63483138", "Nightkingale", "nightkingale");
 	credit("rw-r-r_0644", "18355947", "rw_r_r_0644", "rw-r-r-0644");
-	credit("Nightkingale", "63483138", NULL, "NoahAbc12345");
 	credit("crc32", "7893269", "crc32_", "crc-32");
 	credit("CompuCat", "12215288", NULL, NULL, "compucat", NULL, "compucat.me");
 	credit("Quarky", "8533313", NULL, NULL, "quarktheawesome", NULL, "heyquark.com");
