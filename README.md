@@ -72,10 +72,10 @@ This software is licensed under the GPLv3.
 ### Maintainers
 - [vgmoose](https://github.com/vgmoose)
 - [pwsincd](https://github.com/pwsincd)
+- [Nightkingale](https://github.com/Nightkingale)
 - [rw-r-r_0644](https://github.com/rw-r-r-0644)
 - [crc32](https://github.com/crc-32)
 - [Compucat](https://github.com/compucat)
-- [NoahAbc12345](https://github.com/NoahAbc12345)
 
 ## Contributing
 If you have some functionality that you'd like to see feel free to discuss it on an [issues page](https://github.com/fortheusers/hb-appstore/issues), or if you already have an implementation or desire that you'd like to see, feel free to fork and make a [pull request](https://github.com/fortheusers/hb-appstore/pulls)!
