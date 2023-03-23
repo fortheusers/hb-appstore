@@ -2,7 +2,7 @@ BINARY      := appstore
 
 APP_TITLE   := HB App Store
 APP_AUTHOR  := 4TU Team
-APP_VERSION := 2.3.1
+APP_VERSION := 2.3.1-$(shell git rev-parse --short HEAD)
 
 SOURCES     += gui console
 
