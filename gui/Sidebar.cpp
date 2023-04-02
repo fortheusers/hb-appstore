@@ -47,6 +47,19 @@ Sidebar::Sidebar()
 	// elasticCounter in this class is used to keep track of which element is being pressed down on in touch mode
 	// TODO: elasticCounter belongs to element and should really be renamed (it's for general purpose animations)
 	elasticCounter = -1;
+
+	if (isEarthDay()) {
+		// easter egg for earth day https://www.earthday.org
+		title.setText("Happy Earth Day!");
+		title.update();
+
+		// draw a an icon over the logo
+		logo.hide();
+		ImageElement* earth = new ImageElement(RAMFS "res/earth.png");
+		earth->resize(60, 60);
+		earth->position(23, 40);
+		super::append(earth);
+	}
 }
 
 Sidebar::~Sidebar()

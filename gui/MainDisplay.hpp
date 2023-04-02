@@ -70,3 +70,5 @@ private:
 	TextElement troubleshooting;
 	Button btnQuit;
 };
+
+bool isEarthDay();

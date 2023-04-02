@@ -91,6 +91,12 @@ bool MainDisplay::process(InputEvents* event)
 		// switch gets a red spinner
 		spinnerPath = RAMFS "res/spinner_red.png";
 #endif
+
+	if (isEarthDay()) {
+		backgroundColor = fromRGB(12, 156, 91);
+		spinnerPath = RAMFS "res/spinner_green.png";
+	}
+
 		spinner = new ImageElement(spinnerPath);
 		spinner->position(795, 90);
 		spinner->resize(90, 90);
@@ -144,7 +150,6 @@ bool MainDisplay::process(InputEvents* event)
 	return RootDisplay::process(event);
 }
 
-
 int MainDisplay::updateLoader(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow)
 {
 	int now = CST_GetTicks();
@@ -191,4 +196,11 @@ ErrorScreen::ErrorScreen(std::string troubleshootingText)
 	super::append(&errorMessage);
 	super::append(&troubleshooting);
 	super::append(&btnQuit);
+}
+
+bool isEarthDay() {
+	time_t now = time(0);
+	tm* ltm = localtime(&now);
+
+	return ltm->tm_mon == 3 && ltm->tm_mday == 1;
 }

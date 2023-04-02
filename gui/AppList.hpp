@@ -51,7 +51,7 @@ public:
 	int sortMode = RECENT;
 	bool useBannerIcons = true;
 
-	void launchSettings();
+	void launchSettings(bool isCredits);
 
 	EKeyboard keyboard;
 

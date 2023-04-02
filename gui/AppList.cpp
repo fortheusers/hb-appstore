@@ -1,5 +1,6 @@
 #include "MainDisplay.hpp"
 #include "AboutScreen.hpp"
+#include "FeedbackCenter.hpp"
 #include "main.hpp"
 
 #include "../libs/get/src/Utils.hpp"
@@ -49,7 +50,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	quitBtn.action = quit;
 
 	// additional buttons
-	creditsBtn.action = std::bind(&AppList::launchSettings, this);
+	creditsBtn.action = std::bind(&AppList::launchSettings, this, false);
 	sortBtn.action = std::bind(&AppList::cycleSort, this);
 	
 #if defined(MUSIC)
@@ -546,7 +547,11 @@ void AppList::toggleKeyboard()
 	needsRedraw = true;
 }
 
-void AppList::launchSettings()
+void AppList::launchSettings(bool isCredits)
 {
-	RootDisplay::switchSubscreen(new AboutScreen(this->get));
+	if (isCredits) {
+		RootDisplay::switchSubscreen(new AboutScreen(this->get));
+	} else {
+		RootDisplay::switchSubscreen(new FeedbackCenter(this));
+	}
 }
