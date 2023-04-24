@@ -7,8 +7,13 @@
 
 Sidebar::Sidebar()
 	: logo(RAMFS "res/icon.png")
+#ifdef DEBUG_BUILD
+	, title("hb-appstore Dev Build", 22)
+	, subtitle("v" APP_VERSION " (" __DATE__ ")", 18)
+#else
 	, title("Homebrew App Store", 22)
 	, subtitle("v" APP_VERSION " for " PLATFORM, 18)
+#endif
 {
 	// a sidebar consists of:
 	//		a collection of category labels (TextElements),
@@ -31,6 +36,11 @@ Sidebar::Sidebar()
 		category[x].name->position(105, 150 + x * 70);
 		super::append(category[x].name);
 	}
+
+	// if we're a dev build, rotate the icon upside down
+#ifdef DEBUG_BUILD
+	logo.angle = 180;
+#endif
 
 	// create image in top left
 	logo.resize(45, 45);

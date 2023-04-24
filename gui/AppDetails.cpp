@@ -389,7 +389,7 @@ void AppDetails::render(Element* parent)
 		this->parent = parent;
 
 	// draw white background
-	CST_Rect dimens = { 0, 0, 920, PANE_WIDTH };
+	CST_Rect dimens = { 0, 0, 920, SCREEN_HEIGHT };
 
 	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 

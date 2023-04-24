@@ -18,6 +18,10 @@ MainDisplay::MainDisplay()
 	super::append(&appList);
 
 	needsRedraw = true;
+
+	// use HD resolution for hb-appstore
+	// setScreenResolution(1920, 1080);
+	// setScreenResolution(3840, 2160); // 4k
 }
 
 void MainDisplay::setupMusic() {
@@ -202,5 +206,5 @@ bool isEarthDay() {
 	time_t now = time(0);
 	tm* ltm = localtime(&now);
 
-	return ltm->tm_mon == 3 && ltm->tm_mday == 1;
+	return ltm->tm_mon == 3 && ltm->tm_mday == 22;
 }

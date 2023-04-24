@@ -38,7 +38,7 @@ There are work-in-progress ports to 3DS and Wii, with varying degrees of feature
 If you would like to help maintain repos for these platforms, or contribute code / ideas, please feel free to make a PR or contact us on the [4TU Discord](https://discordapp.com/invite/F2PKpEj)!
 
 ## Maintaining a repo
-See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for setting up a repository. Everything is designed to be statically hosted. If there's no repo provided in the `repos.json` config file, then it will generate a default one pointing to [switchbru.com/appstore](https://switchbru.com/appstore/).
+See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for setting up a repository. Everything is designed to be statically hosted. If there's no repo provided in the `repos.json` config file, then it will generate a default one pointing to [wiiu.cdn.fortheusers.com](https://wiiu.cdn.fortheusers.com) or [switch.cdn.fortheusers.com](https://switch.cdn.fortheusers.com).
 
 If you run into any issues and need help maintaining or setting up a libget repo, feel free to get in touch with vgmoose at me@vgmoose.com or on Discord.
 

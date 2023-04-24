@@ -85,7 +85,7 @@ void FeedbackMessage::build()
     container->child(contentText);
 
     TextElement* replyText = new TextElement(reply.c_str(), 20, &black, NORMAL, 400);
-    replyText->position(800, 100);
+    replyText->position(800, 0);
     replyText->update();
     container->child(replyText);
 
@@ -155,7 +155,7 @@ FeedbackCenter::FeedbackCenter(AppList* appList)
     list->child((new TextElement("Our response:", 15, &gray))->setPosition(800, 100));
 
     RectangleElement* rect = new RectangleElement(
-        1280,
+        SCREEN_WIDTH,
         85,
         RootDisplay::mainDisplay->backgroundColor
     );
@@ -179,8 +179,8 @@ void FeedbackCenter::render(Element* parent)
 	if (this->parent == NULL)
 		this->parent = parent;
 
-	// draw a white background, 1280 wide
-	CST_Rect dimens = { 0, 85, 1280, 720 };
+	// draw a white background, width of the screen
+	CST_Rect dimens = { 0, 85, SCREEN_WIDTH, SCREEN_HEIGHT };
 
 	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 	CST_SetDrawColor(RootDisplay::renderer, white);

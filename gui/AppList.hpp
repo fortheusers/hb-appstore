@@ -22,6 +22,12 @@
 #define SIZE 3
 #define RANDOM 4
 
+#ifndef SDL1
+#define PANE_WIDTH 720
+#else
+#define PANE_WIDTH 640
+#endif
+
 class AppList : public ListElement
 {
 public:

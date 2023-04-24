@@ -38,7 +38,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	, unmuteIcon(RAMFS "res/unmute.png")
 #endif
 {
-	this->x = 400 - 260 * (R - 3);
+	this->x = SCREEN_WIDTH - 880 - 260 * (R - 3);
 
 	// the offset of how far along scroll'd we are
 	this->y = 0;
@@ -70,7 +70,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	// keyboard input callback
 	keyboard.typeAction = std::bind(&AppList::keyboardInputCallback, this);
 	keyboard.preventEnterAndTab = true;
-	keyboard.width = 700;
+	keyboard.width = SCREEN_HEIGHT - 20;
 	keyboard.updateSize();
 
 	// category text
@@ -95,6 +95,12 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	nowPlayingText.setColor(red);
 	nowPlayingText.update();
   }
+#endif
+
+#ifdef DEBUG_BUILD
+	nowPlayingText.setText("NOTICE: You are using a dev build! Update to a stable release if this is unintended.");
+	nowPlayingText.setColor(red);
+	nowPlayingText.update();
 #endif
 
 	// update current app listing
@@ -227,7 +233,7 @@ bool AppList::process(InputEvents* event)
 		Element* curTile = this->elements[this->highlighted];
 
 		// the y-position of the currently highlighted tile, precisely on them screen (accounting for scroll)
-		// this means that if it's < 0 or > 720 then it's not visible
+		// this means that if it's < 0 or > SCREEN_HEIGHT then it's not visible
 		int normalizedY = curTile->y + this->y;
 
 		// if we're out of range above, recenter at the top row
@@ -235,7 +241,7 @@ bool AppList::process(InputEvents* event)
 			this->y = -1 * (curTile->y - 15) + 25;
 
 		// if we're out of range below, recenter at bottom row
-		if (normalizedY > 720 - curTile->height)
+		if (normalizedY > SCREEN_HEIGHT - curTile->height)
 			this->y = -1 * (curTile->y - 3 * (curTile->height - 15)) - 40;
 
 		// if the card is this close to the top, just set it the list offset to 0 to scroll up to the top
@@ -266,8 +272,8 @@ void AppList::render(Element* parent)
 	if (this->parent == NULL)
 		this->parent = parent;
 
-	// draw a white background, 870 wide
-	CST_Rect dimens = { 0, 0, 920 + 260 * (R - 3), 720 };
+	// draw a white background, screen dims wide
+	CST_Rect dimens = { 0, 0, SCREEN_WIDTH - 360 + 260 * (R - 3), SCREEN_HEIGHT };
 	dimens.x = this->x - 35;
 	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 

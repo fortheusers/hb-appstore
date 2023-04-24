@@ -213,8 +213,8 @@ void AboutScreen::render(Element* parent)
 	if (this->parent == NULL)
 		this->parent = parent;
 
-	// draw a white background, 1280 wide
-	CST_Rect dimens = { 0, 0, 1280, 720 };
+	// draw a white background, width of the screen
+	CST_Rect dimens = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
 	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 	CST_SetDrawColor(RootDisplay::renderer, white);
