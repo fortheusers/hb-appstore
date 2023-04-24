@@ -23,7 +23,7 @@
 #define RANDOM 4
 
 #ifndef SDL1
-#define PANE_WIDTH 720
+#define PANE_WIDTH SCREEN_HEIGHT
 #else
 #define PANE_WIDTH 640
 #endif
@@ -58,6 +58,7 @@ public:
 	bool useBannerIcons = true;
 
 	void launchSettings(bool isCredits);
+	bool hideSidebar = false;
 
 	EKeyboard keyboard;
 

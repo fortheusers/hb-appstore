@@ -38,7 +38,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	, unmuteIcon(RAMFS "res/unmute.png")
 #endif
 {
-	this->x = SCREEN_WIDTH - 880 - 260 * (R - 3);
+	this->x = SCREEN_WIDTH - 880 - 260 * hideSidebar;
 
 	// the offset of how far along scroll'd we are
 	this->y = 0;
@@ -85,7 +85,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
   useBannerIcons = true;
 #elif defined(SWITCH)
   // don't use banner icons if we're in applet mode
-  // they use up too much memory, and a lot of people only use applet mode
+  // they use up too much memory, and a lot of users only use applet mode
   AppletType at = appletGetAppletType();
   useBannerIcons = (at == AppletType_Application || at == AppletType_SystemApplication);
 
@@ -111,10 +111,15 @@ bool AppList::process(InputEvents* event)
 {
 	bool ret = false;
 
+	// R is the number of cards per row, let's figure it out based on app card size
+	// and screen size
+	R = (SCREEN_WIDTH - 400) / 260 + hideSidebar;
+
 	if (event->pressed(ZL_BUTTON) || event->pressed(L_BUTTON))
 	{
-		R = (R == 3) ? 4 : 3;
-		this->x = 400 - 260 * (R - 3);
+		hideSidebar = !hideSidebar;
+		R = (SCREEN_WIDTH - 400) / 260 + hideSidebar;
+		this->x = 400 - 260 * hideSidebar;
 		update();
 		return true;
 	}
@@ -273,7 +278,7 @@ void AppList::render(Element* parent)
 		this->parent = parent;
 
 	// draw a white background, screen dims wide
-	CST_Rect dimens = { 0, 0, SCREEN_WIDTH - 360 + 260 * (R - 3), SCREEN_HEIGHT };
+	CST_Rect dimens = { 0, 0, SCREEN_WIDTH - 360 + 260 * hideSidebar, SCREEN_HEIGHT };
 	dimens.x = this->x - 35;
 	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 
@@ -387,7 +392,7 @@ void AppList::update()
 	totalCount = appCards.size();
 
 	// add quit button
-	quitBtn.position(SCREEN_HEIGHT + 260 * (R - 3), 70);
+	quitBtn.position(SCREEN_HEIGHT + 260 * hideSidebar, 70);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
   quitBtn.position(SCREEN_WIDTH - quitBtn.width - 5, 20);
@@ -476,6 +481,7 @@ void AppList::update()
 		}
 	}
 
+	nowPlayingText.setColor(black);
 	nowPlayingText.update();
 	nowPlayingText.position((quitBtn.width + quitBtn.x) - nowPlayingText.width, 20); // TODO: copypasta position
 	nowPlayingIcon.position(nowPlayingText.x - 30, 20);

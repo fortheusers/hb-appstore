@@ -91,7 +91,7 @@ void Sidebar::addHints()
 	// small indicator to switch to advanced view using L
 	hider = new ImageElement(RAMFS "res/button-l-outline.png");
 	hider->resize(20, 20);
-	hider->position(270, 685);
+	hider->position(270, SCREEN_HEIGHT - 35);
 	super::append(hider);
 
 	hint = new TextElement("Hide", 15);

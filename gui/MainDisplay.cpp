@@ -6,6 +6,7 @@
 #include "../libs/get/src/Utils.hpp"
 
 #include "MainDisplay.hpp"
+#include "Constraint.hpp"
 #include "main.hpp"
 
 MainDisplay::MainDisplay()
@@ -96,14 +97,14 @@ bool MainDisplay::process(InputEvents* event)
 		spinnerPath = RAMFS "res/spinner_red.png";
 #endif
 
-	if (isEarthDay()) {
-		backgroundColor = fromRGB(12, 156, 91);
-		spinnerPath = RAMFS "res/spinner_green.png";
-	}
+		if (isEarthDay()) {
+			backgroundColor = fromRGB(12, 156, 91);
+			spinnerPath = RAMFS "res/spinner_green.png";
+		}
 
 		spinner = new ImageElement(spinnerPath);
-		spinner->position(795, 90);
 		spinner->resize(90, 90);
+		spinner->constrain(ALIGN_TOP, 90)->constrain(ALIGN_CENTER_HORIZONTAL | OFFSET_LEFT, 180);
 		super::append(spinner);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
@@ -186,17 +187,20 @@ ErrorScreen::ErrorScreen(std::string troubleshootingText)
 	, troubleshooting((std::string("Troubleshooting:\n") + troubleshootingText).c_str(), 20, NULL, false, 600)
 	, btnQuit("Quit", SELECT_BUTTON, false, 15)
 {
-	icon.position(470, 25);
+	Container* logoCon = new Container(ROW_LAYOUT, 10);
 	icon.resize(35, 35);
-	title.position(515, 25);
-	errorMessage.position(345, 305);
-	troubleshooting.position(380, 585);
-	btnQuit.position(1130, 630);
+	logoCon->add(&icon);
+	logoCon->add(&title);
+
+	// constraints
+	logoCon->constrain(ALIGN_TOP | ALIGN_CENTER_HORIZONTAL, 25);
+	errorMessage.constrain(ALIGN_CENTER_BOTH);
+	troubleshooting.constrain(ALIGN_BOTTOM | ALIGN_CENTER_HORIZONTAL, 40);
+	btnQuit.constrain(ALIGN_RIGHT, 150)->constrain(ALIGN_BOTTOM, 90);
 
 	btnQuit.action = quit;
 
-	super::append(&icon);
-	super::append(&title);
+	super::append(logoCon);
 	super::append(&errorMessage);
 	super::append(&troubleshooting);
 	super::append(&btnQuit);

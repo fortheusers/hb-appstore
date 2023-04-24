@@ -37,10 +37,10 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 
 	// download/update/remove button (2)
 
-	download.position(970, 550);
+	download.position(SCREEN_WIDTH - 310, 550);
 	download.action = std::bind(&AppDetails::proceed, this);
 
-	cancel.position(970, 630);
+	cancel.position(SCREEN_WIDTH - 310, 630);
 	cancel.action = std::bind(&AppDetails::back, this);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
@@ -56,8 +56,8 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 
 	if (package->status != GET && (hasBinary || isTheme))
 	{
-		download.position(970, 470);
-		cancel.position(970, 630);
+		download.position(SCREEN_WIDTH - 310, 470);
+		cancel.position(SCREEN_WIDTH - 310, 630);
 
 		const char* buttonLabel = "Launch";
 		bool injectorPresent = false;
@@ -75,7 +75,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 			this->canLaunch = true;
 
 			start = new Button(buttonLabel, START_BUTTON, true, 30, download.width);
-			start->position(970, 550);
+			start->position(SCREEN_WIDTH - 310, 550);
 			start->action = std::bind(&AppDetails::launch, this);
 			super::append(start);
 		}
@@ -84,7 +84,7 @@ AppDetails::AppDetails(Package* package, AppList* appList)
 
 	// more details
 
-	details.position(940, 50);
+	details.position(SCREEN_WIDTH - 340, 50);
 	super::append(&details);
 
 	// the scrollable portion of the app details page
@@ -389,7 +389,7 @@ void AppDetails::render(Element* parent)
 		this->parent = parent;
 
 	// draw white background
-	CST_Rect dimens = { 0, 0, 920, SCREEN_HEIGHT };
+	CST_Rect dimens = { 0, 0, SCREEN_WIDTH - 360, SCREEN_HEIGHT };
 
 	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 
