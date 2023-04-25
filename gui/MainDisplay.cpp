@@ -21,7 +21,7 @@ MainDisplay::MainDisplay()
 	needsRedraw = true;
 
 	// use HD resolution for hb-appstore
-	setScreenResolution(1920, 1080);
+	// setScreenResolution(1920, 1080);
 	// setScreenResolution(3840, 2160); // 4k
 }
 
