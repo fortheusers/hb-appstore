@@ -21,7 +21,7 @@ jobs:
       with:
         submodules: recursive
     - name: Build ${{ matrix.platform }}
-      run: ./libs/chesto/helpers/build_pc.sh ${{ matrix.os }} ${{ matrix.library }}}
+      run: ./libs/chesto/helpers/build_pc.sh appstore ${{ matrix.os }} ${{ matrix.library }}
     - uses: actions/upload-artifact@v3
       with:
         name: appstore-${{ matrix.ext }}
