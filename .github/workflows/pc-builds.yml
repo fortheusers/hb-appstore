@@ -25,4 +25,4 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: appstore-${{ matrix.ext }}
-        path: ./appstore_${{ matrix.os }}}_${{ matrix.library }}}.zip
+        path: ./appstore_${{ matrix.os }}_${{ matrix.library }}.zip
