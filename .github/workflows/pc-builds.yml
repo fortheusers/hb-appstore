@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - pc-builds-ci
   pull_request:
     branches:
       - main
