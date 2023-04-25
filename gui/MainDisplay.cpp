@@ -21,7 +21,7 @@ MainDisplay::MainDisplay()
 	needsRedraw = true;
 
 	// use HD resolution for hb-appstore
-	// setScreenResolution(1920, 1080);
+	setScreenResolution(1920, 1080);
 	// setScreenResolution(3840, 2160); // 4k
 }
 
@@ -135,6 +135,8 @@ bool MainDisplay::process(InputEvents* event)
 			RootDisplay::switchSubscreen(new ErrorScreen("No enabled repos found, check ./get/repos.json\nMake sure repo has at least one package"));
 			return true;
 		}
+
+		// TODO: sd card write test
 
 		networking_callback = nullptr;
 

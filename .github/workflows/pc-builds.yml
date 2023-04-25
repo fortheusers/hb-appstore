@@ -20,6 +20,9 @@ jobs:
     - uses: actions/checkout@main
       with:
         submodules: recursive
+    - name: Put MSYS2_MinGW64 on PATH
+      if: matrix.os == 'windows'
+      run: echo "${{ runner.temp }}/msys64/mingw64/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     - name: Build ${{ matrix.platform }}
       shell: bash
       run: ./libs/chesto/helpers/build_pc.sh appstore ${{ matrix.os }} ${{ matrix.library }}
