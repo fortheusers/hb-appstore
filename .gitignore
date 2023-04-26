@@ -12,3 +12,8 @@ build_*
 *.rpx
 *.nro
 *.elf
+*.exe
+*.dll
+.get
+.toggle_sound
+background.mp3

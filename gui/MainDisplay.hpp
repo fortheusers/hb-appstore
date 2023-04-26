@@ -2,7 +2,6 @@
 #include "../libs/chesto/src/RootDisplay.hpp"
 #include "../libs/chesto/src/TextElement.hpp"
 #include "../libs/chesto/src/Button.hpp"
-#include "ImageCache.hpp"
 #include <unordered_map>
 
 #if defined(MUSIC)
@@ -36,7 +35,6 @@ public:
 	void setupMusic();
 
 	Get* get = NULL;
-	ImageCache* imageCache = NULL;
 
 	bool error = false;
 	bool atLeastOneEnabled = false;

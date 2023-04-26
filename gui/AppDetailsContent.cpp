@@ -13,7 +13,6 @@
 #include "AppDetailsContent.hpp"
 #include "Feedback.hpp"
 #include "AppList.hpp"
-#include "ImageCache.hpp"
 #include "main.hpp"
 
 std::string getTrimmedDetails(AppDetailsContent* content, std::string details)

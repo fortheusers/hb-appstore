@@ -1,5 +1,4 @@
 #include "Feedback.hpp"
-#include "ImageCache.hpp"
 #include "MainDisplay.hpp"
 #include "main.hpp"
 
