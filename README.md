@@ -93,20 +93,19 @@ This project exists thanks to all the people who contribute!
 <a href="https://github.com/fortheusers/hb-appstore/graphs/contributors"><img src="https://opencollective.com/fortheusers/contributors.svg?width=890&button=false" /></a>
 
 #### Financial Contributors
-Become a [financial contributor](https://opencollective.com/fortheusers/contribute) and help us sustain our community!
+Thank you to the following individuals for donating to the project in the past. ([Archived OpenCollective link](https://opencollective.com/fortheusers/contribute))
 
 <a href="https://opencollective.com/fortheusers"><img src="https://opencollective.com/fortheusers/individuals.svg?width=890"></a>
 
-#### Organizations
-Support this project with your organization. Your logo will show up here with a link to your website.
+If you would like to monetarily support this project, we ask that you instead make a donation towards some other cause instead. Here are a few notable ones:
 
-<a href="https://opencollective.com/fortheusers/organization/0/website"><img src="https://opencollective.com/fortheusers/organization/0/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/1/website"><img src="https://opencollective.com/fortheusers/organization/1/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/2/website"><img src="https://opencollective.com/fortheusers/organization/2/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/3/website"><img src="https://opencollective.com/fortheusers/organization/3/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/4/website"><img src="https://opencollective.com/fortheusers/organization/4/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/5/website"><img src="https://opencollective.com/fortheusers/organization/5/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/6/website"><img src="https://opencollective.com/fortheusers/organization/6/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/7/website"><img src="https://opencollective.com/fortheusers/organization/7/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/8/website"><img src="https://opencollective.com/fortheusers/organization/8/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/9/website"><img src="https://opencollective.com/fortheusers/organization/9/avatar.svg"></a>
+- [Wikipedia / Wikimedia](https://donate.wikimedia.org/)
+- [Electronic Frontier Foundation](https://www.eff.org)
+- [Save the Children](https://www.savethechildren.org)
+- [Partners in Health](https://www.pih.org)
+- [Good Food Institute](https://gfi.org)
+- [Mercy for Animals](https://mercyforanimals.org)
+- [Fandom Forward](https://fandomforward.org)
+- [NaNoWriMo](https://nanowrimo.org)
+
+Thank you!

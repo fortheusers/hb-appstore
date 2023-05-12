@@ -1,4 +1,5 @@
-#pragma once
+#ifndef APP_CARD_H
+#define APP_CARD_H
 
 #include "../libs/get/src/Package.hpp"
 
@@ -26,11 +27,12 @@ public:
 	// the number of which package this is in the list
 	int index;
 
+	// app icon
+	NetImageElement icon;
+
 private:
 	static CST_Color gray, black;
 
-	// app icon
-	NetImageElement icon;
 	// version
 	TextElement version;
 	// status string
@@ -42,3 +44,5 @@ private:
 	// download status icon
 	ImageElement statusicon;
 };
+
+#endif

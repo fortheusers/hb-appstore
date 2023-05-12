@@ -33,6 +33,7 @@ public:
 	void drawErrorScreen(std::string troubleshootingText);
 	bool getDefaultAudioStateForPlatform();
 	void setupMusic();
+	void beginInitialLoad();
 
 	Get* get = NULL;
 
@@ -59,7 +60,7 @@ private:
 class ErrorScreen : public Element
 {
 public:
-	ErrorScreen(std::string troubleshootingText);
+	ErrorScreen(std::string errorMessage, std::string troubleshootingText);
 
 private:
 	ImageElement icon;
