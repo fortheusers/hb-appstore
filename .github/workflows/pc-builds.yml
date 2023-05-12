@@ -1,0 +1,29 @@
+name: Build PC client apps
+
+on:
+  push:
+    branches:
+      - main
+      - pc-builds-ci
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  all:
+    strategy:
+      matrix:
+        os: [ubuntu, windows, macos]
+        library: [sdl2, sdl1]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+    - uses: actions/checkout@main
+      with:
+        submodules: recursive
+    - name: Build ${{ matrix.platform }}
+      shell: bash
+      run: ./libs/chesto/helpers/build_pc.sh appstore ${{ matrix.os }} ${{ matrix.library }}
+    - uses: actions/upload-artifact@v3
+      with:
+        name: appstore_${{ matrix.os }}_${{ matrix.library }}
+        path: ./appstore_${{ matrix.os }}_${{ matrix.library }}.zip

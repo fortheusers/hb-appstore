@@ -17,15 +17,15 @@
 #include "AppDetails.hpp"
 #include "AppList.hpp"
 #include "Feedback.hpp"
-#include "ImageCache.hpp"
 #include "main.hpp"
 
 int AppDetails::lastFrameTime = 99;
 
-AppDetails::AppDetails(Package* package, AppList* appList)
+AppDetails::AppDetails(Package* package, AppList* appList, AppCard* appCard)
 	: package(package)
 	, get(appList->get)
 	, appList(appList)
+	, appCard(appCard)
 	, downloadProgress()
 	, download(getAction(package), package->status == INSTALLED ? X_BUTTON : A_BUTTON, true, 30 / SCALER)
 	, cancel("Cancel", B_BUTTON, true, 30 / SCALER, download.width)
@@ -176,8 +176,15 @@ void AppDetails::proceed()
 	// install or remove this package based on the package status
 	if (this->package->status == INSTALLED)
 		get->remove(this->package);
-	else
+	else {
 		get->install(this->package);
+		// save the icon to the SD card, for offline use
+		if (appCard != NULL) {
+			auto iconSavePath = std::string(get->pkg_path) + "/" + package->pkg_name + "/icon.png";
+			appCard->icon.saveTo(iconSavePath);
+			//TODO: load from a cache instead!!
+		}
+	}
 
 	postInstallHook();
 

@@ -2,13 +2,14 @@
 #define APPDETAILS_H_
 
 #include "AppDetailsContent.hpp"
+#include "AppCard.hpp"
 
 class AppList;
 
 class AppDetails : public Element
 {
 public:
-	AppDetails(Package* package, AppList* appList);
+	AppDetails(Package* package, AppList* appList, AppCard* appCard = NULL);
 	~AppDetails();
 
 	std::string getPackageDetails(Package* package);
@@ -25,9 +26,10 @@ public:
 	CST_Color white = { 0xFF, 0xFF, 0xFF, 0xff };
 
 	bool operating = false;
-	Package* package;
-	Get* get;
-	AppList* appList;
+	Package* package = NULL;
+	Get* get = NULL;
+	AppList* appList = NULL;
+	AppCard* appCard = NULL;
 	ProgressBar* pbar = NULL;
 	int highlighted = -1;
 

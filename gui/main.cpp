@@ -41,7 +41,7 @@ void wiiuSetPwd()
 #define ELF_PATH HBAS_PATH "/hbas.elf"
 #define RPX_PATH HBAS_PATH "/appstore.rpx"
 	// create and cd into the appstore directory
-	mkdir(HBAS_PATH, 0700);
+	my_mkdir(HBAS_PATH);
 	chdir(HBAS_PATH);
 }
 #endif

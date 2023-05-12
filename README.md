@@ -28,14 +28,16 @@ Place a mp3 file named `background.mp3` in one of the following two locations:
 - Switch: `sd:/switch/appstore/background.mp3`
 
 ### Web and Desktop
-Web browsers can download files from the Homebrew App Store at [apps.fortheusers.org](https://apps.fortheusers.org). Source code: [hbas-frontend](https://github.com/fortheusers/hbas-frontend)
+Web browsers can download files from the Homebrew App Store at [apps.fortheusers.org](https://apps.fortheusers.org). Source code: [hbas-frontend](https://github.com/fortheusers/hbas-frontend).
 
-Desktop platforms (Windows, MacOS, and Linux), can use @LyfeOnEdge's [unofficial-appstore](https://github.com/LyfeOnEdge/unofficial-appstore), or their alternative program: [HBUpdater](https://github.com/LyfeOnEdge/HBUpdater)
+Desktop platforms (Windows, MacOS, and Linux), can use @LyfeOnEdge's [unofficial-appstore](https://github.com/LyfeOnEdge/unofficial-appstore), or their alternative program: [HBUpdater](https://github.com/LyfeOnEdge/HBUpdater).
+
+There is a PC port of the same client source code for Linux, Mac, and Windows that can be downloaded from [the nightlies](https://nightly.link/fortheusers/hb-appstore/workflows/pc-builds/main). This will download files to an `sdroot` folder where the app is ran.
 
 ### 3DS and Wii
 There are work-in-progress ports to 3DS and Wii, with varying degrees of feature support. These can be compiled using the instructions below, but aren't yet ready to be used by most users.
 
-If you would like to help maintain repos for these platforms, or contribute code / ideas, please feel free to make a PR or contact us on the [4TU Discord](https://discordapp.com/invite/F2PKpEj)!
+These clients are being developed with the intent to hook up to other existing non-libget repos (such as [Wii/OSC](https://oscwii.org) and [3ds/universal-db](https://db.universal-team.net/3ds/)) in the future. [libget has `*Repo.cpp` implementations](https://github.com/fortheusers/libget/tree/main/src) that would be extended to add this support.
 
 ## Maintaining a repo
 See [get's instructions](https://github.com/vgmoose/get#setting-up-repos) for setting up a repository. Everything is designed to be statically hosted. If there's no repo provided in the `repos.json` config file, then it will generate a default one pointing to [wiiu.cdn.fortheusers.com](https://wiiu.cdn.fortheusers.com) or [switch.cdn.fortheusers.com](https://switch.cdn.fortheusers.com).
@@ -88,25 +90,21 @@ find . \( -name "*.cpp" -or -name "*.hpp" \) -not -path "./libs/*" -exec clang-f
 ### Contributors
 
 #### Code Contributors
-
 This project exists thanks to all the people who contribute!
 <a href="https://github.com/fortheusers/hb-appstore/graphs/contributors"><img src="https://opencollective.com/fortheusers/contributors.svg?width=890&button=false" /></a>
 
-#### Financial Contributors
-Become a [financial contributor](https://opencollective.com/fortheusers/contribute) and help us sustain our community!
+#### Financial Contributions
+Special thanks to [dojafoja](https://github.com/dojafoja) for donating to the project in the past! The funds went directly torwards repository hosting and maintenance. ([Archived OpenCollective link](https://opencollective.com/fortheusers/contribute))
 
-<a href="https://opencollective.com/fortheusers"><img src="https://opencollective.com/fortheusers/individuals.svg?width=890"></a>
+If you would like to monetarily support this project, we ask that you instead make a donation towards some other cause instead. Here are a few notable ones:
 
-#### Organizations
-Support this project with your organization. Your logo will show up here with a link to your website.
+- [Wikipedia / Wikimedia](https://donate.wikimedia.org/)
+- [Electronic Frontier Foundation](https://www.eff.org)
+- [Save the Children](https://www.savethechildren.org)
+- [Partners in Health](https://www.pih.org)
+- [Good Food Institute](https://gfi.org)
+- [Mercy for Animals](https://mercyforanimals.org)
+- [Fandom Forward](https://fandomforward.org)
+- [NaNoWriMo](https://nanowrimo.org)
 
-<a href="https://opencollective.com/fortheusers/organization/0/website"><img src="https://opencollective.com/fortheusers/organization/0/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/1/website"><img src="https://opencollective.com/fortheusers/organization/1/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/2/website"><img src="https://opencollective.com/fortheusers/organization/2/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/3/website"><img src="https://opencollective.com/fortheusers/organization/3/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/4/website"><img src="https://opencollective.com/fortheusers/organization/4/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/5/website"><img src="https://opencollective.com/fortheusers/organization/5/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/6/website"><img src="https://opencollective.com/fortheusers/organization/6/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/7/website"><img src="https://opencollective.com/fortheusers/organization/7/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/8/website"><img src="https://opencollective.com/fortheusers/organization/8/avatar.svg"></a>
-<a href="https://opencollective.com/fortheusers/organization/9/website"><img src="https://opencollective.com/fortheusers/organization/9/avatar.svg"></a>
+Thank you!

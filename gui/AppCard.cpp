@@ -10,11 +10,21 @@ CST_Color AppCard::black = { 0, 0, 0, 0xff };
 AppCard::AppCard(Package* package, AppList* list)
 	: package(package)
 	, list(list)
-	, icon(package->getIconUrl().c_str(), []{
-				return new ImageElement(RAMFS "res/default.png");
-			},
-			!list
-		)
+	, icon(package->getIconUrl().c_str(), [list, package] {
+		// if the icon fails to load, and we're offline, try to use one from the cache
+		auto iconSavePath = std::string(list->get->pkg_path) + "/" + package->pkg_name + "/icon.png";
+
+		// check if the package is installed, and if the icon file exists using stat
+		struct stat buffer;
+		if (package->status != GET && stat(iconSavePath.c_str(), &buffer) == 0) {
+			// file exists, return the path to the icon
+			auto img = new ImageElement(iconSavePath.c_str());
+			img->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+			return img;
+		}
+
+		return new ImageElement(RAMFS "res/default.png");
+	}, !list)
 	, version(("v" + package->version).c_str(), TEXT_SIZE, &gray)
 	, status(package->statusString(), TEXT_SIZE, &gray)
 	, appname(package->title.c_str(), TEXT_SIZE + 3, &black)
@@ -118,7 +128,7 @@ void AppCard::displaySubscreen()
 		return;
 
 	// received a click on this app, add a subscreen under the parent
-	AppDetails *appDetails = new AppDetails(this->package, list);
+	AppDetails *appDetails = new AppDetails(this->package, list, this);
 
 	if (!list->touchMode)
 		appDetails->highlighted = 0; // show cursor if we're not in touch mode

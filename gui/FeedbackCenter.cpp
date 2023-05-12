@@ -1,5 +1,4 @@
 #include "FeedbackCenter.hpp"
-#include "ImageCache.hpp"
 #include "main.hpp"
 
 #include "rapidjson/document.h"

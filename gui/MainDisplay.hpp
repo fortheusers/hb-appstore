@@ -2,7 +2,6 @@
 #include "../libs/chesto/src/RootDisplay.hpp"
 #include "../libs/chesto/src/TextElement.hpp"
 #include "../libs/chesto/src/Button.hpp"
-#include "ImageCache.hpp"
 #include <unordered_map>
 
 #if defined(MUSIC)
@@ -34,9 +33,9 @@ public:
 	void drawErrorScreen(std::string troubleshootingText);
 	bool getDefaultAudioStateForPlatform();
 	void setupMusic();
+	void beginInitialLoad();
 
 	Get* get = NULL;
-	ImageCache* imageCache = NULL;
 
 	bool error = false;
 	bool atLeastOneEnabled = false;
@@ -61,7 +60,7 @@ private:
 class ErrorScreen : public Element
 {
 public:
-	ErrorScreen(std::string troubleshootingText);
+	ErrorScreen(std::string errorMessage, std::string troubleshootingText);
 
 private:
 	ImageElement icon;

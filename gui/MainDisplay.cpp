@@ -9,6 +9,8 @@
 #include "MainDisplay.hpp"
 #include "main.hpp"
 
+using namespace std::string_literals; // for ""s
+
 MainDisplay::MainDisplay()
 	: appList(NULL, &sidebar)
 {
@@ -75,6 +77,22 @@ MainDisplay::~MainDisplay()
 	delete spinner;
 }
 
+void MainDisplay::beginInitialLoad() {
+	networking_callback = nullptr;
+	
+	if (spinner) {
+		// remove spinner
+		super::remove(spinner);
+		delete spinner;
+		spinner = nullptr;
+	}
+
+	// set get instance to our applist
+	appList.get = get;
+	appList.update();
+	appList.sidebar->addHints();
+}
+
 void MainDisplay::render(Element* parent)
 {
 	if (showingSplash)
@@ -120,38 +138,74 @@ bool MainDisplay::process(InputEvents* event)
 		// go through all repos and if one has an error, set the error flag
 		for (auto repo : get->repos)
 		{
-			error = error || !repo->loaded;
-			atLeastOneEnabled = atLeastOneEnabled || repo->enabled;
+			error = error || !repo->isLoaded();
+			atLeastOneEnabled = atLeastOneEnabled || repo->isEnabled();
 		}
 
 		if (error)
 		{
-			RootDisplay::switchSubscreen(new ErrorScreen(std::string("Perform a connection test in the " PLATFORM " System Settings\nEnsure DNS isn't blocking: ") + get->repos[0]->url));
+			RootDisplay::switchSubscreen(new ErrorScreen("Couldn't connect to the Internet!", "Perform a connection test in the " PLATFORM " System Settings\nEnsure DNS isn't blocking: "s + get->repos[0]->getUrl()));
 			return true;
 		}
 
 		if (!atLeastOneEnabled)
 		{
-			RootDisplay::switchSubscreen(new ErrorScreen("No enabled repos found, check ./get/repos.json\nMake sure repo has at least one package"));
+			RootDisplay::switchSubscreen(new ErrorScreen("Couldn't connect to a server!", "No enabled repos found, check ./get/repos.json\nMake sure repo has at least one package"));
 			return true;
 		}
 
-		networking_callback = nullptr;
+		// sd card write test, try to open a file on the sd root
+		std::string tmp_dir = get->tmp_path;
+		std::string tmp_file = tmp_dir + "write_test.txt";
 
-		// remove spinner
-		super::remove(spinner);
-		delete spinner;
-		spinner = nullptr;
+		bool writeFailed = false;
+		std::string magic = "Whosoever holds this hammer, if they be worthy, shall possess the power of Thor.";
 
-		// set get instance to our applist
-		appList.get = get;
-		appList.update();
-		appList.sidebar->addHints();
+		// try to write to the file (no append)
+		std::ofstream file(tmp_file);
+		if (file.is_open()) {
+			file << magic;
+			file.close();
+		}
+		else writeFailed = true;
+		
+		// try to read from the file
+		std::ifstream read_file(tmp_file);
+		if (!writeFailed && read_file.is_open()) 
+		{
+			std::string line;
+			std::getline(read_file, line);
+			read_file.close();
+
+			if (line != magic) writeFailed = true;
+
+			// delete the file
+			std::remove(tmp_file.c_str());
+		}
+		else writeFailed = true;
+
+		if (writeFailed) {
+			std::string cardText = "Ensure "s + tmp_file + " is writable";
+#if defined(__WIIU__)
+			cardText = "Check the physical SD write lock slider\n"s + cardText;
+#elif defined (SWITCH)
+			cardText = "Check for EXFAT FS corruption (no issues on FAT32)\n"s + cardText;
+#endif
+
+			RootDisplay::switchSubscreen(new ErrorScreen("Cannot access SD card!"s, cardText));
+			return true;
+		}
+
+		beginInitialLoad();
 
 		return true;
 	}
 
-	// parent stuff
+	// if we need a redraw, also update the app list (for resizing events)
+	// TODO: have a more generalized way to have a view describe what needs redrawing
+	if (needsRedraw)
+		appList.update();
+
 	return RootDisplay::process(event);
 }
 
@@ -180,10 +234,10 @@ int MainDisplay::updateLoader(void* clientp, double dltotal, double dlnow, doubl
 }
 
 
-ErrorScreen::ErrorScreen(std::string troubleshootingText)
+ErrorScreen::ErrorScreen(std::string mainErrorText, std::string troubleshootingText)
 	: icon(RAMFS "res/icon.png")
 	, title("Homebrew App Store", 50 - 25)
-	, errorMessage("Couldn't connect to the Internet!", 40)
+	, errorMessage(mainErrorText.c_str(), 40)
 	, troubleshooting((std::string("Troubleshooting:\n") + troubleshootingText).c_str(), 20, NULL, false, 600)
 	, btnQuit("Quit", SELECT_BUTTON, false, 15)
 {
@@ -196,7 +250,17 @@ ErrorScreen::ErrorScreen(std::string troubleshootingText)
 	logoCon->constrain(ALIGN_TOP | ALIGN_CENTER_HORIZONTAL, 25);
 	errorMessage.constrain(ALIGN_CENTER_BOTH);
 	troubleshooting.constrain(ALIGN_BOTTOM | ALIGN_CENTER_HORIZONTAL, 40);
-	btnQuit.constrain(ALIGN_RIGHT, 150)->constrain(ALIGN_BOTTOM, 90);
+	btnQuit.constrain(ALIGN_LEFT | ALIGN_BOTTOM, 100);
+
+	super::append((new Button("Ignore This", X_BUTTON, false, 15))
+		->constrain(ALIGN_RIGHT | ALIGN_BOTTOM, 100)
+		->setAction([]() {
+			auto mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;
+			mainDisplay->get->addLocalRepo();
+			mainDisplay->needsRedraw = true;
+			mainDisplay->beginInitialLoad();
+			RootDisplay::switchSubscreen(nullptr);
+	}));
 
 	btnQuit.action = quit;
 
