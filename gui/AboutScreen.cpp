@@ -101,21 +101,24 @@ AboutScreen::AboutScreen(Get* get)
 	credit("brett19", "1621627", NULL, "brett19");
 
 	credHead("Homebrew Community Special Thanks", "Awesome people within the community whose work, words, or actions in some way inspired this program to exist in the manner it does.");
+
 	credit("Whovian9369", "5240754", NULL, NULL, "whovian9369");
+	credit("FIX94", "12349638", NULL, "FIX94");
+	credit("dojafoja", "15602819", NULL, "dojafoja");
 	credit("misson20000", "616626", NULL, "misson20000", NULL, NULL, NULL, "misson20000#0752");
 	credit("roblabla", "1069318", NULL, "roblabla", NULL, NULL, NULL, "roblabla#8145");
 	credit("tomGER", "25822956", "tumGER", "tumGER");
+	credit("sirocyl", "944067", "sirocyl", "sirocyl");
 	credit("m4xw", "13141469", "m4xwdev", "m4xw");
 	credit("vaguerant", "5259025", NULL, "vaguerant");
+	credit("Koopa", "13039555", "CodingKoopa", "CodingKoopa");
 	credit("Nikki", "3280345", "NWPlayer123", "NWPlayer123");
 	credit("shchmue", "7903403", NULL, "shchmue");
 	credit("CTCaer", "3665130", "CTCaer", "CTCaer");
 	credit("SciresM", "8676005", "SciresM", "SciresM");
 	credit("Shinyquagsire", "1224096", "shinyquagsire", "shinyquagsire23");
 	credit("Marionumber1", "775431", "MrMarionumber1");
-	credit("Koopa", "13039555", "CodingKoopa", "CodingKoopa");
 	credit("jam1garner", "8260240", NULL, "jam1garner", NULL, NULL, "jam1.re");
-	credit("sirocyl", "944067", "sirocyl", "sirocyl");
 }
 
 AboutScreen::~AboutScreen()
