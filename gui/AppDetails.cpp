@@ -48,7 +48,6 @@ AppDetails::AppDetails(Package* package, AppList* appList, AppCard* appCard)
 	cancel.position(SCREEN_WIDTH / 2 - cancel.width / 2, 410);
 #endif
 
-#if defined(SWITCH)
 	// display an additional launch/install button if the package is installed,  and has a binary or is a theme
 
 	bool hasBinary = package->binary != "none";
@@ -62,7 +61,7 @@ AppDetails::AppDetails(Package* package, AppList* appList, AppCard* appCard)
 		const char* buttonLabel = "Launch";
 		bool injectorPresent = false;
 
-		if (isTheme)
+		if (isTheme) // should only happen on switch
 		{
 			Package* installer = get->lookup("NXthemes_Installer");
 			injectorPresent = installer != NULL; // whether or not the currently hardcoded installer package exists, in the future becomes something functionality-based like "theme_installer"
@@ -80,7 +79,6 @@ AppDetails::AppDetails(Package* package, AppList* appList, AppCard* appCard)
 			super::append(start);
 		}
 	}
-#endif
 
 	// more details
 
@@ -106,7 +104,6 @@ AppDetails::AppDetails(Package* package, AppList* appList, AppCard* appCard)
 
 AppDetails::~AppDetails()
 {
-#if defined(SWITCH)
 	if (start)
 	{
 		super::remove(start);
@@ -117,7 +114,6 @@ AppDetails::~AppDetails()
 		super::remove(errorText);
 		delete errorText;
 	}
-#endif
 }
 
 std::string AppDetails::getPackageDetails(Package* package)
@@ -199,10 +195,9 @@ void AppDetails::launch()
 {
 	if (!this->canLaunch) return;
 
-#if defined(SWITCH)
 	char path[8 + strlen(package->binary.c_str())];
 
-	sprintf(path, "sdmc:/%s", package->binary.c_str());
+	sprintf(path, ROOT_PATH "%s", package->binary.c_str()+1);
 	printf("Launch path: %s\n", path);
 
 	FILE* file;
@@ -213,7 +208,7 @@ void AppDetails::launch()
 		Package* installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
 		if (installer != NULL && installer->status != GET)
 		{
-			sprintf(path, "sdmc:/%s", installer->binary.c_str());
+			sprintf(path, ROOT_PATH "%s", installer->binary.c_str()+1);
 			successLaunch = this->themeInstall(path);
 		}
 		else
@@ -228,7 +223,7 @@ void AppDetails::launch()
 		if ((file = fopen(path, "r")))
 		{
 			fclose(file);
-			printf("Path OK, Launching...");
+			printf("Path OK, Launching...\n");
 			successLaunch = this->launchFile(path, path);
 		}
 		else
@@ -243,7 +238,7 @@ void AppDetails::launch()
 		super::append(errorText);
 		this->canLaunch = false;
 	}
-#endif
+
 }
 
 void AppDetails::getSupported()
@@ -376,6 +371,7 @@ bool AppDetails::launchFile(char* path, char* context)
 		return RPXLoader_LaunchHomebrew(path) == RPX_LOADER_RESULT_SUCCESS;
 	}
 #endif
+	printf("Would have launched %s, but not implemented on this platform\n", path);
 	return false;
 }
 

@@ -56,10 +56,8 @@ public:
 	bool quitAfterInstall = false;
 
 private:
-#if defined(SWITCH)
 	Button* start = nullptr;
 	TextElement* errorText = nullptr;
-#endif
 	TextElement details;
 	AppDetailsContent content;
 	TextElement downloadStatus;
