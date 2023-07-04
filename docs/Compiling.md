@@ -4,7 +4,7 @@ Specific instructions for various platforms are covered here!
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
 2. Install devkitA64 and needed Switch dependencies via dkp-pacman:
 ```
-sudo dkp-pacman -S devkitA64 libnx switch-tools switch-curl switch-bzip2 switch-freetype switch-libjpeg-turbo switch-libwebp switch-sdl2 switch-sdl2_gfx switch-sdl2_image switch-sdl2_ttf switch-zlib switch-libpng switch-mesa
+sudo dkp-pacman -S devkitA64 libnx switch-tools switch-curl switch-bzip2 switch-freetype switch-libjpeg-turbo switch-libwebp switch-sdl2 switch-sdl2_gfx switch-sdl2_image switch-sdl2_ttf switch-sdl2_mixer switch-zlib switch-libpng switch-mesa
 ```
 3. *If on macOS*: install gtar with: `brew install gnu-tar` (needed by resinfs)
 4. Once it's all setup, recursively clone the repo and run make:
