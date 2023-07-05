@@ -9,22 +9,20 @@
 
 #include "AboutScreen.hpp"
 #include "Feedback.hpp"
+#include "ThemeManager.hpp"
 
 #define AVATAR_URL "https://avatars.githubusercontent.com/u/"
-
-CST_Color AboutScreen::black = { 0x00, 0x00, 0x00, 0xff };
-CST_Color AboutScreen::gray = { 0x50, 0x50, 0x50, 0xff };
 
 AboutScreen::AboutScreen(Get* get)
 	: get(get)
 	, cancel("Go Back", B_BUTTON, false, 29)
 	, feedback("Leave Feedback", A_BUTTON, false, 17)
-	, title("Homebrew App Store", 35, &black)
-	, subtitle("by fortheusers.org", 25, &black)
+	, title("Homebrew App Store", 35, &HBAS::ThemeManager::textPrimary)
+	, subtitle("by fortheusers.org", 25, &HBAS::ThemeManager::textPrimary)
 	, ftuLogo(AVATAR_URL "40721862", []
 		  { return new ImageElement(RAMFS "res/4TU.png"); })
 	, creds("Licensed under the GPLv3 license. This app is free and open source because the users (like you!) deserve it.\n\nLet's support homebrew and the right to control what software we run on our own devices!",
-		  20, &black, false, 1240)
+		  20, &HBAS::ThemeManager::textPrimary, false, 1240)
 {
 
 	// TODO: show current app status somewhere
@@ -145,11 +143,11 @@ void AboutScreen::credHead(const char* header, const char* blurb)
 	auto head = creditHeads.emplace(creditHeads.end());
 
 	creditCount += (4 - creditCount % 4) % 4;
-	head->text = new TextElement(header, 30, &black);
+	head->text = new TextElement(header, 30, &HBAS::ThemeManager::textPrimary);
 	head->text->position(40, 250 + 60 + creditCount / 4 * 160);
 	super::append(head->text);
 
-	head->desc = new TextElement(blurb, 23, &gray, false, 1200);
+	head->desc = new TextElement(blurb, 23, &HBAS::ThemeManager::textSecondary, false, 1200);
 	head->desc->position(40, 250 + 105 + creditCount / 4 * 160);
 	super::append(head->desc);
 
@@ -181,7 +179,7 @@ void AboutScreen::credit(const char* username,
 	cred->userLogo->resize(100, 100);
 	super::append(cred->userLogo);
 
-	cred->name = new TextElement(username, 27, &black);
+	cred->name = new TextElement(username, 27, &HBAS::ThemeManager::textPrimary);
 	cred->name->position(myX + 110, myY);
 	super::append(cred->name);
 
@@ -199,7 +197,7 @@ void AboutScreen::credit(const char* username,
 		cred->social[socialCount].icon->position(myX + 110, myY + 45 + socialCount * 25);
 		super::append(cred->social[socialCount].icon);
 
-		cred->social[socialCount].link = new TextElement(handles[x], 14, &gray);
+		cred->social[socialCount].link = new TextElement(handles[x], 14, &HBAS::ThemeManager::textSecondary);
 		cred->social[socialCount].link->position(myX + 140, myY + 45 + socialCount * 25);
 		super::append(cred->social[socialCount].link);
 
@@ -219,8 +217,7 @@ void AboutScreen::render(Element* parent)
 	// draw a white background, width of the screen
 	CST_Rect dimens = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
-	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
-	CST_SetDrawColor(RootDisplay::renderer, white);
+	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::getBackground());
 	CST_FillRect(RootDisplay::renderer, &dimens);
 
 	super::render(parent);

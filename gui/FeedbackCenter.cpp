@@ -1,4 +1,5 @@
 #include "FeedbackCenter.hpp"
+#include "ThemeManager.hpp"
 #include "main.hpp"
 
 #include "rapidjson/document.h"
@@ -60,8 +61,6 @@ FeedbackMessage::FeedbackMessage()
 
 void FeedbackMessage::build()
 {
-    CST_Color black = { 0, 0, 0, 0xff };
-
     // build icon url from package name and repo
     std::string url = REPO_URL;
     url += "/packages/";
@@ -78,12 +77,12 @@ void FeedbackMessage::build()
     Container* container = new Container(ROW_LAYOUT, 30);
     container->child(img);
 
-    TextElement* contentText = new TextElement(content.c_str(), 20, &black, NORMAL, 600);
+    TextElement* contentText = new TextElement(content.c_str(), 20, &HBAS::ThemeManager::textPrimary, NORMAL, 600);
     contentText->position(200, 0);
     contentText->update();
     container->child(contentText);
 
-    TextElement* replyText = new TextElement(reply.c_str(), 20, &black, NORMAL, 400);
+    TextElement* replyText = new TextElement(reply.c_str(), 20, &HBAS::ThemeManager::textPrimary, NORMAL, 400);
     replyText->position(800, 0);
     replyText->update();
     container->child(replyText);
@@ -148,10 +147,8 @@ FeedbackCenter::FeedbackCenter(AppList* appList)
 
 #endif
 
-    CST_Color gray = { 0x77, 0x77, 0x77, 0xff };
-
-    list->child((new TextElement("You wrote:", 15, &gray))->setPosition(200, 100));
-    list->child((new TextElement("Our response:", 15, &gray))->setPosition(800, 100));
+    list->child((new TextElement("You wrote:", 15, &HBAS::ThemeManager::textSecondary))->setPosition(200, 100));
+    list->child((new TextElement("Our response:", 15, &HBAS::ThemeManager::textSecondary))->setPosition(800, 100));
 
     RectangleElement* rect = new RectangleElement(
         SCREEN_WIDTH,
@@ -181,8 +178,7 @@ void FeedbackCenter::render(Element* parent)
 	// draw a white background, width of the screen
 	CST_Rect dimens = { 0, 85, SCREEN_WIDTH, SCREEN_HEIGHT };
 
-	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
-	CST_SetDrawColor(RootDisplay::renderer, white);
+	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::getBackground());
 	CST_FillRect(RootDisplay::renderer, &dimens);
 
 	super::render(parent);

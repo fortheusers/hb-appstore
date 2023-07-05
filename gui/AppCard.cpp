@@ -1,11 +1,9 @@
 #include "AppCard.hpp"
 #include "AppList.hpp"
+#include "ThemeManager.hpp"
 #include "MainDisplay.hpp"
 
 #define TEXT_SIZE	13 / SCALER
-
-CST_Color AppCard::gray = { 80, 80, 80, 0xff };
-CST_Color AppCard::black = { 0, 0, 0, 0xff };
 
 AppCard::AppCard(Package* package, AppList* list)
 	: package(package)
@@ -25,10 +23,10 @@ AppCard::AppCard(Package* package, AppList* list)
 
 		return new ImageElement(RAMFS "res/default.png");
 	}, !list)
-	, version(("v" + package->version).c_str(), TEXT_SIZE, &gray)
-	, status(package->statusString(), TEXT_SIZE, &gray)
-	, appname(package->title.c_str(), TEXT_SIZE + 3, &black)
-	, author(package->author.c_str(), TEXT_SIZE, &gray)
+	, version(("v" + package->version).c_str(), TEXT_SIZE, &HBAS::ThemeManager::textSecondary)
+	, status(package->statusString(), TEXT_SIZE, &HBAS::ThemeManager::textSecondary)
+	, appname(package->title.c_str(), TEXT_SIZE + 3, &HBAS::ThemeManager::textPrimary)
+	, author(package->author.c_str(), TEXT_SIZE, &HBAS::ThemeManager::textSecondary)
 	, statusicon((RAMFS "res/" + std::string(package->statusString()) + ".png").c_str())
 {
 	// fixed width+height of one app card

@@ -18,6 +18,7 @@
 #include "../libs/get/src/Get.hpp"
 #include "../libs/get/src/Utils.hpp"
 
+#include "ThemeManager.hpp"
 #include "../gui/MainDisplay.hpp"
 
 #include "../console/Menu.hpp"
@@ -52,6 +53,7 @@ int main(int argc, char* argv[])
 	wiiuSetPwd();
 #endif
 	init_networking();
+	HBAS::ThemeManager::themeManagerInit();
 
 	bool cliMode = false;
 
