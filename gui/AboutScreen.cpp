@@ -217,7 +217,7 @@ void AboutScreen::render(Element* parent)
 	// draw a white background, width of the screen
 	CST_Rect dimens = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
-	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::getBackground());
+	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
 	CST_FillRect(RootDisplay::renderer, &dimens);
 
 	super::render(parent);

@@ -30,19 +30,4 @@ namespace HBAS::ThemeManager
             textSecondary = {0x50, 0x50, 0x50, 0xff};
         }
     }
-
-    CST_Color getBackground()
-    {
-        return background;
-    }
-
-    CST_Color getTextPrimary()
-    {
-        return textPrimary;
-    }
-
-    CST_Color gettextSecondary()
-    {
-        return textSecondary;
-    }
 }

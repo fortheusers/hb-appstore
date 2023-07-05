@@ -74,11 +74,11 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 
 	// category text
 	category.setSize(28);
-	category.setColor(HBAS::ThemeManager::getTextPrimary());
+	category.setColor(HBAS::ThemeManager::textPrimary);
 
 	// sort mode text
 	sortBlurb.setSize(15);
-	sortBlurb.setColor(HBAS::ThemeManager::gettextSecondary());
+	sortBlurb.setColor(HBAS::ThemeManager::textSecondary);
 
 #if defined(__WIIU__)
   useBannerIcons = true;
@@ -281,7 +281,7 @@ void AppList::render(Element* parent)
 	dimens.x = this->x - 35;
 
   if (parent != NULL) {
-    CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::getBackground());
+    CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
     CST_FillRect(RootDisplay::renderer, &dimens);
   }
 
@@ -479,7 +479,7 @@ void AppList::update()
 		}
 	}
 
-	nowPlayingText.setColor(HBAS::ThemeManager::getTextPrimary());
+	nowPlayingText.setColor(HBAS::ThemeManager::textPrimary);
 	nowPlayingText.update();
 	nowPlayingText.position((quitBtn.width + quitBtn.x) - nowPlayingText.width, 20); // TODO: copypasta position
 	nowPlayingIcon.position(nowPlayingText.x - 30, 20);

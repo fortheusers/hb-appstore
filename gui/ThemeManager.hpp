@@ -12,8 +12,4 @@ namespace HBAS::ThemeManager
     inline CST_Color textSecondary = {0x50, 0x50, 0x50, 0xff};
 
     void themeManagerInit();
-
-    CST_Color getBackground();
-    CST_Color getTextPrimary();
-    CST_Color gettextSecondary();
 }

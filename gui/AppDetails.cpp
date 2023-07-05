@@ -395,10 +395,10 @@ void AppDetails::render(Element* parent)
 	// draw white background
 	CST_Rect dimens = { 0, 0, SCREEN_WIDTH - 360, SCREEN_HEIGHT };
 
-	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::getBackground());
+	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
 	CST_FillRect(RootDisplay::renderer, &dimens);
 
-	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::getBackground());
+	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
 
 	// draw all elements
 	super::render(parent);
