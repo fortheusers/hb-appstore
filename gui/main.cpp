@@ -41,7 +41,7 @@ void wiiuSetPwd()
 #define ELF_PATH HBAS_PATH "/hbas.elf"
 #define RPX_PATH HBAS_PATH "/appstore.rpx"
 	// create and cd into the appstore directory
-	my_mkdir(HBAS_PATH);
+	mkpath(HBAS_PATH);
 	chdir(HBAS_PATH);
 }
 #endif
@@ -52,6 +52,7 @@ int main(int argc, char* argv[])
 	wiiuSetPwd();
 #endif
 	init_networking();
+	setUserAgent("HBAS/" APP_VERSION " (" PLATFORM "; Chesto)");
 
 	bool cliMode = false;
 
