@@ -13,7 +13,8 @@ class AppList;
 class AppCard : public Element
 {
 public:
-	AppCard(Package* package, AppList* list = nullptr);
+	AppCard(Package& package, AppList* list = nullptr);
+	~AppCard();
 	void update();
 	bool process(InputEvents* event);
 	void render(Element* parent);

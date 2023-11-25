@@ -9,10 +9,10 @@
 #include <curl/easy.h>
 #endif
 
-Feedback::Feedback(Package* package)
-	: package(package)
-	, title((std::string("Leaving feedback for: \"") + package->title + "\"").c_str(), 25)
-	, icon(package->getIconUrl().c_str(), []{ return new ImageElement(RAMFS "res/default.png"); })
+Feedback::Feedback(Package& package)
+	: package(&package)
+	, title((std::string("Leaving feedback for: \"") + package.getTitle() + "\"").c_str(), 25)
+	, icon(package.getIconUrl().c_str(), []{ return new ImageElement(RAMFS "res/default.png"); })
 	, quit("Discard", Y_BUTTON, false, 20)
 	, send("Submit", X_BUTTON, false, 20)
 	, backspaceBtn("Del", B_BUTTON, false, 15)
@@ -113,7 +113,7 @@ void Feedback::submit()
 	if (curl)
 	{
 		curl_easy_setopt(curl, CURLOPT_URL, "http://switchbru.com/appstore/feedback");
-		std::string fields = std::string("name=") + userKey + "&package=" + package->pkg_name + "&message=" + keyboard.getTextInput();
+		std::string fields = std::string("name=") + userKey + "&package=" + package->getPackageName() + "&message=" + keyboard.getTextInput();
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, fields.c_str());
 
 		res = curl_easy_perform(curl);

@@ -21,16 +21,16 @@
 
 int AppDetails::lastFrameTime = 99;
 
-AppDetails::AppDetails(Package* package, AppList* appList, AppCard* appCard)
-	: package(package)
+AppDetails::AppDetails(Package& package, AppList* appList, AppCard* appCard)
+	: package(&package)
 	, get(appList->get)
 	, appList(appList)
 	, appCard(appCard)
 	, downloadProgress()
-	, download(getAction(package), package->status == INSTALLED ? X_BUTTON : A_BUTTON, true, 30 / SCALER)
+	, download(getAction(&package), package.getStatus() == INSTALLED ? X_BUTTON : A_BUTTON, true, 30 / SCALER)
 	, cancel("Cancel", B_BUTTON, true, 30 / SCALER, download.width)
-	, details(getPackageDetails(package).c_str(), 20, &white, false, 300)
-	, content(package, appList->useBannerIcons)
+	, details(getPackageDetails(&package).c_str(), 20, &white, false, 300)
+	, content(&package, appList->useBannerIcons)
 	, downloadStatus("Download Status", 30 / SCALER, &white)
 {
 	// TODO: show current app status somewhere
@@ -50,10 +50,10 @@ AppDetails::AppDetails(Package* package, AppList* appList, AppCard* appCard)
 
 	// display an additional launch/install button if the package is installed,  and has a binary or is a theme
 
-	bool hasBinary = package->binary != "none";
-	bool isTheme = this->package->category == "theme";
+	bool hasBinary = package.getBinary() != "none";
+	bool isTheme = package.getCategory() == "theme";
 
-	if (package->status != GET && (hasBinary || isTheme))
+	if (package.getStatus() != GET && (hasBinary || isTheme))
 	{
 		download.position(SCREEN_WIDTH - 310, 470);
 		cancel.position(SCREEN_WIDTH - 310, 630);
@@ -63,9 +63,9 @@ AppDetails::AppDetails(Package* package, AppList* appList, AppCard* appCard)
 
 		if (isTheme) // should only happen on switch
 		{
-			Package* installer = get->lookup("NXthemes_Installer");
-			injectorPresent = installer != NULL; // whether or not the currently hardcoded installer package exists, in the future becomes something functionality-based like "theme_installer"
-			buttonLabel = (injectorPresent && installer->status == GET) ? "Injector" : "Inject";
+			auto installer = get->lookup("NXthemes_Installer");
+			injectorPresent = installer ? true : false; // whether or not the currently hardcoded installer package exists, in the future becomes something functionality-based like "theme_installer"
+			buttonLabel = (injectorPresent && installer->getStatus() == GET) ? "Injector" : "Inject";
 		}
 
 		// show the third button if a binary is present, or a theme injector is available (installed or not)
@@ -120,22 +120,22 @@ std::string AppDetails::getPackageDetails(Package* package)
 {
 	// lots of details that we know about the package
 	std::stringstream more_details;
-	more_details << "Title: " << package->title << "\n"
-				 << package->short_desc << "\n\n"
-				 << "Author: " << package->author << "\n"
-				 << "Version: " << package->version << "\n"
-				 << "License: " << package->license << "\n\n"
-				 << "Package: " << package->pkg_name << "\n"
-				 << "Downloads: " << package->downloads << "\n"
-				 << "Updated: " << package->updated << "\n\n"
-				 << "Download size: " << package->download_size << " KB\n"
-				 << "Install size: " << package->extracted_size << " KB\n";
+	more_details << "Title: " << package->getTitle() << "\n"
+				 << package->getShortDescription() << "\n\n"
+				 << "Author: " << package->getAuthor() << "\n"
+				 << "Version: " << package->getVersion() << "\n"
+				 << "License: " << package->getLicense() << "\n\n"
+				 << "Package: " << package->getPackageName() << "\n"
+				 << "Downloads: " << package->getDownloadCount() << "\n"
+				 << "Updated: " << package->getUpdatedAt()<< "\n\n"
+				 << "Download size: " << package->getDownloadSize() << " KB\n"
+				 << "Install size: " << package->getExtractedSize() << " KB\n";
 	return more_details.str();
 }
 
 const char* AppDetails::getAction(Package* package)
 {
-	switch (package->status)
+	switch (package->getStatus())
 	{
 	case GET:
 		return "Download";
@@ -170,13 +170,13 @@ void AppDetails::proceed()
 	preInstallHook();
 
 	// install or remove this package based on the package status
-	if (this->package->status == INSTALLED)
-		get->remove(this->package);
+	if (this->package->getStatus() == INSTALLED)
+		get->remove(*package);
 	else {
-		get->install(this->package);
+		get->install(*package);
 		// save the icon to the SD card, for offline use
 		if (appCard != NULL) {
-			auto iconSavePath = std::string(get->pkg_path) + "/" + package->pkg_name + "/icon.png";
+			auto iconSavePath = std::string(get->mPkg_path) + "/" + package->getPackageName() + "/icon.png";
 			appCard->icon.saveTo(iconSavePath);
 			//TODO: load from a cache instead!!
 		}
@@ -195,20 +195,20 @@ void AppDetails::launch()
 {
 	if (!this->canLaunch) return;
 
-	char path[8 + strlen(package->binary.c_str())];
+	char path[8 + strlen(package->getBinary().c_str())];
 
-	sprintf(path, ROOT_PATH "%s", package->binary.c_str()+1);
+	snprintf(path, sizeof(path), ROOT_PATH "%s", package->getBinary().c_str()+1);
 	printf("Launch path: %s\n", path);
 
 	FILE* file;
 	bool successLaunch = false;
 
-	if (package->category == "theme")
+	if (package->getCategory() == "theme")
 	{
-		Package* installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
-		if (installer != NULL && installer->status != GET)
+		auto installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
+		if (installer && installer->getStatus() != GET)
 		{
-			sprintf(path, ROOT_PATH "%s", installer->binary.c_str()+1);
+			snprintf(path, sizeof(path), ROOT_PATH "%s", installer->getBinary().c_str()+1);
 			successLaunch = this->themeInstall(path);
 		}
 		else
@@ -243,9 +243,9 @@ void AppDetails::launch()
 
 void AppDetails::getSupported()
 {
-	Package* installer = get->lookup("NXthemes_Installer");
-	if (installer != NULL)
-		RootDisplay::switchSubscreen(new AppDetails(installer, appList));
+	auto installer = get->lookup("NXthemes_Installer");
+	if (installer)
+		RootDisplay::switchSubscreen(new AppDetails(installer.value(), appList));
 }
 
 void AppDetails::back()
@@ -257,7 +257,7 @@ void AppDetails::back()
 
 void AppDetails::moreByAuthor()
 {
-	const char* author = this->package->author.c_str();
+	const char* author = this->package->getAuthor().c_str();
 	appList->sidebar->searchQuery = std::string(author);
 	appList->sidebar->curCategory = 0;
 	appList->update();
@@ -268,7 +268,7 @@ void AppDetails::moreByAuthor()
 
 void AppDetails::leaveFeedback()
 {
-	RootDisplay::switchSubscreen(new Feedback(this->package));
+	RootDisplay::switchSubscreen(new Feedback(*(this->package)));
 }
 
 bool AppDetails::process(InputEvents* event)
@@ -291,7 +291,7 @@ void AppDetails::preInstallHook()
 {
 // if on wii u and installing ourselves, we need to unmount our WUHB and exit after
 #if defined(__WIIU__)
-	if (this->package->pkg_name == APP_SHORTNAME)
+	if (this->package->getPackageName() == APP_SHORTNAME)
 	{
 		RPXLoaderStatus ret = RPXLoader_InitLibrary();
 		if (ret == RPX_LOADER_RESULT_SUCCESS)
@@ -306,20 +306,23 @@ void AppDetails::preInstallHook()
 bool AppDetails::themeInstall(char* installerPath)
 {
 	std::string ManifestPathInternal = "manifest.install";
-	std::string ManifestPath = get->pkg_path + this->package->pkg_name + "/" + ManifestPathInternal;
+	std::string ManifestPath = get->mPkg_path + this->package->getPackageName() + "/" + ManifestPathInternal;
 
 	std::vector<std::string> themePaths;
 
-	if (!package->manifest) package->manifest = new Manifest(ManifestPath, ROOT_PATH);
+	if (!package->manifest.isValid()) {
+		package->manifest = Manifest(ManifestPath, ROOT_PATH);
+	}
 
-	if (package->manifest->valid)
+	if (package->manifest.isValid())
 	{
-		for (size_t i = 0; i <= package->manifest->entries.size() - 1; i++)
+		auto entries = package->manifest.getEntries();
+		for (size_t i = 0; i <= entries.size() - 1; i++)
 		{
-			if (package->manifest->entries[i].operation == MUPDATE && package->manifest->entries[i].extension == "nxtheme")
+			if (entries[i].operation == MUPDATE && entries[i].extension == "nxtheme")
 			{
 				printf("Found nxtheme\n");
-				themePaths.push_back(package->manifest->entries[i].path);
+				themePaths.push_back(entries[i].path);
 			}
 		}
 	}
@@ -351,7 +354,8 @@ bool AppDetails::themeInstall(char* installerPath)
 		themeArg.replace(index, 1, "(_)");
 	}
 	char args[strlen(installerPath) + themeArg.size() + 8];
-	sprintf(args, "%s %s", installerPath, themeArg.c_str());
+	snprintf(args, sizeof(args), "%s %s", installerPath, themeArg.c_str()+1);
+
 	return this->launchFile(installerPath, args);
 }
 
@@ -421,7 +425,7 @@ int AppDetails::updatePopupStatus(int status, int num, int num_total)
 		statusText << statuses[status];
 
 		if (status <= STATUS_REMOVING)
-			statusText << package->title;
+			statusText << package->getTitle();
 
 		statusText << "...";
 

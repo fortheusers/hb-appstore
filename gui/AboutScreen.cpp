@@ -241,11 +241,11 @@ void AboutScreen::back()
 void AboutScreen::launchFeedback()
 {
 	// find the package corresponding to us
-	for (auto& package : this->get->packages)
+	for (auto& package : this->get->getPackages())
 	{
-		if (package->pkg_name == APP_SHORTNAME)
+		if (package->getPackageName() == APP_SHORTNAME)
 		{
-			RootDisplay::switchSubscreen(new Feedback(package));
+			RootDisplay::switchSubscreen(new Feedback(*package));
 			break;
 		}
 	}

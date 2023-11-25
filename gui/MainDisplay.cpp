@@ -136,7 +136,7 @@ bool MainDisplay::process(InputEvents* event)
 		get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO);
 
 		// go through all repos and if one has an error, set the error flag
-		for (auto repo : get->repos)
+		for (auto repo : get->getRepos())
 		{
 			error = error || !repo->isLoaded();
 			atLeastOneEnabled = atLeastOneEnabled || repo->isEnabled();
@@ -144,7 +144,7 @@ bool MainDisplay::process(InputEvents* event)
 
 		if (error)
 		{
-			RootDisplay::switchSubscreen(new ErrorScreen("Couldn't connect to the Internet!", "Perform a connection test in the " PLATFORM " System Settings\nEnsure DNS isn't blocking: "s + get->repos[0]->getUrl()));
+			RootDisplay::switchSubscreen(new ErrorScreen("Couldn't connect to the Internet!", "Perform a connection test in the " PLATFORM " System Settings\nEnsure DNS isn't blocking: "s + get->getRepos()[0]->getUrl()));
 			return true;
 		}
 
@@ -155,7 +155,7 @@ bool MainDisplay::process(InputEvents* event)
 		}
 
 		// sd card write test, try to open a file on the sd root
-		std::string tmp_dir = get->tmp_path;
+		std::string tmp_dir = get->mTmp_path;
 		std::string tmp_file = tmp_dir + "write_test.txt";
 
 		bool writeFailed = false;

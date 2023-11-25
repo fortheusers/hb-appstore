@@ -290,17 +290,17 @@ void AppList::render(Element* parent)
 	super::render(parent);
 }
 
-bool AppList::sortCompare(const Package* left, const Package* right)
+bool AppList::sortCompare(const Package& left, const Package& right)
 {
 	// handle the supported sorting modes
 	switch (sortMode)
 	{
 		case ALPHABETICAL:
-			return left->title.compare(right->title) < 0;
+			return left.getTitle().compare(right.getTitle()) < 0;
 		case POPULARITY:
-			return left->downloads > right->downloads;
+			return left.getDownloadCount() > right.getDownloadCount();
 		case SIZE:
-			return left->download_size > right->download_size;
+			return left.getDownloadSize() > right.getDownloadSize();
 		case RECENT:
 			break;
 		default:
@@ -319,11 +319,11 @@ bool AppList::sortCompare(const Package* left, const Package* right)
 		}
 		return 4;
 	};
-	int priorityLeft = statusPriority(left->status);
-	int priorityRight = statusPriority(right->status);
+	int priorityLeft = statusPriority(left.getStatus());
+	int priorityRight = statusPriority(right.getStatus());
 
 	if (priorityLeft == priorityRight)
-		return left->updated_timestamp > right->updated_timestamp;
+		return left.getUpdatedAtTimestamp() > right.getUpdatedAtTimestamp();
 
 	return priorityLeft < priorityRight;
 }
@@ -348,9 +348,9 @@ void AppList::update()
 
 	// all packages TODO: move some of this filtering logic into main get library
 	// if it's a search, do a search query through get rather than using all packages
-	std::vector<Package*> packages = (curCategoryValue == "_search")
+	auto packages = (curCategoryValue == "_search")
 		? get->search(sidebar->searchQuery)
-		: get->packages;
+		: get->list();
 
 	// sort the packages
 	if (sortMode == RANDOM)
@@ -364,20 +364,20 @@ void AppList::update()
 		if (curCategoryValue == "_misc")
 		{
 			// if we're on misc, filter out packages belonging to some category
-			if (std::find(std::begin(sidebar->cat_value), std::end(sidebar->cat_value), package->category) != std::end(sidebar->cat_value))
+			if (std::find(std::begin(sidebar->cat_value), std::end(sidebar->cat_value), package.getCategory()) != std::end(sidebar->cat_value))
 				continue;
 		}
 		else if (curCategoryValue != "_all" && curCategoryValue != "_search")
 		{
 			// if we're in a specific category, filter out package of different categories
-			if (curCategoryValue != package->category)
+			if (curCategoryValue != package.getCategory())
 				continue;
 		}
 
 		if (curCategoryValue == "_all")
 		{
 			// hide themes from all
-			if (package->category == "theme")
+			if (package.getCategory() == "theme")
 			continue;
 		}
 

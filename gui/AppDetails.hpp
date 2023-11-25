@@ -9,7 +9,7 @@ class AppList;
 class AppDetails : public Element
 {
 public:
-	AppDetails(Package* package, AppList* appList, AppCard* appCard = NULL);
+	AppDetails(Package& package, AppList* appList, AppCard* appCard = NULL);
 	~AppDetails();
 
 	std::string getPackageDetails(Package* package);

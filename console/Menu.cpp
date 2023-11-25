@@ -68,28 +68,30 @@ void Menu::display()
 		int start = (this->position / PAGE_SIZE) * PAGE_SIZE; //
 
 		// go through this page of apps until the end of the page, or longer than the packages list
-		for (int x = start; x < start + PAGE_SIZE && x < get->packages.size(); x++)
+		for (int x = start; x < start + PAGE_SIZE && x < get->getPackages().size(); x++)
 		{
 			int curPosition = (x % PAGE_SIZE) * 3 + 2;
 
-			Package* cur = get->packages[x];
+			auto cur = get->list()[x];
 			std::stringstream line;
-			line << cur->title << " (" << cur->version << ")";
+			line << cur.getTitle() << " (" << cur.getVersion() << ")";
 			console->drawString(15, curPosition, line.str().c_str());
 
-			int r = (cur->status == UPDATE || cur->status == LOCAL) ? 0xFF : 0x00;
-			int g = (cur->status == UPDATE) ? 0xF7 : 0xFF;
-			int b = (cur->status == INSTALLED || cur->status == LOCAL) ? 0xFF : 0x00;
-			console->drawColorString(5, curPosition, cur->statusString(), r, g, b);
+			auto status = cur.getStatus();
+
+			int r = (status == UPDATE || status == LOCAL) ? 0xFF : 0x00;
+			int g = (status == UPDATE) ? 0xF7 : 0xFF;
+			int b = (status == INSTALLED || status == LOCAL) ? 0xFF : 0x00;
+			console->drawColorString(5, curPosition, cur.statusString(), r, g, b);
 
 			std::stringstream line2;
-			line2 << cur->short_desc << " [" << cur->author << "]";
+			line2 << cur.getShortDescription() << " [" << cur.getAuthor() << "]";
 
 			console->drawColorString(16, curPosition + 1, line2.str().c_str(), 0xcc, 0xcc, 0xcc);
 		}
 
 		std::stringstream footer;
-		footer << "Page " << this->position / PAGE_SIZE + 1 << " of " << (get->packages.size()-1) / PAGE_SIZE + 1;
+		footer << "Page " << this->position / PAGE_SIZE + 1 << " of " << (get->getPackages().size()-1) / PAGE_SIZE + 1;
 		console->drawString(34, 40, footer.str().c_str());
 		console->drawColorString(15, 42, "Use left/right and up/down to switch pages and apps", 0xcc, 0xcc, 0xcc);
 
@@ -98,7 +100,7 @@ void Menu::display()
 
 	if (this->screen == INSTALL_SCREEN)
 	{
-		if (this->position < 0 || this->position > get->packages.size())
+		if (this->position < 0 || this->position > get->getPackages().size())
 		{
 			// invalid selection, go back a screen
 			this->screen--;
@@ -106,20 +108,22 @@ void Menu::display()
 		}
 
 		// currently selected package
-		Package* cur = get->packages[this->position];
+		auto cur = get->list()[this->position];
 
-		console->drawString(5, 3, cur->title.c_str());
-		console->drawString(6, 5, cur->version.c_str());
-		console->drawString(6, 6, cur->author.c_str());
+		console->drawString(5, 3, cur.getTitle().c_str());
+		console->drawString(6, 5, cur.getVersion().c_str());
+		console->drawString(6, 6, cur.getAuthor().c_str());
 
-		int r = (cur->status == UPDATE || cur->status == LOCAL) ? 0xFF : 0x00;
-		int g = (cur->status == UPDATE) ? 0xF7 : 0xFF;
-		int b = (cur->status == INSTALLED || cur->status == LOCAL) ? 0xFF : 0x00;
-		console->drawColorString(5, 8, cur->statusString(), r, g, b);
+		auto status = cur.getStatus();
+
+		int r = (status == UPDATE || status == LOCAL) ? 0xFF : 0x00;
+		int g = (status == UPDATE) ? 0xF7 : 0xFF;
+		int b = (status == INSTALLED || status == LOCAL) ? 0xFF : 0x00;
+		console->drawColorString(5, 8, cur.statusString(), r, g, b);
 
 		console->drawColorString(5, 12, "Press [A] to install this package", 0xff, 0xff, 0x00);
 
-		if (cur->status != GET && cur->status != LOCAL)
+		if (status != GET && status != LOCAL)
 			console->drawColorString(5, 14, "Press [X] to remove this package", 0xff, 0xff, 0x00);
 
 		console->drawString(5, 16, "Press [B] to go back");
@@ -128,9 +132,9 @@ void Menu::display()
 	if (this->screen == INSTALLING || this->screen == REMOVING)
 	{
 		// currently selected package
-		Package* cur = get->packages[this->position];
+		auto cur = get->list()[this->position];
 
-		console->drawString(5, 4, cur->title.c_str());
+		console->drawString(5, 4, cur.getTitle().c_str());
 
 		if (this->screen == INSTALLING)
 			console->drawColorString(5, 5, "Downloading package...", 0xff, 0xff, 0x00);
@@ -165,8 +169,8 @@ void Menu::initGet()
 	// this is a blocking load
 	this->get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO);
 
-	if (get->packages.size() > 0)
-		this->repoUrl = get->packages[0]->repoUrl->c_str();
+	if (get->getRepos().size() > 0)
+		this->repoUrl = get->getRepos()[0]->getUrl().c_str();
 	else
 		this->repoUrl = "No packages found on any repos!";
 }
@@ -181,10 +185,10 @@ void Menu::moveCursor(int diff)
 	if (position < 0)
 	{
 		// went back too far, wrap around to last package
-		position = get->packages.size() - 1;
+		position = get->getPackages().size() - 1;
 	}
 
-	else if (position >= get->packages.size())
+	else if (position >= get->getPackages().size())
 	{
 		// too far forward, wrap around to first package
 		position = 0;

@@ -46,7 +46,7 @@ int console_main(RootDisplay* rootDisplay, InputEvents* input)
 		// if we're on the install screen, perform an install
 		if (menu->screen == INSTALLING || menu->screen == REMOVING)
 		{
-			Package* target = menu->get->packages[menu->position];
+			auto target = menu->get->list()[menu->position];
 
 			// install package
 			bool succeeded = false;

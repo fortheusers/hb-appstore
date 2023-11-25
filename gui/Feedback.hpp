@@ -12,7 +12,7 @@
 class Feedback : public Element
 {
 public:
-	Feedback(Package* package);
+	Feedback(Package& package);
 
 	void render(Element* parent);
 	bool process(InputEvents* event);

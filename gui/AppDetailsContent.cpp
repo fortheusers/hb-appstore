@@ -45,8 +45,8 @@ std::string getTrimmedDetails(AppDetailsContent* content, std::string details)
 AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	: reportIssue("Report Issue", L_BUTTON)
 	, moreByAuthor("More by Author", R_BUTTON)
-	, title(package->title.c_str(), 35, &black)
-	, title2(package->author.c_str(), 27, &gray)
+	, title(package->getTitle().c_str(), 35, &black)
+	, title2(package->getAuthor().c_str(), 27, &gray)
 	, details("Package long description", 20 / SCALER, &black, false, PANE_WIDTH + 20 / SCALER)
 	, changelog("If you're reading this text, something is wrong", 20 / SCALER, &black, false, PANE_WIDTH + 20 / SCALER)
 	, showFiles("Show Installed Files List", ZL_BUTTON, false, 15)
@@ -74,7 +74,7 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	marginOffset = moreByAuthor.x - 20;
 	super::append(&moreByAuthor);
 
-	if (package->status != GET) {
+	if (package->getStatus() != GET) {
 		reportIssue.position(marginOffset - reportIssue.width, 45);
 		super::append(&reportIssue);
 	}
@@ -88,7 +88,7 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	super::append(&title2);
 
 	// the main description (wrapped text)
-	details.setText(getTrimmedDetails(this, package->long_desc).c_str());
+	details.setText(getTrimmedDetails(this, package->getLongDescription()).c_str());
 	details.update();
 	details.position((MARGIN / SCALER + 30), banner.y + banner.height + 22);
 	super::append(&details);
@@ -119,7 +119,7 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 
 		// add screenshot netimages loaded from the package's screenshot urls
 		// (package->screens is the count of screenshots)
-		for (int i=0; i<package->screens; i++) {
+		for (int i=0; i<package->getScreenshotCount(); i++) {
 			auto ssUrl = package->getScreenShotUrl(i+1);
 			NetImageElement* screenshot = new NetImageElement(ssUrl.c_str(), [package]{
 				// if the screen shot fails to load, just use the app icon
@@ -142,7 +142,7 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 				expandedReadMore = true;
 				viewSSButton.hidden = true;
 				int oldDetailsHeight = details.height + 80;
-				details.setText(package->long_desc.c_str());
+				details.setText(package->getLongDescription().c_str());
 				details.update();
 
 				// move the UI down by the new height of the expanded details
@@ -287,7 +287,7 @@ void AppDetailsContent::switchExtraInfo(Package* package, int newState) {
 	// update the "changelog" text depending on which action we're doing
 	if (newState == SHOW_CHANGELOG)
 	{
-		changelog.setText(std::string("Changelog:\n") + package->changelog.c_str());
+		changelog.setText(std::string("Changelog:\n") + package->getChangelog().c_str());
 		changelog.setFont(NORMAL);
 		changelog.update();
 	}
@@ -297,15 +297,16 @@ void AppDetailsContent::switchExtraInfo(Package* package, int newState) {
 
 		// if it's an installed package, use the already installed manifest
 		// (LOCAL -> UPDATE packages won't have a manifest)
-		if ((package->status == INSTALLED || package->status == UPDATE) && package->manifest != NULL) {
+		auto status = package->getStatus();
+		if ((status == INSTALLED || status == UPDATE) && package->manifest .isValid()) {
 			allEntries << "Currently Installed Files:\n";
-			for (auto &entry : package->manifest->entries) {
+			for (auto &entry : package->manifest.getEntries()) {
 				allEntries << entry.raw << "\n";
 			}
 			allEntries << "\n";
 		}
 
-		if (package->status != INSTALLED) {
+		if (status != INSTALLED) {
 			// manifest is either non-local, or we need to display both, download it from the server
 			std::string data("");
 			downloadFileToMemory(package->getManifestUrl().c_str(), &data);

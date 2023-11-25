@@ -63,7 +63,7 @@ public:
 	EKeyboard keyboard;
 
 private:
-	bool sortCompare(const Package* left, const Package* right);
+	bool sortCompare(const Package& left, const Package& right);
 	std::random_device randDevice;
 
 	void keyboardInputCallback();

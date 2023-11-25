@@ -7,16 +7,16 @@
 CST_Color AppCard::gray = { 80, 80, 80, 0xff };
 CST_Color AppCard::black = { 0, 0, 0, 0xff };
 
-AppCard::AppCard(Package* package, AppList* list)
-	: package(package)
+AppCard::AppCard(Package& package, AppList* list)
+	: package(new Package(package))
 	, list(list)
-	, icon(package->getIconUrl().c_str(), [list, package] {
+	, icon(package.getIconUrl().c_str(), [list, package] {
 		// if the icon fails to load, and we're offline, try to use one from the cache
-		auto iconSavePath = std::string(list->get->pkg_path) + "/" + package->pkg_name + "/icon.png";
+		auto iconSavePath = std::string(list->get->mPkg_path) + "/" + package.getPackageName() + "/icon.png";
 
 		// check if the package is installed, and if the icon file exists using stat
 		struct stat buffer;
-		if (package->status != GET && stat(iconSavePath.c_str(), &buffer) == 0) {
+		if (package.getStatus() != GET && stat(iconSavePath.c_str(), &buffer) == 0) {
 			// file exists, return the path to the icon
 			auto img = new ImageElement(iconSavePath.c_str());
 			img->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
@@ -25,11 +25,11 @@ AppCard::AppCard(Package* package, AppList* list)
 
 		return new ImageElement(RAMFS "res/default.png");
 	}, !list)
-	, version(("v" + package->version).c_str(), TEXT_SIZE, &gray)
-	, status(package->statusString(), TEXT_SIZE, &gray)
-	, appname(package->title.c_str(), TEXT_SIZE + 3, &black)
-	, author(package->author.c_str(), TEXT_SIZE, &gray)
-	, statusicon((RAMFS "res/" + std::string(package->statusString()) + ".png").c_str())
+	, version(("v" + package.getVersion()).c_str(), TEXT_SIZE, &gray)
+	, status(package.statusString(), TEXT_SIZE, &gray)
+	, appname(package.getTitle().c_str(), TEXT_SIZE + 3, &black)
+	, author(package.getAuthor().c_str(), TEXT_SIZE, &gray)
+	, statusicon((RAMFS "res/" + std::string(package.statusString()) + ".png").c_str())
 {
 	// fixed width+height of one app card
 	this->width = 256;  // + 9px margins
@@ -92,7 +92,7 @@ void AppCard::handleIconLoad()
 	if (iconFetch)
 		return;
 	
-	// printf("Y position: %d, %d, %d, %d - %s\n", list->y, this->y, this->height, SCREEN_HEIGHT, package->title.c_str());
+	// printf("Y position: %d, %d, %d, %d - %s\n", list->y, this->y, this->height, SCREEN_HEIGHT, package.getTitle().c_str());
 
 	// don't try to load the icon if the card is not visible ("on screen, within height (one card)")
 	CST_Rect rect = { this->xOff + this->x, this->yOff + this->y - this->height, this->width, this->height };
@@ -103,7 +103,7 @@ void AppCard::handleIconLoad()
 	// so the download can be started
 	icon.fetch();
 
-	// printf("Fetching icon for %s\n", package->title.c_str());
+	// printf("Fetching icon for %s\n", package.getTitle().c_str());
 
 	iconFetch = true;
 }
@@ -128,7 +128,7 @@ void AppCard::displaySubscreen()
 		return;
 
 	// received a click on this app, add a subscreen under the parent
-	AppDetails *appDetails = new AppDetails(this->package, list, this);
+	AppDetails *appDetails = new AppDetails(*package, list, this);
 
 	if (!list->touchMode)
 		appDetails->highlighted = 0; // show cursor if we're not in touch mode
@@ -147,4 +147,9 @@ bool AppCard::process(InputEvents* event)
 	}
 
 	return super::process(event);
+}
+
+AppCard::~AppCard()
+{
+	delete package;
 }
