@@ -15,8 +15,6 @@ jobs:
       matrix:
         include:
           - platform: wiiu
-            ext: rpx
-          - platform: wiiu
             ext: wuhb
           - platform: switch
             ext: nro
@@ -36,3 +34,8 @@ jobs:
       with:
         name: appstore.${{ matrix.ext }}
         path: /__w/hb-appstore/hb-appstore/appstore.${{ matrix.ext }}
+    - if: matrix.platform == 'wiiu'
+      uses: actions/upload-artifact@v3
+      with:
+        name: appstore.rpx
+        path: /__w/hb-appstore/hb-appstore/appstore.rpx
