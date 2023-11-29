@@ -23,11 +23,11 @@ AppCard::AppCard(Package& package, AppList* list)
 
 		return new ImageElement(RAMFS "res/default.png");
 	}, !list)
-	, version(("v" + package->getVersion()).c_str(), TEXT_SIZE, &HBAS::ThemeManager::textSecondary)
-	, status(package->statusString(), TEXT_SIZE, &HBAS::ThemeManager::textSecondary)
-	, appname(package->getTitle().c_str(), TEXT_SIZE + 3, &HBAS::ThemeManager::textPrimary)
-	, author(package->getAuthor().c_str(), TEXT_SIZE, &HBAS::ThemeManager::textSecondary)
-	, statusicon((RAMFS "res/" + std::string(package->statusString()) + ".png").c_str())
+	, version(("v" + package.getVersion()).c_str(), TEXT_SIZE, &HBAS::ThemeManager::textSecondary)
+	, status(package.statusString(), TEXT_SIZE, &HBAS::ThemeManager::textSecondary)
+	, appname(package.getTitle().c_str(), TEXT_SIZE + 3, &HBAS::ThemeManager::textPrimary)
+	, author(package.getAuthor().c_str(), TEXT_SIZE, &HBAS::ThemeManager::textSecondary)
+	, statusicon((RAMFS "res/" + std::string(package.statusString()) + ".png").c_str())
 {
 	// fixed width+height of one app card
 	this->width = 256;  // + 9px margins

@@ -8,13 +8,35 @@ namespace HBAS::ThemeManager
     void themeManagerInit()
     {
         // Detect if Switch is using dark theme
-        #ifdef SWITCH
+#ifdef SWITCH
         setsysInitialize();
         static ColorSetId sysTheme = ColorSetId_Light;
         setsysGetColorSetId(&sysTheme);
         isDarkMode = (sysTheme == ColorSetId_Dark);
         setsysExit();
-        #endif
+#endif
+
+#ifdef __APPLE__
+        if (system("defaults read -g AppleInterfaceStyle 2>/dev/null") == 0) {
+            isDarkMode = true;
+        }
+#endif
+
+#ifdef _WIN32
+        HKEY hKey;
+        DWORD dwRegValue, dwRegType, dwRegSize = sizeof(DWORD);
+        if (RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"), 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+        {
+            if (RegQueryValueEx(hKey, TEXT("AppsUseLightTheme"), NULL, &dwRegType, (LPBYTE)&dwRegValue, &dwRegSize) == ERROR_SUCCESS)
+            {
+                isDarkMode = !dwRegValue;
+            }
+            RegCloseKey(hKey);
+        }
+#endif
+
+        // TODO: check some preference to override the system theme
+
         // Set colors for dark mode
         if (isDarkMode)
         {
