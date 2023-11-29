@@ -17,6 +17,7 @@
 #include "AppDetails.hpp"
 #include "AppList.hpp"
 #include "Feedback.hpp"
+#include "ThemeManager.hpp"
 #include "main.hpp"
 
 int AppDetails::lastFrameTime = 99;
@@ -398,12 +399,10 @@ void AppDetails::render(Element* parent)
 	// draw white background
 	CST_Rect dimens = { 0, 0, SCREEN_WIDTH - 360, SCREEN_HEIGHT };
 
-	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
-
-	CST_SetDrawColor(RootDisplay::renderer, white);
+	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
 	CST_FillRect(RootDisplay::renderer, &dimens);
 
-	CST_SetDrawColor(RootDisplay::renderer, white);
+	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
 
 	// draw all elements
 	super::render(parent);

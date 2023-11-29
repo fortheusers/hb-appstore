@@ -18,6 +18,7 @@
 #include "../libs/get/src/Get.hpp"
 #include "../libs/get/src/Utils.hpp"
 
+#include "ThemeManager.hpp"
 #include "../gui/MainDisplay.hpp"
 
 #include "../console/Menu.hpp"
@@ -53,6 +54,7 @@ int main(int argc, char* argv[])
 #endif
 	init_networking();
 	setUserAgent("HBAS/" APP_VERSION " (" PLATFORM "; Chesto)");
+	HBAS::ThemeManager::themeManagerInit();
 
 	bool cliMode = false;
 
