@@ -13,6 +13,7 @@
 #include "AppDetailsContent.hpp"
 #include "Feedback.hpp"
 #include "AppList.hpp"
+#include "ThemeManager.hpp"
 #include "main.hpp"
 
 std::string getTrimmedDetails(AppDetailsContent* content, std::string details)
@@ -45,10 +46,10 @@ std::string getTrimmedDetails(AppDetailsContent* content, std::string details)
 AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	: reportIssue("Report Issue", L_BUTTON)
 	, moreByAuthor("More by Author", R_BUTTON)
-	, title(package->getTitle().c_str(), 35, &black)
-	, title2(package->getAuthor().c_str(), 27, &gray)
-	, details("Package long description", 20 / SCALER, &black, false, PANE_WIDTH + 20 / SCALER)
-	, changelog("If you're reading this text, something is wrong", 20 / SCALER, &black, false, PANE_WIDTH + 20 / SCALER)
+	, title(package->getTitle().c_str(), 35, &HBAS::ThemeManager::textPrimary)
+	, title2(package->getAuthor().c_str(), 27, &HBAS::ThemeManager::textSecondary)
+	, details("Package long description", 20 / SCALER, &HBAS::ThemeManager::textPrimary, false, PANE_WIDTH + 20 / SCALER)
+	, changelog("If you're reading this text, something is wrong", 20 / SCALER, &HBAS::ThemeManager::textPrimary, false, PANE_WIDTH + 20 / SCALER)
 	, showFiles("Show Installed Files List", ZL_BUTTON, false, 15)
 	, showChangelog("Show Changelog", ZR_BUTTON, false, 15)
 	, banner(useBannerIcons ? package->getBannerUrl().c_str() : package->getIconUrl().c_str(), [package]{

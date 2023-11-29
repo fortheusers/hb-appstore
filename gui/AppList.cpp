@@ -1,6 +1,7 @@
 #include "MainDisplay.hpp"
 #include "AboutScreen.hpp"
 #include "FeedbackCenter.hpp"
+#include "ThemeManager.hpp"
 #include "main.hpp"
 
 #include "../libs/get/src/Utils.hpp"
@@ -18,8 +19,6 @@
 #endif
 
 const char* AppList::sortingDescriptions[TOTAL_SORTS] = { "by most recent", "by download count", "alphabetically", "by size (descending)", "randomly" };
-CST_Color AppList::black = { 0, 0, 0, 0xff };
-CST_Color AppList::gray = { 0x50, 0x50, 0x50, 0xff };
 CST_Color AppList::red = { 0xff, 0, 0, 0xff };
 
 AppList::AppList(Get* get, Sidebar* sidebar)
@@ -30,7 +29,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	, sortBtn("Adjust Sort", Y_BUTTON, false, 15)
 	, keyboardBtn("Toggle Keyboard", Y_BUTTON, false, 15)
 	, backspaceBtn("Del", B_BUTTON, false, 15)
-	, nowPlayingText(" ", 20, &black)
+	, nowPlayingText(" ", 20, &HBAS::ThemeManager::textPrimary)
 #if defined(MUSIC)
 	, nowPlayingIcon(RAMFS "res/nowplaying.png")
 	, muteBtn(" ", X_BUTTON, false, 15, 90)
@@ -75,11 +74,11 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 
 	// category text
 	category.setSize(28);
-	category.setColor(black);
+	category.setColor(HBAS::ThemeManager::textPrimary);
 
 	// sort mode text
 	sortBlurb.setSize(15);
-	sortBlurb.setColor(gray);
+	sortBlurb.setColor(HBAS::ThemeManager::textSecondary);
 
 #if defined(__WIIU__)
   useBannerIcons = true;
@@ -280,10 +279,9 @@ void AppList::render(Element* parent)
 	// draw a white background, screen dims wide
 	CST_Rect dimens = { 0, 0, SCREEN_WIDTH - 360 + 260 * hideSidebar, SCREEN_HEIGHT };
 	dimens.x = this->x - 35;
-	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 
   if (parent != NULL) {
-    CST_SetDrawColor(RootDisplay::renderer, white);
+    CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
     CST_FillRect(RootDisplay::renderer, &dimens);
   }
 
@@ -481,7 +479,7 @@ void AppList::update()
 		}
 	}
 
-	nowPlayingText.setColor(black);
+	nowPlayingText.setColor(HBAS::ThemeManager::textPrimary);
 	nowPlayingText.update();
 	nowPlayingText.position((quitBtn.width + quitBtn.x) - nowPlayingText.width, 20); // TODO: copypasta position
 	nowPlayingIcon.position(nowPlayingText.x - 30, 20);
