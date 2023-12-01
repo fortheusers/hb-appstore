@@ -1,4 +1,5 @@
 #include "ThemeManager.hpp"
+#include <ctime>
 #ifdef SWITCH
 #include <switch.h>
 #endif
