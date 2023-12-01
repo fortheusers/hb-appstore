@@ -233,24 +233,35 @@ bool AppList::process(InputEvents* event)
 	if (!touchMode && this->elements.size() > this->highlighted && this->highlighted >= 0 && this->elements[this->highlighted])
 	{
 		// if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
-
 		Element* curTile = this->elements[this->highlighted];
 
 		// the y-position of the currently highlighted tile, precisely on them screen (accounting for scroll)
 		// this means that if it's < 0 or > SCREEN_HEIGHT then it's not visible
 		int normalizedY = curTile->y + this->y;
 
-		// if we're out of range above, recenter at the top row
-		if (normalizedY < 0)
-			this->y = -1 * (curTile->y - 15) + 25;
+		// if we're FAR out of range upwards, speed up the scroll wheel (additive) to get back in range quicker
+		if (normalizedY < -200)
+			event->wheelScroll += 0.15;
+
+		// far out of range, for bottom of screen
+		else if (normalizedY > SCREEN_HEIGHT - curTile->height + 200)
+			event->wheelScroll -= 0.15;
+
+		// if we're slightly out of range above, recenter at the top row slowly
+		else if (normalizedY < -100)
+			event->wheelScroll = 1;
+
+		// special case, scroll when we're on the bottom row of the top of the not-yet-scrolled screen
+		else if (this->y == 0 && normalizedY > SCREEN_HEIGHT/2)
+			event->wheelScroll -= 0.5;
 
 		// if we're out of range below, recenter at bottom row
-		if (normalizedY > SCREEN_HEIGHT - curTile->height)
-			this->y = -1 * (curTile->y - 3 * (curTile->height - 15)) - 40;
+		else if (normalizedY > SCREEN_HEIGHT - curTile->height + 100)
+			event->wheelScroll = -1;
 
 		// if the card is this close to the top, just set it the list offset to 0 to scroll up to the top
-		if (this->highlighted < R)
-			this->y = 0;
+		else if (this->y != 0 && this->highlighted < R)
+			event->wheelScroll = 1;
 
 		if (this->elements[this->highlighted] && this->elements[this->highlighted]->elasticCounter == NO_HIGHLIGHT)
 		{

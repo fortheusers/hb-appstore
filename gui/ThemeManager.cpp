@@ -7,6 +7,8 @@ namespace HBAS::ThemeManager
 {
     void themeManagerInit()
     {
+        bool canDetectDarkMode = false;
+        
         // Detect if Switch is using dark theme
 #ifdef SWITCH
         setsysInitialize();
@@ -14,12 +16,18 @@ namespace HBAS::ThemeManager
         setsysGetColorSetId(&sysTheme);
         isDarkMode = (sysTheme == ColorSetId_Dark);
         setsysExit();
+        canDetectDarkMode = true;
+#endif
+
+#ifdef __WIIU__
+        // TODO: Check if a custom dark theme is being used
 #endif
 
 #ifdef __APPLE__
         if (system("defaults read -g AppleInterfaceStyle 2>/dev/null") == 0) {
             isDarkMode = true;
         }
+        canDetectDarkMode = true;
 #endif
 
 #ifdef _WIN32
@@ -33,9 +41,17 @@ namespace HBAS::ThemeManager
             }
             RegCloseKey(hKey);
         }
+        canDetectDarkMode = true;
 #endif
 
-        // TODO: check some preference to override the system theme
+        if (!canDetectDarkMode) {
+            // we can't detect dark mode on this platform, so let's check the time of day
+            time_t t = time(NULL);
+            struct tm *tm = localtime(&t);
+            isDarkMode = (tm->tm_hour < 5 || tm->tm_hour > 20);
+        }
+
+        // TODO: check some preference to override the automatic theme (system or time detection)
 
         // Set colors for dark mode
         if (isDarkMode)
