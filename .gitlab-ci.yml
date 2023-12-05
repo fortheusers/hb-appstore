@@ -16,19 +16,7 @@ PC:
     PLATFORM: pc
     EXT: bin
 
-PC-sdl1:
-  <<: *common
-  variables:
-    PLATFORM: pc-sdl1
-    EXT: bin-sdl1
-
 WiiU:
-  <<: *common
-  variables:
-    PLATFORM: wiiu
-    EXT: rpx
-
-WiiU-wuhb:
   <<: *common
   variables:
     PLATFORM: wiiu
@@ -39,15 +27,3 @@ Switch:
   variables:
     PLATFORM: switch
     EXT: nro
-
-3ds:
-  <<: *common
-  variables:
-    PLATFORM: 3ds
-    EXT: 3dsx
-
-Wii:
-  <<: *common
-  variables:
-    PLATFORM: wii
-    EXT: dol
