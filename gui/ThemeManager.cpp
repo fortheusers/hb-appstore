@@ -4,6 +4,10 @@
 #include <switch.h>
 #endif
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 namespace HBAS::ThemeManager
 {
     void themeManagerInit()

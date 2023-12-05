@@ -277,15 +277,10 @@ bool AppDetailsContent::process(InputEvents* event)
 
 	int maxScrollOffset = screenshotsContainer.y + screenshotsContainer.height - SCREEN_HEIGHT + 100;
 
-	// make sure the max scroll offset is at least the screen height
-	if (maxScrollOffset < SCREEN_HEIGHT) {
+	// make sure the max scroll offset is positive and snap <50 to 0
+	if (maxScrollOffset < 50) {
 		maxScrollOffset = 0;
 	}
-
-	// if our screen scroll is too far down, stop the scroll
-	// printf("Screenshot container y: %d\n", screenshotsContainer.y);
-	// printf("Screenshot height: %d\n", screenshotsContainer.height);
-	// printf("Scroll offset: %d\n", this->y + this->yOff);
 
 	// if we're not touch dragging, and we're out of bounds, reset scroll bounds
 	if ((!event->isScrolling || event->isTouchUp()) && abs(this->y + this->yOff) > maxScrollOffset) {

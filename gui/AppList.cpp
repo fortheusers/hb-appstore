@@ -19,7 +19,9 @@
 #endif
 
 const char* AppList::sortingDescriptions[TOTAL_SORTS] = { "by most recent", "by download count", "alphabetically", "by size (descending)", "randomly" };
+
 CST_Color AppList::red = { 0xff, 0, 0, 0xff };
+CST_Color AppList::lighterRed = { 0xef, 0x48, 0x48, 0xff };
 
 AppList::AppList(Get* get, Sidebar* sidebar)
 	: get(get)			// the main get instance that contains repo info and stuff
@@ -80,6 +82,8 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	sortBlurb.setSize(15);
 	sortBlurb.setColor(HBAS::ThemeManager::textSecondary);
 
+	auto myRed = HBAS::ThemeManager::isDarkMode ? lighterRed : red;
+
 #if defined(__WIIU__)
   useBannerIcons = true;
 #elif defined(SWITCH)
@@ -91,14 +95,14 @@ AppList::AppList(Get* get, Sidebar* sidebar)
   if (!useBannerIcons) {
 	// applet mode, display a warning
 	nowPlayingText.setText("NOTICE: You are in Applet mode! Google \"Switch Applet Mode\" for more info.");
-	nowPlayingText.setColor(red);
+	nowPlayingText.setColor(myRed);
 	nowPlayingText.update();
   }
 #endif
 
 #ifdef DEBUG_BUILD
 	nowPlayingText.setText("NOTICE: You are using a dev build! Update to a stable release if this is unintended.");
-	nowPlayingText.setColor(red);
+	nowPlayingText.setColor(myRed);
 	nowPlayingText.update();
 #endif
 
