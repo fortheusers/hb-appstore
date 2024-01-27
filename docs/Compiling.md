@@ -36,7 +36,7 @@ If all goes well, `appstore.rpx` should be sitting in the current directory.
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
 2. Install devkitARM and needed 3DS dependencies via dkp-pacman:
 ```
-sudo dkp-pacman --noconfirm -S devkitPPC libogc gamecube-tools ppc-zlib ppc-bzip2 ppc-freetype ppc-mpg123 ppc-libpng ppc-pkg-config ppc-libvorbisidec ppc-libjpeg-turbo libfat-ogc
+sudo dkp-pacman -S 3ds-sdl 3ds-sdl_image 3ds-sdl_mixer 3ds-sdl_gfx 3ds-sdl_ttf libctru citro3d 3dstools 3ds-curl 3ds-mbedtls
 ```
 3. *If on macOS*: install gtar with: `brew install gnu-tar` (needed by resinfs)
 4. Once it's all setup, recursively clone the repo and run make:
@@ -52,7 +52,7 @@ If all goes well, `appstore.3dsx` should be sitting in the current directory.
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
 2. Install devkitPPC and needed Wii dependencies via dkp-pacman:
 ```
-sudo dkp-pacman -S 3ds-sdl 3ds-sdl_image 3ds-sdl_mixer 3ds-sdl_gfx 3ds-sdl_ttf libctru citro3d 3dstools 3ds-curl 3ds-mbedtls
+sudo dkp-pacman --noconfirm -S devkitPPC libogc gamecube-tools ppc-zlib ppc-bzip2 ppc-freetype ppc-mpg123 ppc-libpng ppc-pkg-config ppc-libvorbisidec ppc-libjpeg-turbo libfat-ogc
 ```
 3. *If on macOS*: install gtar with: `brew install gnu-tar` (needed by resinfs)
 4. Once it's all setup, recursively clone the repo and run make:
