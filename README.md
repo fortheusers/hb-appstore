@@ -10,8 +10,8 @@ The Homebrew App Store is a GUI that can be used to access an online repository 
 
 ## Supported Platforms
 
-### Desktop (Linux, Mac, Windows)
-Standalone PC executables are available from [the nightlies](https://nightly.link/fortheusers/hb-appstore/workflows/pc-builds/main). These PC clients download and extract files to an `sdroot` folder relative to the app's path.
+### Linux, Mac, Windows
+Standalone PC executables are available [here](https://nightly.link/fortheusers/hb-appstore/workflows/pc-builds/main). These PC clients download and extract files to an `sdroot` folder relative to the app's path.
 
 ### Web Browsers
 A web interface to download files from the Homebrew App Store directly is available at [apps.fortheusers.org](https://apps.fortheusers.org). Source code: [hbas-frontend](https://github.com/fortheusers/hbas-frontend).
@@ -45,7 +45,7 @@ For more information on the API and self-hosting, see: [hb-app.store/api-info](h
 ## Compiling
 This program is written using [Chesto](https://github.com/fortheusers/chesto) and has dependencies on libcurl, libget, and zlib. The chesto and libget libraries are included in this repo as submodules.
 
-[Pre-compiled nightlies](https://nightly.link/fortheusers/hb-appstore/workflows/main/main) to download the latest nightly builds without signing in.
+Pre-compiled builds off the main branch can be downloaded [here](https://nightly.link/fortheusers/hb-appstore/workflows/main/main) without signing in.
 
 ### Instructions
 Detailed build instructions for specific platforms can be found in [Compiling.md](https://github.com/fortheusers/hb-appstore/blob/main/docs/Compiling.md).
