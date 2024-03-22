@@ -39,7 +39,7 @@ AppCard::AppCard(Package& package, AppList* list)
 	this->action = std::bind(&AppCard::displaySubscreen, this);
 
 	icon.setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
-	icon.cornerRadius = 25;
+	// icon.cornerRadius = 25;
 
 	// create the layout of the app card (all relative)
 

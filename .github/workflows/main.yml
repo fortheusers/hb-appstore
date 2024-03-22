@@ -1,4 +1,4 @@
-name: Build console app
+name: Build SDL2 console apps
 
 on:
   push:
@@ -18,8 +18,8 @@ jobs:
             ext: wuhb
           - platform: switch
             ext: nro
-          - platform: 3ds
-            ext: 3dsx
+          # - platform: 3ds
+          #   ext: 3dsx
           - platform: wii
             ext: dol
     container:
