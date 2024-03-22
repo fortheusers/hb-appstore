@@ -39,7 +39,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	, unmuteIcon(RAMFS "res/unmute.png")
 #endif
 {
-	this->x = SCREEN_WIDTH - 880 - 260 * hideSidebar;
+	this->x = 400 - 260 * hideSidebar;
 
 	// the offset of how far along scroll'd we are
 	this->y = 0;
@@ -292,7 +292,7 @@ void AppList::render(Element* parent)
 		this->parent = parent;
 
 	// draw a white background, screen dims wide
-	CST_Rect dimens = { 0, 0, SCREEN_WIDTH - 360 + 260 * hideSidebar, SCREEN_HEIGHT };
+	CST_Rect dimens = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 	dimens.x = this->x - 35;
 
   if (parent != NULL) {
@@ -574,9 +574,9 @@ void AppList::toggleKeyboard()
 
 void AppList::launchSettings(bool isCredits)
 {
-	if (isCredits) {
+	// if (isCredits) {
 		RootDisplay::switchSubscreen(new AboutScreen(this->get));
-	} else {
-		RootDisplay::switchSubscreen(new FeedbackCenter(this));
-	}
+	// } else {
+	// 	RootDisplay::switchSubscreen(new FeedbackCenter(this));
+	// }
 }

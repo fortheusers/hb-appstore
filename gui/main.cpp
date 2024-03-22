@@ -35,22 +35,31 @@ void quit()
 #endif
 }
 
-#ifdef __WIIU__
-void wiiuSetPwd()
+#if defined(__WIIU__)
+void setPlatformPwd()
 {
 #define HBAS_PATH ROOT_PATH "wiiu/apps/appstore"
-#define ELF_PATH HBAS_PATH "/hbas.elf"
-#define RPX_PATH HBAS_PATH "/appstore.rpx"
+
 	// create and cd into the appstore directory
 	mkpath(HBAS_PATH);
 	chdir(HBAS_PATH);
 }
 #endif
 
+#if defined(WII)
+void setPlatformPwd()
+{
+#define HBAS_PATH "/apps/appstore"
+
+	mkpath(HBAS_PATH);
+	// chdir(HBAS_PATH); TODO: no chdir on wii, will need to keep track of the pwd some other way
+}
+#endif
+
 int main(int argc, char* argv[])
 {
-#if defined(__WIIU__)
-	wiiuSetPwd();
+#if defined(__WIIU__) || defined(WII)
+	setPlatformPwd();
 #endif
 	init_networking();
 	setUserAgent("HBAS/" APP_VERSION " (" PLATFORM "; Chesto)");

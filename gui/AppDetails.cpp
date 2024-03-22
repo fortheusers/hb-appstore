@@ -38,10 +38,10 @@ AppDetails::AppDetails(Package& package, AppList* appList, AppCard* appCard)
 
 	// download/update/remove button (2)
 
-	download.position(SCREEN_WIDTH - 310, 550);
+	download.position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 170);
 	download.action = std::bind(&AppDetails::proceed, this);
 
-	cancel.position(SCREEN_WIDTH - 310, 630);
+	cancel.position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 90);
 	cancel.action = std::bind(&AppDetails::back, this);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
@@ -56,8 +56,8 @@ AppDetails::AppDetails(Package& package, AppList* appList, AppCard* appCard)
 
 	if (package.getStatus() != GET && (hasBinary || isTheme))
 	{
-		download.position(SCREEN_WIDTH - 310, 470);
-		cancel.position(SCREEN_WIDTH - 310, 630);
+		download.position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 250);
+		cancel.position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 90);
 
 		const char* buttonLabel = "Launch";
 		bool injectorPresent = false;
@@ -75,7 +75,7 @@ AppDetails::AppDetails(Package& package, AppList* appList, AppCard* appCard)
 			this->canLaunch = true;
 
 			start = new Button(buttonLabel, START_BUTTON, true, 30, download.width);
-			start->position(SCREEN_WIDTH - 310, 550);
+			start->position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 170);
 			start->action = std::bind(&AppDetails::launch, this);
 			super::append(start);
 		}
@@ -467,8 +467,8 @@ int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, dou
 		{
 			InputEvents* events = new InputEvents();
 			while (events->update())
-				popup->parent->process(events);
-			popup->parent->render(NULL);
+				RootDisplay::mainDisplay->process(events);
+			RootDisplay::mainDisplay->render(NULL);
 		}
 	}
 

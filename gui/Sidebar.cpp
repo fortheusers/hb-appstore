@@ -54,9 +54,9 @@ Sidebar::Sidebar()
 	subtitle.position(105, 75);
 	super::append(&subtitle);
 
-	// elasticCounter in this class is used to keep track of which element is being pressed down on in touch mode
-	// TODO: elasticCounter belongs to element and should really be renamed (it's for general purpose animations)
-	elasticCounter = -1;
+	// currentSelection in this class is used to keep track of which element is being pressed down on in touch mode
+	// TODO: currentSelection belongs to element and should really be renamed (it's for general purpose animations)
+	currentSelection = -1;
 
 	if (isEarthDay()) {
 		// easter egg for earth day https://www.earthday.org
@@ -136,27 +136,39 @@ bool Sidebar::process(InputEvents* event)
 
 #if !defined(_3DS) && !defined(_3DS_MOCK)
 	// saw click down, set dragging state
-	if (event->isTouchDown())
+	if (event->isTouchDown() || event->isTouchDrag())
 	{
 		this->dragging = true;
 		this->highlighted = -1;
+		this->elasticCounter = -1;
+		this->currentSelection = -1;
 
 		// go through the categories and see if this touch down was in one of them, to show it highlighted
 		// TODO: uses similar code from below... really all this sidebar stuff shoould be refactored to use ListElement
 		// and every category itself should be a CategoryLabel just like an AppCard consists of images + text
 		for (int x = 0; x < TOTAL_CATS; x++)
 		{
-			int xc = 0, yc = 150 + x * 70 - 15, width = 400 - 260 * (appList->R - 3) - 35, height = 60;
+			int xc = 0,
+				yc = 150 + x * 70 - 15,
+				width = getWidth(),
+				height = 60;
+
 			if (event->touchIn(xc, yc, width, height))
 			{
-				// touch is over an element of the sidebar, set the elasticCounter
-				elasticCounter = x;
+				// touch is over an element of the sidebar, set the currentSelection
+				currentSelection = x;
+
+				if (event->isTouchDrag()) {
+					elasticCounter = THICK_HIGHLIGHT;
+				}
+
 				break;
 			}
 		}
 
 		return true;
 	}
+
 #endif
 
 	// detect if a click is on one of the sidebar elements
@@ -164,13 +176,16 @@ bool Sidebar::process(InputEvents* event)
 	if ((event->isTouchUp() && this->dragging) || (event->isKeyDown() && event->held(A_BUTTON)))
 	{
 		this->dragging = false;
-		int previouslySelected = elasticCounter;
-		elasticCounter = -1; // reset highlighted one
+		int previouslySelected = currentSelection;
+		currentSelection = -1; // reset highlighted one
 
 		// check if it's one of the text elements
 		for (int x = 0; x < TOTAL_CATS; x++)
 		{
-			int xc = 0, yc = 150 + x * 70 - 15, width = 400 - 260 * (appList->R - 3) - 35, height = 60; // TODO: extract formula into method (same as AppList x value)
+			int xc = 0,
+				yc = 150 + x * 70 - 15,
+				width = getWidth(),
+				height = 60; // TODO: extract formula into method (same as AppList x value)
 			if ((event->touchIn(xc, yc, width, height) && event->isTouchUp()) || (event->held(A_BUTTON) && this->highlighted == x))
 			{
 				// if it's a touch up, let's make sure this is the same one we touched down on
@@ -207,7 +222,7 @@ void Sidebar::render(Element* parent)
   return;
 #endif
 	// draw the light gray bg behind the active category
-	CST_Rect dimens = { 0, 0, 400 - 260 * (appList->R - 3) - 35, 60 }; // TODO: extract this to a method too
+	CST_Rect dimens = { 0, 0, getWidth(), 60 }; // TODO: extract this to a method too
 	dimens.y = 150 + this->curCategory * 70 - 15;					   // TODO: extract formula into method
 
 	auto c = RootDisplay::mainDisplay->backgroundColor;
@@ -218,10 +233,10 @@ void Sidebar::render(Element* parent)
 	if (this->showCurrentCategory)
 		CST_FillRect(RootDisplay::renderer, &dimens);
 
-	if (appList && appList->touchMode && this->elasticCounter >= 0)
+	if (appList && appList->touchMode && (this->currentSelection >= 0 && this->elasticCounter != THICK_HIGHLIGHT))
 	{
 		CST_Rect dimens2 = { 0, 0, 400, 60 };
-		dimens2.y = 150 + this->elasticCounter * 70 - 15; // TODO: extract formula into method
+		dimens2.y = 150 + this->currentSelection * 70 - 15; // TODO: extract formula into method
 		CST_SetDrawBlend(RootDisplay::renderer, true);
 		CST_Color highlight = { 0xad, 0xd8, 0xe6, 0x90 };
 		CST_SetDrawColor(RootDisplay::renderer, highlight); // TODO: matches the DEEP_HIGHLIGHT color
@@ -229,9 +244,12 @@ void Sidebar::render(Element* parent)
 	}
 
 	// draw the selected category, if one should be highlighted
-	if (this->highlighted >= 0)
+	if (this->highlighted >= 0 || (this->currentSelection >= 0 && this->elasticCounter == THICK_HIGHLIGHT))
 	{
-		int y = 150 + this->highlighted * 70 - 15;
+		// for drag events, we want to use the thick h ighlight
+		int highlightValue = (this->currentSelection >= 0 && this->elasticCounter == THICK_HIGHLIGHT) ? this->currentSelection : this->highlighted;
+
+		int y = 150 + highlightValue * 70 - 15;
 		//        rectangleRGBA(RootDisplay::renderer, 0, y, dimens.w, y + dimens.h, 0xff, 0x00, 0xff, 0xff);
 
 		for (int x = 0; x < 5; x++)
@@ -258,4 +276,12 @@ std::string Sidebar::currentCatValue()
 		return std::string(this->cat_value[this->curCategory]);
 
 	return std::string("?");
+}
+
+int Sidebar::getWidth() {
+#if defined(WII)
+	return 400 - 260 * appList->hideSidebar - 35; // hardcoded sidebar width on wii, for now TODO: fix all the things
+#endif
+	return 400 - 260 * appList->hideSidebar - 35; // hardcoded sidebar width on wii, for now TODO: fix all the things
+	return 400 - 260 * (appList->R - 3) - 35;
 }

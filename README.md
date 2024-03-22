@@ -10,9 +10,6 @@ The Homebrew App Store is a GUI that can be used to access an online repository 
 
 ## Supported Platforms
 
-### Linux, Mac, Windows
-Standalone PC executables are available [here](https://nightly.link/fortheusers/hb-appstore/workflows/pc-builds/main). These PC clients download and extract files to an `sdroot` folder relative to the app's path.
-
 ### Web Browsers
 A web interface to download files from the Homebrew App Store directly is available at [apps.fortheusers.org](https://apps.fortheusers.org). Source code: [hbas-frontend](https://github.com/fortheusers/hbas-frontend).
 
@@ -21,6 +18,11 @@ The ability to run homebrew apps is required. Download and extract the latest [h
 
 ### Switch
 Access to the Homebrew Menu is required. Download and extract the latest [hb-appstore](https://github.com/fortheusers/hb-appstore/releases) to `sd:/switch/appstore/`, and run "HB App Store" from within hbmenu.
+
+### Linux, Mac, Windows
+Standalone PC executables are available [here](https://nightly.link/fortheusers/hb-appstore/workflows/pc-builds/main). These PC clients download and extract files to an `sdroot` folder relative to the app's path.
+
+In the future, direct support for selecting an SD card different repos is planned.
 
 ### Wii and 3DS
 There are work-in-progress ports to Wii and 3DS, with varying degrees of feature support. These platforms are not yet ready to be used by most users.

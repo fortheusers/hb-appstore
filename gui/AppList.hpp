@@ -22,11 +22,7 @@
 #define SIZE 3
 #define RANDOM 4
 
-#ifndef SDL1
 #define PANE_WIDTH SCREEN_HEIGHT
-#else
-#define PANE_WIDTH 640
-#endif
 
 class AppList : public ListElement
 {
@@ -58,8 +54,7 @@ public:
 	bool useBannerIcons = true;
 
 	void launchSettings(bool isCredits);
-	bool hideSidebar = false;
-
+	bool hideSidebar = true;
 	EKeyboard keyboard;
 
 private:

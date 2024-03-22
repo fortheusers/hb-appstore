@@ -167,7 +167,14 @@ void Menu::display()
 void Menu::initGet()
 {
 	// this is a blocking load
+#if defined(WII)
+	// default the repo type to OSC for wii (TODO: don't hardcode this)
+	this->get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO, true, "osc");
+#else
 	this->get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO);
+#endif
+
+	// recovery GUI does not check the metarepo for updates
 
 	if (get->getRepos().size() > 0)
 		this->repoUrl = get->getRepos()[0]->getUrl().c_str();

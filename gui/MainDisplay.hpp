@@ -35,6 +35,8 @@ public:
 	void setupMusic();
 	void beginInitialLoad();
 
+	bool checkMetaRepoForUpdates(Get* get);
+
 	Get* get = NULL;
 
 	bool error = false;

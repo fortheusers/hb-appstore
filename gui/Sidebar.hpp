@@ -17,6 +17,7 @@ public:
 	std::string currentCatValue();
 
   void addHints();
+  int getWidth();
 
 	std::string searchQuery = "";
 
@@ -24,6 +25,8 @@ public:
 
 	void render(Element* parent);
 	bool process(InputEvents* event);
+
+	int currentSelection = -1;
 
   bool showCurrentCategory = false;
 

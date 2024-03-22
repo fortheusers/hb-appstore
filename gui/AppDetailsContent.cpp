@@ -81,8 +81,8 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	}
 
 	banner.setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
-	banner.resize(767 / SCALER, 93 / SCALER);	// banners use icon height now
-	banner.position(BANNER_X / SCALER, BANNER_Y);
+	banner.resize(848 / SCALER, 208 / SCALER);	// banners use icon height now
+	banner.position(BANNER_X / SCALER - 26, BANNER_Y);
 	super::append(&banner);
 
 	title2.position(MARGIN, 80);
@@ -199,7 +199,7 @@ void AppDetailsContent::render(Element* parent)
 	if (banner.loaded) {
 		auto prevBannerHeight = banner.height;
 		// a banner icon loaded, so use banner icon height
-		banner.resize(767 / SCALER, 193 / SCALER);
+		banner.resize(848 / SCALER, 208 / SCALER);
 
 		auto heightDiff = banner.height - prevBannerHeight;
 		if (heightDiff > 0) {

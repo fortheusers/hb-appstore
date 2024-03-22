@@ -2,6 +2,7 @@
 #include <switch.h>
 #endif
 #include <filesystem>
+#include <unordered_set>
 #include "../libs/get/src/Get.hpp"
 #include "../libs/get/src/Utils.hpp"
 #include "../libs/chesto/src/Constraint.hpp"
@@ -93,6 +94,74 @@ void MainDisplay::beginInitialLoad() {
 	appList.sidebar->addHints();
 }
 
+bool MainDisplay::checkMetaRepoForUpdates(Get* get) {
+	// download the metarepo (+1 network call)
+	std::string data("");
+	bool success = downloadFileToMemory(META_REPO "/index.json", &data);
+
+	if (!success) {
+		// couldn't download the metarepo, so just return
+		// TODO: surface some error notification to the user
+		std::cout << "couldn't download metarepo" << std::endl;
+		return false;
+	}
+
+	// parse the metarepo
+	rapidjson::Document d;
+	d.Parse(data.c_str());
+
+	// check for parse success
+	if (d.HasParseError()) {
+		// couldn't parse metarepo
+		std::cout << "couldn't parse metarepo" << std::endl;
+		return false;
+	}
+
+	// the repos that we're interested in, which is based on our platform
+	std::vector<std::string> platformsToCheck = {
+		"switch",
+		"wiiu",
+		"vwii"
+	};
+
+	// set of repos to remove (exclude)
+	std::unordered_set<std::string> reposToRemove;
+
+	// set of repos to add (include)
+	std::unordered_set<std::string> reposToAdd;
+
+	// grab the "suggestions" key
+	if (d.HasMember("suggestions")) {
+		// check the repo platforms that we're interested in
+		for (auto& platform : platformsToCheck) {
+			if (d["suggestions"].HasMember(platform.c_str())) {
+				// operations for this platform
+				auto& ops = d["suggestions"][platform.c_str()];
+
+				// iterate through the operations
+				for (auto& op : ops.GetArray()) {
+					if (!op.HasMember("op")) continue;
+					if (!op.HasMember("url")) continue;
+
+					std::string opName = op["op"].GetString();
+					std::string repoUrl = op["url"].GetString();
+
+					if ("remove" == opName) {
+						// remove this repo
+						reposToRemove.insert(repoUrl);
+					} else if ("add" == opName) {
+						// add this repo
+						reposToAdd.insert(repoUrl);
+					}
+				}
+			}
+		}
+	}
+
+	get->addAndRemoveReposByURL(reposToAdd, reposToRemove);
+	return true;
+}
+
 void MainDisplay::render(Element* parent)
 {
 	if (showingSplash)
@@ -133,7 +202,18 @@ bool MainDisplay::process(InputEvents* event)
 		networking_callback = MainDisplay::updateLoader;
 
 		// fetch repositories metadata
-		get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO);
+#if defined(WII)
+		// default the repo type to OSC for wii (TODO: don't hardcode this)
+		get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO, false, "osc");
+#else
+		get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO, false);
+#endif
+
+		// update active repos according to the metarepo
+		bool isOnline = checkMetaRepoForUpdates(get);
+
+		// actually download the repos
+		get->update();
 
 		// go through all repos and if one has an error, set the error flag
 		for (auto repo : get->getRepos())
@@ -142,9 +222,9 @@ bool MainDisplay::process(InputEvents* event)
 			atLeastOneEnabled = atLeastOneEnabled || repo->isEnabled();
 		}
 
-		if (error)
+		if (!isOnline)
 		{
-			RootDisplay::switchSubscreen(new ErrorScreen("Couldn't connect to the Internet!", "Perform a connection test in the " PLATFORM " System Settings\nEnsure DNS isn't blocking: "s + get->getRepos()[0]->getUrl()));
+			RootDisplay::switchSubscreen(new ErrorScreen("Couldn't connect to the Internet!", "Perform a connection test in the " PLATFORM " System Settings\nEnsure DNS isn't blocking: "s + META_REPO));
 			return true;
 		}
 
@@ -186,11 +266,11 @@ bool MainDisplay::process(InputEvents* event)
 
 		if (writeFailed) {
 			std::string cardText = "Ensure "s + tmp_file + " is writable";
-#if defined(__WIIU__)
+	#if defined(__WIIU__)
 			cardText = "Check the physical SD write lock slider\n"s + cardText;
-#elif defined (SWITCH)
+	#elif defined (SWITCH)
 			cardText = "Check for EXFAT FS corruption (no issues on FAT32)\n"s + cardText;
-#endif
+	#endif
 
 			RootDisplay::switchSubscreen(new ErrorScreen("Cannot access SD card!"s, cardText));
 			return true;
@@ -206,7 +286,7 @@ bool MainDisplay::process(InputEvents* event)
 	if (needsRedraw)
 		appList.update();
 
-	return RootDisplay::process(event);
+	return RootDisplay::process(event) || true;
 }
 
 int MainDisplay::updateLoader(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow)
