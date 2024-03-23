@@ -60,7 +60,7 @@ Sidebar::Sidebar()
 
 	if (isEarthDay()) {
 		// easter egg for earth day https://www.earthday.org
-		title.setText("Happy Earth Day!");
+		title.setText(i18n("listing.earthday").c_str());
 		title.update();
 
 		// draw a an icon over the logo
@@ -94,7 +94,7 @@ void Sidebar::addHints()
 	hider->position(270, SCREEN_HEIGHT - 35);
 	super::append(hider);
 
-	hint = new TextElement("Hide", 15);
+	hint = new TextElement(i18n("contents.hide"), 15);
 	hint->position(hider->x + hider->width + 5, hider->y);
 	super::append(hint);
 

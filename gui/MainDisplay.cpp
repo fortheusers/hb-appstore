@@ -13,7 +13,7 @@
 using namespace std::string_literals; // for ""s
 
 MainDisplay::MainDisplay()
-	: appList(NULL, &sidebar)
+	: RootDisplay(), appList(NULL, &sidebar)
 {
 	// add in the sidebar, footer, and main app listing
 	sidebar.appList = &appList;
@@ -224,13 +224,14 @@ bool MainDisplay::process(InputEvents* event)
 
 		if (!isOnline)
 		{
-			RootDisplay::switchSubscreen(new ErrorScreen("Couldn't connect to the Internet!", "Perform a connection test in the " PLATFORM " System Settings\nEnsure DNS isn't blocking: "s + META_REPO));
+			std::string connTestMsg = replaceAll(i18n("errors.conntest"), "PLATFORM", PLATFORM);
+			RootDisplay::switchSubscreen(new ErrorScreen(i18n("errors.nowifi"), connTestMsg + "\n" + i18n("errors.dnsmsg") + " " + META_REPO));
 			return true;
 		}
 
 		if (!atLeastOneEnabled)
 		{
-			RootDisplay::switchSubscreen(new ErrorScreen("Couldn't connect to a server!", "No enabled repos found, check ./get/repos.json\nMake sure repo has at least one package"));
+			RootDisplay::switchSubscreen(new ErrorScreen(i18n("errors.noserver"), i18n("errors.norepos") + "\n" + i18n("errors.onepkg")));
 			return true;
 		}
 
@@ -264,15 +265,15 @@ bool MainDisplay::process(InputEvents* event)
 		}
 		else writeFailed = true;
 
-		if (writeFailed) {
-			std::string cardText = "Ensure "s + tmp_file + " is writable";
+		if (writeFailed || true) {
+			std::string cardText = replaceAll(i18n("errors.writetestfail"), "PATH", tmp_file) + "\n";
 	#if defined(__WIIU__)
-			cardText = "Check the physical SD write lock slider\n"s + cardText;
+			cardText = i18n("errors.sdlock") + "\n"s + cardText;
 	#elif defined (SWITCH)
-			cardText = "Check for EXFAT FS corruption (no issues on FAT32)\n"s + cardText;
+			cardText = i18n("errors.exfat") + "\n"s + cardText;
 	#endif
 
-			RootDisplay::switchSubscreen(new ErrorScreen("Cannot access SD card!"s, cardText));
+			RootDisplay::switchSubscreen(new ErrorScreen(i18n("errors.sdaccess"), cardText));
 			return true;
 		}
 
@@ -316,10 +317,10 @@ int MainDisplay::updateLoader(void* clientp, double dltotal, double dlnow, doubl
 
 ErrorScreen::ErrorScreen(std::string mainErrorText, std::string troubleshootingText)
 	: icon(RAMFS "res/icon.png")
-	, title("Homebrew App Store", 50 - 25)
+	, title(i18n("credits.title"), 50 - 25)
 	, errorMessage(mainErrorText.c_str(), 40)
-	, troubleshooting((std::string("Troubleshooting:\n") + troubleshootingText).c_str(), 20, NULL, false, 600)
-	, btnQuit("Quit", SELECT_BUTTON, false, 15)
+	, troubleshooting((std::string(i18n("errors.troubleshooting") + "\n") + troubleshootingText).c_str(), 20, NULL, false, 600)
+	, btnQuit(i18n("listing.quit"), SELECT_BUTTON, false, 15)
 {
 	Container* logoCon = new Container(ROW_LAYOUT, 10);
 	icon.resize(35, 35);
@@ -332,7 +333,7 @@ ErrorScreen::ErrorScreen(std::string mainErrorText, std::string troubleshootingT
 	troubleshooting.constrain(ALIGN_BOTTOM | ALIGN_CENTER_HORIZONTAL, 40);
 	btnQuit.constrain(ALIGN_LEFT | ALIGN_BOTTOM, 100);
 
-	super::append((new Button("Ignore This", X_BUTTON, false, 15))
+	super::append((new Button(i18n("errors.ignorethis"), X_BUTTON, false, 15))
 		->constrain(ALIGN_RIGHT | ALIGN_BOTTOM, 100)
 		->setAction([]() {
 			auto mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;

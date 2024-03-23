@@ -39,7 +39,7 @@ public:
 	void removeEmptyFolders();
 	void wipeCache();
 	void launchFeedback();
-	void credHead(std::string& header, std::string& blurb);
+	void credHead(const std::string& header, const std::string& blurb);
 	void credit(const char* username,
 				const char* githubId,
 				const char* twitter = NULL,

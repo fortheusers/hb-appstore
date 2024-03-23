@@ -431,7 +431,7 @@ void AppList::update()
 
 		// category text
 		category.position(20, 90);
-		category.setText(std::string("Search: \"") + sidebar->searchQuery + "\"");
+		category.setText(std::string(i18n("listing.search") + " \"") + sidebar->searchQuery + "\"");
 		category.update();
 		super::append(&category);
 

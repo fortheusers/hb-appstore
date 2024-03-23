@@ -59,14 +59,14 @@ AppDetails::AppDetails(Package& package, AppList* appList, AppCard* appCard)
 		download.position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 250);
 		cancel.position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 90);
 
-		const char* buttonLabel = "Launch";
+		std::string buttonLabel = i18n("details.launch");
 		bool injectorPresent = false;
 
 		if (isTheme) // should only happen on switch
 		{
 			auto installer = get->lookup("NXthemes_Installer");
 			injectorPresent = installer ? true : false; // whether or not the currently hardcoded installer package exists, in the future becomes something functionality-based like "theme_installer"
-			buttonLabel = (injectorPresent && installer->getStatus() == GET) ? "Injector" : "Inject";
+			buttonLabel = (injectorPresent && installer->getStatus() == GET) ? i18n("details.injector") : i18n("details.inject");
 		}
 
 		// show the third button if a binary is present, or a theme injector is available (installed or not)
@@ -233,8 +233,8 @@ void AppDetails::launch()
 
 	if (!successLaunch)
 	{
-		printf("Failed to launch.");
-		errorText = new TextElement("Couldn't launch app", 24, &red, false, 300);
+		// printf("Failed to launch.");
+		errorText = new TextElement(i18n("errors.applaunch"), 24, &red, false, 300);
 		errorText->position(970, 430);
 		super::append(errorText);
 		this->canLaunch = false;

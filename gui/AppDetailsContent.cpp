@@ -44,14 +44,14 @@ std::string getTrimmedDetails(AppDetailsContent* content, std::string details)
 }
 
 AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
-	: reportIssue("Report Issue", L_BUTTON)
-	, moreByAuthor("More by Author", R_BUTTON)
+	: reportIssue(i18n("contents.report"), L_BUTTON)
+	, moreByAuthor(i18n("more"), R_BUTTON)
 	, title(package->getTitle().c_str(), 35, &HBAS::ThemeManager::textPrimary)
 	, title2(package->getAuthor().c_str(), 27, &HBAS::ThemeManager::textSecondary)
-	, details("Package long description", 20 / SCALER, &HBAS::ThemeManager::textPrimary, false, PANE_WIDTH + 20 / SCALER)
-	, changelog("If you're reading this text, something is wrong", 20 / SCALER, &HBAS::ThemeManager::textPrimary, false, PANE_WIDTH + 20 / SCALER)
-	, showFiles("Show Installed Files List", ZL_BUTTON, false, 15)
-	, showChangelog("Show Changelog", ZR_BUTTON, false, 15)
+	, details(i18n("contents.placeholder1"), 20 / SCALER, &HBAS::ThemeManager::textPrimary, false, PANE_WIDTH + 20 / SCALER)
+	, changelog(i18n("contents.placeholder2"), 20 / SCALER, &HBAS::ThemeManager::textPrimary, false, PANE_WIDTH + 20 / SCALER)
+	, showFiles(i18n("contents.showinstalled"), ZL_BUTTON, false, 15)
+	, showChangelog(i18n("contents.showchangelog"), ZR_BUTTON, false, 15)
 	, banner(useBannerIcons ? package->getBannerUrl().c_str() : package->getIconUrl().c_str(), [package]{
 			// If the banner fails to load, use an icon banner
 			NetImageElement* icon = new NetImageElement(package->getIconUrl().c_str(), []{
@@ -64,7 +64,7 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 			return icon;
 		})
 	, screenshotsContainer(COL_LAYOUT, 20)
-	, viewSSButton("Read More...", Y_BUTTON, false, 15)
+	, viewSSButton(i18n("contents.readmore"), Y_BUTTON, false, 15)
 {
 	title.position(MARGIN, 30);
 	super::append(&title);
@@ -163,7 +163,7 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 			screenshot->position(0, 0);
 			subParent->child(screenshot);
 
-			Button* dismiss = new Button("Back", B_BUTTON, false, 15);
+			Button* dismiss = new Button(i18n("details.back"), B_BUTTON, false, 15);
 			auto appDetails = RootDisplay::subscreen;
 			dismiss->action = [this, appDetails, subParent] {
 				appDetails->remove(subParent);
@@ -253,17 +253,19 @@ bool AppDetailsContent::process(InputEvents* event)
 		if (expandedReadMore) {
 			viewSSButton.hidden = true;
 		} else {
+			auto readMoreText = i18n("contents.readmore");
 			// no screenshot is on screen, so get our button out of there
 			viewSSButton.position((banner.x + banner.width)/2 - viewSSButton.width/4, (details.y + details.height + 20));
-			if (viewSSButton.getText() != "Read More...") {
-				viewSSButton.updateText("Read More...");
+			if (viewSSButton.getText() != readMoreText) {
+				viewSSButton.updateText(readMoreText.c_str());
 			}
 			curScreenIdx = 0;
 		}
 	} else {
 		// if we have a screenshot on screen, let's update the View button's position
-		if (viewSSButton.getText() != "View") {
-			viewSSButton.updateText("View");
+		auto viewText = i18n("contents.view");
+		if (viewSSButton.getText() != viewText) {
+			viewSSButton.updateText(viewText.c_str());
 		}
 		viewSSButton.position(
 			screenshotsContainer.x + curScreenshot->x + curScreenshot->width - viewSSButton.width - 5,
@@ -293,8 +295,10 @@ bool AppDetailsContent::process(InputEvents* event)
 void AppDetailsContent::switchExtraInfo(Package* package, int newState) {
 
 	// update button text
-	showFiles.updateText((std::string(newState == SHOW_LIST_OF_FILES ? "Hide" : "Show") + " Installed Files List").c_str());
-	showChangelog.updateText((std::string(newState == SHOW_CHANGELOG ? "Hide" : "Show") + " Changelog").c_str());
+	auto hideText = i18n("contents.hide");
+	auto showText = i18n("contents.show");
+	showFiles.updateText((std::string(newState == SHOW_LIST_OF_FILES ? hideText : showText) + " " + i18n("contents.showinstalled ")).c_str());
+	showChangelog.updateText((std::string(newState == SHOW_CHANGELOG ? hideText : showText) + " " + i18n("contents.changelog")).c_str());
 
 	// hide/show changelog text based on if neither is true
 	changelog.hidden = newState == SHOW_NEITHER;
@@ -303,7 +307,7 @@ void AppDetailsContent::switchExtraInfo(Package* package, int newState) {
 	// update the "changelog" text depending on which action we're doing
 	if (newState == SHOW_CHANGELOG)
 	{
-		changelog.setText(std::string("Changelog:\n") + package->getChangelog().c_str());
+		changelog.setText(std::string(i18n("contents.changelog") + ":\n") + package->getChangelog().c_str());
 		changelog.setFont(NORMAL);
 		changelog.update();
 	}
@@ -315,7 +319,7 @@ void AppDetailsContent::switchExtraInfo(Package* package, int newState) {
 		// (LOCAL -> UPDATE packages won't have a manifest)
 		auto status = package->getStatus();
 		if ((status == INSTALLED || status == UPDATE) && package->manifest .isValid()) {
-			allEntries << "Currently Installed Files:\n";
+			allEntries << i18n("contents.files.current") + "\n";
 			for (auto &entry : package->manifest.getEntries()) {
 				allEntries << entry.raw << "\n";
 			}
@@ -326,7 +330,7 @@ void AppDetailsContent::switchExtraInfo(Package* package, int newState) {
 			// manifest is either non-local, or we need to display both, download it from the server
 			std::string data("");
 			downloadFileToMemory(package->getManifestUrl().c_str(), &data);
-			allEntries << "Manifest of Remote Files:\n" << data;
+			allEntries << i18n("contents.files.remote") + "\n" << data;
 		}
 
 		changelog.setText(std::string("") + allEntries.str().c_str());

@@ -159,7 +159,7 @@ FeedbackCenter::FeedbackCenter(AppList* appList)
     child(header);
 
     // back button
-    child((new Button("Back", B_BUTTON, true))->setPosition(35, 15)->setAction([]{
+    child((new Button(i18n("details.back"), B_BUTTON, true))->setPosition(35, 15)->setAction([]{
         RootDisplay::switchSubscreen(nullptr);
     }));
 

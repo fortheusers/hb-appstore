@@ -137,7 +137,7 @@ AboutScreen::~AboutScreen()
 	}
 }
 
-void AboutScreen::credHead(std::string& header, std::string& blurb)
+void AboutScreen::credHead(const std::string& header, const std::string& blurb)
 {
 	auto head = creditHeads.emplace(creditHeads.end());
 
