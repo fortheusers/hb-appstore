@@ -36,10 +36,10 @@ public:
 	// list of human-readable category titles and short names from the json
 
 #if defined(__WIIU__)
-	const char* cat_names[TOTAL_CATS] = { "Search", "All Apps", "Aroma-Ready", "Games", "Emulators", "Tools", "Advanced", "Misc" };
+	const char* cat_names[TOTAL_CATS] = { "sidebar.search", "sidebar.all", "Aroma", "sidebar.games", "sidebar.emulators", "sidebar.tools", "sidebar.advanced", "sidebar.misc" };
 	const char* cat_value[TOTAL_CATS] = { "_search", "_all", "aroma", "game", "emu", "tool", "advanced", "_misc" };
 #else
-	const char* cat_names[TOTAL_CATS] = { "Search", "All Apps", "Games", "Emulators", "Tools", "Advanced", "Themes", "Misc" };
+	const char* cat_names[TOTAL_CATS] = { "sidebar.search", "sidebar.all", "sidebar.games", "sidebar.emulators", "sidebar.tools", "sidebar.advanced", "sidebar.themes", "sidebar.misc" };
 	const char* cat_value[TOTAL_CATS] = { "_search", "_all", "game", "emu", "tool", "advanced", "theme", "_misc" };
 #endif
 

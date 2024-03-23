@@ -18,7 +18,13 @@
 #include <switch.h>
 #endif
 
-const char* AppList::sortingDescriptions[TOTAL_SORTS] = { "by most recent", "by download count", "alphabetically", "by size (descending)", "randomly" };
+std::string AppList::sortingDescriptions[TOTAL_SORTS] = {
+	"listing.sort.recent",
+	"listing.sort.downloads",
+	"listing.sort.alpha",
+	"listing.sort.size",
+	"listing.sort.random"
+ };
 
 CST_Color AppList::red = { 0xff, 0, 0, 0xff };
 CST_Color AppList::lighterRed = { 0xef, 0x48, 0x48, 0xff };
@@ -26,11 +32,11 @@ CST_Color AppList::lighterRed = { 0xef, 0x48, 0x48, 0xff };
 AppList::AppList(Get* get, Sidebar* sidebar)
 	: get(get)			// the main get instance that contains repo info and stuff
 	, sidebar(sidebar)	// the sidebar, which will store the currently selected category info
-	, quitBtn("Quit", SELECT_BUTTON, false, 15)
-	, creditsBtn("Credits", START_BUTTON, false, 15)
-	, sortBtn("Adjust Sort", Y_BUTTON, false, 15)
-	, keyboardBtn("Toggle Keyboard", Y_BUTTON, false, 15)
-	, backspaceBtn("Del", B_BUTTON, false, 15)
+	, quitBtn(i18n("listing.quit"), SELECT_BUTTON, false, 15)
+	, creditsBtn(i18n("listing.credits"), START_BUTTON, false, 15)
+	, sortBtn(i18n("listing.adjustsort"), Y_BUTTON, false, 15)
+	, keyboardBtn(i18n("listing.togglekeyboard"), Y_BUTTON, false, 15)
+	, backspaceBtn(i18n("listing.delete"), B_BUTTON, false, 15)
 	, nowPlayingText(" ", 20, &HBAS::ThemeManager::textPrimary)
 #if defined(MUSIC)
 	, nowPlayingIcon(RAMFS "res/nowplaying.png")
@@ -69,6 +75,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	};
 
 	// keyboard input callback
+	// keyboard.hasRoundedKeys = true;
 	keyboard.typeAction = std::bind(&AppList::keyboardInputCallback, this);
 	keyboard.preventEnterAndTab = true;
 	keyboard.width = SCREEN_HEIGHT - 20;
@@ -94,14 +101,14 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 
   if (!useBannerIcons) {
 	// applet mode, display a warning
-	nowPlayingText.setText("NOTICE: You are in Applet mode! Google \"Switch Applet Mode\" for more info.");
+	nowPlayingText.setText(i18n("listing.appletwarning").c_str());
 	nowPlayingText.setColor(myRed);
 	nowPlayingText.update();
   }
 #endif
 
 #ifdef DEBUG_BUILD
-	nowPlayingText.setText("NOTICE: You are using a dev build! Update to a stable release if this is unintended.");
+	nowPlayingText.setText(i18n("listing.debugwarning").c_str());
 	nowPlayingText.setColor(myRed);
 	nowPlayingText.update();
 #endif
@@ -461,7 +468,7 @@ void AppList::update()
 
 		// add the search type next to the category in a gray font
 		sortBlurb.position(category.x + category.width + 15, category.y + 12);
-		sortBlurb.setText(sortingDescriptions[sortMode]);
+		sortBlurb.setText(i18n(sortingDescriptions[sortMode]).c_str());
 		sortBlurb.update();
 		super::append(&sortBlurb);
 
@@ -484,7 +491,7 @@ void AppList::update()
 			// now playing icon, and position
 			nowPlayingText.setText(
 				std::string("") + title +
-				((artist != std::string("")) ? (std::string(" by ") + artist) : "") +
+				((artist != std::string("")) ? (std::string(" " + i18n("listing.by") + " ") + artist) : "") +
 				((album != std::string("")) ? (std::string(" - ") + album) : "")
 			);
 			super::append(&nowPlayingIcon);

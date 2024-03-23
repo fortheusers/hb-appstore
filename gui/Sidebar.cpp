@@ -32,7 +32,7 @@ Sidebar::Sidebar()
 		category[x].icon->position(30, 150 + x * 70 - 5);
 		super::append(category[x].icon);
 
-		category[x].name = new TextElement(cat_names[x], 25);
+		category[x].name = new TextElement(i18n(cat_names[x]), 25);
 		category[x].name->position(105, 150 + x * 70);
 		super::append(category[x].name);
 	}
@@ -265,7 +265,7 @@ void Sidebar::render(Element* parent)
 std::string Sidebar::currentCatName()
 {
 	if (this->curCategory >= 0 && this->curCategory < TOTAL_CATS)
-		return std::string(this->cat_names[this->curCategory]);
+		return i18n(this->cat_names[this->curCategory]);
 
 	return std::string("?");
 }

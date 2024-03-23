@@ -29,10 +29,10 @@ AppDetails::AppDetails(Package& package, AppList* appList, AppCard* appCard)
 	, appCard(appCard)
 	, downloadProgress()
 	, download(getAction(&package), package.getStatus() == INSTALLED ? X_BUTTON : A_BUTTON, true, 30 / SCALER)
-	, cancel("Cancel", B_BUTTON, true, 30 / SCALER, download.width)
+	, cancel(i18n("details.cancel"), B_BUTTON, true, 30 / SCALER, download.width)
 	, details(getPackageDetails(&package).c_str(), 20, &white, false, 300)
 	, content(&package, appList->useBannerIcons)
-	, downloadStatus("Download Status", 30 / SCALER, &white)
+	, downloadStatus(i18n("details.status"), 30 / SCALER, &white)
 {
 	// TODO: show current app status somewhere
 
@@ -121,31 +121,31 @@ std::string AppDetails::getPackageDetails(Package* package)
 {
 	// lots of details that we know about the package
 	std::stringstream more_details;
-	more_details << "Title: " << package->getTitle() << "\n"
+	more_details << i18n("details.title") << " " << package->getTitle() << "\n"
 				 << package->getShortDescription() << "\n\n"
-				 << "Author: " << package->getAuthor() << "\n"
-				 << "Version: " << package->getVersion() << "\n"
-				 << "License: " << package->getLicense() << "\n\n"
-				 << "Package: " << package->getPackageName() << "\n"
-				 << "Downloads: " << package->getDownloadCount() << "\n"
-				 << "Updated: " << package->getUpdatedAt()<< "\n\n"
-				 << "Download size: " << package->getDownloadSize() << " KB\n"
-				 << "Install size: " << package->getExtractedSize() << " KB\n";
+				 << i18n("details.author") << " " << package->getAuthor() << "\n"
+				 << i18n("details.version") << " " << package->getVersion() << "\n"
+				 << i18n("details.license") << " " << package->getLicense() << "\n\n"
+				 << i18n("details.package") << " " << package->getPackageName() << "\n"
+				 << i18n("details.downloads") << " " << package->getDownloadCount() << "\n"
+				 << i18n("details.updated") << " " << package->getUpdatedAt()<< "\n\n"
+				 << i18n("details.size") << " " << package->getDownloadSize() << " KB\n"
+				 << i18n("details.installsize") << " " << package->getExtractedSize() << " KB\n";
 	return more_details.str();
 }
 
-const char* AppDetails::getAction(Package* package)
+std::string AppDetails::getAction(Package* package)
 {
 	switch (package->getStatus())
 	{
 	case GET:
-		return "Download";
+		return i18n("details.download");
 	case UPDATE:
-		return "Update";
+		return i18n("details.update");
 	case INSTALLED:
-		return "Remove";
+		return i18n("details.remove");
 	case LOCAL:
-		return "Reinstall";
+		return i18n("details.reinstall");
 	default:
 		break;
 	}
@@ -419,7 +419,14 @@ int AppDetails::updatePopupStatus(int status, int num, int num_total)
 		Package* package = popup->package;
 
 		if (status < 0 || status >= 5) return 0;
-		const char* statuses[6] = { "Downloading ", "Installing ", "Removing ", "Reloading Metadata", "Syncing Packages", "Analyzing Files" };
+		std::string statuses[6] = {
+			i18n("details.download.verb") + " ",
+			i18n("details.install.verb") + " ",
+			i18n("details.remove.verb") + " ",
+			i18n("details.reloading"),
+			i18n("details.syncing") + " ",
+			i18n("details.analyzing") + " "
+		};
 
 		statusText << statuses[status];
 

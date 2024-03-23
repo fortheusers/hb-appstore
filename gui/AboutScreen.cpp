@@ -15,14 +15,13 @@
 
 AboutScreen::AboutScreen(Get* get)
 	: get(get)
-	, cancel("Go Back", B_BUTTON, false, 29)
-	, feedback("Leave Feedback", A_BUTTON, false, 17)
-	, title("Homebrew App Store", 35, &HBAS::ThemeManager::textPrimary)
-	, subtitle("by fortheusers.org", 25, &HBAS::ThemeManager::textPrimary)
+	, cancel(i18n("credits.goback"), B_BUTTON, false, 29)
+	, feedback(i18n("credits.feedback"), A_BUTTON, false, 17)
+	, title(i18n("credits.title"), 35, &HBAS::ThemeManager::textPrimary)
+	, subtitle(i18n("credits.subtitle"), 25, &HBAS::ThemeManager::textPrimary)
 	, ftuLogo(AVATAR_URL "40721862", []
 		  { return new ImageElement(RAMFS "res/4TU.png"); })
-	, creds("Licensed under the GPLv3 license. This app is free and open source because the users (like you!) deserve it.\n\nLet's support homebrew and the right to control what software we run on our own devices!",
-		  20, &HBAS::ThemeManager::textPrimary, false, 1240)
+	, creds((i18n("credits.license") + "\n\n" + i18n("credits.cta")), 20, &HBAS::ThemeManager::textPrimary, false, 1240)
 {
 
 	// TODO: show current app status somewhere
@@ -56,7 +55,7 @@ AboutScreen::AboutScreen(Get* get)
 	// username, githubId, twitter, github, gitlab, patreon, url, discord, directAvatarURL
 	// only first two social points will be used
 
-	credHead("Repo Maintenance and Development", "These are the primary people responsible for actively maintaining and developing the Homebrew App Store. If there's a problem, these are the ones to get in touch with!");
+	credHead(i18n("credits.repo"), i18n("credits.repo.desc"));
 	credit("pwsincd", "20027105", NULL, "pwsincd", NULL, NULL, NULL, "pwsincd#9044");
 	credit("VGMoose", "2467473", "vgmoose", "vgmoose");
 	credit("Nightkingale", "63483138", "Nightkingale", "nightkingale");
@@ -65,7 +64,7 @@ AboutScreen::AboutScreen(Get* get)
 	credit("CompuCat", "12215288", NULL, NULL, "compucat", NULL, "compucat.me");
 	credit("Quarky", "8533313", NULL, NULL, "quarktheawesome", NULL, "heyquark.com");
 
-	credHead("Library Development and Support", "Without the contributions to open-source libraries and projects by these people, much of the functionality within this program wouldn't be possible.");
+	credHead(i18n("credits.library"), i18n("credits.library.desc"));
 	credit("Maschell", "8582508", "maschelldev", "maschell");
 	credit("brienj", "17801294", "xhp_creations", "xhp-creations");
 	credit("Dimok", "15055714", NULL, "dimok789");
@@ -75,11 +74,11 @@ AboutScreen::AboutScreen(Get* get)
 	credit("CreeperMario", "15356475", "CreeperMario258", "CreeperMario");
 	credit("Ep8Script", "27195853", "ep8script", "ep8script");
 
-	credHead("Music and Sound", "In the Wii U and Switch releases, these guys provide the chiptune melodies that play in the background. They make the app feel more alive, and are all-around awesome!");
+	credHead(i18n("credits.music"), i18n("credits.music.desc"));
 	credit("(T-T)b", "40721862", "ttbchiptunes", NULL, NULL, NULL, "t-tb.bandcamp.com", NULL, "https://f4.bcbits.com/img/a2723574369_16.jpg");
 	credit("drewinator4", "40721862", NULL, NULL, NULL, NULL, NULL, NULL, "https://i.ytimg.com/vi/Tb02CNlhkPA/hqdefault.jpg", "drewinator4");
 
-	credHead("Interface Development and Design", "In one way or another, everyone in this category provided information regarding core functionality, quality-of-life changes, or the design of the user interface.");
+	credHead(i18n("credits.design"), i18n("credits.design.desc"));
 	credit("exelix", "13405476", "exelix11", "exelix11");
 	credit("Xortroll", "33005497", NULL, "xortroll", NULL, "xortroll");
 	credit("Ave", "584369", NULL, NULL, "a", NULL, "ave.zone", NULL, "https://gitlab.com/uploads/-/system/user/avatar/584369/avatar.png");
@@ -89,7 +88,7 @@ AboutScreen::AboutScreen(Get* get)
 	credit("Jacob", "12831497", NULL, "jacquesCedric");
 	credit("iTotalJustice", "47043333", NULL, "iTotalJustice");
 
-	credHead("Toolchain and Environment", "The organizations and people in this category enable Homebrew in general by creating and maintaining a cohesive environment for the community.");
+	credHead(i18n("credits.toolchain"), i18n("credits.toolchain.desc"));
 	credit("devkitPro", "7538897", NULL, "devkitPro", NULL, "devkitPro");
 	credit("Wintermute", "101194", NULL, "wintermute", NULL, NULL, "devkitPro.org");
 	credit("Fincs", "581494", "fincsdev", "fincs");
@@ -98,7 +97,7 @@ AboutScreen::AboutScreen(Get* get)
 	credit("exjam", "1302758", NULL, "exjam");
 	credit("brett19", "1621627", NULL, "brett19");
 
-	credHead("Homebrew Community Special Thanks", "Awesome people within the community whose work, words, or actions in some way inspired this program to exist in the manner it does.");
+	credHead(i18n("credits.extra"), i18n("credits.extra.desc"));
 
 	credit("Whovian9369", "5240754", NULL, NULL, "whovian9369");
 	credit("FIX94", "12349638", NULL, "FIX94");
@@ -138,7 +137,7 @@ AboutScreen::~AboutScreen()
 	}
 }
 
-void AboutScreen::credHead(const char* header, const char* blurb)
+void AboutScreen::credHead(std::string& header, std::string& blurb)
 {
 	auto head = creditHeads.emplace(creditHeads.end());
 

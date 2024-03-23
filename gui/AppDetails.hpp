@@ -13,7 +13,7 @@ public:
 	~AppDetails();
 
 	std::string getPackageDetails(Package* package);
-	const char* getAction(Package* package);
+	std::string getAction(Package* package);
 	bool process(InputEvents* event);
 	void render(Element* parent);
 	bool launchFile(char* path, char* context);

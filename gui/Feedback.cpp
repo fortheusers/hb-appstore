@@ -11,13 +11,13 @@
 
 Feedback::Feedback(Package& package)
 	: package(&package)
-	, title((std::string("Leaving feedback for: \"") + package.getTitle() + "\"").c_str(), 25)
+	, title((std::string(i18n("feedback.leaving") + " \"") + package.getTitle() + "\""), 25)
 	, icon(package.getIconUrl().c_str(), []{ return new ImageElement(RAMFS "res/default.png"); })
-	, quit("Discard", Y_BUTTON, false, 20)
-	, send("Submit", X_BUTTON, false, 20)
-	, backspaceBtn("Del", B_BUTTON, false, 15)
-	, capsBtn("Caps", L_BUTTON, false, 15)
-	, response("If you need to send more detailed feedback, please email us at fight@fortheusers.org", 20, NULL, false, 460)
+	, quit(i18n("feedback.discard"), Y_BUTTON, false, 20)
+	, send(i18n("feedback.submit"), X_BUTTON, false, 20)
+	, backspaceBtn(i18n("feedback.delete"), B_BUTTON, false, 15)
+	, capsBtn(i18n("feedback.caps"), L_BUTTON, false, 15)
+	, response(i18n("feedback.help"), 20, NULL, false, 460)
 {
 	title.position(50, 30);
 	super::append(&title);
@@ -30,6 +30,8 @@ Feedback::Feedback(Package& package)
 	icon.resize(256, ICON_SIZE);
 #endif
 	super::append(&icon);
+
+	// keyboard.hasRoundedKeys = true;
 
 	keyboard.typeAction = std::bind(&Feedback::keyboardInputCallback, this);
 	keyboard.preventEnterAndTab = true;

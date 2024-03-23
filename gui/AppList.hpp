@@ -65,7 +65,7 @@ private:
 
 	// the title of this category (from the sidebar)
 	static CST_Color black, gray, red, lighterRed;
-	static const char* sortingDescriptions[TOTAL_SORTS];
+	static std::string sortingDescriptions[TOTAL_SORTS];
 
 	TextElement sortBlurb;
 	TextElement category;
