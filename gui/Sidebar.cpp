@@ -88,16 +88,20 @@ Sidebar::~Sidebar()
 
 void Sidebar::addHints()
 {
-	// small indicator to switch to advanced view using L
-	hider = new ImageElement(RAMFS "res/button-l-outline.png");
-	hider->resize(20, 20);
-	hider->position(270, SCREEN_HEIGHT - 35);
-	super::append(hider);
+	if (hider == nullptr) {
+		// small indicator to switch to advanced view using L
+		hider = new ImageElement(Button::getControllerButtonImageForPlatform(L_BUTTON, false, false));
+		hider->resize(20, 20);
+		super::append(hider);
+	}
 
-	hint = new TextElement(i18n("contents.hide"), 15);
+	if (hint == nullptr) {
+		hint = new TextElement(i18n("sidebar.hide"), 15);
+		super::append(hint);
+	}
+
+	hider->position(getWidth() - 25 - (!appList->hideSidebar)*(hint->width+10), SCREEN_HEIGHT - 35);
 	hint->position(hider->x + hider->width + 5, hider->y);
-	super::append(hint);
-
 	showCurrentCategory = true;
 }
 
@@ -279,9 +283,5 @@ std::string Sidebar::currentCatValue()
 }
 
 int Sidebar::getWidth() {
-#if defined(WII)
-	return 400 - 260 * appList->hideSidebar - 35; // hardcoded sidebar width on wii, for now TODO: fix all the things
-#endif
-	return 400 - 260 * appList->hideSidebar - 35; // hardcoded sidebar width on wii, for now TODO: fix all the things
-	return 400 - 260 * (appList->R - 3) - 35;
+	return 400 - 260 * appList->hideSidebar - 35;
 }

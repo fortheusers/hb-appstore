@@ -45,7 +45,7 @@ std::string getTrimmedDetails(AppDetailsContent* content, std::string details)
 
 AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	: reportIssue(i18n("contents.report"), L_BUTTON)
-	, moreByAuthor(i18n("more"), R_BUTTON)
+	, moreByAuthor(i18n("contents.more"), R_BUTTON)
 	, title(package->getTitle().c_str(), 35, &HBAS::ThemeManager::textPrimary)
 	, title2(package->getAuthor().c_str(), 27, &HBAS::ThemeManager::textSecondary)
 	, details(i18n("contents.placeholder1"), 20 / SCALER, &HBAS::ThemeManager::textPrimary, false, PANE_WIDTH + 20 / SCALER)
@@ -297,7 +297,7 @@ void AppDetailsContent::switchExtraInfo(Package* package, int newState) {
 	// update button text
 	auto hideText = i18n("contents.hide");
 	auto showText = i18n("contents.show");
-	showFiles.updateText((std::string(newState == SHOW_LIST_OF_FILES ? hideText : showText) + " " + i18n("contents.showinstalled ")).c_str());
+	showFiles.updateText((std::string(newState == SHOW_LIST_OF_FILES ? hideText : showText) + " " + i18n("contents.showinstalled")).c_str());
 	showChangelog.updateText((std::string(newState == SHOW_CHANGELOG ? hideText : showText) + " " + i18n("contents.changelog")).c_str());
 
 	// hide/show changelog text based on if neither is true

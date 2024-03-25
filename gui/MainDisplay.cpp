@@ -265,7 +265,7 @@ bool MainDisplay::process(InputEvents* event)
 		}
 		else writeFailed = true;
 
-		if (writeFailed || true) {
+		if (writeFailed) {
 			std::string cardText = replaceAll(i18n("errors.writetestfail"), "PATH", tmp_file) + "\n";
 	#if defined(__WIIU__)
 			cardText = i18n("errors.sdlock") + "\n"s + cardText;

@@ -130,6 +130,7 @@ bool AppList::process(InputEvents* event)
 		hideSidebar = !hideSidebar;
 		R = (SCREEN_WIDTH - 400) / 260 + hideSidebar;
 		this->x = 400 - 260 * hideSidebar;
+		sidebar->addHints();
 		update();
 		return true;
 	}
