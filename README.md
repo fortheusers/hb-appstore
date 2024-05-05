@@ -43,16 +43,6 @@ See [hb-app.store/submit-or-request](https://hb-app.store/submit-or-request) for
 See [get's instructions](https://github.com/fortheusers/get#setting-up-repos) for setting up a repository. All repo JSON data and package zips are designed to be statically hosted as files, with no explicit backend logic.
 
 For more information on the API and self-hosting, see: [hb-app.store/api-info](https://hb-app.store/api-info)
- 
-## Compiling
-This program is written using [Chesto](https://github.com/fortheusers/chesto) and has dependencies on libcurl, libget, and zlib. The chesto and libget libraries are included in this repo as submodules.
-
-Pre-compiled builds off the main branch can be downloaded [here](https://nightly.link/fortheusers/hb-appstore/workflows/main/main) without signing in.
-
-### Instructions
-Detailed build instructions for specific platforms can be found in [Compiling.md](https://github.com/fortheusers/hb-appstore/blob/main/docs/Compiling.md).
-
-In general, clone the repository recursively (with `git clone --recursive`) and run `make`, after installing the required platform dependencies.
 
 ## License
 This software is licensed under the GPLv3.
@@ -62,3 +52,15 @@ For an up-to-date list of repo maintainers, app authors, and special thanks, see
 
 ### Contributing
 If you have some functionality that you'd like to see feel free to discuss it on an [issues page](https://github.com/fortheusers/hb-appstore/issues), or if you already have an implementation or desire that you'd like to see, please send in a [pull request](https://github.com/fortheusers/hb-appstore/pulls)!
+
+We're also currently working on localization and translation of the app into other languages. Please see the [current languages here](https://github.com/fortheusers/hb-appstore/tree/main/resin/res/i18n), and if you are inclined to submit a new one, thanks!
+
+## Compiling
+This program is written using [Chesto](https://github.com/fortheusers/chesto) and has dependencies on libcurl, libget, and zlib. The chesto and libget libraries are included in this repo as submodules.
+
+Pre-compiled builds off the main branch can be downloaded [here](https://nightly.link/fortheusers/hb-appstore/workflows/main/main) without signing in.
+
+### Instructions
+Detailed build instructions for specific platforms can be found in [Compiling.md](https://github.com/fortheusers/hb-appstore/blob/main/docs/Compiling.md).
+
+In general, clone the repository recursively (with `git clone --recursive`) and run `make`, after installing the required platform dependencies.
