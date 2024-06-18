@@ -6,6 +6,7 @@ APP_VERSION := 2.3.2
 
 SOURCES     += gui console
 # DEBUG_BUILD := 1
+CFLAGS      += -Wno-implicit-function-declaration
 
 ifeq (wiiu,$(MAKECMDGOALS))
 SOURCES   += libs/librpxloader/source
