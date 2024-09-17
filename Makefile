@@ -7,6 +7,8 @@ APP_VERSION := 2.3.2
 SOURCES     += gui console
 DEBUG_BUILD := 1
 
+# CFLAGS += -D_3DS_MOCK
+
 ifeq (wiiu,$(MAKECMDGOALS))
 SOURCES   += libs/librpxloader/source
 INCLUDES  += ../libs/librpxloader/include

@@ -126,11 +126,21 @@ std::string AppDetails::getPackageDetails(Package* package)
 				 << i18n("details.author") << " " << package->getAuthor() << "\n"
 				 << i18n("details.version") << " " << package->getVersion() << "\n"
 				 << i18n("details.license") << " " << package->getLicense() << "\n\n"
-				 << i18n("details.package") << " " << package->getPackageName() << "\n"
-				 << i18n("details.downloads") << " " << package->getDownloadCount() << "\n"
-				 << i18n("details.updated") << " " << package->getUpdatedAt()<< "\n\n"
-				 << i18n("details.size") << " " << package->getDownloadSize() << " KB\n"
-				 << i18n("details.installsize") << " " << package->getExtractedSize() << " KB\n";
+				 << i18n("details.package") << " " << package->getPackageName() << "\n";
+	
+	auto downloadsCount = package->getDownloadCount();
+	if (downloadsCount > 0) {
+		// only show download count if it's not 0
+		more_details << i18n("details.downloads") << " " << package->getDownloadCount() << "\n";
+	}
+		more_details << i18n("details.updated") << " " << package->getUpdatedAt()<< "\n\n"
+				 << i18n("details.size") << " " << package->getHumanDownloadSize() << "\n";
+	
+	auto extractedSize = package->getExtractedSize();
+	if (extractedSize > 0) {
+		printf("Extracted size: %d\n", extractedSize);
+		more_details << i18n("details.installsize") << " " << package->getHumanExtractedSize() << "\n";
+	}
 	return more_details.str();
 }
 

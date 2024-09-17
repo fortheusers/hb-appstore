@@ -36,6 +36,7 @@ public:
 	void beginInitialLoad();
 
 	bool checkMetaRepoForUpdates(Get* get);
+	bool isLowMemoryMode();
 
 	Get* get = NULL;
 

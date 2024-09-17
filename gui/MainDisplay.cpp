@@ -23,6 +23,8 @@ MainDisplay::MainDisplay()
 
 	needsRedraw = true;
 
+	RootDisplay::idleCursorPulsing = true;
+
 	// use HD resolution for hb-appstore
 	// setScreenResolution(1920, 1080);
 	// setScreenResolution(3840, 2160); // 4k
@@ -97,7 +99,7 @@ void MainDisplay::beginInitialLoad() {
 bool MainDisplay::checkMetaRepoForUpdates(Get* get) {
 	// download the metarepo (+1 network call)
 	std::string data("");
-	bool success = downloadFileToMemory(META_REPO "/index.json", &data);
+	bool success = downloadFileToMemory(META_REPO_1 "/index.json", &data);
 
 	if (!success) {
 		// couldn't download the metarepo, so just return
@@ -225,7 +227,7 @@ bool MainDisplay::process(InputEvents* event)
 		if (!isOnline)
 		{
 			std::string connTestMsg = replaceAll(i18n("errors.conntest"), "PLATFORM", PLATFORM);
-			RootDisplay::switchSubscreen(new ErrorScreen(i18n("errors.nowifi"), connTestMsg + "\n" + i18n("errors.dnsmsg") + " " + META_REPO));
+			RootDisplay::switchSubscreen(new ErrorScreen(i18n("errors.nowifi"), connTestMsg + "\n" + i18n("errors.dnsmsg") + " " + META_REPO_1));
 			return true;
 		}
 
@@ -356,4 +358,32 @@ bool isEarthDay() {
 	tm* ltm = localtime(&now);
 
 	return ltm->tm_mon == 3 && ltm->tm_mday == 22;
+}
+
+bool MainDisplay::isLowMemoryMode() {
+	#if defined(SWITCH)
+		AppletType at = appletGetAppletType();
+		// in switch applet mode, we're in a low memory device
+		return at == AppletType_Application || at == AppletType_SystemApplication;
+	#endif
+	return false;
+}
+
+std::string getOSVersion() {
+	#if defined(SWITCH)
+		auto version = hosversionGet();
+		return std::to_string(version);
+	#elif defined(__WIIU__)
+		// TODO: hook up this wut function
+		// MCP_GetSystemVersion(int32_t handle, MCPSystemVersion *systemVersion)
+	#elif defined(_3DS)
+		// TODO: Check libctru
+	#elif defined(WII)
+		// TODO: Check libogc
+	#elif defined(__APPLE__)
+		return "macOS";
+	#elif defined(_WIN32)
+		return "Windows";
+	#endif
+	return "Unknown";
 }
