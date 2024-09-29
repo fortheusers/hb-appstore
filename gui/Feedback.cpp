@@ -137,7 +137,7 @@ void Feedback::submit()
 			<< "&hbas_version=" << APP_VERSION
 			<< "&is_low_memory=" << mainDisplay->isLowMemoryMode()
 			<< "&installed_packages=" << installedPackageCount
-			<< "&is_this_pkg_installed=" << (package->getStatus() != GET)
+			<< "&is_this_pkg_installed=" << (package->getStatus() != GET);
 			// TODO: support these fields in the UI
 			// << "&rating=" << getRating()
 			// << "&is_anonymous=" << isAnonymous()

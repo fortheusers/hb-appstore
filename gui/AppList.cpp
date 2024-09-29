@@ -2,6 +2,7 @@
 #include "AboutScreen.hpp"
 #include "FeedbackCenter.hpp"
 #include "ThemeManager.hpp"
+#include "SettingsScreen.hpp"
 #include "main.hpp"
 
 #include "../libs/get/src/Utils.hpp"
@@ -575,8 +576,9 @@ void AppList::toggleKeyboard()
 
 void AppList::launchSettings(bool isCredits)
 {
+	RootDisplay::switchSubscreen(new SettingsScreen());
 	// if (isCredits) {
-		RootDisplay::switchSubscreen(new AboutScreen(this->get));
+		// RootDisplay::switchSubscreen(new AboutScreen(this->get));
 	// } else {
 	// 	RootDisplay::switchSubscreen(new FeedbackCenter(this));
 	// }
