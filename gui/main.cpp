@@ -2,6 +2,11 @@
 #include <switch.h>
 #endif
 
+#if defined(WII)
+#include <unistd.h>
+#include <fat.h>
+#endif
+
 #if defined(__WIIU__)
 #include <unistd.h>
 
@@ -49,9 +54,8 @@ void setPlatformPwd()
 #if defined(WII)
 void setPlatformPwd()
 {
-#define HBAS_PATH "/apps/appstore"
-
-	mkpath(HBAS_PATH);
+	fatInitDefault();
+	mkpath("/apps/appstore/.get");
 	// chdir(HBAS_PATH); TODO: no chdir on wii, will need to keep track of the pwd some other way
 }
 #endif

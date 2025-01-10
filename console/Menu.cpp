@@ -169,7 +169,8 @@ void Menu::initGet()
 	// this is a blocking load
 #if defined(WII)
 	// default the repo type to OSC for wii (TODO: don't hardcode this)
-	this->get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO, true, "osc");
+	// also hardcodes an absolute path, for no chdir on wii
+	this->get = new Get("/apps/appstore/.get/", DEFAULT_REPO, true, "osc");
 #else
 	this->get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO);
 #endif

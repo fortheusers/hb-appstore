@@ -204,7 +204,7 @@ bool MainDisplay::process(InputEvents* event)
 		// fetch repositories metadata
 #if defined(WII)
 		// default the repo type to OSC for wii (TODO: don't hardcode this)
-		get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO, false, "osc");
+		get = new Get("/apps/appstore/.get/", DEFAULT_REPO, false, "osc");
 #else
 		get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO, false);
 #endif
