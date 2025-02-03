@@ -30,12 +30,12 @@ jobs:
         submodules: recursive
     - name: Build ${{ matrix.platform }}
       run: make ${{ matrix.platform }}
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: appstore.${{ matrix.ext }}
         path: /__w/hb-appstore/hb-appstore/appstore.${{ matrix.ext }}
     - if: matrix.platform == 'wiiu'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: appstore.rpx
         path: /__w/hb-appstore/hb-appstore/appstore.rpx

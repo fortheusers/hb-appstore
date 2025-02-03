@@ -28,7 +28,7 @@ jobs:
     - name: Build ${{ matrix.platform }}
       shell: bash
       run: ./libs/chesto/helpers/build_pc.sh appstore ${{ matrix.os }} ${{ matrix.library }}
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: appstore_${{ matrix.os }}_${{ matrix.library }}
         path: ./appstore_${{ matrix.os }}_${{ matrix.library }}.zip
