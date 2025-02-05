@@ -63,4 +63,4 @@ Pre-compiled builds off the main branch can be downloaded [here](https://nightly
 ### Instructions
 Detailed build instructions for specific platforms can be found in [Compiling.md](https://github.com/fortheusers/hb-appstore/blob/main/docs/Compiling.md).
 
-In general, clone the repository recursively (with `git clone --recursive`) and run `make`, after installing the required platform dependencies.
+In general, clone the repository recursively (with `git clone --recursive`) and run `make <platform>`, after installing the required platform dependencies.

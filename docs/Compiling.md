@@ -4,39 +4,16 @@ Specific instructions for building on various platforms are covered here!
 The easiest way to build is using the [Sealeo](https://github.com/fortheusers/sealeo) docker container. It uses this [dependency helper script](https://github.com/fortheusers/sealeo/blob/main/dependency_helper.sh) to be able to build for all supported platforms. This is how the pre-compiled binaries are built.
 
 1. Install [Docker](https://www.docker.com)
-2. Run the following, replacing `switch` with the target platform (one of `switch`, `wiiu`, or `pc`):
+2. Run the following, replacing `make switch` with the target platform (one of `switch`, `wiiu`, `wii`, `3ds`, or `pc`):
 ```
 git clone --recursive https://github.com/fortheusers/hb-appstore.git
 cd hb-appstore
-export PLATFORM=switch    # or wiiu, 3ds, wii, pc, pc-sdl1
-docker run -v $(pwd):/code -it ghcr.io/fortheusers/sealeo /bin/bash -c "cd /code && make $PLATFORM"
+docker run -v $(pwd):/code -it ghcr.io/fortheusers/sealeo /bin/bash
+make switch    # or wiiu, wii, 3ds, pc
 ```
 
 Depending on which platform you chose, `appstore.nro` or `appstore.rpx` should now be sitting in the cloned directory. When building for Wii U, an `appstore.wuhb` file will also be present.
 
-
-## Building for PC
-Below instructions are for Ubuntu, but should be similar on other platforms.
-
-Both targets support the addition of `CFLAGS += -D_3DS_MOCK` in the Makefile to build a version that uses 3DS dimensions and layout logic for the window size.
-
-### Using SDL2
-The following produces `appstore.bin` in the current directory:
-```
-sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++ libcurl4-openssl-dev
-git clone --recursive https://github.com/fortheusers/hb-appstore.git
-cd hb-appstore
-make pc
-```
-
-### Using SDL1
-The following produces `appstore.bin-sdl1` in the current directory:
-```
-sudo apt-get install libsdl1.2-dev libsdl-ttf2.0-dev libsdl-image1.2-dev libsdl-gfx1.2-dev zlib1g-dev gcc g++ libcurl4-openssl-dev
-git clone --recursive https://github.com/fortheusers/hb-appstore.git
-cd hb-appstore
-make pc-sdl1
-```
 
 ## Building for Wii U (with WUT)
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
@@ -71,6 +48,7 @@ make switch
 
 If all goes well, `appstore.nro` should be sitting in the current directory.
 
+
 ## Building for Wii (with libogc)
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
 2. Install devkitPPC and needed Wii dependencies via dkp-pacman:
@@ -88,6 +66,7 @@ make wii
 
 If all goes well, `appstore.dol` should be sitting in the current directory.
 
+
 ## Building for 3DS (with libctru)
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
 2. Install devkitARM and needed 3DS dependencies via dkp-pacman:
@@ -103,3 +82,20 @@ make 3ds
 ```
 
 If all goes well, `appstore.3dsx` should be sitting in the current directory.
+
+
+## Building for PC
+Below instructions are for Ubuntu, but should be similar on other platforms.
+
+Both targets support the addition of `CFLAGS += -D_3DS_MOCK` in the Makefile to build a version that uses 3DS dimensions and layout logic for the window size.
+
+The following produces `appstore.bin` in the current directory:
+```
+sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-gfx-dev zlib1g-dev gcc g++ libcurl4-openssl-dev
+git clone --recursive https://github.com/fortheusers/hb-appstore.git
+cd hb-appstore
+make pc
+```
+
+### Windows Dependencies
+See the [build_pc.sh](https://github.com/fortheusers/chesto/blob/main/helpers/build_pc.sh#L29-L35) script for info on how to install msys2 and mingw64 dependencies.

@@ -3,11 +3,8 @@
 Console::Console(CST_Window* window)
 {
 	this->window = window;
-#ifndef SDL1
 	this->window_surface = SDL_GetWindowSurface(window);
-#else
-	this->window_surface = window;
-#endif
+
 	// make background black
 	this->background(0x42, 0x45, 0x48);
 }
@@ -24,12 +21,7 @@ void Console::background(int r, int g, int b)
 
 void Console::update()
 {
-#ifndef SDL1
 	SDL_UpdateWindowSurface(this->window);
-#else
-	SDL_Flip(this->window); //TODO: replace this hack with SDL_gfx framerate limiter
-#endif
-
 }
 
 void Console::fillRect(int x, int y, int width, int height, int r, int g, int b)

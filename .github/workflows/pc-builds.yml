@@ -16,10 +16,6 @@ jobs:
       matrix:
         os: [ubuntu, windows, macos]
         library: [sdl2]
-        # library: [sdl2, sdl1]
-        # exclude:
-        #   - os: macos
-        #     library: sdl1
     runs-on: ${{ matrix.os }}-latest
     steps:
     - uses: actions/checkout@main

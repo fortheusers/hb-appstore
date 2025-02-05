@@ -16,9 +16,7 @@
 int console_main(RootDisplay* rootDisplay, InputEvents* input)
 {
 	// initialize SDL console, ditch Chesto SDL renderer
-#ifndef SDL1
 	SDL_DestroyRenderer(rootDisplay->renderer);
-#endif
 
 	rootDisplay->renderer = NULL;
 	Console* console = new Console(rootDisplay->window);
