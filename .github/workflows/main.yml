@@ -38,6 +38,10 @@ jobs:
         cmake -D CMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Wii.cmake -B build -G Ninja
         cmake --build build --parallel
         cmake --install build
+        cd ..
+        git config --global --add safe.directory /__w/hb-appstore/hb-appstore
+        git submodule update --recursive --force
+
     - name: Build ${{ matrix.platform }}
       run: make ${{ matrix.platform }}
     - uses: actions/upload-artifact@v4
