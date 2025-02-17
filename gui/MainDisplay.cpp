@@ -1,6 +1,9 @@
 #if defined(SWITCH)
 #include <switch.h>
 #endif
+#if defined(WII)
+#include <ogc/conf.h>
+#endif
 #include <filesystem>
 #include <unordered_set>
 #include "../libs/get/src/Get.hpp"
@@ -22,6 +25,16 @@ MainDisplay::MainDisplay()
 	super::append(&appList);
 
 	needsRedraw = true;
+
+	#ifdef WII
+	// TODO: Uncomment the 16:9 stuff when
+	// https://github.com/devkitPro/SDL/pull/91
+	// gets merged 
+	/*if(CONF_GetAspectRatio() == CONF_ASPECT_16_9)
+		setScreenResolution(854, 480);
+	else*/
+		setScreenResolution(640, 480);
+	#endif
 
 	// use HD resolution for hb-appstore
 	// setScreenResolution(1920, 1080);
@@ -203,8 +216,8 @@ bool MainDisplay::process(InputEvents* event)
 
 		// fetch repositories metadata
 #if defined(WII)
-		// default the repo type to OSC for wii (TODO: don't hardcode this)
-		get = new Get("/apps/appstore/.get/", DEFAULT_REPO, false, "osc");
+		// default the repo type to OSC for wii
+		get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO, false, "osc");
 #else
 		get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO, false);
 #endif

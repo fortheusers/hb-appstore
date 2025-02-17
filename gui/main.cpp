@@ -3,8 +3,13 @@
 #endif
 
 #if defined(WII)
+#include <stdlib.h>
 #include <unistd.h>
 #include <fat.h>
+// Handles basic HW Init,
+// Including Wiimote as Mouse
+// And starting the Fat FS
+#include "SDL_main.h"
 #endif
 
 #if defined(__WIIU__)
@@ -54,9 +59,11 @@ void setPlatformPwd()
 #if defined(WII)
 void setPlatformPwd()
 {
-	fatInitDefault();
-	mkpath("/apps/appstore/.get");
-	// chdir(HBAS_PATH); TODO: no chdir on wii, will need to keep track of the pwd some other way
+#define HBAS_PATH ROOT_PATH "apps/appstore"
+
+	// create and cd into the appstore directory
+	mkpath(HBAS_PATH);
+	chdir(HBAS_PATH);
 }
 #endif
 
