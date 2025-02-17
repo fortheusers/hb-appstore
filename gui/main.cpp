@@ -9,7 +9,7 @@
 // Handles basic HW Init,
 // Including Wiimote as Mouse
 // And starting the Fat FS
-#include "SDL_main.h"
+#include "SDL2/SDL_main.h"
 #endif
 
 #if defined(__WIIU__)
