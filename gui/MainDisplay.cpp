@@ -26,16 +26,6 @@ MainDisplay::MainDisplay()
 
 	needsRedraw = true;
 
-	#ifdef WII
-	// TODO: Uncomment the 16:9 stuff when
-	// https://github.com/devkitPro/SDL/pull/91
-	// gets merged 
-	/*if(CONF_GetAspectRatio() == CONF_ASPECT_16_9)
-		setScreenResolution(854, 480);
-	else*/
-		setScreenResolution(640, 480);
-	#endif
-
 	// use HD resolution for hb-appstore
 	// setScreenResolution(1920, 1080);
 	// setScreenResolution(3840, 2160); // 4k
