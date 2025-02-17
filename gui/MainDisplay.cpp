@@ -26,7 +26,7 @@ MainDisplay::MainDisplay()
 
 	needsRedraw = true;
 
-	#if defined(WII)	
+	#if defined(WII)
 		if(CONF_GetAspectRatio() == CONF_ASPECT_16_9)
 			setScreenResolution(854, 480);
 	#endif
@@ -201,7 +201,7 @@ bool MainDisplay::process(InputEvents* event)
 		spinner->constrain(ALIGN_TOP, 90)->constrain(ALIGN_CENTER_HORIZONTAL | OFFSET_LEFT, 180);
 		super::append(spinner);
 
-#if defined(_3DS) || defined(_3DS_MOCK) || defined(WII)
+#if defined(_3DS) || defined(_3DS_MOCK)
 		spinner->resize(40, 40);
 		spinner->position(SCREEN_WIDTH / 2 - spinner->width / 2, 70);
 #endif

@@ -8,6 +8,7 @@
 
 #include "../libs/chesto/src/EKeyboard.hpp"
 #include "../libs/chesto/src/RootDisplay.hpp"
+#include "../libs/chesto/src/Constraint.hpp"
 
 #include <algorithm>
 #include <filesystem>
@@ -37,7 +38,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	, sortBtn(i18n("listing.adjustsort"), Y_BUTTON, false, 15)
 	, keyboardBtn(i18n("listing.togglekeyboard"), Y_BUTTON, false, 15)
 	, backspaceBtn(i18n("listing.delete"), B_BUTTON, false, 15)
-	, nowPlayingText(" ", 20, &HBAS::ThemeManager::textPrimary, false, PANE_WIDTH + 20 / SCALER)
+	, nowPlayingText(" ", 20, &HBAS::ThemeManager::textPrimary)
 #if defined(MUSIC)
 	, nowPlayingIcon(RAMFS "res/nowplaying.png")
 	, muteBtn(" ", X_BUTTON, false, 15, 90)
@@ -45,7 +46,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	, unmuteIcon(RAMFS "res/unmute.png")
 #endif
 {
-	this->x = 400 - 260 * hideSidebar;
+	this->x = 400/SCALER - 260/SCALER * hideSidebar;
 
 	// the offset of how far along scroll'd we are
 	this->y = 0;
@@ -78,7 +79,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	// keyboard.hasRoundedKeys = true;
 	keyboard.typeAction = std::bind(&AppList::keyboardInputCallback, this);
 	keyboard.preventEnterAndTab = true;
-	keyboard.width = SCREEN_HEIGHT - 20;
+	keyboard.width = SCREEN_HEIGHT/SCALER - 20;
 	keyboard.updateSize();
 
 	// category text
@@ -109,6 +110,8 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 
 #ifdef DEBUG_BUILD
 	nowPlayingText.setText(i18n("listing.debugwarning").c_str());
+	nowPlayingText.constrain(ALIGN_TOP | ALIGN_LEFT, 25);
+	nowPlayingText.setWrappedWidth(PANE_WIDTH + 20 / SCALER);
 	nowPlayingText.setColor(myRed);
 	nowPlayingText.update();
 #endif
@@ -123,13 +126,13 @@ bool AppList::process(InputEvents* event)
 
 	// R is the number of cards per row, let's figure it out based on app card size
 	// and screen size
-	R = (SCREEN_WIDTH - 400) / 260 + hideSidebar;
+	R = (SCREEN_WIDTH/SCALER - 400/SCALER) / 260/SCALER + hideSidebar;
 
 	if (event->pressed(ZL_BUTTON) || event->pressed(L_BUTTON))
 	{
 		hideSidebar = !hideSidebar;
-		R = (SCREEN_WIDTH - 400) / 260 + hideSidebar;
-		this->x = 400 - 260 * hideSidebar;
+		R = (SCREEN_WIDTH - 400/SCALER) / 260/SCALER + hideSidebar;
+		this->x = 400/SCALER - 260/SCALER * hideSidebar;
 		sidebar->addHints();
 		update();
 		return true;
@@ -413,10 +416,10 @@ void AppList::update()
 	totalCount = appCards.size();
 
 	// add quit button
-	quitBtn.position(SCREEN_HEIGHT + 260 * hideSidebar, 70);
+	quitBtn.position(SCREEN_HEIGHT/SCALER + 260 * hideSidebar, 70);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
-  quitBtn.position(SCREEN_WIDTH - quitBtn.width - 5, 20);
+  	quitBtn.position(SCREEN_WIDTH - quitBtn.width - 5, 20);
 #else
 	super::append(&quitBtn);
 #endif

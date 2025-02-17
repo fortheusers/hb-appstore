@@ -45,9 +45,9 @@ AppCard::AppCard(Package& package, AppList* list)
 
 #if defined(_3DS) || defined(_3DS_MOCK)
 	icon.resize(ICON_SIZE, ICON_SIZE);
-  this->width = 85;
+  	this->width = 85;
 #else
-  icon.resize(256, ICON_SIZE);
+  	icon.resize(256, ICON_SIZE);
 #endif
 	statusicon.resize(30 / SCALER, 30 / SCALER);
 

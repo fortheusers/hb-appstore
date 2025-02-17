@@ -29,11 +29,11 @@ Sidebar::Sidebar()
 	{
 		category[x].icon = new ImageElement((std::string(RAMFS "res/") + cat_value[x] + ".png").c_str());
 		category[x].icon->resize(40/SCALER, 40/SCALER);
-		category[x].icon->position(30, 150 + x * 70/SCALER - 5);
+		category[x].icon->position(30/SCALER, 150/SCALER + x * 70/SCALER - 5/SCALER);
 		super::append(category[x].icon);
 
 		category[x].name = new TextElement(i18n(cat_names[x]), 25);
-		category[x].name->position(105, 150 + x * 70/SCALER);
+		category[x].name->position(105/SCALER, 150/SCALER + x * 70/SCALER);
 		super::append(category[x].name);
 	}
 
@@ -44,14 +44,14 @@ Sidebar::Sidebar()
 
 	// create image in top left
 	logo.resize(45/SCALER, 45/SCALER);
-	logo.position(30, 50/SCALER);
+	logo.position(30/SCALER, 50/SCALER);
 	super::append(&logo);
 
 	// create title for logo, top left
-	title.position(105, 45/SCALER);
+	title.position(105/SCALER , 45/SCALER);
 	super::append(&title);
 
-	subtitle.position(105, 75/SCALER);
+	subtitle.position(105/SCALER, 75/SCALER);
 	super::append(&subtitle);
 
 	// currentSelection in this class is used to keep track of which element is being pressed down on in touch mode
@@ -67,7 +67,7 @@ Sidebar::Sidebar()
 		logo.hide();
 		ImageElement* earth = new ImageElement(RAMFS "res/earth.png");
 		earth->resize(60/SCALER, 60/SCALER);
-		earth->position(23, 40/SCALER);
+		earth->position(23/SCALER, 40/SCALER);
 		super::append(earth);
 	}
 }
@@ -101,7 +101,7 @@ void Sidebar::addHints()
 	}
 
 	hider->position(getWidth() - 25 - (!appList->hideSidebar)*(hint->width+10), SCREEN_HEIGHT - 35);
-	hint->position(hider->x + hider->width + 5, hider->y);
+	hint->position(hider->x + hider->width + 5/SCALER, hider->y);
 	showCurrentCategory = true;
 }
 
@@ -153,7 +153,7 @@ bool Sidebar::process(InputEvents* event)
 		for (int x = 0; x < TOTAL_CATS; x++)
 		{
 			int xc = 0,
-				yc = 150 + x * 70 - 15,
+				yc = 150/SCALER + x * 70/SCALER - 15 / SCALER,
 				width = getWidth(),
 				height = 60;
 
@@ -187,7 +187,7 @@ bool Sidebar::process(InputEvents* event)
 		for (int x = 0; x < TOTAL_CATS; x++)
 		{
 			int xc = 0,
-				yc = 150 + x * 70 - 15,
+				yc = 150/SCALER + x * 70/SCALER - 15 / SCALER,
 				width = getWidth(),
 				height = 60; // TODO: extract formula into method (same as AppList x value)
 			if ((event->touchIn(xc, yc, width, height) && event->isTouchUp()) || (event->held(A_BUTTON) && this->highlighted == x))
@@ -226,8 +226,8 @@ void Sidebar::render(Element* parent)
   return;
 #endif
 	// draw the light gray bg behind the active category
-	CST_Rect dimens = { 0, 0, getWidth(), 60 }; // TODO: extract this to a method too
-	dimens.y = 150 + this->curCategory * 70 - 15;					   // TODO: extract formula into method
+	CST_Rect dimens = { 0, 0, getWidth(), (int)(60/SCALER) }; // TODO: extract this to a method too
+	dimens.y = 150/SCALER + this->curCategory * 70/SCALER - 15 / SCALER;					   // TODO: extract formula into method
 
 	auto c = RootDisplay::mainDisplay->backgroundColor;
 	CST_Color consoleColor = { (int)(c.r * 255) + 0x25, (int)(c.g * 255) + 0x25, (int)(c.b * 255) + 0x25, 0xff };
@@ -240,7 +240,7 @@ void Sidebar::render(Element* parent)
 	if (appList && appList->touchMode && (this->currentSelection >= 0 && this->elasticCounter != THICK_HIGHLIGHT))
 	{
 		CST_Rect dimens2 = { 0, 0, 400, 60 };
-		dimens2.y = 150 + this->currentSelection * 70 - 15; // TODO: extract formula into method
+		dimens.y = 150/SCALER + this->currentSelection * 70/SCALER - 15 / SCALER;					   // TODO: extract formula into method
 		CST_SetDrawBlend(RootDisplay::renderer, true);
 		CST_Color highlight = { 0xad, 0xd8, 0xe6, 0x90 };
 		CST_SetDrawColor(RootDisplay::renderer, highlight); // TODO: matches the DEEP_HIGHLIGHT color
@@ -253,7 +253,7 @@ void Sidebar::render(Element* parent)
 		// for drag events, we want to use the thick h ighlight
 		int highlightValue = (this->currentSelection >= 0 && this->elasticCounter == THICK_HIGHLIGHT) ? this->currentSelection : this->highlighted;
 
-		int y = 150 + highlightValue * 70 - 15;
+		int y = 150/SCALER  + highlightValue * 70/SCALER - 15 / SCALER;
 		//        rectangleRGBA(RootDisplay::renderer, 0, y, dimens.w, y + dimens.h, 0xff, 0x00, 0xff, 0xff);
 
 		for (int x = 0; x < 5; x++)
@@ -283,5 +283,5 @@ std::string Sidebar::currentCatValue()
 }
 
 int Sidebar::getWidth() {
-	return 400/SCALER - 260 * appList->hideSidebar - 35;
+	return 400 - 260 * appList->hideSidebar - 35;
 }

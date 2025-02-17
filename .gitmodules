@@ -3,8 +3,7 @@
 	url = https://github.com/fortheusers/libget.git
 [submodule "libs/chesto"]
 	path = libs/chesto
-	url = https://github.com/fancy2209/chesto.git
-	branch = patch-1
+	url = https://github.com/fortheusers/chesto.git
 [submodule "libs/librpxloader"]
 	path = libs/librpxloader
 	url = https://github.com/wiiu-env/librpxloader.git

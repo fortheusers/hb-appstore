@@ -38,10 +38,6 @@ jobs:
         cmake -D CMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Wii.cmake -B build -G Ninja
         cmake --build build --parallel
         cmake --install build
-        cd ..
-        cd libs/chesto
-        git pull origin patch-1
-
     - name: Build ${{ matrix.platform }}
       run: make ${{ matrix.platform }}
     - uses: actions/upload-artifact@v4

@@ -11,6 +11,7 @@
 // And starting the Fat FS
 #include "SDL2/SDL_main.h"
 #include "../libs/chesto/src/DrawUtils.hpp"
+#include <ogc/system.h>
 #endif
 
 #if defined(__WIIU__)
@@ -70,6 +71,9 @@ void setPlatformPwd()
 
 int main(int argc, char* argv[])
 {
+	#ifdef WII
+	SYS_STDIO_Report(true);
+	#endif
 #if defined(__WIIU__) || defined(WII)
 	setPlatformPwd();
 #endif
