@@ -28,12 +28,12 @@ Sidebar::Sidebar()
 	for (int x = 0; x < TOTAL_CATS; x++)
 	{
 		category[x].icon = new ImageElement((std::string(RAMFS "res/") + cat_value[x] + ".png").c_str());
-		category[x].icon->resize(40, 40);
-		category[x].icon->position(30, 150 + x * 70 - 5);
+		category[x].icon->resize(40/SCALE, 40/SCALE);
+		category[x].icon->position(30, (150 + x * 70 - 5)/SCALE);
 		super::append(category[x].icon);
 
 		category[x].name = new TextElement(i18n(cat_names[x]), 25);
-		category[x].name->position(105, 150 + x * 70);
+		category[x].name->position(105/SCALE, (150 + x * 70)/SCALE);
 		super::append(category[x].name);
 	}
 
@@ -43,15 +43,15 @@ Sidebar::Sidebar()
 #endif
 
 	// create image in top left
-	logo.resize(45, 45);
-	logo.position(30, 50);
+	logo.resize(45/SCALE, 45/SCALE);
+	logo.position(30/SCALE, 50/SCALE);
 	super::append(&logo);
 
 	// create title for logo, top left
-	title.position(105, 45);
+	title.position(105/SCALE, 45)/SCALE;
 	super::append(&title);
 
-	subtitle.position(105, 75);
+	subtitle.position(105/SCALE, 75/SCALE);
 	super::append(&subtitle);
 
 	// currentSelection in this class is used to keep track of which element is being pressed down on in touch mode
@@ -66,8 +66,8 @@ Sidebar::Sidebar()
 		// draw a an icon over the logo
 		logo.hide();
 		ImageElement* earth = new ImageElement(RAMFS "res/earth.png");
-		earth->resize(60, 60);
-		earth->position(23, 40);
+		earth->resize(60/SCALE, 60/SCALE);
+		earth->position(23/SCALE, 40/SCALE);
 		super::append(earth);
 	}
 }
@@ -91,7 +91,7 @@ void Sidebar::addHints()
 	if (hider == nullptr) {
 		// small indicator to switch to advanced view using L
 		hider = new ImageElement(Button::getControllerButtonImageForPlatform(L_BUTTON, false, false));
-		hider->resize(20, 20);
+		hider->resize(20/SCALE, 20/SCALE);
 		super::append(hider);
 	}
 
