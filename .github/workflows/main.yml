@@ -40,7 +40,7 @@ jobs:
         cmake --install build
         cd ..
         git config --global --add safe.directory /__w/hb-appstore/hb-appstore
-        git submodule update --recursive --force
+        git submodule update --recursive --remote
 
     - name: Build ${{ matrix.platform }}
       run: make ${{ matrix.platform }}
