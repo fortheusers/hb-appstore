@@ -10,6 +10,7 @@
 // Including Wiimote as Mouse
 // And starting the Fat FS
 #include "SDL2/SDL_main.h"
+#include "../libs/chesto/src/DrawUtils.hpp"
 #endif
 
 #if defined(__WIIU__)
@@ -114,6 +115,11 @@ int main(int argc, char* argv[])
 	else
 	{
 		display->setupMusic();
+
+		#if defined(WII)
+		// Wii uses a Hand Cursor by default, so force Arrow
+		CST_SetCursor(CST_CURSOR_ARROW);
+		#endif
 
 		// start primary app
 		display->mainLoop();
