@@ -3,7 +3,8 @@ name: Build SDL2 console apps
 on:
   push:
     branches:
-      - main
+      - main 
+      - test
   pull_request:
     branches:
       - main
@@ -29,7 +30,7 @@ jobs:
       with:
         submodules: recursive
     - name: Build ${{ matrix.platform }}
-      run: make ${{ matrix.platform }}
+      run: git submodule update --init --recrursive --force && make ${{ matrix.platform }}
     - uses: actions/upload-artifact@v4
       with:
         name: appstore.${{ matrix.ext }}
