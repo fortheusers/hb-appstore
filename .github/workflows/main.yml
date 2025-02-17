@@ -29,12 +29,12 @@ jobs:
     - uses: actions/checkout@main
       with:
         submodules: recursive
-    - if: matrix.platform == 'wiiu'
+    - if: matrix.platform == 'wii'
       name: Setup SDL2 Widescreen
       run: |
         git clone https://github.com/Fancy2209/SDL -b Widescreen
         cd SDL
-        cmake -B build
+        cmake -D CMAKE_TOOLCHAIN_FILE=$DEVKITPRO/cmake/Wii.cmake -B build
         cmake --build build --parallel
         cmake --install build
     - name: Build ${{ matrix.platform }}
