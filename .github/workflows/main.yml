@@ -35,7 +35,7 @@ jobs:
         git clone https://github.com/Fancy2209/SDL -b Widescreen
         cd SDL
         apt-get install ninja-build
-        cmake -D CMAKE_TOOLCHAIN_FILE=$DEVKITPRO/cmake/Wii.cmake -B build -G Ninja
+        cmake -D CMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Wii.cmake -B build -G Ninja
         cmake --build build --parallel
         cmake --install build
     - name: Build ${{ matrix.platform }}
