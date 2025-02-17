@@ -34,7 +34,7 @@ jobs:
       run: |
         git clone https://github.com/Fancy2209/SDL -b Widescreen
         cd SDL
-        sudo apt install ninja-build
+        apt-get install ninja-build
         cmake -D CMAKE_TOOLCHAIN_FILE=$DEVKITPRO/cmake/Wii.cmake -B build -G Ninja
         cmake --build build --parallel
         cmake --install build
