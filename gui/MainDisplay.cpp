@@ -26,8 +26,10 @@ MainDisplay::MainDisplay()
 
 	needsRedraw = true;
 
-	if(CONF_GetAspectRatio() == CONF_ASPECT_16_9)
-		setScreenResolution(854, 480);
+	#if defined(WII)	
+		if(CONF_GetAspectRatio() == CONF_ASPECT_16_9)
+			setScreenResolution(854, 480);
+	#endif
 	// use HD resolution for hb-appstore
 	// setScreenResolution(1920, 1080);
 	// setScreenResolution(3840, 2160); // 4k
