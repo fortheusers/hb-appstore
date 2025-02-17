@@ -30,7 +30,7 @@ jobs:
       with:
         submodules: recursive
     - name: Build ${{ matrix.platform }}
-      run: git submodule update --init --recrursive --force && make ${{ matrix.platform }}
+      run: make ${{ matrix.platform }}
     - uses: actions/upload-artifact@v4
       with:
         name: appstore.${{ matrix.ext }}
