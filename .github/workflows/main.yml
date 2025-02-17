@@ -39,8 +39,8 @@ jobs:
         cmake --build build --parallel
         cmake --install build
         cd ..
-        git config --global --add safe.directory /__w/hb-appstore/hb-appstore
-        git submodule update --recursive --remote
+        cd libs/chesto
+        git pull origin patch-1
 
     - name: Build ${{ matrix.platform }}
       run: make ${{ matrix.platform }}
