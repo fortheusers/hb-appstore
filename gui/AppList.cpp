@@ -126,12 +126,12 @@ bool AppList::process(InputEvents* event)
 
 	// R is the number of cards per row, let's figure it out based on app card size
 	// and screen size
-	R = (SCREEN_WIDTH/SCALER - 400/SCALER) / 260/SCALER + hideSidebar;
+	R = (SCREEN_WIDTH - 400) / 260 + hideSidebar;
 
 	if (event->pressed(ZL_BUTTON) || event->pressed(L_BUTTON))
 	{
 		hideSidebar = !hideSidebar;
-		R = (SCREEN_WIDTH - 400/SCALER) / 260/SCALER + hideSidebar;
+		R = (SCREEN_WIDTH - 400) / 260 + hideSidebar;
 		this->x = 400/SCALER - 260/SCALER * hideSidebar;
 		sidebar->addHints();
 		update();
