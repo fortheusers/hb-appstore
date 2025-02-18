@@ -107,6 +107,8 @@ void Feedback::submit()
 
 #if defined(__WIIU__)
 	const char* userKey = "wiiu_user";
+#elif defined(WII)
+	const char* userKey = "wii_user";
 #else
 	const char* userKey = "switch_user";
 #endif

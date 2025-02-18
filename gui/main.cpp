@@ -3,8 +3,14 @@
 #endif
 
 #if defined(WII)
+#include <stdlib.h>
 #include <unistd.h>
 #include <fat.h>
+// Handles basic HW Init,
+// Including Wiimote as Mouse
+// And starting the Fat FS
+#include "SDL2/SDL_main.h"
+#include "../libs/chesto/src/DrawUtils.hpp"
 #endif
 
 #if defined(__WIIU__)
@@ -54,9 +60,11 @@ void setPlatformPwd()
 #if defined(WII)
 void setPlatformPwd()
 {
-	fatInitDefault();
-	mkpath("/apps/appstore/.get");
-	// chdir(HBAS_PATH); TODO: no chdir on wii, will need to keep track of the pwd some other way
+#define HBAS_PATH ROOT_PATH "apps/appstore"
+
+	// create and cd into the appstore directory
+	mkpath(HBAS_PATH);
+	chdir(HBAS_PATH);
 }
 #endif
 
@@ -107,6 +115,11 @@ int main(int argc, char* argv[])
 	else
 	{
 		display->setupMusic();
+
+		#if defined(WII)
+		// Wii uses a Hand Cursor by default, so force Arrow
+		CST_SetCursor(CST_CURSOR_ARROW);
+		#endif
 
 		// start primary app
 		display->mainLoop();

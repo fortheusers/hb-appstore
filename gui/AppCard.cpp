@@ -73,7 +73,7 @@ void AppCard::update()
 	version.position(40, icon.height + 10);
 	status.position(40, icon.height + 25);
 
-  int spacer = this->width - 11; // 245 on 720p
+  	int spacer = this->width - 11; // 245 on 720p
 
 	appname.getTextureSize(&w, &h);
 	appname.position(spacer - w, icon.height + 5);
