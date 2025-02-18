@@ -3,7 +3,8 @@ name: Build SDL2 console apps
 on:
   push:
     branches:
-      - main
+      - main 
+      - test
   pull_request:
     branches:
       - main
@@ -28,6 +29,15 @@ jobs:
     - uses: actions/checkout@main
       with:
         submodules: recursive
+    - if: matrix.platform == 'wii'
+      name: Setup SDL2 Widescreen
+      run: |
+        git clone https://github.com/Fancy2209/SDL -b Widescreen
+        cd SDL
+        apt-get install ninja-build
+        cmake -D CMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Wii.cmake -B build -G Ninja
+        cmake --build build --parallel
+        cmake --install build
     - name: Build ${{ matrix.platform }}
       run: make ${{ matrix.platform }}
     - uses: actions/upload-artifact@v4

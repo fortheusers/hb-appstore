@@ -27,7 +27,7 @@ Feedback::Feedback(Package& package)
 #if defined(_3DS) || defined(_3DS_MOCK)
   icon.resize(ICON_SIZE, ICON_SIZE);
 #else
-	icon.resize(256, ICON_SIZE);
+	icon.resize(256/SCALER, ICON_SIZE/SCALER);
 #endif
 	super::append(&icon);
 
