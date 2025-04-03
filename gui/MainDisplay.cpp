@@ -194,7 +194,7 @@ bool MainDisplay::process(InputEvents* event)
 
 		spinner = new ImageElement(spinnerPath);
 		spinner->resize(90, 90);
-		spinner->constrain(ALIGN_TOP, 90)->constrain(ALIGN_CENTER_HORIZONTAL | OFFSET_LEFT, 180);
+		spinner->constrain(ALIGN_TOP, 90)->constrain(ALIGN_CENTER_HORIZONTAL, 0)->constrain(OFFSET_LEFT, 45);
 		super::append(spinner);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
