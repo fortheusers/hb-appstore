@@ -60,7 +60,7 @@ Sidebar::Sidebar()
 
 	if (isEarthDay()) {
 		// easter egg for earth day https://www.earthday.org
-		title.setText(i18n("listing.earthday").c_str());
+		title.setText(i18n("listing.earthday"));
 		title.update();
 
 		// draw a an icon over the logo
