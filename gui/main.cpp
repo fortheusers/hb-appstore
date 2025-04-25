@@ -36,16 +36,6 @@
 
 #include "main.hpp"
 
-void quit()
-{
-#ifdef __WIIU__
-	// will exit via procui loop in RootDisplay
-	SYSLaunchMenu();
-#else
-	RootDisplay::mainDisplay->isRunning = false;
-#endif
-}
-
 #if defined(__WIIU__)
 void setPlatformPwd()
 {
@@ -91,7 +81,6 @@ int main(int argc, char* argv[])
 	display->canUseSelectToExit = true;
 
 	auto events = display->events;
-	events->quitaction = quit;
 
 	for (int x = 0; x < 10; x++)
 	{

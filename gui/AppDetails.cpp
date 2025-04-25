@@ -366,7 +366,7 @@ bool AppDetails::launchFile(char* path, char* context)
 	// If setnexload works without problems, quit to make loader open next nro
 	if (R_SUCCEEDED(envSetNextLoad(path, context)))
 	{
-		quit();
+		RootDisplay::mainDisplay->requestQuit();
 		return true;
 	}
 #elif defined(__WIIU__)
@@ -385,9 +385,8 @@ void AppDetails::postInstallHook()
 	networking_callback = nullptr;
 	libget_status_callback = nullptr;
 
-	if (quitAfterInstall)
-	{
-		RootDisplay::mainDisplay->events->quitaction();
+	if (quitAfterInstall) {
+		RootDisplay::mainDisplay->requestQuit();
 	}
 }
 

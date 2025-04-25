@@ -54,7 +54,9 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	std::srand(unsigned(std::time(0)));
 
 	// quit button
-	quitBtn.action = quit;
+	quitBtn.action = []() {
+		RootDisplay::mainDisplay->requestQuit();
+	};
 
 	// additional buttons
 	creditsBtn.action = std::bind(&AppList::launchSettings, this, false);

@@ -360,7 +360,9 @@ ErrorScreen::ErrorScreen(std::string mainErrorText, std::string troubleshootingT
 			RootDisplay::switchSubscreen(nullptr);
 	}));
 
-	btnQuit.action = quit;
+	btnQuit.action = []() {
+		RootDisplay::mainDisplay->requestQuit();
+	};
 
 	super::append(logoCon);
 	super::append(&errorMessage);

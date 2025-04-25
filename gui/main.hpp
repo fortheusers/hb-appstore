@@ -25,5 +25,3 @@
 // preference paths
 #define SOUND_PATH "./.toggle_sound"
 #define DEFAULT_GET_HOME "./.get/"
-
-void quit();
