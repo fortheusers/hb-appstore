@@ -60,7 +60,7 @@ Sidebar::Sidebar()
 
 	if (isEarthDay()) {
 		// easter egg for earth day https://www.earthday.org
-		title.setText(i18n("listing.earthday").c_str());
+		title.setText(i18n("listing.earthday"));
 		title.update();
 
 		// draw a an icon over the logo
@@ -242,7 +242,7 @@ void Sidebar::render(Element* parent)
 		CST_Rect dimens2 = { 0, 0, 400, 60 };
 		dimens.y = 150/SCALER + this->currentSelection * 70/SCALER - 15 / SCALER;					   // TODO: extract formula into method
 		CST_SetDrawBlend(RootDisplay::renderer, true);
-		CST_Color highlight = { 0xad, 0xd8, 0xe6, 0x90 };
+		CST_Color highlight = { 0x10, 0xD9, 0xD9, 0x40 };
 		CST_SetDrawColor(RootDisplay::renderer, highlight); // TODO: matches the DEEP_HIGHLIGHT color
 		CST_FillRect(RootDisplay::renderer, &dimens2);
 	}
@@ -250,15 +250,18 @@ void Sidebar::render(Element* parent)
 	// draw the selected category, if one should be highlighted
 	if (this->highlighted >= 0 || (this->currentSelection >= 0 && this->elasticCounter == THICK_HIGHLIGHT))
 	{
-		// for drag events, we want to use the thick h ighlight
+		// for drag events, we want to use the thick highlight
 		int highlightValue = (this->currentSelection >= 0 && this->elasticCounter == THICK_HIGHLIGHT) ? this->currentSelection : this->highlighted;
 
 		int y = 150/SCALER  + highlightValue * 70/SCALER - 15 / SCALER;
 		//        rectangleRGBA(RootDisplay::renderer, 0, y, dimens.w, y + dimens.h, 0xff, 0x00, 0xff, 0xff);
 
-		for (int x = 0; x < 5; x++)
-		{
-			rectangleRGBA(RootDisplay::renderer, dimens.x + x, y + x, dimens.x + dimens.w - x, y + dimens.h - x, 0x66 - x * 10, 0x7c + x * 20, 0x89 + x * 10, 0xFF);
+		for (int x=-2; x<3; x++) {
+			CST_rectangleRGBA(MainDisplay::renderer,
+				dimens.x + x, y + x,
+				dimens.x + dimens.w - x, y + dimens.h - x,
+				0x10, 0xD9, 0xD9, 0xff
+			);
 		}
 	}
 

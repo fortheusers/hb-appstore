@@ -127,10 +127,10 @@ std::string AppDetails::getPackageDetails(Package* package)
 				 << i18n("details.version") << " " << package->getVersion() << "\n"
 				 << i18n("details.license") << " " << package->getLicense() << "\n\n"
 				 << i18n("details.package") << " " << package->getPackageName() << "\n"
-				 << i18n("details.downloads") << " " << package->getDownloadCount() << "\n"
-				 << i18n("details.updated") << " " << package->getUpdatedAt()<< "\n\n"
-				 << i18n("details.size") << " " << package->getDownloadSize() << " KB\n"
-				 << i18n("details.installsize") << " " << package->getExtractedSize() << " KB\n";
+				 << i18n("details.downloads") << " " << i18n_number(package->getDownloadCount()) << "\n"
+				 << i18n("details.updated") << " " << i18n_date(package->getUpdatedAtTimestamp())<< "\n\n"
+				 << i18n("details.size") << " " << package->getHumanDownloadSize() << "\n"
+				 << i18n("details.installsize") << " " << package->getHumanExtractedSize() << "\n";
 	return more_details.str();
 }
 
@@ -366,7 +366,7 @@ bool AppDetails::launchFile(char* path, char* context)
 	// If setnexload works without problems, quit to make loader open next nro
 	if (R_SUCCEEDED(envSetNextLoad(path, context)))
 	{
-		quit();
+		RootDisplay::mainDisplay->requestQuit();
 		return true;
 	}
 #elif defined(__WIIU__)
@@ -385,9 +385,8 @@ void AppDetails::postInstallHook()
 	networking_callback = nullptr;
 	libget_status_callback = nullptr;
 
-	if (quitAfterInstall)
-	{
-		RootDisplay::mainDisplay->events->quitaction();
+	if (quitAfterInstall) {
+		RootDisplay::mainDisplay->requestQuit();
 	}
 }
 

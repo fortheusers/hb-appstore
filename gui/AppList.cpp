@@ -55,7 +55,9 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	std::srand(unsigned(std::time(0)));
 
 	// quit button
-	quitBtn.action = quit;
+	quitBtn.action = []() {
+		RootDisplay::mainDisplay->requestQuit();
+	};
 
 	// additional buttons
 	creditsBtn.action = std::bind(&AppList::launchSettings, this, false);
@@ -256,11 +258,11 @@ bool AppList::process(InputEvents* event)
 
 		// if we're FAR out of range upwards, speed up the scroll wheel (additive) to get back in range quicker
 		if (normalizedY < -200)
-			event->wheelScroll += 0.15;
+			event->wheelScroll += 0.3;
 
 		// far out of range, for bottom of screen
 		else if (normalizedY > SCREEN_HEIGHT - curTile->height + 200)
-			event->wheelScroll -= 0.15;
+			event->wheelScroll -= 0.3;
 
 		// if we're slightly out of range above, recenter at the top row slowly
 		else if (normalizedY < -100)

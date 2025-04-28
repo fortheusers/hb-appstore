@@ -125,17 +125,26 @@ bool MainDisplay::checkMetaRepoForUpdates(Get* get) {
 	}
 
 	// the repos that we're interested in, which is based on our platform
-	std::vector<std::string> platformsToCheck = {
-		"switch",
-		"wiiu",
-		"vwii"
-	};
+	std::vector<std::string> platformsToCheck;
+	// TODO: Use a RepoManager to get which platform types are enabled
+#if defined(__WIIU__) || defined(PC)
+	platformsToCheck.push_back("wiiu"); // TOOD: also use vwii, if enabled
+#endif
+#if defined(SWITCH) || defined(PC)
+	platformsToCheck.push_back("switch");
+#endif
+#if defined(WII) || defined(WII_MOCK)
+	platformsToCheck.push_back("wii"); // osc
+#endif
+#if defined(_3DS) || defined(_3DS_MOCK)
+	platformsToCheck.push_back("3ds"); // uu
+#endif
 
 	// set of repos to remove (exclude)
 	std::unordered_set<std::string> reposToRemove;
 
 	// set of repos to add (include)
-	std::unordered_set<std::string> reposToAdd;
+	std::unordered_map<std::string, std::string> reposToAdd;
 
 	// grab the "suggestions" key
 	if (d.HasMember("suggestions")) {
@@ -157,8 +166,13 @@ bool MainDisplay::checkMetaRepoForUpdates(Get* get) {
 						// remove this repo
 						reposToRemove.insert(repoUrl);
 					} else if ("add" == opName) {
+						// check/get the type
+						auto repoType = "get"; // default to get
+						if (op.HasMember("type")) {
+							repoType = op["type"].GetString();
+						}
 						// add this repo
-						reposToAdd.insert(repoUrl);
+						reposToAdd[repoUrl] = repoType;
 					}
 				}
 			}
@@ -198,7 +212,7 @@ bool MainDisplay::process(InputEvents* event)
 
 		spinner = new ImageElement(spinnerPath);
 		spinner->resize(90, 90);
-		spinner->constrain(ALIGN_TOP, 90)->constrain(ALIGN_CENTER_HORIZONTAL | OFFSET_LEFT, 180);
+		spinner->constrain(ALIGN_TOP, 90)->constrain(ALIGN_CENTER_HORIZONTAL, 0)->constrain(OFFSET_LEFT, 45);
 		super::append(spinner);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
@@ -350,7 +364,9 @@ ErrorScreen::ErrorScreen(std::string mainErrorText, std::string troubleshootingT
 			RootDisplay::switchSubscreen(nullptr);
 	}));
 
-	btnQuit.action = quit;
+	btnQuit.action = []() {
+		RootDisplay::mainDisplay->requestQuit();
+	};
 
 	super::append(logoCon);
 	super::append(&errorMessage);

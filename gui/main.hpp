@@ -17,7 +17,7 @@
 #elif defined(WII)
 #define DEFAULT_REPO WII_REPO
 #elif defined(_3DS)
-#define DEFAULT_REPO META_REPO
+#define DEFAULT_REPO _3DS_REPO
 #else
 #define DEFAULT_REPO WIIU_REPO
 #endif
@@ -25,5 +25,3 @@
 // preference paths
 #define SOUND_PATH "./.toggle_sound"
 #define DEFAULT_GET_HOME "./.get/"
-
-void quit();
