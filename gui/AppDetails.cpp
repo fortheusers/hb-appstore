@@ -30,7 +30,7 @@ AppDetails::AppDetails(Package& package, AppList* appList, AppCard* appCard)
 	, downloadProgress()
 	, download(getAction(&package), package.getStatus() == INSTALLED ? X_BUTTON : A_BUTTON, true, 30 / SCALER)
 	, cancel(i18n("details.cancel"), B_BUTTON, true, 30 / SCALER, download.width)
-	, details(getPackageDetails(&package).c_str(), 20, &white, false, 300)
+	, details(getPackageDetails(&package).c_str(), 20 / SCALER, &white, false, 300)
 	, content(&package, appList->useBannerIcons)
 	, downloadStatus(i18n("details.status"), 30 / SCALER, &white)
 {
@@ -45,8 +45,8 @@ AppDetails::AppDetails(Package& package, AppList* appList, AppCard* appCard)
 	cancel.action = std::bind(&AppDetails::back, this);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
-	download.position(SCREEN_WIDTH / 2 - download.width / 2, 360);
-	cancel.position(SCREEN_WIDTH / 2 - cancel.width / 2, 410);
+	download.position(SCREEN_WIDTH / SCALER - download.width / SCALER, 360);
+	cancel.position(SCREEN_WIDTH / SCALER - cancel.width / SCALER, 410);
 #endif
 
 	// display an additional launch/install button if the package is installed,  and has a binary or is a theme
