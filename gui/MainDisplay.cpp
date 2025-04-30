@@ -11,6 +11,7 @@
 #include "../libs/chesto/src/Constraint.hpp"
 
 #include "MainDisplay.hpp"
+#include "ThemeManager.hpp"
 #include "main.hpp"
 
 using namespace std::string_literals; // for ""s
@@ -26,9 +27,17 @@ MainDisplay::MainDisplay()
 
 	needsRedraw = true;
 
+	updateSidebarColor();
+
 	// use HD resolution for hb-appstore
 	// setScreenResolution(1920, 1080);
 	// setScreenResolution(3840, 2160); // 4k
+}
+
+void MainDisplay::updateSidebarColor() {
+	// set the background color (used as sidebar color)
+	auto color = HBAS::ThemeManager::sidebarColor;
+	backgroundColor = fromRGB(color.r, color.g, color.b);
 }
 
 void MainDisplay::setupMusic() {

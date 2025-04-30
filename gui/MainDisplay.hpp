@@ -36,6 +36,7 @@ public:
 	void beginInitialLoad();
 
 	bool checkMetaRepoForUpdates(Get* get);
+	void updateSidebarColor();
 
 	Get* get = NULL;
 
