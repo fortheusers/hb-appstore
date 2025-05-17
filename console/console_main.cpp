@@ -28,10 +28,6 @@ int console_main(RootDisplay* rootDisplay, InputEvents* input)
 
 	while (running)
 	{
-#if defined(__WIIU__)
-		rootDisplay->processWiiUHomeOverlay();
-#endif
-
 		console->background(42, 37, 39);
 
 		// show the current menu screen
@@ -115,8 +111,8 @@ int console_main(RootDisplay* rootDisplay, InputEvents* input)
 			running = false;
 
 		// if X is pressed on the splash screen, show advanced options
-    if (menu->screen == SPLASH && input->pressed(Y_BUTTON))
-      menu->screen = RECOVERY_OPTIONS;
+		if (menu->screen == SPLASH && input->pressed(Y_BUTTON))
+			menu->screen = RECOVERY_OPTIONS;
 
 		// move cursor up or down depending on input
 		menu->moveCursor(-1 * (input->pressed(UP_BUTTON)) + (input->pressed(DOWN_BUTTON)));
@@ -124,10 +120,6 @@ int console_main(RootDisplay* rootDisplay, InputEvents* input)
 		// move page PAGE_SIZE forward/backward depending on input
 		menu->moveCursor(-1 * PAGE_SIZE * input->pressed(LEFT_BUTTON) + PAGE_SIZE * input->pressed(RIGHT_BUTTON));
 	}
-
-#if defined(__WIIU__)
-		rootDisplay->processWiiUHomeOverlay();
-#endif
 
 	console->close();
 

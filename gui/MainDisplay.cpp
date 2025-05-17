@@ -11,6 +11,7 @@
 #include "../libs/chesto/src/Constraint.hpp"
 
 #include "MainDisplay.hpp"
+#include "ThemeManager.hpp"
 #include "main.hpp"
 
 using namespace std::string_literals; // for ""s
@@ -26,6 +27,8 @@ MainDisplay::MainDisplay()
 
 	needsRedraw = true;
 
+	updateSidebarColor();
+
 	#if defined(WII)
 		if(CONF_GetAspectRatio() == CONF_ASPECT_16_9)
 			setScreenResolution(854, 480);
@@ -33,6 +36,12 @@ MainDisplay::MainDisplay()
 	// use HD resolution for hb-appstore
 	// setScreenResolution(1920, 1080);
 	// setScreenResolution(3840, 2160); // 4k
+}
+
+void MainDisplay::updateSidebarColor() {
+	// set the background color (used as sidebar color)
+	auto color = HBAS::ThemeManager::sidebarColor;
+	backgroundColor = fromRGB(color.r, color.g, color.b);
 }
 
 void MainDisplay::setupMusic() {
@@ -125,17 +134,26 @@ bool MainDisplay::checkMetaRepoForUpdates(Get* get) {
 	}
 
 	// the repos that we're interested in, which is based on our platform
-	std::vector<std::string> platformsToCheck = {
-		"switch",
-		"wiiu",
-		"vwii"
-	};
+	std::vector<std::string> platformsToCheck;
+	// TODO: Use a RepoManager to get which platform types are enabled
+#if defined(__WIIU__) || defined(PC)
+	platformsToCheck.push_back("wiiu"); // TOOD: also use vwii, if enabled
+#endif
+#if defined(SWITCH) || defined(PC)
+	platformsToCheck.push_back("switch");
+#endif
+#if defined(WII) || defined(WII_MOCK)
+	platformsToCheck.push_back("wii"); // osc
+#endif
+#if defined(_3DS) || defined(_3DS_MOCK)
+	platformsToCheck.push_back("3ds"); // uu
+#endif
 
 	// set of repos to remove (exclude)
 	std::unordered_set<std::string> reposToRemove;
 
 	// set of repos to add (include)
-	std::unordered_set<std::string> reposToAdd;
+	std::unordered_map<std::string, std::string> reposToAdd;
 
 	// grab the "suggestions" key
 	if (d.HasMember("suggestions")) {
@@ -157,8 +175,13 @@ bool MainDisplay::checkMetaRepoForUpdates(Get* get) {
 						// remove this repo
 						reposToRemove.insert(repoUrl);
 					} else if ("add" == opName) {
+						// check/get the type
+						auto repoType = "get"; // default to get
+						if (op.HasMember("type")) {
+							repoType = op["type"].GetString();
+						}
 						// add this repo
-						reposToAdd.insert(repoUrl);
+						reposToAdd[repoUrl] = repoType;
 					}
 				}
 			}
@@ -198,7 +221,7 @@ bool MainDisplay::process(InputEvents* event)
 
 		spinner = new ImageElement(spinnerPath);
 		spinner->resize(90, 90);
-		spinner->constrain(ALIGN_TOP, 90)->constrain(ALIGN_CENTER_HORIZONTAL | OFFSET_LEFT, 180);
+		spinner->constrain(ALIGN_TOP, 90)->constrain(ALIGN_CENTER_HORIZONTAL, 0)->constrain(OFFSET_LEFT, 45);
 		super::append(spinner);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
@@ -323,7 +346,7 @@ int MainDisplay::updateLoader(void* clientp, double dltotal, double dlnow, doubl
 
 
 ErrorScreen::ErrorScreen(std::string mainErrorText, std::string troubleshootingText)
-	: icon(RAMFS "res/icon.png")
+	: icon(LOGO_PATH)
 	, title(i18n("credits.title"), 50 - 25)
 	, errorMessage(mainErrorText.c_str(), 40)
 	, troubleshooting((std::string(i18n("errors.troubleshooting") + "\n") + troubleshootingText).c_str(), 20, NULL, false, 600)
@@ -333,6 +356,14 @@ ErrorScreen::ErrorScreen(std::string mainErrorText, std::string troubleshootingT
 	icon.resize(35, 35);
 	logoCon->add(&icon);
 	logoCon->add(&title);
+
+#if defined(USE_OSC_BRANDING)
+	// make the icon larger
+	title.setText("HBAS + OSC Wii");
+	title.update();
+	icon.setScaleMode(SCALE_PROPORTIONAL_NO_BG);
+	icon.resize(80, 80);
+#endif
 
 	// constraints
 	logoCon->constrain(ALIGN_TOP | ALIGN_CENTER_HORIZONTAL, 25);
@@ -350,7 +381,9 @@ ErrorScreen::ErrorScreen(std::string mainErrorText, std::string troubleshootingT
 			RootDisplay::switchSubscreen(nullptr);
 	}));
 
-	btnQuit.action = quit;
+	btnQuit.action = []() {
+		RootDisplay::mainDisplay->requestQuit();
+	};
 
 	super::append(logoCon);
 	super::append(&errorMessage);

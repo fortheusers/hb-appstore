@@ -6,8 +6,8 @@
 #endif
 
 Sidebar::Sidebar()
-	: logo(RAMFS "res/icon.png")
-#ifdef DEBUG_BUILD
+	: logo(LOGO_PATH)
+#if defined(DEBUG_BUILD) && !defined(WII_MOCK)
 	, title("hb-appstore Dev Build", 22)
 	, subtitle("v" APP_VERSION " (" __DATE__ ")", 18)
 #else
@@ -38,7 +38,7 @@ Sidebar::Sidebar()
 	}
 
 	// if we're a dev build, rotate the icon upside down
-#ifdef DEBUG_BUILD
+#if defined(DEBUG_BUILD) && !defined(WII_MOCK)
 	logo.angle = 180;
 #endif
 
@@ -52,6 +52,26 @@ Sidebar::Sidebar()
 	super::append(&title);
 
 	subtitle.position(105/SCALER, 75/SCALER);
+	title.position(105, 45);
+	subtitle.position(105, 75);
+
+#if defined(USE_OSC_BRANDING)
+	// make the icon larger
+	logo.setScaleMode(SCALE_PROPORTIONAL_NO_BG);
+	logo.resize(85, 85);
+	logo.position(10, 20);
+
+	title.setText("HB App Store v" APP_VERSION);
+	title.update();
+	subtitle.setText("Pwrd by OSCWii.org");
+	subtitle.setSize(22);
+	subtitle.update();
+
+	title.position(110, 35);
+	subtitle.position(110, 65);
+#endif
+
+	super::append(&title);
 	super::append(&subtitle);
 
 	// currentSelection in this class is used to keep track of which element is being pressed down on in touch mode
@@ -60,7 +80,7 @@ Sidebar::Sidebar()
 
 	if (isEarthDay()) {
 		// easter egg for earth day https://www.earthday.org
-		title.setText(i18n("listing.earthday").c_str());
+		title.setText(i18n("listing.earthday"));
 		title.update();
 
 		// draw a an icon over the logo
@@ -242,7 +262,7 @@ void Sidebar::render(Element* parent)
 		CST_Rect dimens2 = { 0, 0, 400, 60 };
 		dimens.y = 150/SCALER + this->currentSelection * 70/SCALER - 15 / SCALER;					   // TODO: extract formula into method
 		CST_SetDrawBlend(RootDisplay::renderer, true);
-		CST_Color highlight = { 0xad, 0xd8, 0xe6, 0x90 };
+		CST_Color highlight = { 0x10, 0xD9, 0xD9, 0x40 };
 		CST_SetDrawColor(RootDisplay::renderer, highlight); // TODO: matches the DEEP_HIGHLIGHT color
 		CST_FillRect(RootDisplay::renderer, &dimens2);
 	}
@@ -250,15 +270,18 @@ void Sidebar::render(Element* parent)
 	// draw the selected category, if one should be highlighted
 	if (this->highlighted >= 0 || (this->currentSelection >= 0 && this->elasticCounter == THICK_HIGHLIGHT))
 	{
-		// for drag events, we want to use the thick h ighlight
+		// for drag events, we want to use the thick highlight
 		int highlightValue = (this->currentSelection >= 0 && this->elasticCounter == THICK_HIGHLIGHT) ? this->currentSelection : this->highlighted;
 
 		int y = 150/SCALER  + highlightValue * 70/SCALER - 15 / SCALER;
 		//        rectangleRGBA(RootDisplay::renderer, 0, y, dimens.w, y + dimens.h, 0xff, 0x00, 0xff, 0xff);
 
-		for (int x = 0; x < 5; x++)
-		{
-			rectangleRGBA(RootDisplay::renderer, dimens.x + x, y + x, dimens.x + dimens.w - x, y + dimens.h - x, 0x66 - x * 10, 0x7c + x * 20, 0x89 + x * 10, 0xFF);
+		for (int x=-2; x<3; x++) {
+			CST_rectangleRGBA(MainDisplay::renderer,
+				dimens.x + x, y + x,
+				dimens.x + dimens.w - x, y + dimens.h - x,
+				0x10, 0xD9, 0xD9, 0xff
+			);
 		}
 	}
 
@@ -285,3 +308,20 @@ std::string Sidebar::currentCatValue()
 int Sidebar::getWidth() {
 	return 400 - 260 * appList->hideSidebar - 35;
 }
+
+#if defined(USE_OSC_BRANDING)
+rgb getOSCCategoryColor(std::string category)
+{
+	if (category == "emulators") {
+		return fromRGB(0x34, 0xED, 0x90);
+	} else if (category == "games") {
+		return fromRGB(0xED, 0x34, 0x9F);
+	} else if (category == "utilities") {
+		return fromRGB(0x34, 0xBE, 0xED);
+	} else if (category == "media") {
+		return fromRGB(0xff, 0xd3, 0x24);
+	} else {
+		return fromRGB(0xFF, 0xFF, 0xFF);
+	}
+}
+#endif
