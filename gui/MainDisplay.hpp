@@ -13,12 +13,18 @@
 #define PLATFORM "Switch"
 #elif defined(__WIIU__)
 #define PLATFORM "Wii U"
-#elif defined(_3DS)
+#elif defined(_3DS) || defined(_3DS_MOCK)
 #define PLATFORM "3DS"
-#elif defined(WII)
+#elif defined(WII) || defined(WII_MOCK)
 #define PLATFORM "Wii"
 #else
 #define PLATFORM "Generic"
+#endif
+
+#ifdef USE_OSC_BRANDING
+#define LOGO_PATH RAMFS "res/open-hbas-logo.png"
+#else
+#define LOGO_PATH RAMFS "res/icon.png"
 #endif
 
 class MainDisplay : public RootDisplay

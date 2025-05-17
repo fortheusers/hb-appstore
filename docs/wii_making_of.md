@@ -45,3 +45,10 @@
   - After these packages are installed, `make wii` in hb-appstore works without `-DNETWORK_MOCK`
   - SD card writing not working, but networking is!
 - CompuCat, pwsincd, vgmoose, and others back in active discussion in dusted off discord channels regarding layout changes!
+
+## Little bit later still
+- Fancy2209 enters with widescreen patches and other Wii-specific fixes!
+  - Downloading packages now actually works! And they install!
+- More changes to the UI discussed, Gabubu and vgmoose make mockups
+  - Glossy/two-toned Wii-style buttons are added, along with Wii remote input refactoring
+- OSC branding added with their category icon and colors

@@ -6,8 +6,8 @@
 #endif
 
 Sidebar::Sidebar()
-	: logo(RAMFS "res/icon.png")
-#ifdef DEBUG_BUILD
+	: logo(LOGO_PATH)
+#if defined(DEBUG_BUILD) && !defined(WII_MOCK)
 	, title("hb-appstore Dev Build", 22)
 	, subtitle("v" APP_VERSION " (" __DATE__ ")", 18)
 #else
@@ -38,7 +38,7 @@ Sidebar::Sidebar()
 	}
 
 	// if we're a dev build, rotate the icon upside down
-#ifdef DEBUG_BUILD
+#if defined(DEBUG_BUILD) && !defined(WII_MOCK)
 	logo.angle = 180;
 #endif
 
@@ -49,9 +49,25 @@ Sidebar::Sidebar()
 
 	// create title for logo, top left
 	title.position(105, 45);
-	super::append(&title);
-
 	subtitle.position(105, 75);
+
+#if defined(USE_OSC_BRANDING)
+	// make the icon larger
+	logo.setScaleMode(SCALE_PROPORTIONAL_NO_BG);
+	logo.resize(85, 85);
+	logo.position(10, 20);
+
+	title.setText("HB App Store v" APP_VERSION);
+	title.update();
+	subtitle.setText("Pwrd by OSCWii.org");
+	subtitle.setSize(22);
+	subtitle.update();
+
+	title.position(110, 35);
+	subtitle.position(110, 65);
+#endif
+
+	super::append(&title);
 	super::append(&subtitle);
 
 	// currentSelection in this class is used to keep track of which element is being pressed down on in touch mode
@@ -288,3 +304,20 @@ std::string Sidebar::currentCatValue()
 int Sidebar::getWidth() {
 	return 400 - 260 * appList->hideSidebar - 35;
 }
+
+#if defined(USE_OSC_BRANDING)
+rgb getOSCCategoryColor(std::string category)
+{
+	if (category == "emulators") {
+		return fromRGB(0x34, 0xED, 0x90);
+	} else if (category == "games") {
+		return fromRGB(0xED, 0x34, 0x9F);
+	} else if (category == "utilities") {
+		return fromRGB(0x34, 0xBE, 0xED);
+	} else if (category == "media") {
+		return fromRGB(0xff, 0xd3, 0x24);
+	} else {
+		return fromRGB(0xFF, 0xFF, 0xFF);
+	}
+}
+#endif

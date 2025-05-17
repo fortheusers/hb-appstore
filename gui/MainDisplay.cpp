@@ -342,7 +342,7 @@ int MainDisplay::updateLoader(void* clientp, double dltotal, double dlnow, doubl
 
 
 ErrorScreen::ErrorScreen(std::string mainErrorText, std::string troubleshootingText)
-	: icon(RAMFS "res/icon.png")
+	: icon(LOGO_PATH)
 	, title(i18n("credits.title"), 50 - 25)
 	, errorMessage(mainErrorText.c_str(), 40)
 	, troubleshooting((std::string(i18n("errors.troubleshooting") + "\n") + troubleshootingText).c_str(), 20, NULL, false, 600)
@@ -352,6 +352,14 @@ ErrorScreen::ErrorScreen(std::string mainErrorText, std::string troubleshootingT
 	icon.resize(35, 35);
 	logoCon->add(&icon);
 	logoCon->add(&title);
+
+#if defined(USE_OSC_BRANDING)
+	// make the icon larger
+	title.setText("HBAS + OSC Wii");
+	title.update();
+	icon.setScaleMode(SCALE_PROPORTIONAL_NO_BG);
+	icon.resize(80, 80);
+#endif
 
 	// constraints
 	logoCon->constrain(ALIGN_TOP | ALIGN_CENTER_HORIZONTAL, 25);

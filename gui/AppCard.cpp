@@ -39,10 +39,22 @@ AppCard::AppCard(Package& package, AppList* list)
 	this->action = std::bind(&AppCard::displaySubscreen, this);
 
 	icon.setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
-	// icon.cornerRadius = 25;
+	icon.backgroundColor = fromRGB(0xFF, 0xFF, 0xFF);
 
-	// create the layout of the app card (all relative)
+#if defined(WII) || defined(WII_MOCK)
+	// on wii we'll use differently sized icons
+	icon.cornerRadius = cornerRadius = 25;
+	icon.setScaleMode(SCALE_PROPORTIONAL_NO_BG);
+	icon.backgroundColor = fromRGB(0x67, 0x67, 0x67); // dark gray on wii, where missing background colors is common
 
+	// set the bg color based on the category color
+#if defined(USE_OSC_BRANDING)
+	auto color = getOSCCategoryColor(package.getCategory());
+	backgroundColor = color;
+	hasBackground = true;
+#endif
+#endif
+	
 #if defined(_3DS) || defined(_3DS_MOCK)
 	icon.resize(ICON_SIZE, ICON_SIZE);
   this->width = 85;
