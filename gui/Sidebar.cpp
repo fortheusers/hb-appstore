@@ -1,5 +1,5 @@
 #include "MainDisplay.hpp"
-
+#include "../libs/chesto/src/Constraint.hpp"
 
 #ifndef APP_VERSION
 #define APP_VERSION "0.0.0"
@@ -52,8 +52,7 @@ Sidebar::Sidebar()
 	super::append(&title);
 
 	subtitle.position(105/SCALER, 75/SCALER);
-	title.position(105, 45);
-	subtitle.position(105, 75);
+	super::append(&subtitle);
 
 #if defined(USE_OSC_BRANDING)
 	// make the icon larger
@@ -70,9 +69,6 @@ Sidebar::Sidebar()
 	title.position(110, 35);
 	subtitle.position(110, 65);
 #endif
-
-	super::append(&title);
-	super::append(&subtitle);
 
 	// currentSelection in this class is used to keep track of which element is being pressed down on in touch mode
 	// TODO: currentSelection belongs to element and should really be renamed (it's for general purpose animations)
@@ -120,7 +116,7 @@ void Sidebar::addHints()
 		super::append(hint);
 	}
 
-	hider->position(getWidth() - 25 - (!appList->hideSidebar)*(hint->width+10), SCREEN_HEIGHT - 35);
+	hider->constrain(ALIGN_RIGHT | ALIGN_BOTTOM, 10);
 	hint->position(hider->x + hider->width + 5/SCALER, hider->y);
 	showCurrentCategory = true;
 }
@@ -174,7 +170,7 @@ bool Sidebar::process(InputEvents* event)
 		{
 			int xc = 0,
 				yc = 150/SCALER + x * 70/SCALER - 15 / SCALER,
-				width = getWidth(),
+				// width = getWidth(),
 				height = 60;
 
 			if (event->touchIn(xc, yc, width, height))
@@ -208,7 +204,7 @@ bool Sidebar::process(InputEvents* event)
 		{
 			int xc = 0,
 				yc = 150/SCALER + x * 70/SCALER - 15 / SCALER,
-				width = getWidth(),
+				// width = getWidth(),
 				height = 60; // TODO: extract formula into method (same as AppList x value)
 			if ((event->touchIn(xc, yc, width, height) && event->isTouchUp()) || (event->held(A_BUTTON) && this->highlighted == x))
 			{
@@ -246,7 +242,7 @@ void Sidebar::render(Element* parent)
   return;
 #endif
 	// draw the light gray bg behind the active category
-	CST_Rect dimens = { 0, 0, getWidth(), (int)(60/SCALER) }; // TODO: extract this to a method too
+	CST_Rect dimens = { 0, 0, width, (int)(60/SCALER) }; // TODO: extract this to a method too
 	dimens.y = 150/SCALER + this->curCategory * 70/SCALER - 15 / SCALER;					   // TODO: extract formula into method
 
 	auto c = RootDisplay::mainDisplay->backgroundColor;
@@ -303,10 +299,6 @@ std::string Sidebar::currentCatValue()
 		return std::string(this->cat_value[this->curCategory]);
 
 	return std::string("?");
-}
-
-int Sidebar::getWidth() {
-	return 400 - 260 * appList->hideSidebar - 35;
 }
 
 #if defined(USE_OSC_BRANDING)

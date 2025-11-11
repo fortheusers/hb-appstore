@@ -7,7 +7,7 @@ APP_VERSION := 2.3.2
 SOURCES     += gui console
 # DEBUG_BUILD := 1
 
-CFLAGS    += -DWII_MOCK=1
+# CFLAGS    += -DWII_MOCK=1
 
 ifeq (wiiu,$(MAKECMDGOALS))
 SOURCES   += libs/librpxloader/source

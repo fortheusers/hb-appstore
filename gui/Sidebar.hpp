@@ -25,7 +25,6 @@ public:
 	std::string currentCatValue();
 
   void addHints();
-  int getWidth();
 
 	std::string searchQuery = "";
 

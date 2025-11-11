@@ -3,7 +3,11 @@
 #include "ThemeManager.hpp"
 #include "MainDisplay.hpp"
 
+#if defined(WII) || defined(WII_MOCK)
+#define TEXT_SIZE 20
+#else
 #define TEXT_SIZE	13 / SCALER
+#endif
 
 AppCard::AppCard(Package& package, AppList* list)
 	: package(new Package(package))
@@ -42,6 +46,9 @@ AppCard::AppCard(Package& package, AppList* list)
 	icon.backgroundColor = fromRGB(0xFF, 0xFF, 0xFF);
 
 #if defined(WII) || defined(WII_MOCK)
+	icon.resize(128, 48);
+	width = 170;
+	height = 110;
 	// on wii we'll use differently sized icons
 	icon.cornerRadius = cornerRadius = 25;
 	icon.setScaleMode(SCALE_PROPORTIONAL_NO_BG);
@@ -53,9 +60,7 @@ AppCard::AppCard(Package& package, AppList* list)
 	backgroundColor = color;
 	hasBackground = true;
 #endif
-#endif
-	
-#if defined(_3DS) || defined(_3DS_MOCK)
+#elif defined(_3DS) || defined(_3DS_MOCK)
 	icon.resize(ICON_SIZE, ICON_SIZE);
   	this->width = 85;
 #else

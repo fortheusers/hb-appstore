@@ -47,6 +47,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 #endif
 {
 	this->x = 400/SCALER - 260/SCALER * hideSidebar;
+	sidebar->width = this->x - 35/SCALER; // width of the sidebar is space between edge and applist
 
 	// the offset of how far along scroll'd we are
 	this->y = 0;
@@ -135,6 +136,7 @@ bool AppList::process(InputEvents* event)
 		hideSidebar = !hideSidebar;
 		R = (SCREEN_WIDTH - 400) / 260 + hideSidebar;
 		this->x = 400/SCALER - 260/SCALER * hideSidebar;
+		sidebar->width = this->x - 35/SCALER; // width of the sidebar is space between edge and applist
 		sidebar->addHints();
 		update();
 		return true;
