@@ -1,4 +1,4 @@
-image: ghcr.io/fortheusers/sealeo
+image: ghcr.io/fortheusers/sealeo:evo
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive

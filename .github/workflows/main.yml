@@ -24,7 +24,7 @@ jobs:
           - platform: wii
             ext: dol
     container:
-      image: ghcr.io/fortheusers/sealeo:latest
+      image: ghcr.io/fortheusers/sealeo:evo
     steps:
     - uses: actions/checkout@main
       with:
