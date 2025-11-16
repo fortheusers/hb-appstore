@@ -167,9 +167,12 @@ void Menu::display()
 void Menu::initGet()
 {
 	// this is a blocking load
-#if defined(WII)
-	// default the repo type to OSC for wii
+#if defined(WII) || defined(WII_MOCK)
+	// default the repo type to OSC for wii (TODO: don't hardcode this)
 	this->get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO, true, "osc");
+#elif defined(_3DS) || defined(_3DS_MOCK)
+	// default the repo type to universaldb for 3ds (TODO: don't hardcode this)
+	this->get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO, true, "unistore");
 #else
 	this->get = new Get(DEFAULT_GET_HOME, DEFAULT_REPO);
 #endif

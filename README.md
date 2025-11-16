@@ -55,6 +55,12 @@ If you have some functionality that you'd like to see feel free to discuss it on
 
 We're also currently working on localization and translation of the app into other languages. Please see the [current languages here](https://github.com/fortheusers/hb-appstore/tree/main/resin/res/i18n), and if you are inclined to submit a new one, thanks!
 
+A python script that checks for any missing keys is in the `docs` folder. This is useful when updating an existing language:
+
+```
+python3 ./docs/localization_checker.py
+```
+
 ## Compiling
 This program is written using [Chesto](https://github.com/fortheusers/chesto) and has dependencies on libcurl, libget, and zlib. The chesto and libget libraries are included in this repo as submodules.
 

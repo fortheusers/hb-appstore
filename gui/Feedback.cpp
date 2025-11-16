@@ -1,6 +1,7 @@
 #include "Feedback.hpp"
 #include "MainDisplay.hpp"
 #include "main.hpp"
+#include <sstream>
 
 #include "../libs/chesto/src/RootDisplay.hpp"
 
@@ -105,6 +106,7 @@ void Feedback::submit()
 	CURL* curl;
 	CURLcode res;
 
+// TODO: store a user specific key after first feed
 #if defined(__WIIU__)
 	const char* userKey = "wiiu_user";
 #elif defined(WII)
@@ -117,7 +119,32 @@ void Feedback::submit()
 	if (curl)
 	{
 		curl_easy_setopt(curl, CURLOPT_URL, "http://switchbru.com/appstore/feedback");
-		std::string fields = std::string("name=") + userKey + "&package=" + package->getPackageName() + "&message=" + keyboard.getTextInput();
+
+		auto mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;
+
+		int installedPackageCount = 0;
+		for (auto& package : mainDisplay->get->getPackages())
+		{
+			if (package->getStatus() != GET) {
+				installedPackageCount++;
+			}
+		}
+
+		std::ostringstream oss;
+		oss << "name=" << userKey
+			<< "&package=" << package->getPackageName()
+			<< "&message=" << keyboard.getTextInput()
+			<< "&platform=" << PLATFORM
+			<< "&package_version=" << package->getVersion()
+			<< "&hbas_version=" << APP_VERSION
+			<< "&is_low_memory=" << mainDisplay->isLowMemoryMode()
+			<< "&installed_packages=" << installedPackageCount
+			<< "&is_this_pkg_installed=" << (package->getStatus() != GET);
+			// TODO: support these fields in the UI
+			// << "&rating=" << getRating()
+			// << "&is_anonymous=" << isAnonymous()
+
+		std::string fields = oss.str();
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, fields.c_str());
 
 		res = curl_easy_perform(curl);

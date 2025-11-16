@@ -2,6 +2,7 @@
 #include "AboutScreen.hpp"
 #include "FeedbackCenter.hpp"
 #include "ThemeManager.hpp"
+#include "SettingsScreen.hpp"
 #include "main.hpp"
 
 #include "../libs/get/src/Utils.hpp"
@@ -14,10 +15,6 @@
 #include <filesystem>
 #include <cstdlib> // std::rand, std::srand
 #include <ctime>   // std::time
-
-#if defined(SWITCH)
-#include <switch.h>
-#endif
 
 std::string AppList::sortingDescriptions[TOTAL_SORTS] = {
 	"listing.sort.recent",
@@ -95,21 +92,18 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 
 	auto myRed = HBAS::ThemeManager::isDarkMode ? lighterRed : red;
 
-#if defined(__WIIU__)
-  useBannerIcons = true;
-#elif defined(SWITCH)
-  // don't use banner icons if we're in applet mode
-  // they use up too much memory, and a lot of users only use applet mode
-  AppletType at = appletGetAppletType();
-  useBannerIcons = (at == AppletType_Application || at == AppletType_SystemApplication);
+  	useBannerIcons = true;
 
-  if (!useBannerIcons) {
-	// applet mode, display a warning
-	nowPlayingText.setText(i18n("listing.appletwarning").c_str());
-	nowPlayingText.setColor(myRed);
-	nowPlayingText.update();
-  }
-#endif
+	auto mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;
+
+	if (mainDisplay->isLowMemoryMode()) {
+		// applet mode, display a warning
+		useBannerIcons = false;
+		nowPlayingText.setText(i18n("listing.appletwarning").c_str());
+		nowPlayingText.setColor(myRed);
+		nowPlayingText.update();
+		printf("Low memory mode detected, disabling banner icons\n");
+	}
 
 #ifdef DEBUG_BUILD
 	nowPlayingText.setText(i18n("listing.debugwarning").c_str());
@@ -593,8 +587,9 @@ void AppList::toggleKeyboard()
 
 void AppList::launchSettings(bool isCredits)
 {
+	RootDisplay::switchSubscreen(new SettingsScreen());
 	// if (isCredits) {
-		RootDisplay::switchSubscreen(new AboutScreen(this->get));
+		// RootDisplay::switchSubscreen(new AboutScreen(this->get));
 	// } else {
 	// 	RootDisplay::switchSubscreen(new FeedbackCenter(this));
 	// }

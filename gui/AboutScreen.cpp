@@ -154,7 +154,7 @@ void AboutScreen::credit(const char* username,
 void AboutScreen::loadCreditsFromJSON()
 {
 	std::string jsonContent;
-	std::string creditsUrl = std::string(META_REPO) + "/credits.json";
+	std::string creditsUrl = std::string(META_REPO_1) + "/credits.json";
 	
 	bool success = downloadFileToMemory(creditsUrl, &jsonContent);
 	
