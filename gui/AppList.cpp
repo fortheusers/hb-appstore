@@ -497,15 +497,19 @@ void AppList::update()
 			const char* album = musicInfo[2].c_str();
 			
 			// now playing icon, and position
+			#if !defined(DEBUG_BUILD)
 			nowPlayingText.setText(
 				std::string("") + title +
 				((artist != std::string("")) ? (std::string(" " + i18n("listing.by") + " ") + artist) : "") +
 				((album != std::string("")) ? (std::string(" - ") + album) : "")
 			);
+			#endif
 			super::append(&nowPlayingIcon);
 		} else {
-			// no music playing
+			// no music playing, stop showing music name
+			#if !defined(DEBUG_BUILD)
 			nowPlayingText.setText(" ");
+			#endif
 		}
 	}
 

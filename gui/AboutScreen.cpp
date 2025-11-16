@@ -7,11 +7,16 @@
 #include "../libs/chesto/src/NetImageElement.hpp"
 #include "../libs/chesto/src/RootDisplay.hpp"
 
+#include "rapidjson/document.h"
+
 #include "AboutScreen.hpp"
 #include "Feedback.hpp"
+#include "main.hpp"
 #include "ThemeManager.hpp"
 
 #define AVATAR_URL "https://avatars.githubusercontent.com/u/"
+
+using namespace rapidjson;
 
 AboutScreen::AboutScreen(Get* get)
 	: get(get)
@@ -51,71 +56,8 @@ AboutScreen::AboutScreen(Get* get)
 	creds.position(100, 170);
 	super::append(&creds);
 
-	// argument order:
-	// username, githubId, twitter, github, gitlab, patreon, url, discord, directAvatarURL
-	// only first two social points will be used
-
-	credHead(i18n("credits.repo"), i18n("credits.repo.desc"));
-	credit("pwsincd", "20027105", NULL, "pwsincd", NULL, NULL, NULL, "pwsincd#9044");
-	credit("VGMoose", "2467473", "vgmoose", "vgmoose");
-	credit("Nightkingale", "63483138", "Nightkingale", "nightkingale");
-	credit("rw-r-r_0644", "18355947", "rw_r_r_0644", "rw-r-r-0644");
-	credit("crc32", "7893269", "crc32_", "crc-32");
-	credit("CompuCat", "12215288", NULL, NULL, "compucat", NULL, "compucat.me");
-	credit("Quarky", "8533313", NULL, NULL, "quarktheawesome", NULL, "heyquark.com");
-
-	credHead(i18n("credits.library"), i18n("credits.library.desc"));
-	credit("Maschell", "8582508", "maschelldev", "maschell");
-	credit("brienj", "17801294", "xhp_creations", "xhp-creations");
-	credit("Dimok", "15055714", NULL, "dimok789");
-	credit("GaryOderNichts", "12049776", "GaryOderNichts", "GaryOderNichts");
-	credit("FIX94", "12349638", NULL, "FIX94", NULL, NULL, NULL, "FIX94#3446");
-	credit("Zarklord", "1622280", "zarklore", "zarklord");
-	credit("CreeperMario", "15356475", "CreeperMario258", "CreeperMario");
-	credit("Ep8Script", "27195853", "ep8script", "ep8script");
-
-	credHead(i18n("credits.music"), i18n("credits.music.desc"));
-	credit("(T-T)b", "40721862", "ttbchiptunes", NULL, NULL, NULL, "t-tb.bandcamp.com", NULL, "https://f4.bcbits.com/img/a2723574369_16.jpg");
-	credit("drewinator4", "40721862", NULL, NULL, NULL, NULL, NULL, NULL, "https://i.ytimg.com/vi/Tb02CNlhkPA/hqdefault.jpg", "drewinator4");
-
-	credHead(i18n("credits.design"), i18n("credits.design.desc"));
-	credit("exelix", "13405476", "exelix11", "exelix11");
-	credit("Xortroll", "33005497", NULL, "xortroll", NULL, "xortroll");
-	credit("Ave", "584369", NULL, NULL, "a", NULL, "ave.zone", NULL, "https://gitlab.com/uploads/-/system/user/avatar/584369/avatar.png");
-	credit("LyfeOnEdge", "26140376", NULL, "lyfeonedge", NULL, NULL, NULL, "Lyfe#1555");
-	credit("Román", "57878194", NULL, NULL, NULL, NULL, NULL, "Román#6630");
-	credit("Jaames", "9112876", "rakujira", "jaames");
-	credit("Jacob", "12831497", NULL, "jacquesCedric");
-	credit("iTotalJustice", "47043333", NULL, "iTotalJustice");
-
-	credHead(i18n("credits.toolchain"), i18n("credits.toolchain.desc"));
-	credit("devkitPro", "7538897", NULL, "devkitPro", NULL, "devkitPro");
-	credit("Wintermute", "101194", NULL, "wintermute", NULL, NULL, "devkitPro.org");
-	credit("Fincs", "581494", "fincsdev", "fincs");
-	credit("yellows8", "585494", "yellows8");
-	credit("ReSwitched", "26338222", NULL, "reswitched", NULL, NULL, "reswitched.team");
-	credit("exjam", "1302758", NULL, "exjam");
-	credit("brett19", "1621627", NULL, "brett19");
-
-	credHead(i18n("credits.extra"), i18n("credits.extra.desc"));
-
-	credit("Whovian9369", "5240754", NULL, NULL, "whovian9369");
-	credit("FIX94", "12349638", NULL, "FIX94");
-	credit("dojafoja", "15602819", NULL, "dojafoja");
-	credit("misson20000", "616626", NULL, "misson20000", NULL, NULL, NULL, "misson20000#0752");
-	credit("roblabla", "1069318", NULL, "roblabla", NULL, NULL, NULL, "roblabla#8145");
-	credit("tomGER", "25822956", "tumGER", "tumGER");
-	credit("sirocyl", "944067", "sirocyl", "sirocyl");
-	credit("m4xw", "13141469", "m4xwdev", "m4xw");
-	credit("vaguerant", "5259025", NULL, "vaguerant");
-	credit("Koopa", "13039555", "CodingKoopa", "CodingKoopa");
-	credit("Nikki", "3280345", "NWPlayer123", "NWPlayer123");
-	credit("shchmue", "7903403", NULL, "shchmue");
-	credit("CTCaer", "3665130", "CTCaer", "CTCaer");
-	credit("SciresM", "8676005", "SciresM", "SciresM");
-	credit("Shinyquagsire", "1224096", "shinyquagsire", "shinyquagsire23");
-	credit("Marionumber1", "775431", "MrMarionumber1");
-	credit("jam1garner", "8260240", NULL, "jam1garner", NULL, NULL, "jam1.re");
+	// credits are fetched dynamically from meta repo json
+	loadCreditsFromJSON();
 }
 
 AboutScreen::~AboutScreen()
@@ -155,14 +97,15 @@ void AboutScreen::credHead(const std::string& header, const std::string& blurb)
 
 void AboutScreen::credit(const char* username,
 	const char* githubId,
-	const char* twitter,
+	const char* bsky,
 	const char* github,
 	const char* gitlab,
 	const char* patreon,
 	const char* url,
 	const char* discord,
 	const char* directAvatarUrl,
-	const char* youtube)
+	const char* youtube,
+	const char* mastodon)
 {
 	int X = 40;
 	int Y = 310;
@@ -184,10 +127,10 @@ void AboutScreen::credit(const char* username,
 
 	int socialCount = 0;
 
-	const char* handles[7] = { twitter, github, gitlab, patreon, url, discord, youtube };
-	const char* icons[7] = { "twitter", "github", "gitlab", "patreon", "url", "discord", "youtube" };
+	const char* handles[8] = { bsky, github, gitlab, patreon, url, discord, youtube, mastodon };
+	const char* icons[8] = { "bsky", "github", "gitlab", "patreon", "url", "discord", "youtube", "mastodon" };
 
-	for (int x = 0; x < 7; x++)
+	for (int x = 0; x < 8; x++)
 	{
 		if (handles[x] == NULL) continue;
 
@@ -206,6 +149,106 @@ void AboutScreen::credit(const char* username,
 	}
 
 	creditCount++;
+}
+
+void AboutScreen::loadCreditsFromJSON()
+{
+	std::string jsonContent;
+	std::string creditsUrl = std::string(META_REPO) + "/credits.json";
+	
+	bool success = downloadFileToMemory(creditsUrl, &jsonContent);
+	
+	if (success && !jsonContent.empty())
+	{
+		parseCreditsJSON(jsonContent);
+	}
+	else
+	{
+		printf("--> Failed to load credits from %s\n", creditsUrl.c_str());
+	}
+}
+
+const char* AboutScreen::getJsonString(const Value& obj, const char* key)
+{
+	if (obj.HasMember(key) && obj[key].IsString())
+	{
+		return obj[key].GetString();
+	}
+	return nullptr;
+}
+
+void AboutScreen::parseCreditsJSON(const std::string& jsonContent)
+{
+	Document doc;
+	doc.Parse(jsonContent.c_str());
+	
+	if (doc.HasParseError() || !doc.IsObject() || !doc.HasMember("credits"))
+	{
+		printf("--> Error parsing credits JSON\n");
+		return;
+	}
+	
+	const Value& creditsArray = doc["credits"];
+	if (!creditsArray.IsArray())
+	{
+		printf("--> Credits is not an array\n");
+		return;
+	}
+	
+	for (SizeType i = 0; i < creditsArray.Size(); i++)
+	{
+		const Value& section = creditsArray[i];
+		
+		if (!section.IsObject())
+			continue;
+		
+		// header and details
+		const char* nameStr = getJsonString(section, "section");
+		std::string sectionName =  nameStr ? nameStr : "";
+		const char* detailsStr = getJsonString(section, "details");
+		std::string sectionDetails =  detailsStr ? detailsStr : "";
+		
+		if (!sectionName.empty())
+		{
+			credHead(sectionName, sectionDetails);
+		}
+		
+		// for each user under this header
+		if (section.HasMember("users") && section["users"].IsArray())
+		{
+			const Value& users = section["users"];
+			
+			for (SizeType j = 0; j < users.Size(); j++)
+			{
+				const Value& user = users[j];
+				
+				if (!user.IsObject())
+					continue;
+				
+				// most social/url fields are optional
+				const char* name = getJsonString(user, "name");
+				const char* githubId = getJsonString(user, "githubId");
+				const char* bsky = getJsonString(user, "bsky");
+				const char* github = getJsonString(user, "github");
+				const char* gitlab = getJsonString(user, "gitlab");
+				const char* patreon = getJsonString(user, "patreon");
+				const char* url = getJsonString(user, "url");
+				const char* discord = getJsonString(user, "discord");
+				const char* directAvatarUrl = getJsonString(user, "directAvatarURL");
+				const char* youtube = getJsonString(user, "youtube");
+				const char* mastodon = getJsonString(user, "mastodon");
+				
+				if (name && (githubId || directAvatarUrl)) // username and (githubId or directAvatarUrl) required
+				{
+					credit(
+						name,
+						githubId, bsky, github, gitlab,
+						patreon, url, discord, directAvatarUrl,
+						youtube, mastodon);
+				}
+			}
+		}
+	}
 }
 
 void AboutScreen::render(Element* parent)

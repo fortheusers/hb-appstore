@@ -7,6 +7,8 @@
 #include "../libs/chesto/src/ListElement.hpp"
 #include "../libs/chesto/src/TextElement.hpp"
 
+#include "rapidjson/document.h"
+
 struct CreditHead
 {
 	TextElement* text;
@@ -42,14 +44,20 @@ public:
 	void credHead(const std::string& header, const std::string& blurb);
 	void credit(const char* username,
 				const char* githubId,
-				const char* twitter = NULL,
+				const char* bsky = NULL,
 				const char* github = NULL,
 				const char* gitlab = NULL,
 				const char* patreon = NULL,
 				const char* url = NULL,
 				const char* discord = NULL,
 				const char* directAvatarUrl = NULL,
-				const char* youtube = NULL);
+				const char* youtube = NULL,
+				const char* mastodon = NULL);
+
+	// JSON loading methods
+	void loadCreditsFromJSON();
+	void parseCreditsJSON(const std::string& jsonContent);
+	const char* getJsonString(const rapidjson::Value& obj, const char* key);
 
   int creditCount = 0;
 
