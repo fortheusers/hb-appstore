@@ -57,6 +57,8 @@ public:
 	bool hideSidebar = true;
 	EKeyboard keyboard;
 
+	void rebuildUI(); // common method for managing non-appcard elements
+
 private:
 	bool sortCompare(const Package& left, const Package& right);
 	std::random_device randDevice;

@@ -82,6 +82,14 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	keyboard.width = SCREEN_HEIGHT/SCALER - 20;
 	keyboard.updateSize();
 
+  	useBannerIcons = true;
+
+	rebuildUI(); // other text components and colors
+}
+
+void AppList::rebuildUI() {
+	// for every text element (and button?) that we own, poke/reload it, then do a normal reload of all cards
+
 	// category text
 	category.setSize(28);
 	category.setColor(HBAS::ThemeManager::textPrimary);
@@ -91,9 +99,6 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	sortBlurb.setColor(HBAS::ThemeManager::textSecondary);
 
 	auto myRed = HBAS::ThemeManager::isDarkMode ? lighterRed : red;
-
-  	useBannerIcons = true;
-
 	auto mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;
 
 	if (mainDisplay->isLowMemoryMode()) {

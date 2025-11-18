@@ -44,6 +44,7 @@ public:
 	bool checkMetaRepoForUpdates(Get* get);
 	void updateSidebarColor();
 	bool isLowMemoryMode();
+	void rebuildUI();
 
 	Get* get = NULL;
 

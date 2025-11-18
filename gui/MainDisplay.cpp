@@ -44,6 +44,14 @@ void MainDisplay::updateSidebarColor() {
 	backgroundColor = fromRGB(color.r, color.g, color.b);
 }
 
+void MainDisplay::rebuildUI() {
+	// rebuild the UI (for theme changes)
+	appList.rebuildUI();
+	// sidebar.rebuildUI();
+	updateSidebarColor();
+	needsRedraw = true;
+}
+
 void MainDisplay::setupMusic() {
 	// initialize music (only if MUSIC defined)
 	this->initMusic();

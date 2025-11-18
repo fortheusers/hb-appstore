@@ -1,10 +1,16 @@
 #pragma once
 #include "../libs/chesto/src/DrawUtils.hpp"
 
+#define THEME_AUTO 0
+#define THEME_LIGHT 1
+#define THEME_DARK 2
+
 namespace HBAS::ThemeManager
 {
     // Misc variables
     inline bool isDarkMode = false;
+
+    inline int preferredTheme = THEME_AUTO;
 
     // Colours
     inline CST_Color background = {0xff, 0xff, 0xff, 0xff};
