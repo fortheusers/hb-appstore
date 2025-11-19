@@ -1,5 +1,6 @@
 #include "Feedback.hpp"
 #include "MainDisplay.hpp"
+#include "ThemeManager.hpp"
 #include "main.hpp"
 #include <sstream>
 
@@ -14,10 +15,10 @@ Feedback::Feedback(Package& package)
 	: package(&package)
 	, title((std::string(i18n("feedback.leaving") + " \"") + package.getTitle() + "\""), 25)
 	, icon(package.getIconUrl().c_str(), []{ return new ImageElement(RAMFS "res/default.png"); })
-	, quit(i18n("feedback.discard"), Y_BUTTON, false, 20)
-	, send(i18n("feedback.submit"), X_BUTTON, false, 20)
-	, backspaceBtn(i18n("feedback.delete"), B_BUTTON, false, 15)
-	, capsBtn(i18n("feedback.caps"), L_BUTTON, false, 15)
+	, quit(i18n("feedback.discard"), Y_BUTTON, isDark, 20)
+	, send(i18n("feedback.submit"), X_BUTTON, isDark, 20)
+	, backspaceBtn(i18n("feedback.delete"), B_BUTTON, isDark, 15)
+	, capsBtn(i18n("feedback.caps"), L_BUTTON, isDark, 15)
 	, response(i18n("feedback.help"), 20, NULL, false, 460)
 {
 	title.position(50, 30);

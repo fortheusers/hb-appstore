@@ -5,7 +5,10 @@
 #include "../libs/chesto/src/Constraint.hpp"
 #include "SettingsScreen.hpp"
 #include "ThemeManager.hpp"
-#include <unordered_map>
+#include "AboutScreen.hpp"
+#include "FeedbackCenter.hpp"
+
+#include <map>
 
 void appendRow(Container* parent, Element* left, Element* right) {
     auto row = new Container(ROW_LAYOUT, 20);
@@ -38,7 +41,7 @@ void SettingsScreen::rebuildUI() {
 
     // theme selection
     auto themeLabel = new TextElement(i18n("settings.theme.title"), 24, &HBAS::ThemeManager::textPrimary);
-    auto choices = std::unordered_map<std::string, std::string> {
+    auto choices = std::map<std::string, std::string> {
         { "auto", i18n("settings.auto") },
         { "light", i18n("settings.theme.light") },
         { "dark", i18n("settings.theme.dark") }
@@ -46,7 +49,7 @@ void SettingsScreen::rebuildUI() {
 
     // resolution selection
     auto resLabel = new TextElement(i18n("settings.res.title"), 24, &HBAS::ThemeManager::textPrimary);
-    auto resChoices = std::unordered_map<std::string, std::string> {
+    auto resChoices = std::map<std::string, std::string> {
         // { "480p", i18n("settings.res.480p") },
         { "720p", i18n("settings.res.720p") },
         { "1080p", i18n("settings.res.1080p") },
@@ -58,7 +61,7 @@ void SettingsScreen::rebuildUI() {
 
     // sidebar accent color
     auto accentLabel = new TextElement(i18n("settings.accentcolor"), 24, &HBAS::ThemeManager::textPrimary);
-    auto accentChoices = std::unordered_map<std::string, std::string> {
+    auto accentChoices = std::map<std::string, std::string> {
         { "red", i18n("settings.accent.red") },
         { "orange", i18n("settings.accent.orange") },
         { "yellow", i18n("settings.accent.yellow") },
@@ -87,7 +90,7 @@ void SettingsScreen::rebuildUI() {
 
         ((MainDisplay*)RootDisplay::mainDisplay)->rebuildUI(); // MainDisplay doesn't get reconstructed, so it needs to manually rebuild its subcomponents
         this->rebuildUI(); // andh our own UI too
-    }, 20, defaultTheme);
+    }, 20, defaultTheme, isDark);
     appendRow(rows, themeLabel, themeDropDown);
 
     auto resDropDown = new DropDown(this, X_BUTTON, resChoices, [this](std::string choice) {
@@ -106,27 +109,44 @@ void SettingsScreen::rebuildUI() {
             std::cout << "Set resolution to 4k\n";
         }
         this->rebuildUI();
-    }, 20, std::to_string(SCREEN_HEIGHT) + "p");
+    }, 20, std::to_string(SCREEN_HEIGHT) + "p", isDark);
     appendRow(rows, resLabel, resDropDown);
 
-     auto langDropdown = new DropDown(this, L_BUTTON, TextElement::i18nCache, [](std::string choice) {
+     auto langDropdown = new DropDown(this, L_BUTTON, TextElement::getAvailableLanguages(), [this](std::string choice) {
         printf("Selected language: %s\n", choice.c_str());
-    }, 20, "English");
+        TextElement::loadI18nCache(choice);
+        Texture::wipeTextCache(); // all text elems need to be redrawn
+        ((MainDisplay*)RootDisplay::mainDisplay)->rebuildUI();
+        this->rebuildUI();
+    }, 20, "English", isDark);
     appendRow(rows, langLabel, langDropdown);
     
     appendRow(rows, accentLabel, new DropDown(this, Y_BUTTON, accentChoices, [](std::string choice) {
         // auto mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;
         // mainDisplay->updateSidebarColor();
         printf("unimplemented: set accent color to %s\n", choice.c_str());
-    }, 20, "Dark Gray"));
+    }, 20, "Dark Gray", isDark));
 
     // Back button in the corner
-    auto backButton = new Button(i18n("settings.back"), B_BUTTON, false, 20);
+    auto backButton = new Button(i18n("settings.back"), B_BUTTON, isDark, 20);
     backButton->setAction([]() {
         RootDisplay::switchSubscreen(nullptr);
     });
     backButton->constrain(ALIGN_TOP | ALIGN_RIGHT,  20);
     this->child(backButton);
+
+    auto feedbackCenter = new Button(i18n("settings.feedbackcenter"), 0, isDark, 20);
+    feedbackCenter->setAction([]() {
+        RootDisplay::switchSubscreen(new FeedbackCenter());
+    });
+    feedbackCenter->constrain(ALIGN_BOTTOM | ALIGN_CENTER_HORIZONTAL, 20);
+    this->child(feedbackCenter);
+
+    auto credits = new Button(i18n("settings.credits"), 0, isDark, 20);
+    credits->setAction([]() {
+        RootDisplay::switchSubscreen(new AboutScreen(((MainDisplay*)RootDisplay::mainDisplay)->get));;
+    });
+    this->child(credits);
 
     // rows->constrain(OFFSET_TOP, 150)->constrain(OFFSET_LEFT, 100);
     this->child(rows);
@@ -136,16 +156,8 @@ SettingsScreen::~SettingsScreen()
 {
 }
 
-bool SettingsScreen::process(InputEvents* event)
-{
-    if (curDropDown != nullptr) {
-        // if a dropdown is open, pass events to it instead, and it will clean itself up when done
-        return curDropDown->process(event);
-    }
-    super::process(event);
-}
-
 void SettingsScreen::render(Element* parent)
 {
+    // draw the secondary color along the top
     super::render(parent);
 }

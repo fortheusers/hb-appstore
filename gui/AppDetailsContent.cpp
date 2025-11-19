@@ -10,6 +10,7 @@
 
 #include "../libs/chesto/src/RootDisplay.hpp"
 
+#include "MainDisplay.hpp"
 #include "AppDetailsContent.hpp"
 #include "Feedback.hpp"
 #include "AppList.hpp"
@@ -43,15 +44,20 @@ std::string getTrimmedDetails(AppDetailsContent* content, std::string details)
   return trimmedDetails;
 }
 
-AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
-	: reportIssue(i18n("contents.report"), L_BUTTON)
-	, moreByAuthor(i18n("contents.more"), R_BUTTON)
+AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons, DropDownControllerElement* controller)
+	: reportIssue(i18n("contents.report"), L_BUTTON, isDark, 15)
+	, moreByAuthor(i18n("contents.more"), R_BUTTON, isDark, 15)
 	, title(package->getTitle().c_str(), 35, &HBAS::ThemeManager::textPrimary)
 	, title2(package->getAuthor().c_str(), 27, &HBAS::ThemeManager::textSecondary)
 	, details(i18n("contents.placeholder1"), 20 / SCALER, &HBAS::ThemeManager::textPrimary, false, PANE_WIDTH + 20 / SCALER)
 	, changelog(i18n("contents.placeholder2"), 20 / SCALER, &HBAS::ThemeManager::textPrimary, false, PANE_WIDTH + 20 / SCALER)
-	, showFiles(i18n("contents.showinstalled"), ZL_BUTTON, false, 15)
-	, showChangelog(i18n("contents.showchangelog"), ZR_BUTTON, false, 15)
+	, showFiles(controller, ZL_BUTTON, std::map<std::string, std::string>{
+		{ "N/A", "N/A" },
+	}, [](std::string choice) {
+        // do nothing, this is read only innfo
+		std::cout << "Selected choice: " << choice << std::endl;
+    }, 15, i18n("contents.showinstalled"), isDark)
+	, showChangelog(i18n("contents.showchangelog"), ZR_BUTTON, isDark, 15)
 	, banner(useBannerIcons ? package->getBannerUrl().c_str() : package->getIconUrl().c_str(), [package]{
 			// If the banner fails to load, use an icon banner
 			NetImageElement* icon = new NetImageElement(package->getIconUrl().c_str(), []{
@@ -64,7 +70,7 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 			return icon;
 		})
 	, screenshotsContainer(COL_LAYOUT, 20)
-	, viewSSButton(i18n("contents.readmore"), Y_BUTTON, false, 15)
+	, viewSSButton(i18n("contents.readmore"), Y_BUTTON, isDark, 15)
 {
 	title.position(MARGIN, 30);
 	super::append(&title);
@@ -97,10 +103,12 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons)
 	// "Read more..." and View screen shot button (reused/moves based on scroll (see process()))
 	viewSSButton.position((banner.x + banner.width)/2 - viewSSButton.width/4, (details.y + details.height) + 20);
 
-	// view file list button
+	// view file list dropdown button
 	showFiles.position(banner.x, viewSSButton.y);
-	showFiles.action = [this, package] {
-		this->switchExtraInfo(package, extraContentState == SHOW_LIST_OF_FILES ? SHOW_NEITHER : SHOW_LIST_OF_FILES);
+	auto showDropdownFunc = showFiles.action;
+	 showFiles.action = [this, package, showDropdownFunc] {
+		showFiles.choices = getManifestFiles(package);
+		showDropdownFunc();
 	};
 	super::append(&showFiles);
 
@@ -297,7 +305,6 @@ void AppDetailsContent::switchExtraInfo(Package* package, int newState) {
 	// update button text
 	auto hideText = i18n("contents.hide");
 	auto showText = i18n("contents.show");
-	showFiles.updateText((std::string(newState == SHOW_LIST_OF_FILES ? hideText : showText) + " " + i18n("contents.showinstalled")).c_str());
 	showChangelog.updateText((std::string(newState == SHOW_CHANGELOG ? hideText : showText) + " " + i18n("contents.changelog")).c_str());
 
 	// hide/show changelog text based on if neither is true
@@ -311,36 +318,44 @@ void AppDetailsContent::switchExtraInfo(Package* package, int newState) {
 		changelog.setFont(NORMAL);
 		changelog.update();
 	}
-	else if (newState == SHOW_LIST_OF_FILES)
-	{
-		std::stringstream allEntries;
-
-		// if it's an installed package, use the already installed manifest
-		// (LOCAL -> UPDATE packages won't have a manifest)
-		auto status = package->getStatus();
-		if ((status == INSTALLED || status == UPDATE) && package->manifest .isValid()) {
-			allEntries << i18n("contents.files.current") + "\n";
-			for (auto &entry : package->manifest.getEntries()) {
-				allEntries << entry.raw << "\n";
-			}
-			allEntries << "\n";
-		}
-
-		if (status != INSTALLED) {
-			// manifest is either non-local, or we need to display both, download it from the server
-			std::string data("");
-			downloadFileToMemory(package->getManifestUrl().c_str(), &data);
-			allEntries << i18n("contents.files.remote") + "\n" << data;
-		}
-
-		changelog.setText(std::string("") + allEntries.str().c_str());
-		changelog.setFont(MONOSPACED);
-		changelog.update();
-	}
 
 	// update the position of the screenshots based on text
 	screenshotsContainer.position(
 		screenshotsContainer.x,
 		showFiles.y + showFiles.height + 30 + (changelog.hidden ? 0 : changelog.height)
 	);
+}
+
+std::map<std::string, std::string> AppDetailsContent::getManifestFiles(Package* package) {
+	std::map<std::string, std::string> allEntries;
+	int count = 0;
+	// if it's an installed package, use the already installed manifest
+	// (LOCAL -> UPDATE packages won't have a manifest)
+	auto status = package->getStatus();
+	if ((status == INSTALLED || status == UPDATE) && package->manifest .isValid()) {
+		allEntries["header1"] = i18n("contents.files.current");
+		for (auto &entry : package->manifest.getEntries()) {
+			allEntries["file1-" + std::to_string(count)] = entry.path;
+			count += 1;
+		}
+		allEntries["newline"] = "\n";
+	}
+
+	if (status != INSTALLED) {
+		// manifest is either non-local, or we need to display both, download it from the server
+		std::string data("");
+		downloadFileToMemory(package->getManifestUrl().c_str(), &data);
+		allEntries["header2"] = i18n("contents.files.remote");
+		// split data into lines
+		std::istringstream stream(data);
+		std::string line;
+		count = 0;
+		while (std::getline(stream, line)) {
+			if (line.empty()) continue;
+			allEntries["file2-" + std::to_string(count)] = line;;
+			count += 1;
+		}
+	}
+	
+	return allEntries;
 }

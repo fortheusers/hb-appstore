@@ -6,7 +6,6 @@ class SettingsScreen : public DropDownControllerElement
 public:
     SettingsScreen();
     ~SettingsScreen();
-    bool process(InputEvents* event);
     void render(Element* parent);
     void rebuildUI();
 };

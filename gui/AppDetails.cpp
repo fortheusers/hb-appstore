@@ -31,7 +31,7 @@ AppDetails::AppDetails(Package& package, AppList* appList, AppCard* appCard)
 	, download(getAction(&package), package.getStatus() == INSTALLED ? X_BUTTON : A_BUTTON, true, 30 / SCALER)
 	, cancel(i18n("details.cancel"), B_BUTTON, true, 30 / SCALER, download.width)
 	, details(getPackageDetails(&package).c_str(), 20 / SCALER, &white, false, 300)
-	, content(&package, appList->useBannerIcons)
+	, content(&package, appList->useBannerIcons, this)
 	, downloadStatus(i18n("details.status"), 30 / SCALER, &white)
 {
 	// TODO: show current app status somewhere
@@ -295,6 +295,14 @@ bool AppDetails::process(InputEvents* event)
 		// TODO: this is a pattern chesto should handle better (like a stack of subscreens)
 		return elements[elements.size() - 1]->process(event);
 	}
+
+	// same as above, but for the dropdown that's being displayed! this is slightly better since now
+	// we have a "controller" concept, but the stack of subscreens would still be better
+	if (this->curDropDown != nullptr)
+	{
+		return this->curDropDown->process(event);
+	}
+
 	return super::process(event);
 }
 

@@ -30,15 +30,15 @@ CST_Color AppList::lighterRed = { 0xef, 0x48, 0x48, 0xff };
 AppList::AppList(Get* get, Sidebar* sidebar)
 	: get(get)			// the main get instance that contains repo info and stuff
 	, sidebar(sidebar)	// the sidebar, which will store the currently selected category info
-	, quitBtn(i18n("listing.quit"), SELECT_BUTTON, false, 15)
-	, creditsBtn(i18n("listing.credits"), START_BUTTON, false, 15)
-	, sortBtn(i18n("listing.adjustsort"), Y_BUTTON, false, 15)
-	, keyboardBtn(i18n("listing.togglekeyboard"), Y_BUTTON, false, 15)
-	, backspaceBtn(i18n("listing.delete"), B_BUTTON, false, 15)
+	, quitBtn(i18n("listing.quit"), SELECT_BUTTON, isDark, 15)
+	, creditsBtn(i18n("listing.credits"), START_BUTTON, isDark, 15)
+	, sortBtn(i18n("listing.adjustsort"), Y_BUTTON, isDark, 15)
+	, keyboardBtn(i18n("listing.togglekeyboard"), Y_BUTTON, isDark, 15)
+	, backspaceBtn(i18n("listing.delete"), B_BUTTON, isDark, 15)
 	, nowPlayingText(" ", 20, &HBAS::ThemeManager::textPrimary)
 #if defined(MUSIC)
 	, nowPlayingIcon(RAMFS "res/nowplaying.png")
-	, muteBtn(" ", X_BUTTON, false, 15, 90)
+	, muteBtn(" ", X_BUTTON, isDark, 15, 90)
 	, muteIcon(RAMFS "res/mute.png")
 	, unmuteIcon(RAMFS "res/unmute.png")
 #endif
@@ -98,7 +98,23 @@ void AppList::rebuildUI() {
 	sortBlurb.setSize(15);
 	sortBlurb.setColor(HBAS::ThemeManager::textSecondary);
 
-	auto myRed = HBAS::ThemeManager::isDarkMode ? lighterRed : red;
+	// ensure that our helper buttons all have the right theme
+	auto buttons = { &quitBtn, &creditsBtn, &sortBtn, &keyboardBtn, &backspaceBtn };
+	for (auto btn : buttons) {
+		btn->dark = isDark;
+		btn->needsRedraw = true;
+		btn->updateBounds();
+	}
+
+#if defined(MUSIC)
+	muteBtn.dark = isDark;
+	muteBtn.needsRedraw = true;
+	muteBtn.text.setColor(HBAS::ThemeManager::textSecondary);
+	muteBtn.text.update();
+	muteBtn.updateBounds();
+#endif
+
+	auto myRed = isDark ? lighterRed : red;
 	auto mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;
 
 	if (mainDisplay->isLowMemoryMode()) {

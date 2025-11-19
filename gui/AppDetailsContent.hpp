@@ -10,6 +10,7 @@
 #include "../libs/chesto/src/TextElement.hpp"
 #include "../libs/chesto/src/NetImageElement.hpp"
 #include "../libs/chesto/src/Container.hpp"
+#include "../libs/chesto/src/DropDown.hpp"
 
 #define SHOW_NEITHER 0
 #define SHOW_CHANGELOG 1
@@ -18,11 +19,12 @@
 class AppDetailsContent : public ListElement
 {
 public:
-	AppDetailsContent(Package *package, bool lowMemoryMode);
+	AppDetailsContent(Package *package, bool lowMemoryMode, DropDownControllerElement* controller);
 	bool process(InputEvents* event);
 	void render(Element* parent);
 	void switchExtraInfo(Package* package, int newState);
 	void slideUIDown(int heightOffset);
+	std::map<std::string, std::string> getManifestFiles(Package* package);
 
 	Button reportIssue;
 	Button moreByAuthor;
@@ -45,7 +47,7 @@ private:
 	TextElement changelog;
 	NetImageElement banner;
 
-	Button showFiles;
+	DropDown showFiles;
 	Button showChangelog;
 	Button viewSSButton;
 	Container screenshotsContainer;

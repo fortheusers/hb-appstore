@@ -27,6 +27,8 @@
 #define LOGO_PATH RAMFS "res/icon.png"
 #endif
 
+#define isDark HBAS::ThemeManager::isDarkMode
+
 class MainDisplay : public RootDisplay
 {
 public:

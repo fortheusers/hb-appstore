@@ -2,12 +2,11 @@
 #define FEEDBACKCENTERSCREEN_H_
 
 #include "../libs/chesto/src/Element.hpp"
-#include "AppList.hpp"
 
 class FeedbackCenter : public Element
 {
 public:
-	FeedbackCenter(AppList* appList);
+	FeedbackCenter();
 
 	void render(Element* parent);
 	// bool process(InputEvents* event);

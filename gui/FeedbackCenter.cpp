@@ -1,6 +1,8 @@
 #include "FeedbackCenter.hpp"
 #include "ThemeManager.hpp"
+#include "Feedback.hpp"
 #include "main.hpp"
+#include "MainDisplay.hpp"
 
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
@@ -92,7 +94,7 @@ void FeedbackMessage::build()
     this->height = std::max(100, std::max(contentText->height, replyText->height)) + 20;
 }
 
-FeedbackCenter::FeedbackCenter(AppList* appList)
+FeedbackCenter::FeedbackCenter()
 {
     TextElement* header = new TextElement("Feedback Center", 35);
     this->width = RootDisplay::mainDisplay->width; // TODO: chesto should handle this... eg. default all new full screen views to the dimensions of the main display
@@ -164,8 +166,16 @@ FeedbackCenter::FeedbackCenter(AppList* appList)
     }));
 
     // credits button
-    child((new Button("Credits", START_BUTTON, true))->setPosition(SCREEN_WIDTH - 200, 15)->setAction([appList]{
-        appList->launchSettings(true);
+    child((new Button(i18n("leavefeedback"), Y_BUTTON, true))->setPosition(SCREEN_WIDTH - 200, 15)->setAction([]{
+        // find the package corresponding to us
+        for (auto& package : ((MainDisplay*)RootDisplay::mainDisplay)->get->getPackages())
+        {
+            if (package->getPackageName() == APP_SHORTNAME)
+            {
+                RootDisplay::switchSubscreen(new Feedback(*package));
+                break;
+            }
+        }
     }));
     
 }

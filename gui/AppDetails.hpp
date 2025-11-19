@@ -1,12 +1,13 @@
 #ifndef APPDETAILS_H_
 #define APPDETAILS_H_
+#include "../libs/chesto/src/DropDown.hpp"
 
 #include "AppDetailsContent.hpp"
 #include "AppCard.hpp"
 
 class AppList;
 
-class AppDetails : public Element
+class AppDetails : public DropDownControllerElement
 {
 public:
 	AppDetails(Package& package, AppList* appList, AppCard* appCard = NULL);
