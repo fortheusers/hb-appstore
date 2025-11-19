@@ -1,5 +1,5 @@
 #include "ThemeManager.hpp"
-#include "RootDisplay.hpp"
+#include "../libs/chesto/src/RootDisplay.hpp"
 
 #include <ctime>
 #ifdef SWITCH
