@@ -395,6 +395,27 @@ void AppList::update()
 		? get->search(sidebar->searchQuery)
 		: get->list();
 
+	auto& localePackages = ((MainDisplay*)MainDisplay::mainDisplay)->localePackages;
+	// merge in locale package data if we have any
+	if (localePackages.size() > 0) {
+		for (auto& package : packages) {
+			auto it = localePackages.find(package.getPackageName());
+			if (it != localePackages.end()) {
+				// found an override, so copy over potential fields from the locale package
+				auto& localePkg = *(it->second);
+				if (localePkg.getTitle() != "") {
+					package.title = localePkg.getTitle();
+				}
+				if (localePkg.getShortDescription() != "") {
+					package.short_desc = localePkg.getShortDescription();
+				}
+				if (localePkg.getLongDescription() != "") {
+					package.long_desc = localePkg.getLongDescription();
+				}
+			}
+		}
+	}
+
 	// sort the packages
 	if (sortMode == RANDOM)
 		std::shuffle(packages.begin(), packages.end(), randDevice);

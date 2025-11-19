@@ -1,5 +1,6 @@
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 #if defined(SWITCH)
 #include <switch.h>
@@ -51,7 +52,7 @@ AppDetailsContent::AppDetailsContent(Package *package, bool useBannerIcons, Drop
 	, title2(package->getAuthor().c_str(), 27, &HBAS::ThemeManager::textSecondary)
 	, details(i18n("contents.placeholder1"), 20 / SCALER, &HBAS::ThemeManager::textPrimary, false, PANE_WIDTH + 20 / SCALER)
 	, changelog(i18n("contents.placeholder2"), 20 / SCALER, &HBAS::ThemeManager::textPrimary, false, PANE_WIDTH + 20 / SCALER)
-	, showFiles(controller, ZL_BUTTON, std::map<std::string, std::string>{
+	, showFiles(controller, ZL_BUTTON, std::vector<std::pair<std::string, std::string>>{
 		{ "N/A", "N/A" },
 	}, [](std::string choice) {
         // do nothing, this is read only innfo
@@ -326,36 +327,36 @@ void AppDetailsContent::switchExtraInfo(Package* package, int newState) {
 	);
 }
 
-std::map<std::string, std::string> AppDetailsContent::getManifestFiles(Package* package) {
-	std::map<std::string, std::string> allEntries;
+std::vector<std::pair<std::string, std::string>> AppDetailsContent::getManifestFiles(Package* package) {
+	std::vector<std::pair<std::string, std::string>> allEntries;
 	int count = 0;
 	// if it's an installed package, use the already installed manifest
 	// (LOCAL -> UPDATE packages won't have a manifest)
 	auto status = package->getStatus();
 	if ((status == INSTALLED || status == UPDATE) && package->manifest .isValid()) {
-		allEntries["header1"] = i18n("contents.files.current");
+		allEntries.push_back({"header1", i18n("contents.files.current")});
 		for (auto &entry : package->manifest.getEntries()) {
-			allEntries["file1-" + std::to_string(count)] = entry.path;
+			allEntries.push_back({"file1-" + std::to_string(count), entry.path});
 			count += 1;
 		}
-		allEntries["newline"] = "\n";
+		// allEntries["newline"] = "\n";
 	}
 
 	if (status != INSTALLED) {
 		// manifest is either non-local, or we need to display both, download it from the server
 		std::string data("");
 		downloadFileToMemory(package->getManifestUrl().c_str(), &data);
-		allEntries["header2"] = i18n("contents.files.remote");
+		allEntries.push_back({"header2", i18n("contents.files.remote")});
 		// split data into lines
 		std::istringstream stream(data);
 		std::string line;
 		count = 0;
 		while (std::getline(stream, line)) {
 			if (line.empty()) continue;
-			allEntries["file2-" + std::to_string(count)] = line;;
+			allEntries.push_back({"file2-" + std::to_string(count), line});
 			count += 1;
 		}
 	}
-	
+
 	return allEntries;
 }

@@ -48,7 +48,10 @@ public:
 	bool isLowMemoryMode();
 	void rebuildUI();
 
-	Get* get = NULL;
+	void updateGetLocale();
+
+	Get* get = nullptr;
+	std::map<std::string, std::unique_ptr<Package>> localePackages; // if we're in a non-english locale, this contains a lightweight list of packages instance representing the overrides from the meta repo
 
 	bool error = false;
 	bool atLeastOneEnabled = false;

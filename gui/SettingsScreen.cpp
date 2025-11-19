@@ -7,8 +7,19 @@
 #include "ThemeManager.hpp"
 #include "AboutScreen.hpp"
 #include "FeedbackCenter.hpp"
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/prettywriter.h"
+#include "main.hpp"
 
-#include <map>
+#include <vector>
+#include <utility>
+#include <fstream>
+#include <sstream>
+
+// put it in the .get folder
+#define CONFIG_PATH DEFAULT_GET_HOME "settings.json"
 
 void appendRow(Container* parent, Element* left, Element* right) {
     auto row = new Container(ROW_LAYOUT, 20);
@@ -17,8 +28,133 @@ void appendRow(Container* parent, Element* left, Element* right) {
     parent->add(row);
 }
 
+std::string SettingsScreen::getSettingsPath() {
+    return CONFIG_PATH;
+}
+
+void SettingsScreen::saveSettings() {
+    using namespace rapidjson;
+    
+    Document doc;
+    doc.SetObject();
+    Document::AllocatorType& allocator = doc.GetAllocator();
+    
+    // Save current settings
+    Value themeVal;
+    themeVal.SetString(currentTheme.c_str(), currentTheme.length(), allocator);
+    doc.AddMember("theme", themeVal, allocator);
+    
+    Value resVal;
+    resVal.SetString(currentResolution.c_str(), currentResolution.length(), allocator);
+    doc.AddMember("resolution", resVal, allocator);
+    
+    Value langVal;
+    langVal.SetString(currentLanguage.c_str(), currentLanguage.length(), allocator);
+    doc.AddMember("language", langVal, allocator);
+    
+    Value accentVal;
+    accentVal.SetString(currentAccentColor.c_str(), currentAccentColor.length(), allocator);
+    doc.AddMember("accentColor", accentVal, allocator);
+    
+    // write to output file
+    StringBuffer buffer;
+    PrettyWriter<StringBuffer> writer(buffer);
+    doc.Accept(writer);
+    
+    std::ofstream ofs(getSettingsPath());
+    if (ofs.is_open()) {
+        ofs << buffer.GetString();
+        ofs.close();
+        printf("Settings saved to %s\n", getSettingsPath().c_str());
+    } else {
+        printf("Failed to save settings to %s\n", getSettingsPath().c_str());
+    }
+
+    // now reload settings (all setting changes go through disk first)
+    loadSettings();
+}
+
+void SettingsScreen::loadSettings() {
+    using namespace rapidjson;
+    
+    // defaults
+    currentTheme = "auto";
+    currentResolution = std::to_string(SCREEN_HEIGHT) + "p";
+    currentLanguage = "English";
+    currentAccentColor = "darkgray";
+    
+    // try to load from file
+    std::ifstream ifs(getSettingsPath());
+    if (!ifs.is_open()) {
+        printf("No settings file found at %s, using defaults\n", getSettingsPath().c_str());
+        return;
+    }
+    
+    std::stringstream buffer;
+    buffer << ifs.rdbuf();
+    std::string content = buffer.str();
+    ifs.close();
+    
+    Document doc;
+    doc.Parse(content.c_str());
+    
+    if (doc.HasParseError()) {
+        printf("Error parsing settings file, using defaults\n");
+        return;
+    }
+    
+    // Load settings
+    if (doc.HasMember("theme") && doc["theme"].IsString()) {
+        currentTheme = doc["theme"].GetString();
+    }
+    
+    if (doc.HasMember("resolution") && doc["resolution"].IsString()) {
+        currentResolution = doc["resolution"].GetString();
+    }
+    
+    if (doc.HasMember("language") && doc["language"].IsString()) {
+        currentLanguage = doc["language"].GetString();
+    }
+    
+    if (doc.HasMember("accentColor") && doc["accentColor"].IsString()) {
+        currentAccentColor = doc["accentColor"].GetString();
+    }
+    
+    printf("Settings loaded from %s\n", getSettingsPath().c_str());
+    
+    // Apply loaded settings
+    if (currentTheme == "auto") {
+        HBAS::ThemeManager::preferredTheme = THEME_AUTO;
+    } else if (currentTheme == "light") {
+        HBAS::ThemeManager::preferredTheme = THEME_LIGHT;
+    } else if (currentTheme == "dark") {
+        HBAS::ThemeManager::preferredTheme = THEME_DARK;
+    }
+    
+    // Apply accent color
+    if (currentAccentColor == "red")
+        HBAS::ThemeManager::setAccentColor(fromRGB(255, 0, 0));
+    else if (currentAccentColor == "orange")
+        HBAS::ThemeManager::setAccentColor(fromRGB(255, 165, 0));
+    else if (currentAccentColor == "yellow")
+        HBAS::ThemeManager::setAccentColor(fromRGB(255, 255, 0));
+    else if (currentAccentColor == "green")
+        HBAS::ThemeManager::setAccentColor(fromRGB(0, 255, 0));
+    else if (currentAccentColor == "blue")
+        HBAS::ThemeManager::setAccentColor(fromRGB(0, 0, 255));
+    else if (currentAccentColor == "purple")
+        HBAS::ThemeManager::setAccentColor(fromRGB(128, 0, 128));
+    else if (currentAccentColor == "pink")
+        HBAS::ThemeManager::setAccentColor(fromRGB(255, 192, 203));
+    else if (currentAccentColor == "lightgray")
+        HBAS::ThemeManager::setAccentColor(fromRGB(200, 200, 200));
+    else if (currentAccentColor == "darkgray")
+        HBAS::ThemeManager::setAccentColor(fromRGB(30, 30, 30));
+}
+
 SettingsScreen::SettingsScreen()
 {
+    loadSettings();
     rebuildUI();
 }
 
@@ -28,40 +164,75 @@ void SettingsScreen::rebuildUI() {
     width = SCREEN_WIDTH;
     height = SCREEN_HEIGHT;
 
-    auto color = HBAS::ThemeManager::background;
-    this->backgroundColor = {color.r / 255.0, color.g / 255.0, color.b / 255.0};
-    hasBackground = true;
+    // Back button in the upper left corner
+    auto backButton = new Button(i18n("settings.back"), B_BUTTON, isDark, 20);
+    backButton->setAction([]() {
+        RootDisplay::switchSubscreen(nullptr);
+    });
+    backButton->constrain(ALIGN_TOP | ALIGN_LEFT, 20);
+    this->child(backButton);
 
-    auto header = new TextElement(i18n("settings.title"), 30, &HBAS::ThemeManager::textPrimary);
-    // header->constrain(ALIGN_TOP | ALIGN_CENTER_HORIZONTAL, 30);
+    // Header centered at top
+    auto header = new TextElement(i18n("settings.title"), 30, &HBAS::ThemeManager::textSecondary);
+    header->position(0, 20);
+    header->constrain(ALIGN_CENTER_HORIZONTAL, 0);
     this->child(header);
 
-    auto rows = new Container(COL_LAYOUT, 60);
-    // main header
+    // Main settings container - centered vertically and horizontally
+    auto rows = new Container(COL_LAYOUT, 40);
 
-    // theme selection
+    // Theme selection
     auto themeLabel = new TextElement(i18n("settings.theme.title"), 24, &HBAS::ThemeManager::textPrimary);
-    auto choices = std::map<std::string, std::string> {
+    auto choices = std::vector<std::pair<std::string, std::string>> {
         { "auto", i18n("settings.auto") },
         { "light", i18n("settings.theme.light") },
         { "dark", i18n("settings.theme.dark") }
     };
 
-    // resolution selection
+    auto themeDropDown = new DropDown(this, R_BUTTON, choices, [this](std::string choice) {
+        currentTheme = choice;
+        saveSettings();
+        HBAS::ThemeManager::themeManagerInit();
+        Texture::wipeTextCache();
+        ((MainDisplay*)RootDisplay::mainDisplay)->rebuildUI();
+        this->rebuildUI();
+    }, 20, currentTheme, isDark);
+    appendRow(rows, themeLabel, themeDropDown);
+
+    // Resolution selection
     auto resLabel = new TextElement(i18n("settings.res.title"), 24, &HBAS::ThemeManager::textPrimary);
-    auto resChoices = std::map<std::string, std::string> {
-        // { "480p", i18n("settings.res.480p") },
+    auto resChoices = std::vector<std::pair<std::string, std::string>> {
         { "720p", i18n("settings.res.720p") },
         { "1080p", i18n("settings.res.1080p") },
-        // { "4k", i18n("settings.res.4k") }
     };
 
-    // language selection
-    auto langLabel = new TextElement(i18n("settings.language"), 24, &HBAS::ThemeManager::textPrimary);
+    auto resDropDown = new DropDown(this, X_BUTTON, resChoices, [this](std::string choice) {
+        currentResolution = choice;
+        saveSettings();
+        this->rebuildUI();
+    }, 20, currentResolution, isDark);
+    appendRow(rows, resLabel, resDropDown);
 
-    // sidebar accent color
+    // Language selection
+    auto langLabel = new TextElement(i18n("settings.language"), 24, &HBAS::ThemeManager::textPrimary);
+    auto langDropdown = new DropDown(this, L_BUTTON, TextElement::getAvailableLanguages(), [this](std::string choice) {
+        currentLanguage = choice;
+        printf("Selected language: %s\n", choice.c_str());
+        saveSettings();
+
+        TextElement::loadI18nCache(choice);
+        Texture::wipeTextCache();
+        ((MainDisplay*)RootDisplay::mainDisplay)->rebuildUI();
+        this->rebuildUI();
+
+        ((MainDisplay*)RootDisplay::mainDisplay)->updateGetLocale(); // merge our repo data with the meta-repo's locale translation data
+
+    }, 20, currentLanguage, isDark);
+    appendRow(rows, langLabel, langDropdown);
+    
+    // Accent color selection
     auto accentLabel = new TextElement(i18n("settings.accentcolor"), 24, &HBAS::ThemeManager::textPrimary);
-    auto accentChoices = std::map<std::string, std::string> {
+    auto accentChoices = std::vector<std::pair<std::string, std::string>> {
         { "red", i18n("settings.accent.red") },
         { "orange", i18n("settings.accent.orange") },
         { "yellow", i18n("settings.accent.yellow") },
@@ -72,84 +243,31 @@ void SettingsScreen::rebuildUI() {
         { "lightgray", i18n("settings.accent.lightgray") },
         { "darkgray", i18n("settings.accent.darkgray") }
     };
-
-    auto defaultTheme = "auto";
-    if (HBAS::ThemeManager::preferredTheme != THEME_AUTO) {
-        defaultTheme = (HBAS::ThemeManager::preferredTheme == THEME_LIGHT) ? "light" : "dark";
-    }
-    auto themeDropDown = new DropDown(this, R_BUTTON, choices, [this](std::string choice) {
-        if (choice == "auto") {
-            HBAS::ThemeManager::preferredTheme = THEME_AUTO;
-        } else if (choice == "light") {
-            HBAS::ThemeManager::preferredTheme = THEME_LIGHT;
-        } else if (choice == "dark") {
-            HBAS::ThemeManager::preferredTheme = THEME_DARK;
-        }
-        HBAS::ThemeManager::themeManagerInit(); // re-init theme
-        Texture::wipeTextCache(); // all text elems need to be redrawn
-
-        ((MainDisplay*)RootDisplay::mainDisplay)->rebuildUI(); // MainDisplay doesn't get reconstructed, so it needs to manually rebuild its subcomponents
-        this->rebuildUI(); // andh our own UI too
-    }, 20, defaultTheme, isDark);
-    appendRow(rows, themeLabel, themeDropDown);
-
-    auto resDropDown = new DropDown(this, X_BUTTON, resChoices, [this](std::string choice) {
-        if (choice == "480p") {
-            RootDisplay::mainDisplay->setScreenResolution(640, 480);
-            std::cout << "Set resolution to 480p\n";
-        }
-        else if (choice == "720p") {
-            RootDisplay::mainDisplay->setScreenResolution(1280, 720);
-            std::cout << "Set resolution to 720p\n";
-        } else if (choice == "1080p") {
-            RootDisplay::mainDisplay->setScreenResolution(1920, 1080);
-            std::cout << "Set resolution to 1080p\n";
-        } else if (choice == "4k") {
-            RootDisplay::mainDisplay->setScreenResolution(3840, 2160);
-            std::cout << "Set resolution to 4k\n";
-        }
-        this->rebuildUI();
-    }, 20, std::to_string(SCREEN_HEIGHT) + "p", isDark);
-    appendRow(rows, resLabel, resDropDown);
-
-     auto langDropdown = new DropDown(this, L_BUTTON, TextElement::getAvailableLanguages(), [this](std::string choice) {
-        printf("Selected language: %s\n", choice.c_str());
-        TextElement::loadI18nCache(choice);
-        Texture::wipeTextCache(); // all text elems need to be redrawn
-        ((MainDisplay*)RootDisplay::mainDisplay)->rebuildUI();
-        this->rebuildUI();
-    }, 20, "English", isDark);
-    appendRow(rows, langLabel, langDropdown);
     
-    appendRow(rows, accentLabel, new DropDown(this, Y_BUTTON, accentChoices, [](std::string choice) {
-        // auto mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;
-        // mainDisplay->updateSidebarColor();
-        printf("unimplemented: set accent color to %s\n", choice.c_str());
-    }, 20, "Dark Gray", isDark));
+    appendRow(rows, accentLabel, new DropDown(this, Y_BUTTON, accentChoices, [this](std::string choice) {
+        currentAccentColor = choice;
+        saveSettings();
+    }, 20, currentAccentColor, isDark));
 
-    // Back button in the corner
-    auto backButton = new Button(i18n("settings.back"), B_BUTTON, isDark, 20);
-    backButton->setAction([]() {
-        RootDisplay::switchSubscreen(nullptr);
-    });
-    backButton->constrain(ALIGN_TOP | ALIGN_RIGHT,  20);
-    this->child(backButton);
+    // Center the rows container
+    rows->constrain(ALIGN_CENTER_BOTH, 0);
+    this->child(rows);
 
+    // Feedback button at bottom center
     auto feedbackCenter = new Button(i18n("settings.feedbackcenter"), 0, isDark, 20);
     feedbackCenter->setAction([]() {
         RootDisplay::switchSubscreen(new FeedbackCenter());
     });
-    feedbackCenter->constrain(ALIGN_BOTTOM | ALIGN_CENTER_HORIZONTAL, 20);
+    feedbackCenter->constrain(ALIGN_BOTTOM | ALIGN_CENTER_HORIZONTAL, 80);
     this->child(feedbackCenter);
 
+    // Credits button at bottom center (above feedback)
     auto credits = new Button(i18n("settings.credits"), 0, isDark, 20);
     credits->setAction([]() {
         RootDisplay::switchSubscreen(new AboutScreen(((MainDisplay*)RootDisplay::mainDisplay)->get));;
     });
+    credits->constrain(ALIGN_BOTTOM | ALIGN_CENTER_HORIZONTAL, 20);
     this->child(credits);
-
-    // rows->constrain(OFFSET_TOP, 150)->constrain(OFFSET_LEFT, 100);
-    this->child(rows);
 }
 
 SettingsScreen::~SettingsScreen()
@@ -158,6 +276,15 @@ SettingsScreen::~SettingsScreen()
 
 void SettingsScreen::render(Element* parent)
 {
+	if (this->parent == NULL)
+		this->parent = parent;
+
+	// draw a white background, width of the screen
+	CST_Rect dimens = { 0, 85, SCREEN_WIDTH, SCREEN_HEIGHT };
+
+	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
+	CST_FillRect(RootDisplay::renderer, &dimens);
+
     // draw the secondary color along the top
     super::render(parent);
 }

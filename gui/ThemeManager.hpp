@@ -1,5 +1,6 @@
 #pragma once
 #include "../libs/chesto/src/DrawUtils.hpp"
+#include "../libs/chesto/src/colorspaces.hpp"
 
 #define THEME_AUTO 0
 #define THEME_LIGHT 1
@@ -11,6 +12,7 @@ namespace HBAS::ThemeManager
     inline bool isDarkMode = false;
 
     inline int preferredTheme = THEME_AUTO;
+    void setAccentColor(rgb color);
 
     // Colours
     inline CST_Color background = {0xff, 0xff, 0xff, 0xff};

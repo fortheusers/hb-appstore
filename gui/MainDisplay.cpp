@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <unordered_set>
 #include "../libs/get/src/Get.hpp"
+#include "../libs/get/src/repos/GetRepo.hpp"
 #include "../libs/get/src/Utils.hpp"
 #include "../libs/chesto/src/Constraint.hpp"
 
@@ -116,6 +117,20 @@ void MainDisplay::beginInitialLoad() {
 	appList.get = get;
 	appList.update();
 	appList.sidebar->addHints();
+}
+
+void MainDisplay::updateGetLocale() {
+	localePackages.clear();
+
+	if (TextElement::curLang != "en-us") {
+		// create a lightweight get instance for the locale repo
+		auto localUrl = META_REPO_1 "/locales/" + TextElement::curLang;
+		GetRepo localeRepo("locale", localUrl, true);
+		auto localeList = localeRepo.loadPackages();
+		for (auto& pkg : localeList) {
+			localePackages[pkg->getPackageName()] = std::move(pkg);
+		}
+	}
 }
 
 bool MainDisplay::checkMetaRepoForUpdates(Get* get) {

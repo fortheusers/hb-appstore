@@ -1,4 +1,6 @@
 #include "ThemeManager.hpp"
+#include "RootDisplay.hpp"
+
 #include <ctime>
 #ifdef SWITCH
 #include <switch.h>
@@ -76,5 +78,9 @@ namespace HBAS::ThemeManager
             textPrimary = {0x00, 0x00, 0x00, 0xff};
             textSecondary = {0x50, 0x50, 0x50, 0xff};
         }
+    }
+
+    void setAccentColor(rgb color) {
+        RootDisplay::mainDisplay->backgroundColor = color;
     }
 }

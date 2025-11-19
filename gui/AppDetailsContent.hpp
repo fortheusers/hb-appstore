@@ -24,7 +24,7 @@ public:
 	void render(Element* parent);
 	void switchExtraInfo(Package* package, int newState);
 	void slideUIDown(int heightOffset);
-	std::map<std::string, std::string> getManifestFiles(Package* package);
+	std::vector<std::pair<std::string, std::string>> getManifestFiles(Package* package);
 
 	Button reportIssue;
 	Button moreByAuthor;
