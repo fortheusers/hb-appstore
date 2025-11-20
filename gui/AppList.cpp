@@ -31,7 +31,7 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	: get(get)			// the main get instance that contains repo info and stuff
 	, sidebar(sidebar)	// the sidebar, which will store the currently selected category info
 	, quitBtn(i18n("listing.quit"), SELECT_BUTTON, isDark, 15)
-	, creditsBtn(i18n("listing.credits"), START_BUTTON, isDark, 15)
+	, creditsBtn(i18n("settings.title"), START_BUTTON, isDark, 15)
 	, sortBtn(i18n("listing.adjustsort"), Y_BUTTON, isDark, 15)
 	, keyboardBtn(i18n("listing.togglekeyboard"), Y_BUTTON, isDark, 15)
 	, backspaceBtn(i18n("listing.delete"), B_BUTTON, isDark, 15)

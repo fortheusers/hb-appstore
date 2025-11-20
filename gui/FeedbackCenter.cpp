@@ -166,7 +166,7 @@ FeedbackCenter::FeedbackCenter()
     }));
 
     // credits button
-    child((new Button(i18n("leavefeedback"), Y_BUTTON, true))->setPosition(SCREEN_WIDTH - 200, 15)->setAction([]{
+    child((new Button(i18n("credits.feedback"), Y_BUTTON, true))->setPosition(SCREEN_WIDTH - 200, 15)->setAction([]{
         // find the package corresponding to us
         for (auto& package : ((MainDisplay*)RootDisplay::mainDisplay)->get->getPackages())
         {

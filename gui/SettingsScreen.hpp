@@ -20,4 +20,6 @@ public:
     std::string currentResolution;
     std::string currentLanguage;
     std::string currentAccentColor;
+
+    int transitionAmt = 0; // how far in we've faded in
 };

@@ -33,6 +33,11 @@ Feedback::Feedback(Package& package)
 #endif
 	super::append(&icon);
 
+	width = SCREEN_WIDTH;
+	height = SCREEN_HEIGHT;
+	hasBackground = true;
+	backgroundColor = MainDisplay::mainDisplay->backgroundColor;
+
 	// keyboard.hasRoundedKeys = true;
 
 	keyboard.typeAction = std::bind(&Feedback::keyboardInputCallback, this);

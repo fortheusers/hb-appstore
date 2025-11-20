@@ -36,6 +36,22 @@ AppDetails::AppDetails(Package& package, AppList* appList, AppCard* appCard)
 {
 	// TODO: show current app status somewhere
 
+	// set the BG to the theme's
+	this->hasBackground = true;
+	this->backgroundColor = fromCST(HBAS::ThemeManager::background);
+
+	width = SCREEN_WIDTH;
+	height = SCREEN_HEIGHT;
+
+	// the sidebar is just an Element with a bg
+	Element* sidebarBg = new Element();
+	sidebarBg->hasBackground = true;
+	sidebarBg->backgroundColor = RootDisplay::mainDisplay->backgroundColor;
+	sidebarBg->position(SCREEN_WIDTH - 360, 0);
+	sidebarBg->width = 360;
+	sidebarBg->height = SCREEN_HEIGHT;
+	child(sidebarBg);
+
 	// download/update/remove button (2)
 
 	download.position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 170);
@@ -412,14 +428,6 @@ void AppDetails::render(Element* parent)
 {
 	if (this->parent == NULL)
 		this->parent = parent;
-
-	// draw white background
-	CST_Rect dimens = { 0, 0, SCREEN_WIDTH - 360, SCREEN_HEIGHT };
-
-	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
-	CST_FillRect(RootDisplay::renderer, &dimens);
-
-	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
 
 	// draw all elements
 	super::render(parent);
