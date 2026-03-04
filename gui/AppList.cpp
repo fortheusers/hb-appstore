@@ -743,9 +743,9 @@ void AppList::update()
 		nowPlayingText->position((quitBtn->width + quitBtn->x) - nowPlayingText->width, 20);
 	}
 
+#if defined(MUSIC)
 	auto rootDisplay = RootDisplay::mainDisplay;
 
-#if defined(MUSIC)
 	if (rootDisplay->music)
 	{
 		if (!Mix_PausedMusic())
