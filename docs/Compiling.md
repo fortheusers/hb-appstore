@@ -8,7 +8,7 @@ The easiest way to build is using the [Sealeo](https://github.com/fortheusers/se
 ```
 git clone --recursive https://github.com/fortheusers/hb-appstore.git
 cd hb-appstore
-docker run -v $(pwd):/code -it ghcr.io/fortheusers/sealeo /bin/bash
+docker run -v $(pwd):/code -it ghcr.io/fortheusers/sealeo:evo /bin/bash
 make switch    # or wiiu, wii, 3ds, pc
 ```
 

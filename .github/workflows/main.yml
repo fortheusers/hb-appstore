@@ -6,6 +6,7 @@ on:
       - main 
       - test
       - 3ds-build
+      - 2.4-newabi
   pull_request:
     branches:
       - main
@@ -30,6 +31,9 @@ jobs:
     - uses: actions/checkout@main
       with:
         submodules: recursive
+    - name: Generate pixel i18n fonts
+      run: |
+        python3 tools/generate_extended_font.py
     - if: matrix.platform == 'wii'
       name: Setup SDL2 Widescreen
       run: |

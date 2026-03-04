@@ -1,6 +1,8 @@
 #include "Feedback.hpp"
 #include "MainDisplay.hpp"
+#include "ThemeManager.hpp"
 #include "main.hpp"
+#include <sstream>
 
 #include "../libs/chesto/src/RootDisplay.hpp"
 
@@ -11,61 +13,69 @@
 
 Feedback::Feedback(Package& package)
 	: package(&package)
-	, title((std::string(i18n("feedback.leaving") + " \"") + package.getTitle() + "\""), 25)
-	, icon(package.getIconUrl().c_str(), []{ return new ImageElement(RAMFS "res/default.png"); })
-	, quit(i18n("feedback.discard"), Y_BUTTON, false, 20)
-	, send(i18n("feedback.submit"), X_BUTTON, false, 20)
-	, backspaceBtn(i18n("feedback.delete"), B_BUTTON, false, 15)
-	, capsBtn(i18n("feedback.caps"), L_BUTTON, false, 15)
-	, response(i18n("feedback.help"), 20, NULL, false, 460)
 {
-	title.position(50, 30);
-	super::append(&title);
+	rebuildUI();
+}
 
-	icon.setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
-	icon.position(50, 100);
+void Feedback::rebuildUI()
+{
+	removeAll();
+
+	title = createNode<TextElement>((std::string(i18n("feedback.leaving") + " \"") + package->getTitle() + "\""), 25);
+	icon = createNode<NetImageElement>(package->getIconUrl().c_str(), []
+		{ return new ImageElement(RAMFS "res/default.png"); });
+	quit = createNode<Button>(i18n("feedback.discard"), Y_BUTTON, isDark, 20);
+	send = createNode<Button>(i18n("feedback.submit"), X_BUTTON, isDark, 20);
+	backspaceBtn = createNode<Button>(i18n("feedback.delete"), B_BUTTON, isDark, 15);
+	capsBtn = createNode<Button>(i18n("feedback.caps"), L_BUTTON, isDark, 15);
+	response = createNode<TextElement>(i18n("feedback.help"), 20, nullptr, false, 460);
+
+	title->position(50, 30);
+
+	icon->setScaleMode(SCALE_PROPORTIONAL_WITH_BG);
+	icon->position(50, 100);
 #if defined(_3DS) || defined(_3DS_MOCK)
-  icon.resize(ICON_SIZE, ICON_SIZE);
+	icon->resize(ICON_SIZE, ICON_SIZE);
 #else
-	icon.resize(256/SCALER, ICON_SIZE/SCALER);
+	float effectiveScale = getEffectiveScale();
+	icon->resize(256 * effectiveScale, ICON_SIZE * effectiveScale);
 #endif
-	super::append(&icon);
+
+	hasBackground = true;
+	backgroundColor = MainDisplay::mainDisplay->backgroundColor;
 
 	// keyboard.hasRoundedKeys = true;
 
-	keyboard.typeAction = std::bind(&Feedback::keyboardInputCallback, this);
-	keyboard.preventEnterAndTab = true;
-	keyboard.updateSize();
-	super::append(&keyboard);
+	keyboard = createNode<EKeyboard>();
+	keyboard->typeAction = std::bind(&Feedback::keyboardInputCallback, this);
+	keyboard->preventEnterAndTab = true;
+	keyboard->updateSize();
 
-	quit.position(895, 240);
-	quit.action = std::bind(&Feedback::back, this);
-	super::append(&quit);
+	quit->position(895, 240);
+	quit->action = std::bind(&Feedback::back, this);
 
-	send.position(quit.x + quit.width + 15, quit.y);
-	send.action = std::bind(&Feedback::submit, this);
-	super::append(&send);
+	send->position(quit->x + quit->width + 15, quit->y);
+	send->action = std::bind(&Feedback::submit, this);
 
-	backspaceBtn.position(quit.x - 15 - backspaceBtn.width, send.y);
-	backspaceBtn.action = [this](void) {
-		this->keyboard.backspace();
+	backspaceBtn->position(quit->x - 15 - backspaceBtn->width, send->y);
+	backspaceBtn->action = [this](void)
+	{
+		this->keyboard->backspace();
 	};
-	super::append(&backspaceBtn);
 
-	capsBtn.position(backspaceBtn.x - 15 - capsBtn.width, send.y);
-	capsBtn.action = [this](void) {
-		this->keyboard.capsOn = !this->keyboard.capsOn;
-		this->keyboard.updateSize();
+	capsBtn->position(backspaceBtn->x - 15 - capsBtn->width, send->y);
+	capsBtn->action = [this](void)
+	{
+		this->keyboard->capsOn = !this->keyboard->capsOn;
+		this->keyboard->updateSize();
 	};
-	super::append(&capsBtn);
 
-	response.position(860, 20);
-	super::append(&response);
+	response->position(860, 20);
 
-	feedback.setSize(23);
-	feedback.setWrappedWidth(730);
-	feedback.position(390, 100);
-	super::append(&feedback);
+	feedback = createNode<TextElement>();
+	feedback->setSize(23);
+	feedback->setWrappedWidth(730);
+	feedback->position(390, 100);
 }
 
 void Feedback::render(Element* parent)
@@ -73,9 +83,10 @@ void Feedback::render(Element* parent)
 	// draw a white background, 870 wiz
 	CST_Color white = { 0xff, 0xff, 0xff, 0xff };
 
-	  if (parent != NULL) {
-    CST_SetDrawColor(RootDisplay::renderer, white);
-  }
+	if (parent != NULL)
+	{
+		CST_SetDrawColor(RootDisplay::renderer, white);
+	}
 
 	return super::render(parent);
 }
@@ -86,8 +97,8 @@ bool Feedback::process(InputEvents* event)
 
 	if (needsRefresh)
 	{
-		feedback.setText(keyboard.getTextInput());
-		feedback.update();
+		feedback->setText(keyboard->getTextInput());
+		feedback->update();
 		needsRefresh = false;
 	}
 
@@ -103,8 +114,8 @@ void Feedback::submit()
 {
 #ifndef NETWORK_MOCK
 	CURL* curl;
-	CURLcode res;
 
+// TODO: store a user specific key after first feed
 #if defined(__WIIU__)
 	const char* userKey = "wiiu_user";
 #elif defined(WII)
@@ -117,10 +128,36 @@ void Feedback::submit()
 	if (curl)
 	{
 		curl_easy_setopt(curl, CURLOPT_URL, "http://switchbru.com/appstore/feedback");
-		std::string fields = std::string("name=") + userKey + "&package=" + package->getPackageName() + "&message=" + keyboard.getTextInput();
+
+		auto mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;
+
+		int installedPackageCount = 0;
+		for (auto& package : mainDisplay->get->getPackages())
+		{
+			if (package->getStatus() != GET)
+			{
+				installedPackageCount++;
+			}
+		}
+
+		std::ostringstream oss;
+		oss << "name=" << userKey
+			<< "&package=" << package->getPackageName()
+			<< "&message=" << keyboard->getTextInput()
+			<< "&platform=" << PLATFORM
+			<< "&package_version=" << package->getVersion()
+			<< "&hbas_version=" << APP_VERSION
+			<< "&is_low_memory=" << mainDisplay->isLowMemoryMode()
+			<< "&installed_packages=" << installedPackageCount
+			<< "&is_this_pkg_installed=" << (package->getStatus() != GET);
+		// TODO: support these fields in the UI
+		// << "&rating=" << getRating()
+		// << "&is_anonymous=" << isAnonymous()
+
+		std::string fields = oss.str();
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, fields.c_str());
 
-		res = curl_easy_perform(curl);
+		curl_easy_perform(curl);
 
 		/* always cleanup */
 		curl_easy_cleanup(curl);
@@ -133,5 +170,5 @@ void Feedback::submit()
 
 void Feedback::back()
 {
-	RootDisplay::switchSubscreen(nullptr);
+	RootDisplay::popScreen();
 }

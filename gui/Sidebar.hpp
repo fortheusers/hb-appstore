@@ -2,6 +2,8 @@
 #include "../libs/chesto/src/ListElement.hpp"
 #include "../libs/chesto/src/TextElement.hpp"
 
+using namespace Chesto;
+
 class AppList;
 
 #if defined(WII) || defined(WII_MOCK)
@@ -24,7 +26,7 @@ public:
 	std::string currentCatName();
 	std::string currentCatValue();
 
-  void addHints();
+	void addHints();
 
 	std::string searchQuery = "";
 
@@ -56,14 +58,14 @@ private:
 		TextElement* name;
 	} category[TOTAL_CATS];
 
-	ImageElement logo;
-	TextElement title;
-	TextElement subtitle;
+	ImageElement* logo;
+	TextElement* title;
+	TextElement* subtitle;
 
 	ImageElement* hider = nullptr;
 	TextElement* hint = nullptr;
 };
 
 #if defined(USE_OSC_BRANDING)
-	rgb getOSCCategoryColor(std::string category);
+rgb getOSCCategoryColor(std::string category);
 #endif

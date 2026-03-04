@@ -5,77 +5,49 @@
 
 #include "../libs/chesto/src/ImageElement.hpp"
 #include "../libs/chesto/src/ListElement.hpp"
+#include "../libs/chesto/src/Screen.hpp"
 #include "../libs/chesto/src/TextElement.hpp"
 
 #include "rapidjson/document.h"
 
-struct CreditHead
-{
-	TextElement* text;
-	TextElement* desc;
-};
+using namespace Chesto;
 
-struct Credit
-{
-	Texture* userLogo;
-	TextElement* name;
-	struct
-	{
-		ImageElement* icon;
-		TextElement* link;
-	} social[2];
-};
-
-class AboutScreen : public ListElement
+class AboutScreen : public Screen
 {
 public:
 	AboutScreen(Get* get);
-	~AboutScreen();
 
-	Get* get = NULL;
-	void render(Element* parent);
-  bool process(InputEvents* event);
+	void render(Element* parent) override;
+	bool process(InputEvents* event) override;
+	void rebuildUI() override;
 
 	// button bindings
 	void back();
-	void removeEmptyFolders();
-	void wipeCache();
 	void launchFeedback();
+	
 	void credHead(const std::string& header, const std::string& blurb);
-	void credit(const char* username,
-				const char* githubId,
-				const char* bsky = NULL,
-				const char* github = NULL,
-				const char* gitlab = NULL,
-				const char* patreon = NULL,
-				const char* url = NULL,
-				const char* discord = NULL,
-				const char* directAvatarUrl = NULL,
-				const char* youtube = NULL,
-				const char* mastodon = NULL);
+	void credit(const std::string& username,
+				const std::string& githubId,
+				const std::string& bsky = "",
+				const std::string& github = "",
+				const std::string& gitlab = "",
+				const std::string& patreon = "",
+				const std::string& url = "",
+				const std::string& discord = "",
+				const std::string& directAvatarUrl = "",
+				const std::string& youtube = "",
+				const std::string& mastodon = "");
 
 	// JSON loading methods
 	void loadCreditsFromJSON();
 	void parseCreditsJSON(const std::string& jsonContent);
 	const char* getJsonString(const rapidjson::Value& obj, const char* key);
 
-  int creditCount = 0;
+	int creditCount = 0;
+	ListElement* scrollList = nullptr;
 
 private:
-	static CST_Color black, gray;
-
-	Button cancel;
-	Button feedback;
-
-	TextElement title;
-	TextElement subtitle;
-
-	NetImageElement ftuLogo;
-
-	TextElement creds;
-
-	std::list<CreditHead> creditHeads;
-	std::list<Credit> credits;
+	Get* get = nullptr;
 };
 
 #endif

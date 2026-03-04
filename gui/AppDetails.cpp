@@ -17,47 +17,77 @@
 #include "AppDetails.hpp"
 #include "AppList.hpp"
 #include "Feedback.hpp"
+#include "ProgressScreen.hpp"
 #include "ThemeManager.hpp"
+#include "MainDisplay.hpp"
 #include "main.hpp"
 
 int AppDetails::lastFrameTime = 99;
 
 AppDetails::AppDetails(Package& package, AppList* appList, AppCard* appCard)
-	: package(&package)
+	: package(std::make_shared<Package>(package))
 	, get(appList->get)
 	, appList(appList)
 	, appCard(appCard)
-	, downloadProgress()
-	, download(getAction(&package), package.getStatus() == INSTALLED ? X_BUTTON : A_BUTTON, true, 30 / SCALER)
-	, cancel(i18n("details.cancel"), B_BUTTON, true, 30 / SCALER, download.width)
-	, details(getPackageDetails(&package).c_str(), 20 / SCALER, &white, false, 300)
-	, content(&package, appList->useBannerIcons)
-	, downloadStatus(i18n("details.status"), 30 / SCALER, &white)
 {
-	// TODO: show current app status somewhere
+	width = SCREEN_WIDTH;
+	height = SCREEN_HEIGHT;
+	
+	rebuildUI();
+}
+
+void AppDetails::rebuildUI()
+{
+	removeAll();
+	
+	download = nullptr;
+	cancel = nullptr;
+	details = nullptr;
+	content = nullptr;
+	start = nullptr;
+	errorText = nullptr;
+	
+	// set the BG to the theme's
+	this->hasBackground = true;
+	this->backgroundColor = fromCST(HBAS::ThemeManager::background);
+
+	auto sidebarBg = std::make_unique<Element>();
+	sidebarBg->hasBackground = true;
+	sidebarBg->backgroundColor = RootDisplay::mainDisplay->backgroundColor;
+	sidebarBg->position(SCREEN_WIDTH - 360, 0);
+	sidebarBg->width = 360;
+	sidebarBg->height = SCREEN_HEIGHT;
+	addNode(std::move(sidebarBg));
+
+	auto effectiveScale = getEffectiveScale();
+	
+	download = createNode<Button>(getAction(package.get()), package->getStatus() == INSTALLED ? X_BUTTON : A_BUTTON, true, 30 * effectiveScale);
+	cancel = createNode<Button>(i18n("details.cancel"), B_BUTTON, true, 30 * effectiveScale, download->width);
+	details = createNode<TextElement>(getPackageDetails(package.get()).c_str(), 20 * effectiveScale, &white, false, 300);
+	content = createNode<AppDetailsContent>(package, appList->useBannerIcons);
 
 	// download/update/remove button (2)
 
-	download.position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 170);
-	download.action = std::bind(&AppDetails::proceed, this);
+	download->position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 170);
+	download->action = std::bind(&AppDetails::proceed, this);
 
-	cancel.position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 90);
-	cancel.action = std::bind(&AppDetails::back, this);
+	cancel->position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 90);
+	cancel->action = std::bind(&AppDetails::back, this);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
-	download.position(SCREEN_WIDTH / SCALER - download.width / SCALER, 360);
-	cancel.position(SCREEN_WIDTH / SCALER - cancel.width / SCALER, 410);
+	download->position(SCREEN_WIDTH * effectiveScale - download->width * effectiveScale, 360);
+	cancel->position(SCREEN_WIDTH * effectiveScale - cancel->width * effectiveScale, 410);
 #endif
 
 	// display an additional launch/install button if the package is installed,  and has a binary or is a theme
 
-	bool hasBinary = package.getBinary() != "none";
-	bool isTheme = package.getCategory() == "theme";
+	bool hasBinary = package->getBinary() != "none";
+	bool isTheme = package->getCategory() == "theme";
 
-	if (package.getStatus() != GET && (hasBinary || isTheme))
+	if (package->getStatus() != GET && (hasBinary || isTheme))
 	{
-		download.position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 250);
-		cancel.position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 90);
+		download->position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 250);
+		cancel->position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 90);
 
 		std::string buttonLabel = i18n("details.launch");
 		bool injectorPresent = false;
@@ -74,47 +104,23 @@ AppDetails::AppDetails(Package& package, AppList* appList, AppCard* appCard)
 		{
 			this->canLaunch = true;
 
-			start = new Button(buttonLabel, START_BUTTON, true, 30, download.width);
-			start->position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 170);
-			start->action = std::bind(&AppDetails::launch, this);
-			super::append(start);
-		}
+		auto startBtn = std::make_unique<Button>(buttonLabel, START_BUTTON, true, 30, download->width);
+		start = startBtn.get();
+		start->position(SCREEN_WIDTH - 310, SCREEN_HEIGHT - 170);
+		start->action = std::bind(&AppDetails::launch, this);
+		super::addNode(std::move(startBtn));
 	}
+}	// more details
 
-	// more details
-
-	details.position(SCREEN_WIDTH - 340, 50);
-	super::append(&details);
+	details->position(SCREEN_WIDTH - 340, 50);
 
 	// the scrollable portion of the app details page
-	content.moreByAuthor.action = std::bind(&AppDetails::moreByAuthor, this);
-	content.reportIssue.action = std::bind(&AppDetails::leaveFeedback, this);
-	super::append(&content);
-
-	super::append(&download);
-	super::append(&cancel);
-
-	downloadProgress.width = PANE_WIDTH;
-	downloadProgress.position(SCREEN_WIDTH / 2 - downloadProgress.width / 2, PANE_WIDTH / 2 - 5);
-	downloadProgress.color = 0xff0000ff;
-	downloadProgress.dimBg = true;
-
-	// download informations (not visible until the download is started)
-	downloadStatus.position(SCREEN_WIDTH / 2 - downloadProgress.width / 2, PANE_WIDTH / 2 - 70 / SCALER);
+	content->moreByAuthor->action = std::bind(&AppDetails::moreByAuthor, this);
+	content->reportIssue->action = std::bind(&AppDetails::leaveFeedback, this);
 }
 
 AppDetails::~AppDetails()
 {
-	if (start)
-	{
-		super::remove(start);
-		delete start;
-	}
-	if (errorText)
-	{
-		super::remove(errorText);
-		delete errorText;
-	}
 }
 
 std::string AppDetails::getPackageDetails(Package* package)
@@ -126,13 +132,26 @@ std::string AppDetails::getPackageDetails(Package* package)
 				 << i18n("details.author") << " " << package->getAuthor() << "\n"
 				 << i18n("details.version") << " " << package->getVersion() << "\n"
 				 << i18n("details.license") << " " << package->getLicense() << "\n\n"
-				 << i18n("details.package") << " " << package->getPackageName() << "\n"
-				 << i18n("details.downloads") << " " << i18n_number(package->getDownloadCount()) << "\n"
-				 << i18n("details.updated") << " " << i18n_date(package->getUpdatedAtTimestamp())<< "\n\n"
-				 << i18n("details.size") << " " << package->getHumanDownloadSize() << "\n"
-				 << i18n("details.installsize") << " " << package->getHumanExtractedSize() << "\n";
+				 << i18n("details.package") << " " << package->getPackageName() << "\n";
+
+	auto downloadsCount = package->getDownloadCount();
+	if (downloadsCount > 0)
+	{
+		// only show download count if it's not 0
+		more_details << i18n("details.downloads") << " " << i18n_number(package->getDownloadCount()) << "\n";
+	}
+	more_details << i18n("details.updated") << " " << i18n_date(package->getUpdatedAtTimestamp()) << "\n\n"
+				 << i18n("details.size") << " " << package->getHumanDownloadSize() << "\n";
+
+	auto extractedSize = package->getExtractedSize();
+	if (extractedSize > 0)
+	{
+		printf("Extracted size: %d\n", extractedSize);
+		more_details << i18n("details.installsize") << " " << package->getHumanExtractedSize() << "\n";
+	}
 	return more_details.str();
 }
+
 
 std::string AppDetails::getAction(Package* package)
 {
@@ -156,15 +175,80 @@ void AppDetails::proceed()
 {
 	if (this->operating) return;
 
+	// check for an existing partial download if installing/updating
+	bool isInstalling = package->getStatus() != INSTALLED;
+	if (isInstalling) {
+		int partialPercent = package->hasPartialDownload(get->mTmp_path);
+		// only show resume prompt if we have a meaningful amount downloaded (> 0%)
+		if (partialPercent > 0) {
+			showResumePrompt(partialPercent);
+			return;
+		}
+	}
+
+	// no partial download, proceed normally
+	startInstallOrRemove(false);
+}
+
+void AppDetails::showResumePrompt(int percentComplete)
+{
+	std::vector<std::pair<std::string, std::string>> choices;
+	
+	std::stringstream resumeText;
+	resumeText << i18n("details.resume") << " (" << percentComplete << "%)";
+	choices.push_back({"resume", resumeText.str()});
+	choices.push_back({"restart", i18n("details.restart")});
+	
+	auto resumePrompt = std::make_unique<DropDownChoices>(
+		choices,
+		[this](std::string choice) {			
+			printf("DropDown callback invoked: choice=%s, this=%p, appList=%p\n", 
+				choice.c_str(), this, this->appList);
+			
+			bool shouldResume = (choice == "resume");
+			this->startInstallOrRemove(shouldResume);
+		},
+		true, // isDarkMode, TODO: match current theme
+		i18n("details.resume.prompt") // Header text
+	);
+	
+	RootDisplay::pushScreen(std::move(resumePrompt));
+}
+
+void AppDetails::startInstallOrRemove(bool resume)
+{
+	if (this->operating) return;
+
 	this->operating = true;
-	// event->update();
 
-	// description of what we're doing
-	super::append(&downloadProgress);
-	super::append(&downloadStatus);
+	get->resetCancellation();
 
-	// setup progress bar callback
+	printf("AppDetails::proceed: Creating and pushing ProgressScreen\n");
+	std::string operation = package->getStatus() == INSTALLED ? i18n("details.remove.verb") : i18n("details.install.verb");
+	
+	// get partial download percentage if resuming
+	double partialPercent = 0.0;
+	if (resume) {
+		int partial = package->hasPartialDownload(get->mTmp_path);
+		if (partial > 0) {
+			partialPercent = (double)partial;
+		}
+	}
+	
+	auto progressScreen = std::make_unique<ProgressScreen>(package, operation, partialPercent);
+	
+	progressScreen->setCancelCallback([this]() {
+		this->operating = false;
+		get->cancelCurrentOperation();
+		printf("User cancelled operation\n");
+	});
+	
+	RootDisplay::pushScreen(std::move(progressScreen));	
+	printf("AppDetails::proceed: ProgressScreen pushed, topScreen = %p\n", RootDisplay::topScreen());
+
+	// setup progress bar callback (signature depends on curl version)
 	networking_callback = AppDetails::updateCurrentlyDisplayedPopup;
+	networking_callback_data = (void*)get; // uses Get instance to check for cancellation
 	libget_status_callback = AppDetails::updatePopupStatus;
 
 	// if we're installing ourselves, we need to quit after on switch
@@ -173,23 +257,46 @@ void AppDetails::proceed()
 	// install or remove this package based on the package status
 	if (this->package->getStatus() == INSTALLED)
 		get->remove(*package);
-	else {
-		get->install(*package);
+	else
+	{
+		get->install(*package, resume);
 		// save the icon to the SD card, for offline use
-		if (appCard != NULL) {
-			auto iconSavePath = std::string(get->mPkg_path) + "/" + package->getPackageName() + "/icon.png";
-			appCard->icon.saveTo(iconSavePath);
-			//TODO: load from a cache instead!!
+		// TODO: save directly from the texture cache instead of a new network call
+		auto iconSavePath = std::string(get->mPkg_path) + "/" + package->getPackageName() + "/icon.png";
+		
+		std::string iconData;
+		if (downloadFileToMemory(package->getIconUrl().c_str(), &iconData)) {
+			std::ofstream iconFile(iconSavePath, std::ios::binary);
+			if (iconFile.is_open()) {
+				iconFile.write(iconData.c_str(), iconData.size());
+				iconFile.close();
+			}
 		}
 	}
 
 	postInstallHook();
 
-	// refresh the screen
-	RootDisplay::switchSubscreen(nullptr);
+		// check if operation was cancelled, if so, user already popped ProgressScreen
+	if (get->isCancelled()) {
+		printf("Operation was cancelled, not popping screens\n");
+		this->operating = false;
+		return;
+	}
 
-	this->operating = false;
-	this->appList->update();
+	auto* appListPtr = this->appList;
+	
+	// pop two screens to dismiss progress + appdetails
+	// (these calls are deferred, so appListPtr is still valid)
+	RootDisplay::popScreen();
+	RootDisplay::popScreen();
+	
+	// also, force update the main app list (also deferred)
+	if (appListPtr) {
+		RootDisplay::deferAction([appListPtr]() {
+			printf("Updating app list after install/remove completion\n");
+			appListPtr->update();
+		});
+	}
 }
 
 void AppDetails::launch()
@@ -198,7 +305,7 @@ void AppDetails::launch()
 
 	char path[8 + strlen(package->getBinary().c_str())];
 
-	snprintf(path, sizeof(path), ROOT_PATH "%s", package->getBinary().c_str()+1);
+	snprintf(path, sizeof(path), ROOT_PATH "%s", package->getBinary().c_str() + 1);
 	printf("Launch path: %s\n", path);
 
 	FILE* file;
@@ -209,7 +316,7 @@ void AppDetails::launch()
 		auto installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
 		if (installer && installer->getStatus() != GET)
 		{
-			snprintf(path, sizeof(path), ROOT_PATH "%s", installer->getBinary().c_str()+1);
+			snprintf(path, sizeof(path), ROOT_PATH "%s", installer->getBinary().c_str() + 1);
 			successLaunch = this->themeInstall(path);
 		}
 		else
@@ -234,26 +341,26 @@ void AppDetails::launch()
 	if (!successLaunch)
 	{
 		// printf("Failed to launch.");
-		errorText = new TextElement(i18n("errors.applaunch"), 24, &red, false, 300);
-		errorText->position(970, 430);
-		super::append(errorText);
-		this->canLaunch = false;
+		auto errText = std::make_unique<TextElement>(i18n("errors.applaunch"), 24, &red, false, 300);
+	errorText = errText.get();
+	errorText->position(970, 430);
+	super::addNode(std::move(errText));
+	this->canLaunch = false;
 	}
-
 }
 
 void AppDetails::getSupported()
 {
 	auto installer = get->lookup("NXthemes_Installer");
 	if (installer)
-		RootDisplay::switchSubscreen(new AppDetails(installer.value(), appList));
+		RootDisplay::pushScreen(std::make_unique<AppDetails>(installer.value(), appList));
 }
 
 void AppDetails::back()
 {
 	if (this->operating) return;
 
-	RootDisplay::switchSubscreen(nullptr);
+	RootDisplay::popScreen();
 }
 
 void AppDetails::moreByAuthor()
@@ -263,13 +370,13 @@ void AppDetails::moreByAuthor()
 	appList->sidebar->curCategory = 0;
 	appList->update();
 	appList->y = 0;
-	appList->keyboard.hidden = true;
-	RootDisplay::switchSubscreen(nullptr);
+	appList->keyboard->hidden = true;
+	RootDisplay::popScreen();
 }
 
 void AppDetails::leaveFeedback()
 {
-	RootDisplay::switchSubscreen(new Feedback(*(this->package)));
+	RootDisplay::pushScreen(std::make_unique<Feedback>(*(this->package)));
 }
 
 bool AppDetails::process(InputEvents* event)
@@ -279,12 +386,6 @@ bool AppDetails::process(InputEvents* event)
 
 	if (this->operating) return false;
 
-	if (content.showingScreenshot)
-	{
-		// if the screenshot is displayed, it's kind of like a second subscreen, and eats all inputs
-		// TODO: this is a pattern chesto should handle better (like a stack of subscreens)
-		return elements[elements.size() - 1]->process(event);
-	}
 	return super::process(event);
 }
 
@@ -311,7 +412,8 @@ bool AppDetails::themeInstall(char* installerPath)
 
 	std::vector<std::string> themePaths;
 
-	if (!package->manifest.isValid()) {
+	if (!package->manifest.isValid())
+	{
 		package->manifest = Manifest(ManifestPath, ROOT_PATH);
 	}
 
@@ -338,12 +440,12 @@ bool AppDetails::themeInstall(char* installerPath)
 	{
 		if (i == (int)themePaths.size() - 1)
 		{
-			themeArg.append(themePaths[i]);
+			themeArg += themePaths[i];
 		}
 		else
 		{
-			themeArg.append(themePaths[i]);
-			themeArg.append(",");
+			themeArg += themePaths[i];
+			themeArg += ",";
 		}
 	}
 	printf("Theme Install: %s\n", themeArg.c_str());
@@ -355,7 +457,7 @@ bool AppDetails::themeInstall(char* installerPath)
 		themeArg.replace(index, 1, "(_)");
 	}
 	char args[strlen(installerPath) + themeArg.size() + 8];
-	snprintf(args, sizeof(args), "%s %s", installerPath, themeArg.c_str()+1);
+	snprintf(args, sizeof(args), "%s %s", installerPath, themeArg.c_str() + 1);
 
 	return this->launchFile(installerPath, args);
 }
@@ -370,11 +472,14 @@ bool AppDetails::launchFile(char* path, char* context)
 		return true;
 	}
 #elif defined(__WIIU__)
+	(void)context; // unused on wii u
 	RPXLoaderStatus ret = RPXLoader_InitLibrary();
 	if (ret == RPX_LOADER_RESULT_SUCCESS)
 	{
 		return RPXLoader_LaunchHomebrew(path) == RPX_LOADER_RESULT_SUCCESS;
 	}
+#else
+	(void)context; // unused on other platforms
 #endif
 	printf("Would have launched %s, but not implemented on this platform\n", path);
 	return false;
@@ -382,10 +487,13 @@ bool AppDetails::launchFile(char* path, char* context)
 
 void AppDetails::postInstallHook()
 {
+	printf("postInstallHook: Clearing networking callbacks\n");
 	networking_callback = nullptr;
+	networking_callback_data = nullptr;
 	libget_status_callback = nullptr;
 
-	if (quitAfterInstall) {
+	if (quitAfterInstall)
+	{
 		RootDisplay::mainDisplay->requestQuit();
 	}
 }
@@ -395,88 +503,85 @@ void AppDetails::render(Element* parent)
 	if (this->parent == NULL)
 		this->parent = parent;
 
-	// draw white background
-	CST_Rect dimens = { 0, 0, SCREEN_WIDTH - 360, SCREEN_HEIGHT };
-
-	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
-	CST_FillRect(RootDisplay::renderer, &dimens);
-
-	CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
-
 	// draw all elements
 	super::render(parent);
 }
 
 int AppDetails::updatePopupStatus(int status, int num, int num_total)
 {
-	auto screen = RootDisplay::subscreen;
-	std::stringstream statusText;
+	// get the top screen which should be ProgressScreen during install/remove
+	// TODO: verify this?
+	ProgressScreen* progressScreen = dynamic_cast<ProgressScreen*>(RootDisplay::topScreen());
+	
+	if (progressScreen == nullptr)
+		return 0;
 
-	if (screen != NULL)
-	{
-		AppDetails* popup = (AppDetails*)screen;
-		Package* package = popup->package;
+	if (status < 0 || status >= 6)
+		return 0;
 
-		if (status < 0 || status >= 5) return 0;
-		std::string statuses[6] = {
-			i18n("details.download.verb") + " ",
-			i18n("details.install.verb") + " ",
-			i18n("details.remove.verb") + " ",
-			i18n("details.reloading"),
-			i18n("details.syncing") + " ",
-			i18n("details.analyzing") + " "
-		};
-
-		statusText << statuses[status];
-
-		if (status <= STATUS_REMOVING)
-			statusText << package->getTitle();
-
-		statusText << "...";
-
-		if (num_total != 1)
-		{
-			// num_total for this operation isn't 1, so let's display a counter in parens
-			// (for instance, with multiple repos)
-			statusText << " (" << num << "/" << num_total << ")";
-		}
-
-		popup->downloadStatus.setText(statusText.str());
-		popup->downloadStatus.update();
+	// hide cancel button when we're no longer in the downloading phase
+	if (status != 0) {
+		progressScreen->hideCancelButton();
 	}
+
+	std::string statuses[6] = {
+		i18n("details.download.verb") + " ",
+		i18n("details.install.verb") + " ",
+		i18n("details.remove.verb") + " ",
+		i18n("details.reloading"),
+		i18n("details.syncing") + " ",
+		i18n("details.analyzing") + " "
+	};
+
+	std::stringstream statusText;
+	statusText << statuses[status] << "...";
+
+	if (num_total != 1)
+	{
+		statusText << " (" << num << "/" << num_total << ")";
+	}
+
+	progressScreen->updateProgress(progressScreen->getProgress(), statusText.str());
 	return 0;
 }
 
-int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow)
+int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double progress)
 {
+	// check if user requested cancellation
+	Get* get = (Get*)clientp;
+	if (get && get->isCancelled()) {
+		printf("Cancellation requested, aborting download\n");
+		return 1; // non-zero return cancels the transfer
+	}
+
 	int now = CST_GetTicks();
 	int diff = now - AppDetails::lastFrameTime;
 
-	if (dltotal == 0) dltotal = 1;
-
-	double amount = dlnow / dltotal;
-
 	// don't update the GUI too frequently here, it slows down downloading
 	// (never return early if it's 100% done)
-	if (diff < 32 && amount != 1)
+	if (diff < 32 && progress != 1.0)
 		return 0;
 
-	AppDetails* popup = (AppDetails*)RootDisplay::subscreen;
-
-	// update the amount
-	if (popup != NULL)
-	{
-		popup->downloadProgress.percent = amount;
-
-		// force render the element right here (and it's progress bar too)
-		if (popup->parent != NULL)
-		{
-			InputEvents* events = new InputEvents();
-			while (events->update())
-				RootDisplay::mainDisplay->process(events);
-			RootDisplay::mainDisplay->render(NULL);
-		}
+	// get ProgressScreen from the top of the screen stack
+	// TODO: see above TODO again
+	ProgressScreen* progressScreen = dynamic_cast<ProgressScreen*>(RootDisplay::topScreen());
+	
+	if (progressScreen == NULL) {
+		printf("updateCurrentlyDisplayedPopup: progressScreen is NULL (topScreen = %p)\n", RootDisplay::topScreen());
+		return 0;
 	}
+
+	// printf("updateCurrentlyDisplayedPopup: Updating progress to %.2f%%\n", progress * 100);
+	progressScreen->updateProgress(progress, "");
+
+	// force a render/event process, as during the sync fetch, our callback is outside of the main loop
+	MainDisplay* mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;
+	
+	auto events = std::make_unique<InputEvents>();
+	auto eventsPtr = events.get();
+	while (events->update())
+		mainDisplay->process(eventsPtr);
+	mainDisplay->render(NULL);
 
 	AppDetails::lastFrameTime = CST_GetTicks();
 

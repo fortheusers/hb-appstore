@@ -46,7 +46,7 @@ int console_main(RootDisplay* rootDisplay, InputEvents* input)
 			bool succeeded = false;
 
 			if (menu->screen == INSTALLING)
-				succeeded = menu->get->install(target);
+				succeeded = menu->get->install(target, false); // resume = false for console mode
 			else if (menu->screen == REMOVING)
 				succeeded = menu->get->remove(target);
 
@@ -118,7 +118,8 @@ int console_main(RootDisplay* rootDisplay, InputEvents* input)
 		menu->moveCursor(-1 * (input->pressed(UP_BUTTON)) + (input->pressed(DOWN_BUTTON)));
 
 		// move page PAGE_SIZE forward/backward depending on input
-		menu->moveCursor(-1 * PAGE_SIZE * input->pressed(LEFT_BUTTON) + PAGE_SIZE * input->pressed(RIGHT_BUTTON));
+		int pageSize = menu->getPageSize();
+		menu->moveCursor(-1 * pageSize * input->pressed(LEFT_BUTTON) + pageSize * input->pressed(RIGHT_BUTTON));
 	}
 
 	console->close();

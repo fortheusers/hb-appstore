@@ -1,4 +1,7 @@
 #include "../libs/chesto/src/DrawUtils.hpp"
+#include <string>
+
+using namespace Chesto;
 
 class Console
 {
@@ -8,8 +11,8 @@ public:
 	void background(int r, int g, int b);
 	void putAPixel(int x, int y, int r, int g, int b);
 	void fillRect(int x, int y, int width, int height, int r, int g, int b);
-	void drawString(int xi, int yi, const char* string);
-	void drawColorString(int xi, int yi, const char* string, int r, int g, int b);
+	void drawString(int xi, int yi, const std::string& string);
+	void drawColorString(int xi, int yi, const std::string& string, int r, int g, int b);
 	void close();
 	void update();
 
@@ -20,4 +23,4 @@ private:
 };
 
 void sleep(int s);
-char* fontLookup(char c);
+unsigned char* fontLookup(char c);
