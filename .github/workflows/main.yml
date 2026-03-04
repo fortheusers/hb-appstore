@@ -5,6 +5,7 @@ on:
     branches:
       - main 
       - test
+      - 3ds-build
   pull_request:
     branches:
       - main
@@ -19,8 +20,8 @@ jobs:
             ext: wuhb
           - platform: switch
             ext: nro
-          # - platform: 3ds
-          #   ext: 3dsx
+          - platform: 3ds
+            ext: 3dsx
           - platform: wii
             ext: dol
     container:

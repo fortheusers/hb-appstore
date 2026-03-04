@@ -22,6 +22,12 @@ WiiU:
     PLATFORM: wiiu
     EXT: wuhb
 
+3ds:
+  <<: *common
+  variables:
+    PLATFORM: 3ds
+    EXT: 3dsx
+
 Switch:
   <<: *common
   variables:

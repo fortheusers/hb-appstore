@@ -69,10 +69,7 @@ If all goes well, `appstore.dol` should be sitting in the current directory.
 
 ## Building for 3DS (with libctru)
 1. Install [dkp-pacman](https://devkitpro.org/viewtopic.php?f=13&t=8702)
-2. Install devkitARM and needed 3DS dependencies via dkp-pacman:
-```
-sudo dkp-pacman -S 3ds-sdl 3ds-sdl_image 3ds-sdl_mixer 3ds-sdl_gfx 3ds-sdl_ttf libctru citro3d 3dstools 3ds-curl 3ds-mbedtls
-```
+2. Install devkitARM and needed 3DS dependencies, including upstream SDL2, according to [this helper script](https://github.com/fortheusers/sealeo/blob/main/dependency_helper.sh#L75)
 3. *If on macOS*: install gtar with: `brew install gnu-tar` (needed by resinfs)
 4. Once it's all setup, recursively clone the repo and run make:
 ```
