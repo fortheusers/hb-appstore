@@ -21,8 +21,8 @@ jobs:
             ext: nro
           # - platform: 3ds
           #   ext: 3dsx
-          - platform: wii
-            ext: dol
+          # - platform: wii
+          #   ext: dol
     container:
       image: ghcr.io/fortheusers/sealeo:evo
     steps:

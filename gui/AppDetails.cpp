@@ -303,10 +303,8 @@ void AppDetails::launch()
 {
 	if (!this->canLaunch) return;
 
-	char path[8 + strlen(package->getBinary().c_str())];
-
-	snprintf(path, sizeof(path), ROOT_PATH "%s", package->getBinary().c_str() + 1);
-	printf("Launch path: %s\n", path);
+	std::string path = std::string(ROOT_PATH) + (package->getBinary().c_str() + 1);
+	printf("Launch path: %s\n", path.c_str());
 
 	FILE* file;
 	bool successLaunch = false;
@@ -316,8 +314,8 @@ void AppDetails::launch()
 		auto installer = get->lookup("NXthemes_Installer"); // This should probably be more dynamic in future, e.g. std::vector<Package*> Get::find_functionality("theme_installer")
 		if (installer && installer->getStatus() != GET)
 		{
-			snprintf(path, sizeof(path), ROOT_PATH "%s", installer->getBinary().c_str() + 1);
-			successLaunch = this->themeInstall(path);
+			path = std::string(ROOT_PATH) + (installer->getBinary().c_str() + 1);
+			successLaunch = this->themeInstall(path.data());
 		}
 		else
 		{
@@ -328,11 +326,11 @@ void AppDetails::launch()
 	else
 	{
 		// Final check if path actually exists
-		if ((file = fopen(path, "r")))
+		if ((file = fopen(path.c_str(), "r")))
 		{
 			fclose(file);
 			printf("Path OK, Launching...\n");
-			successLaunch = this->launchFile(path, path);
+			successLaunch = this->launchFile(path.data(), path.data());
 		}
 		else
 			successLaunch = false;
@@ -456,10 +454,9 @@ bool AppDetails::themeInstall(char* installerPath)
 		if (index == std::string::npos) break;
 		themeArg.replace(index, 1, "(_)");
 	}
-	char args[strlen(installerPath) + themeArg.size() + 8];
-	snprintf(args, sizeof(args), "%s %s", installerPath, themeArg.c_str() + 1);
+	std::string args = std::string(installerPath) + " " + (themeArg.c_str() + 1);
 
-	return this->launchFile(installerPath, args);
+	return this->launchFile(installerPath, args.data());
 }
 
 bool AppDetails::launchFile(char* path, char* context)
@@ -587,3 +584,4 @@ int AppDetails::updateCurrentlyDisplayedPopup(void* clientp, double progress)
 
 	return 0;
 }
+
