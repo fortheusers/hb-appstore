@@ -1,12 +1,17 @@
 #ifndef APPDETAILS_H_
 #define APPDETAILS_H_
+#include <memory>
+#include "../libs/chesto/src/DropDown.hpp"
+#include "../libs/get/src/Utils.hpp"
 
-#include "AppDetailsContent.hpp"
 #include "AppCard.hpp"
+#include "AppDetailsContent.hpp"
+
+using namespace Chesto;
 
 class AppList;
 
-class AppDetails : public Element
+class AppDetails : public Screen
 {
 public:
 	AppDetails(Package& package, AppList* appList, AppCard* appCard = NULL);
@@ -14,8 +19,9 @@ public:
 
 	std::string getPackageDetails(Package* package);
 	std::string getAction(Package* package);
-	bool process(InputEvents* event);
-	void render(Element* parent);
+	bool process(InputEvents* event) override;
+	void render(Element* parent) override;
+	void rebuildUI() override;
 	bool launchFile(char* path, char* context);
 	bool themeInstall(char* installerPath);
 	void getSupported();
@@ -26,7 +32,7 @@ public:
 	CST_Color white = { 0xFF, 0xFF, 0xFF, 0xff };
 
 	bool operating = false;
-	Package* package = NULL;
+	std::shared_ptr<Package> package;
 	Get* get = NULL;
 	AppList* appList = NULL;
 	AppCard* appCard = NULL;
@@ -36,7 +42,7 @@ public:
 	bool canLaunch = false;
 
 	// the callback method to update the currently displayed pop up (and variables it needs)
-	static int updateCurrentlyDisplayedPopup(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow);
+	static int updateCurrentlyDisplayedPopup(void* clientp, double progress);
 	static int updatePopupStatus(int status, int num = 1, int num_total = 1);
 	static int lastFrameTime;
 
@@ -49,8 +55,9 @@ public:
 
 	void preInstallHook();
 	void postInstallHook();
-
-	ProgressBar downloadProgress;
+	
+	void showResumePrompt(int percentComplete);
+	void startInstallOrRemove(bool resume);
 
 	// on some platform + package combinations, we need to quit after installing
 	bool quitAfterInstall = false;
@@ -58,12 +65,11 @@ public:
 private:
 	Button* start = nullptr;
 	TextElement* errorText = nullptr;
-	TextElement details;
-	AppDetailsContent content;
-	TextElement downloadStatus;
+	TextElement* details = nullptr;
+	AppDetailsContent* content = nullptr;
 
-	Button download;
-	Button cancel;
+	Button* download = nullptr;
+	Button* cancel = nullptr;
 };
 
 #endif

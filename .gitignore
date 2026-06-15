@@ -17,3 +17,6 @@ build_*
 .get
 .toggle_sound
 background.mp3
+*.tmp
+#console/font_extended.h
+.trash

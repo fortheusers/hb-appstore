@@ -1,23 +1,20 @@
-#include "MainDisplay.hpp"
 #include "AboutScreen.hpp"
 #include "FeedbackCenter.hpp"
+#include "MainDisplay.hpp"
+#include "SettingsScreen.hpp"
 #include "ThemeManager.hpp"
 #include "main.hpp"
 
 #include "../libs/get/src/Utils.hpp"
 
+#include "../libs/chesto/src/Constraint.hpp"
 #include "../libs/chesto/src/EKeyboard.hpp"
 #include "../libs/chesto/src/RootDisplay.hpp"
-#include "../libs/chesto/src/Constraint.hpp"
 
 #include <algorithm>
-#include <filesystem>
 #include <cstdlib> // std::rand, std::srand
 #include <ctime>   // std::time
-
-#if defined(SWITCH)
-#include <switch.h>
-#endif
+#include <filesystem>
 
 std::string AppList::sortingDescriptions[TOTAL_SORTS] = {
 	"listing.sort.recent",
@@ -25,29 +22,59 @@ std::string AppList::sortingDescriptions[TOTAL_SORTS] = {
 	"listing.sort.alpha",
 	"listing.sort.size",
 	"listing.sort.random"
- };
+};
 
 CST_Color AppList::red = { 0xff, 0, 0, 0xff };
 CST_Color AppList::lighterRed = { 0xef, 0x48, 0x48, 0xff };
 
 AppList::AppList(Get* get, Sidebar* sidebar)
-	: get(get)			// the main get instance that contains repo info and stuff
-	, sidebar(sidebar)	// the sidebar, which will store the currently selected category info
-	, quitBtn(i18n("listing.quit"), SELECT_BUTTON, false, 15)
-	, creditsBtn(i18n("listing.credits"), START_BUTTON, false, 15)
-	, sortBtn(i18n("listing.adjustsort"), Y_BUTTON, false, 15)
-	, keyboardBtn(i18n("listing.togglekeyboard"), Y_BUTTON, false, 15)
-	, backspaceBtn(i18n("listing.delete"), B_BUTTON, false, 15)
-	, nowPlayingText(" ", 20, &HBAS::ThemeManager::textPrimary)
-#if defined(MUSIC)
-	, nowPlayingIcon(RAMFS "res/nowplaying.png")
-	, muteBtn(" ", X_BUTTON, false, 15, 90)
-	, muteIcon(RAMFS "res/mute.png")
-	, unmuteIcon(RAMFS "res/unmute.png")
-#endif
+	: get(get)		   // the main get instance that contains repo info and stuff
+	, sidebar(sidebar) // the sidebar, which will store the currently selected category info
 {
-	this->x = 400/SCALER - 260/SCALER * hideSidebar;
-	sidebar->width = this->x - 35/SCALER; // width of the sidebar is space between edge and applist
+	auto quitBtn = createNode<Button>(i18n("listing.quit"), SELECT_BUTTON, isDark, 15);
+	quitBtn->tag = TAG_QUIT_BTN;
+	
+	auto creditsBtn = createNode<Button>(i18n("settings.title"), START_BUTTON, isDark, 15);
+	creditsBtn->tag = TAG_CREDITS_BTN;
+	
+	auto sortBtn = createNode<Button>(i18n("listing.adjustsort"), Y_BUTTON, isDark, 15);
+	sortBtn->tag = TAG_SORT_BTN;
+	
+	auto keyboardBtn = createNode<Button>(i18n("listing.togglekeyboard"), Y_BUTTON, isDark, 15);
+	keyboardBtn->tag = TAG_KEYBOARD_BTN;
+	
+	auto backspaceBtn = createNode<Button>(i18n("listing.delete"), B_BUTTON, isDark, 15);
+	backspaceBtn->tag = TAG_BACKSPACE_BTN;
+	
+	auto nowPlayingText = createNode<TextElement>(" ", 20, &HBAS::ThemeManager::textPrimary);
+	nowPlayingText->tag = TAG_NOW_PLAYING_TEXT;
+
+	auto category = createNode<TextElement>("", 28);
+	category->tag = TAG_CATEGORY_TEXT;
+	
+	auto sortBlurb = createNode<TextElement>("", 15);
+	sortBlurb->tag = TAG_SORT_BLURB;
+
+#if defined(MUSIC)
+	auto muteBtn = createNode<Button>(" ", X_BUTTON, isDark, 15, 90);
+	muteBtn->tag = TAG_MUTE_BTN;
+	
+	auto muteIcon = createNode<ImageElement>(RAMFS "res/mute.png");
+	muteIcon->tag = TAG_MUTE_ICON;
+	
+	auto unmuteIcon = createNode<ImageElement>(RAMFS "res/unmute.png");
+	unmuteIcon->tag = TAG_UNMUTE_ICON;
+	
+	auto nowPlayingIcon = createNode<ImageElement>(RAMFS "res/nowplaying.png");
+	nowPlayingIcon->tag = TAG_NOW_PLAYING_ICON;
+#endif
+
+	keyboard = createNode<EKeyboard>();
+	auto effectiveScale = getEffectiveScale();
+
+	R = (SCREEN_WIDTH - 400) / 260 + hideSidebar;
+	this->x = 400 * effectiveScale - 260 * effectiveScale * hideSidebar;
+	sidebar->width = this->x - 35 * effectiveScale; // width of the sidebar is space between edge and applist
 
 	// the offset of how far along scroll'd we are
 	this->y = 0;
@@ -55,68 +82,155 @@ AppList::AppList(Get* get, Sidebar* sidebar)
 	// initialize random numbers used for sorting
 	std::srand(unsigned(std::time(0)));
 
+	// hide all UI elements initially (will be shown in update())
+	quitBtn->hide();
+	creditsBtn->hide();
+	sortBtn->hide();
+	keyboardBtn->hide();
+	backspaceBtn->hide();
+	nowPlayingText->hide();
+	category->hide();
+	sortBlurb->hide();
+	keyboard->hide();
+#if defined(MUSIC)
+	muteBtn->hide();
+	muteIcon->hide();
+	unmuteIcon->hide();
+	nowPlayingIcon->hide();
+#endif
+
 	// quit button
-	quitBtn.action = []() {
+	quitBtn->action = []()
+	{
 		RootDisplay::mainDisplay->requestQuit();
 	};
 
 	// additional buttons
-	creditsBtn.action = std::bind(&AppList::launchSettings, this, false);
-	sortBtn.action = std::bind(&AppList::cycleSort, this);
-	
+	creditsBtn->action = std::bind(&AppList::launchSettings, this);
+	sortBtn->action = std::bind(&AppList::cycleSort, this);
+
 #if defined(MUSIC)
-	muteBtn.action = std::bind(&AppList::toggleAudio, this);
-	muteIcon.resize(32, 32);
-	unmuteIcon.resize(32, 32);
-	nowPlayingIcon.resize(26, 26);
+	muteBtn->action = std::bind(&AppList::toggleAudio, this);
+	muteIcon->resize(32, 32);
+	unmuteIcon->resize(32, 32);
+	nowPlayingIcon->resize(26, 26);
 #endif
 
 	// search buttons
-	keyboardBtn.action = std::bind(&AppList::toggleKeyboard, this);
+	keyboardBtn->action = std::bind(&AppList::toggleKeyboard, this);
 
-	backspaceBtn.action = [this](void) {
-		this->keyboard.backspace();
+	backspaceBtn->action = [this](void)
+	{
+		this->keyboard->backspace();
 	};
 
 	// keyboard input callback
-	// keyboard.hasRoundedKeys = true;
-	keyboard.typeAction = std::bind(&AppList::keyboardInputCallback, this);
-	keyboard.preventEnterAndTab = true;
-	keyboard.width = SCREEN_HEIGHT/SCALER - 20;
-	keyboard.updateSize();
+	// keyboard->hasRoundedKeys = true;
+	keyboard->typeAction = std::bind(&AppList::keyboardInputCallback, this);
+	keyboard->preventEnterAndTab = true;
+	keyboard->width = SCREEN_HEIGHT * effectiveScale - 20;
+	keyboard->updateSize();
+
+	useBannerIcons = true;
+
+	rebuildUI(); // other text components and colors
+}
+
+void AppList::rebuildUI()
+{
+	// for every text element (and button?) that we own, poke/reload it, then do a normal reload of all cards
+
+	// TODO: this avoids raw pointers, but ideally the buttons would all be rebuilt every time from the Screen's state, not each have their own hide/show states
+	auto category = findElementByTag<TextElement>(TAG_CATEGORY_TEXT);
+	auto sortBlurb = findElementByTag<TextElement>(TAG_SORT_BLURB);
+	auto quitBtn = findElementByTag<Button>(TAG_QUIT_BTN);
+	auto creditsBtn = findElementByTag<Button>(TAG_CREDITS_BTN);
+	auto sortBtn = findElementByTag<Button>(TAG_SORT_BTN);
+	auto keyboardBtn = findElementByTag<Button>(TAG_KEYBOARD_BTN);
+	auto backspaceBtn = findElementByTag<Button>(TAG_BACKSPACE_BTN);
+	auto nowPlayingText = findElementByTag<TextElement>(TAG_NOW_PLAYING_TEXT);
 
 	// category text
-	category.setSize(28);
-	category.setColor(HBAS::ThemeManager::textPrimary);
+	if (category) {
+		category->setText(this->sidebar->currentCatName());
+		category->setSize(28);
+		category->setColor(HBAS::ThemeManager::textPrimary);
+		category->update();
+	}
 
 	// sort mode text
-	sortBlurb.setSize(15);
-	sortBlurb.setColor(HBAS::ThemeManager::textSecondary);
+	if (sortBlurb) {
+		sortBlurb->setText(i18n(sortingDescriptions[this->sortMode]).c_str());
+		sortBlurb->setSize(15);
+		sortBlurb->setColor(HBAS::ThemeManager::textSecondary);
+		sortBlurb->update();
+	}
 
-	auto myRed = HBAS::ThemeManager::isDarkMode ? lighterRed : red;
+	if (quitBtn) {
+		quitBtn->updateText(i18n("listing.quit"));
+		quitBtn->dark = isDark;
+		quitBtn->needsRedraw = true;
+	}
+	
+	if (creditsBtn) {
+		creditsBtn->updateText(i18n("listing.credits"));
+		creditsBtn->dark = isDark;
+		creditsBtn->needsRedraw = true;
+	}
+	
+	if (sortBtn) {
+		sortBtn->updateText(i18n("listing.adjustsort"));
+		sortBtn->dark = isDark;
+		sortBtn->needsRedraw = true;
+	}
+	
+	if (keyboardBtn) {
+		keyboardBtn->updateText(i18n("listing.search"));
+		keyboardBtn->dark = isDark;
+		keyboardBtn->needsRedraw = true;
+	}
+	
+	if (backspaceBtn) {
+		backspaceBtn->updateText(i18n("listing.backspace"));
+		backspaceBtn->dark = isDark;
+		backspaceBtn->needsRedraw = true;
+	}
 
-#if defined(__WIIU__)
-  useBannerIcons = true;
-#elif defined(SWITCH)
-  // don't use banner icons if we're in applet mode
-  // they use up too much memory, and a lot of users only use applet mode
-  AppletType at = appletGetAppletType();
-  useBannerIcons = (at == AppletType_Application || at == AppletType_SystemApplication);
-
-  if (!useBannerIcons) {
-	// applet mode, display a warning
-	nowPlayingText.setText(i18n("listing.appletwarning").c_str());
-	nowPlayingText.setColor(myRed);
-	nowPlayingText.update();
-  }
+#if defined(MUSIC)
+	auto muteBtn = findElementByTag<Button>(TAG_MUTE_BTN);
+	if (muteBtn) {
+		muteBtn->dark = isDark;
+		muteBtn->needsRedraw = true;
+		muteBtn->text.setColor(HBAS::ThemeManager::textSecondary);
+		muteBtn->text.update();
+		muteBtn->updateBounds();
+	}
 #endif
 
+	auto myRed = isDark ? lighterRed : red;
+	auto mainDisplay = (MainDisplay*)RootDisplay::mainDisplay;
+
+	if (mainDisplay->isLowMemoryMode())
+	{
+		// applet mode, display a warning
+		useBannerIcons = false;
+		if (nowPlayingText) {
+			nowPlayingText->setText(i18n("listing.appletwarning").c_str());
+			nowPlayingText->setColor(myRed);
+			nowPlayingText->update();
+		}
+		printf("Low memory mode detected, disabling banner icons\n");
+	}
+
+	auto effectiveScale = getEffectiveScale();
 #ifdef DEBUG_BUILD
-	nowPlayingText.setText(i18n("listing.debugwarning").c_str());
-	nowPlayingText.constrain(ALIGN_TOP | ALIGN_LEFT, 25);
-	nowPlayingText.setWrappedWidth(PANE_WIDTH + 20 / SCALER);
-	nowPlayingText.setColor(myRed);
-	nowPlayingText.update();
+	if (nowPlayingText) {
+		nowPlayingText->setText(i18n("listing.debugwarning").c_str());
+		nowPlayingText->constrain(ALIGN_TOP | ALIGN_LEFT, 25);
+		nowPlayingText->setWrappedWidth(PANE_WIDTH + 20 * effectiveScale);
+		nowPlayingText->setColor(myRed);
+		nowPlayingText->update();
+	}
 #endif
 
 	// update current app listing
@@ -130,13 +244,14 @@ bool AppList::process(InputEvents* event)
 	// R is the number of cards per row, let's figure it out based on app card size
 	// and screen size
 	R = (SCREEN_WIDTH - 400) / 260 + hideSidebar;
+	auto effectiveScale = getEffectiveScale();
 
 	if (event->pressed(ZL_BUTTON) || event->pressed(L_BUTTON))
 	{
 		hideSidebar = !hideSidebar;
 		R = (SCREEN_WIDTH - 400) / 260 + hideSidebar;
-		this->x = 400/SCALER - 260/SCALER * hideSidebar;
-		sidebar->width = this->x - 35/SCALER; // width of the sidebar is space between edge and applist
+		this->x = 400 * effectiveScale - 260 * effectiveScale * hideSidebar;
+		sidebar->width = this->x - 35 * effectiveScale; // width of the sidebar is space between edge and applist
 		sidebar->addHints();
 		update();
 		return true;
@@ -145,9 +260,9 @@ bool AppList::process(InputEvents* event)
 	// must be done before keyboard stuff to properly switch modes
 	if (event->isTouchDown())
 	{
-		// remove a highlight if it exists (TODO: same as an above if statement)
-		if (this->highlighted >= 0 && this->highlighted < this->elements.size() && this->elements[this->highlighted])
-			this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
+		// remove a highlight if it exists, TODO: handle directly in Grid
+		if (this->highlighted >= 0 && this->highlighted < (int)appCards.size() && appCards[this->highlighted])
+			appCards[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
 
 		// got a touch, so let's enter touchmode
 		this->highlighted = -1;
@@ -158,18 +273,23 @@ bool AppList::process(InputEvents* event)
 	// also make sure the children elements exist before trying the keyboard
 	// AND we're actually on the search category
 	// also if we're not in touchmode, always go in here regardless of any button presses (user can only interact with keyboard)
-	bool keyboardIsShowing = sidebar && sidebar->curCategory == 0 && !keyboard.hidden;
-	if (keyboardIsShowing && ((event->isTouchDown() && event->touchIn(keyboard.x, keyboard.y, keyboard.width + 305, keyboard.height + 200)) || !touchMode))
-	{
-		// wow I'm surprised this still works with the chesto keyboard
-		ret |= keyboard.process(event);
-		if (event->isKeyDown() && (event->held(Y_BUTTON) || event->held(B_BUTTON)))
-			ret |= ListElement::process(event); // continue processing ONLY if they're pressing Y or B
-		else if (event->noop)
-			ret |= ListElement::process(event); // continue processing if they're not pressing anything
+	bool keyboardIsShowing = sidebar && sidebar->curCategory == 0 && !keyboard->hidden;
+	if (keyboardIsShowing) {
+		float effectiveScale = keyboard->getEffectiveScale();
+		int scaledWidth = (int)(keyboard->width * effectiveScale);
+		int scaledHeight = (int)(keyboard->height * effectiveScale);
 		
-    if (needsUpdate) update();
-    return ret;
+		if ((event->isTouchDown() && event->touchIn(keyboard->x, keyboard->y, scaledWidth + 305, scaledHeight + 200)) || !touchMode) {
+			// wow I'm surprised this still works with the chesto keyboard
+			ret |= keyboard->process(event);
+			if (event->isKeyDown() && (event->held(Y_BUTTON) || event->held(B_BUTTON)))
+				ret |= ListElement::process(event); // continue processing ONLY if they're pressing Y or B
+			else if (event->noop)
+				ret |= ListElement::process(event); // continue processing if they're not pressing anything
+
+			if (needsUpdate) update();
+			return ret;
+		}
 	}
 
 	int origHighlight = this->highlighted;
@@ -202,9 +322,9 @@ bool AppList::process(InputEvents* event)
 				ret |= true;
 			}
 
-			if (event->held(A_BUTTON) && this->highlighted >= 0)
+			if (event->held(A_BUTTON) && this->highlighted >= 0 && this->highlighted < (int)appCards.size())
 			{
-				this->elements[this->highlighted]->action();
+				appCards[this->highlighted]->action();
 				ret |= true;
 			}
 
@@ -214,8 +334,8 @@ bool AppList::process(InputEvents* event)
 
 			// look up whatever is currently chosen as the highlighted position
 			// and remove its highlight
-			if (this->elements[this->highlighted])
-				this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
+			if (this->highlighted < (int)appCards.size() && appCards[this->highlighted])
+				appCards[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
 
 			// if we got a LEFT key while on the left most edge already, transfer to categories
 			if (this->highlighted % R == 0 && event->held(LEFT_BUTTON))
@@ -227,7 +347,10 @@ bool AppList::process(InputEvents* event)
 			}
 
 			// similarly, prevent a RIGHT from wrapping to the next line
-			if (this->highlighted % R == (R - 1) && event->held(RIGHT_BUTTON)) return false;
+			if (this->highlighted % R == (R - 1) && event->held(RIGHT_BUTTON)) 
+			{
+				return false;
+			}
 
 			// adjust the cursor by 1 for left or right
 			this->highlighted += -1 * (event->held(LEFT_BUTTON)) + (event->held(RIGHT_BUTTON));
@@ -236,12 +359,13 @@ bool AppList::process(InputEvents* event)
 			this->highlighted += -1 * R * (event->held(UP_BUTTON)) + R * (event->held(DOWN_BUTTON));
 
 			// don't let the cursor go out of bounds
-			if (this->highlighted >= (int)this->elements.size()) this->highlighted = this->elements.size() - 1;
+			if (this->highlighted >= (int)appCards.size()) 
+				this->highlighted = appCards.size() - 1;
+			if (this->highlighted < 0) 
+				this->highlighted = 0;
 
-			if (this->highlighted < 0) this->highlighted = 0;
-			if (this->highlighted >= (int)this->totalCount) this->highlighted = this->totalCount - 1;
-
-			if (currentSelected != this->highlighted) {
+			if (currentSelected != this->highlighted)
+			{
 				// we moved the cursor, so play a sound
 				mainDisplay->playSFX();
 			}
@@ -249,10 +373,10 @@ bool AppList::process(InputEvents* event)
 	}
 
 	// always check the currently highlighted piece and try to give it a thick border or adjust the screen
-	if (!touchMode && this->elements.size() > this->highlighted && this->highlighted >= 0 && this->elements[this->highlighted])
+	if (!touchMode && this->highlighted >= 0 && this->highlighted < (int)appCards.size() && appCards[this->highlighted])
 	{
 		// if our highlighted position is large enough, force scroll the screen so that our cursor stays on screen
-		Element* curTile = this->elements[this->highlighted];
+		Element* curTile = appCards[this->highlighted];
 
 		// the y-position of the currently highlighted tile, precisely on them screen (accounting for scroll)
 		// this means that if it's < 0 or > SCREEN_HEIGHT then it's not visible
@@ -271,7 +395,7 @@ bool AppList::process(InputEvents* event)
 			event->wheelScroll = 1;
 
 		// special case, scroll when we're on the bottom row of the top of the not-yet-scrolled screen
-		else if (this->y == 0 && normalizedY > SCREEN_HEIGHT/2)
+		else if (this->y == 0 && normalizedY > SCREEN_HEIGHT / 2)
 			event->wheelScroll -= 0.5;
 
 		// if we're out of range below, recenter at bottom row
@@ -282,7 +406,7 @@ bool AppList::process(InputEvents* event)
 		else if (this->y != 0 && this->highlighted < R)
 			event->wheelScroll = 1;
 
-		if (this->elements[this->highlighted] && this->elements[this->highlighted]->elasticCounter == NO_HIGHLIGHT)
+		if (this->highlighted < (int)this->totalCount && this->elements[this->highlighted] && this->elements[this->highlighted]->elasticCounter == NO_HIGHLIGHT)
 		{
 			this->elements[this->highlighted]->elasticCounter = THICK_HIGHLIGHT;
 			ret |= true;
@@ -293,7 +417,16 @@ bool AppList::process(InputEvents* event)
 	if (origHighlight != this->highlighted)
 		ret |= true;
 
-	ret |= ListElement::process(event);
+	// TODO: replace below with Grid processing
+	if (touchMode) {
+		ret |= ListElement::process(event);
+	} else {
+		for (auto& elem : elements) {
+			if (elem && elem->tag != TAG_APP_CARD) {
+				ret |= elem->process(event);
+			}
+		}
+	}
 
 	if (needsUpdate)
 		update();
@@ -310,10 +443,11 @@ void AppList::render(Element* parent)
 	CST_Rect dimens = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 	dimens.x = this->x - 35;
 
-  if (parent != NULL) {
-    CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
-    CST_FillRect(RootDisplay::renderer, &dimens);
-  }
+	if (parent != NULL)
+	{
+		CST_SetDrawColor(RootDisplay::renderer, HBAS::ThemeManager::background);
+		CST_FillRect(RootDisplay::renderer, &dimens);
+	}
 
 	super::render(parent);
 }
@@ -323,27 +457,31 @@ bool AppList::sortCompare(const Package& left, const Package& right)
 	// handle the supported sorting modes
 	switch (sortMode)
 	{
-		case ALPHABETICAL:
-			return left.getTitle().compare(right.getTitle()) < 0;
-		case POPULARITY:
-			return left.getDownloadCount() > right.getDownloadCount();
-		case SIZE:
-			return left.getDownloadSize() > right.getDownloadSize();
-		case RECENT:
-			break;
-		default:
-			break;
+	case ALPHABETICAL:
+		return left.getTitle().compare(right.getTitle()) < 0;
+	case POPULARITY:
+		return left.getDownloadCount() > right.getDownloadCount();
+	case SIZE:
+		return left.getDownloadSize() > right.getDownloadSize();
+	case RECENT:
+		break;
+	default:
+		break;
 	}
 
 	// RECENT sort order is the default view, so it puts updates and installed apps first
-	auto statusPriority = [](int status)->int
+	auto statusPriority = [](int status) -> int
 	{
 		switch (status)
 		{
-			case UPDATE:	return 0;
-			case INSTALLED:	return 1;
-			case LOCAL:		return 2;
-			case GET:		return 3;
+		case UPDATE:
+			return 0;
+		case INSTALLED:
+			return 1;
+		case LOCAL:
+			return 2;
+		case GET:
+			return 3;
 		}
 		return 4;
 	};
@@ -361,15 +499,48 @@ void AppList::update()
 	if (!get)
 		return;
 
-#if defined(_3DS) || defined(_3DS_MOCK)
-  R = 3;  // force 3 app cards at time
-  this->x = 45; // no sidebar
-#endif
-	// remove elements
-	super::removeAll();
+	auto effectiveScale = getEffectiveScale();
 
-	// destroy old elements
+	auto quitBtn = findElementByTag<Button>(TAG_QUIT_BTN);
+	auto creditsBtn = findElementByTag<Button>(TAG_CREDITS_BTN);
+	auto sortBtn = findElementByTag<Button>(TAG_SORT_BTN);
+	auto keyboardBtn = findElementByTag<Button>(TAG_KEYBOARD_BTN);
+	auto backspaceBtn = findElementByTag<Button>(TAG_BACKSPACE_BTN);
+	auto category = findElementByTag<TextElement>(TAG_CATEGORY_TEXT);
+	auto sortBlurb = findElementByTag<TextElement>(TAG_SORT_BLURB);
+	auto nowPlayingText = findElementByTag<TextElement>(TAG_NOW_PLAYING_TEXT);
+#if defined(MUSIC)
+	auto muteBtn = findElementByTag<Button>(TAG_MUTE_BTN);
+	auto muteIcon = findElementByTag<ImageElement>(TAG_MUTE_ICON);
+	auto unmuteIcon = findElementByTag<ImageElement>(TAG_UNMUTE_ICON);
+	auto nowPlayingIcon = findElementByTag<ImageElement>(TAG_NOW_PLAYING_ICON);
+#endif
+
+#if defined(_3DS) || defined(_3DS_MOCK)
+	R = 3;		  // force 3 app cards at time
+	this->x = 45; // no sidebar
+#endif
+
+	// remove all AppCards using tags
+	elements.erase(
+		std::remove_if(elements.begin(), elements.end(),
+			[](const std::unique_ptr<Element, std::function<void(Element*)>>& elem) {
+				return elem && elem->tag == TAG_APP_CARD;
+			}),
+		elements.end()
+	);
+
 	appCards.clear();
+	
+	if (appGrid == nullptr) {
+		// width calculation: screen width - sidebar - left margin
+		int gridWidth = SCREEN_WIDTH - 140 - 25 - 25;
+		appGrid = createNode<Chesto::Grid>(R, gridWidth, 9, 15);
+		appGrid->position(25, 145);
+		appGrid->touchMode = this->touchMode;
+	} else {
+		appGrid->removeAll();
+	}
 
 	// the current category value from the sidebar
 	std::string curCategoryValue = sidebar->currentCatValue();
@@ -380,6 +551,33 @@ void AppList::update()
 		? get->search(sidebar->searchQuery)
 		: get->list();
 
+	auto& localePackages = ((MainDisplay*)MainDisplay::mainDisplay)->localePackages;
+	// merge in locale package data if we have any
+	if (localePackages.size() > 0)
+	{
+		for (auto& package : packages)
+		{
+			auto it = localePackages.find(package.getPackageName());
+			if (it != localePackages.end())
+			{
+				// found an override, so copy over potential fields from the locale package
+				auto& localePkg = *(it->second);
+				if (localePkg.getTitle() != "")
+				{
+					package.title = localePkg.getTitle();
+				}
+				if (localePkg.getShortDescription() != "")
+				{
+					package.short_desc = localePkg.getShortDescription();
+				}
+				if (localePkg.getLongDescription() != "")
+				{
+					package.long_desc = localePkg.getLongDescription();
+				}
+			}
+		}
+	}
+
 	// sort the packages
 	if (sortMode == RANDOM)
 		std::shuffle(packages.begin(), packages.end(), randDevice);
@@ -387,7 +585,7 @@ void AppList::update()
 		std::sort(packages.begin(), packages.end(), std::bind(&AppList::sortCompare, this, std::placeholders::_1, std::placeholders::_2));
 
 	// add AppCards for the packages belonging to the current category
-	for (auto &package : packages)
+	for (auto& package : packages)
 	{
 		if (curCategoryValue == "_misc")
 		{
@@ -406,120 +604,193 @@ void AppList::update()
 		{
 			// hide themes from all
 			if (package.getCategory() == "theme")
-			continue;
+				continue;
 		}
 
-		// create and position the AppCard for the package
-		appCards.emplace_back(package, this);
-		AppCard& card = appCards.back();
-		card.index = appCards.size() - 1;
-		card.position(25 + (card.index % R) * (card.width + 9 / SCALER), 145 + (card.height + 15) * (card.index / R));
-		card.update();
-		super::append(&card);
+		// create the AppCard for the package, Grid positions it
+		auto card = std::make_unique<AppCard>(package, this);
+		card->tag = TAG_APP_CARD;
+		card->update();
+		
+		AppCard* cardPtr = card.get();
+		appCards.push_back(cardPtr);
+		
+		appGrid->addNode(std::move(card));
 	}
+	
+	appGrid->refresh();
+	
 	totalCount = appCards.size();
 
 	// add quit button
-	quitBtn.position(SCREEN_HEIGHT/SCALER + 260 * hideSidebar, 70);
+	if (quitBtn) {
+		quitBtn->position(SCREEN_HEIGHT * effectiveScale + 260 * hideSidebar, 70);
 
 #if defined(_3DS) || defined(_3DS_MOCK)
-  	quitBtn.position(SCREEN_WIDTH - quitBtn.width - 5, 20);
+		quitBtn->position(SCREEN_WIDTH - quitBtn->width - 5, 20);
 #else
-	super::append(&quitBtn);
+		quitBtn->unhide();
 #endif
+	}
 
 	// update the view for the current category
+	// TODO: don't manage their individual visibility, instead have the Screen manage it during rebuildUI
 	if (curCategoryValue == "_search")
 	{
 		// add the keyboard
-		keyboardBtn.position(quitBtn.x - 20 - keyboardBtn.width, quitBtn.y);
-		super::append(&keyboardBtn);
-		keyboard.position(372 + (3 - R) * 132, 417);
-		super::append(&keyboard);
+		if (keyboardBtn && quitBtn) {
+			keyboardBtn->position(quitBtn->x - 20 - keyboardBtn->width, quitBtn->y);
+			keyboardBtn->unhide();
+		}
+		keyboard->position(372 + (3 - R) * 132, 417);
+		keyboard->unhide();
+		
+		keyboard->moveToFront();
 
 		// category text
-		category.position(20, 90);
-		category.setText(std::string(i18n("listing.search") + " \"") + sidebar->searchQuery + "\"");
-		category.update();
-		super::append(&category);
+		if (category) {
+			category->position(20, 90);
+			category->setText(std::string(i18n("listing.search") + " \"") + sidebar->searchQuery + "\"");
+			category->update();
+			category->unhide();
+		}
 
-		backspaceBtn.position(keyboardBtn.x - 20 - backspaceBtn.width, quitBtn.y);
-		super::append(&backspaceBtn);
+		if (backspaceBtn && keyboardBtn && quitBtn) {
+			backspaceBtn->position(keyboardBtn->x - 20 - backspaceBtn->width, quitBtn->y);
+			backspaceBtn->unhide();
+		}
+
+		if (creditsBtn) creditsBtn->hide();
+		if (sortBtn) sortBtn->hide();
+		if (sortBlurb) sortBlurb->hide();
+#if defined(MUSIC)
+		if (muteBtn) muteBtn->hide();
+		if (muteIcon) muteIcon->hide();
+		if (unmuteIcon) unmuteIcon->hide();
+#endif
 	}
 	else
 	{
+		if (keyboardBtn) keyboardBtn->hide();
+		keyboard->hide();
+		if (backspaceBtn) backspaceBtn->hide();
+
 		// add additional buttons
-		creditsBtn.position(quitBtn.x - 20 - creditsBtn.width, quitBtn.y);
-		super::append(&creditsBtn);
-		sortBtn.position(creditsBtn.x - 20 - sortBtn.width, quitBtn.y);
-		super::append(&sortBtn);
-	
+		if (creditsBtn && quitBtn) {
+			creditsBtn->position(quitBtn->x - 20 - creditsBtn->width, quitBtn->y);
+			creditsBtn->unhide();
+		}
+		if (sortBtn && creditsBtn && quitBtn) {
+			sortBtn->position(creditsBtn->x - 20 - sortBtn->width, quitBtn->y);
+			sortBtn->unhide();
+		}
 
 #if defined(MUSIC)
 		auto rootDisplay = RootDisplay::mainDisplay;
 
-		if (rootDisplay->music) {
-			muteBtn.position(sortBtn.x - 20 - muteBtn.width, quitBtn.y);
-			super::append(&muteBtn);
+		if (rootDisplay->music)
+		{
+			if (muteBtn && sortBtn && quitBtn) {
+				muteBtn->position(sortBtn->x - 20 - muteBtn->width, quitBtn->y);
+				muteBtn->unhide();
+			}
 			// reposition quit now that mute button is there
-			muteIcon.position(sortBtn.x - 35 - muteIcon.width, quitBtn.y + 5);
-			unmuteIcon.position(sortBtn.x - 35 - muteIcon.width, quitBtn.y + 5);
-			Mix_PausedMusic() ? super::append(&muteIcon) : super::append(&unmuteIcon);
+			if (muteIcon && sortBtn && quitBtn) {
+				muteIcon->position(sortBtn->x - 35 - muteIcon->width, quitBtn->y + 5);
+			}
+			if (unmuteIcon && sortBtn && quitBtn && muteIcon) {
+				unmuteIcon->position(sortBtn->x - 35 - muteIcon->width, quitBtn->y + 5);
+			}
+			if (muteIcon && unmuteIcon) {
+				if (Mix_PausedMusic())
+				{
+					muteIcon->unhide();
+					unmuteIcon->hide();
+				}
+				else
+				{
+					muteIcon->hide();
+					unmuteIcon->unhide();
+				}
+			}
+		}
+		else
+		{
+			if (muteBtn) muteBtn->hide();
+			if (muteIcon) muteIcon->hide();
+			if (unmuteIcon) unmuteIcon->hide();
 		}
 #endif
 
 		// category text
-		category.position(20, 90);
-		category.setText(sidebar->currentCatName());
-		category.update();
-		super::append(&category);
+		if (category) {
+			category->position(20, 90);
+			category->setText(sidebar->currentCatName());
+			category->update();
+			category->unhide();
+		}
 
 		// add the search type next to the category in a gray font
-		sortBlurb.position(category.x + category.width + 15, category.y + 12);
-		sortBlurb.setText(i18n(sortingDescriptions[sortMode]).c_str());
-		sortBlurb.update();
-		super::append(&sortBlurb);
-
-	}
-
-	nowPlayingText.position((quitBtn.width + quitBtn.x) - nowPlayingText.width, 20);
-
-	auto rootDisplay = RootDisplay::mainDisplay;
-	
-#if defined(MUSIC)
-	if (rootDisplay->music) {
-		if (!Mix_PausedMusic()) {
-			// music is playing, get the title and artist 
-			if (this->musicInfo.size() == 0)
-				this->musicInfo = CST_GetMusicInfo(rootDisplay->music);
-			const char* title = musicInfo[0].c_str();
-			const char* artist = musicInfo[1].c_str();
-			const char* album = musicInfo[2].c_str();
-			
-			// now playing icon, and position
-			#if !defined(DEBUG_BUILD)
-			nowPlayingText.setText(
-				std::string("") + title +
-				((artist != std::string("")) ? (std::string(" " + i18n("listing.by") + " ") + artist) : "") +
-				((album != std::string("")) ? (std::string(" - ") + album) : "")
-			);
-			#endif
-			super::append(&nowPlayingIcon);
-		} else {
-			// no music playing, stop showing music name
-			#if !defined(DEBUG_BUILD)
-			nowPlayingText.setText(" ");
-			#endif
+		if (sortBlurb && category) {
+			sortBlurb->position(category->x + category->width + 15, category->y + 12);
+			sortBlurb->setText(i18n(sortingDescriptions[sortMode]).c_str());
+			sortBlurb->update();
+			sortBlurb->unhide();
 		}
 	}
 
-	nowPlayingText.setColor(HBAS::ThemeManager::textPrimary);
-	nowPlayingText.update();
-	nowPlayingText.position((quitBtn.width + quitBtn.x) - nowPlayingText.width, 20); // TODO: copypasta position
-	nowPlayingIcon.position(nowPlayingText.x - 30, 20);
+	if (nowPlayingText && quitBtn) {
+		nowPlayingText->position((quitBtn->width + quitBtn->x) - nowPlayingText->width, 20);
+	}
+
+	auto rootDisplay = RootDisplay::mainDisplay;
+
+#if defined(MUSIC)
+	if (rootDisplay->music)
+	{
+		if (!Mix_PausedMusic())
+		{
+			// music is playing, get the title and artist
+			if (this->musicInfo.size() == 0)
+				this->musicInfo = CST_GetMusicInfo(rootDisplay->music);
+			// musicInfo[0] = title, [1] = artist, [2] = album 
+
+// now playing icon, and position
+#if !defined(DEBUG_BUILD)
+			if (nowPlayingText) {
+				nowPlayingText->setText(
+					std::string("") + title + ((artist != std::string("")) ? (std::string(" " + i18n("listing.by") + " ") + artist) : "") + ((album != std::string("")) ? (std::string(" - ") + album) : ""));
+			}
+#endif
+			if (nowPlayingIcon) nowPlayingIcon->unhide();
+		}
+		else
+		{
+// no music playing, stop showing music name
+#if !defined(DEBUG_BUILD)
+			if (nowPlayingText) nowPlayingText->setText(" ");
+#endif
+			if (nowPlayingIcon) nowPlayingIcon->hide();
+		}
+	}
+	else
+	{
+		if (nowPlayingIcon) nowPlayingIcon->hide();
+	}
+
+	if (nowPlayingText) {
+		nowPlayingText->setColor(HBAS::ThemeManager::textPrimary);
+		nowPlayingText->update();
+		if (quitBtn) {
+			nowPlayingText->position((quitBtn->width + quitBtn->x) - nowPlayingText->width, 20); // TODO: copypasta position
+		}
+	}
+	if (nowPlayingIcon && nowPlayingText) {
+		nowPlayingIcon->position(nowPlayingText->x - 30, 20);
+	}
 
 	// now playing text (or applet warning)
-	super::append(&nowPlayingText);
+	if (nowPlayingText) nowPlayingText->unhide();
 #endif
 
 	needsUpdate = false;
@@ -528,13 +799,13 @@ void AppList::update()
 void AppList::reorient()
 {
 	// remove a highilight if it exists (TODO: extract method, we use this everywehre)
-	if (this->highlighted >= 0 && this->highlighted < this->elements.size() && this->elements[this->highlighted])
+	if (this->highlighted >= 0 && (size_t)this->highlighted < this->elements.size() && this->elements[this->highlighted])
 		this->elements[this->highlighted]->elasticCounter = NO_HIGHLIGHT;
 }
 
 void AppList::keyboardInputCallback()
 {
-	sidebar->searchQuery = keyboard.getTextInput();
+	sidebar->searchQuery = keyboard->getTextInput();
 	this->y = 0;
 	needsUpdate = true;
 }
@@ -550,22 +821,29 @@ void AppList::toggleAudio()
 {
 #if defined(MUSIC)
 
-	if (Mix_PausedMusic()) {
+	if (Mix_PausedMusic())
+	{
 		Mix_ResumeMusic();
-	} else {
+	}
+	else
+	{
 		Mix_PauseMusic();
 	}
 
 	auto isMusicAllowedByDefault = ((MainDisplay*)RootDisplay::mainDisplay)->getDefaultAudioStateForPlatform();
 	auto isMusicPlayingCurrently = !Mix_PausedMusic();
 	bool isSoundSettingDefaultBehavior = isMusicAllowedByDefault == isMusicPlayingCurrently; // music allowed + paused == inverted
-	
-	if (isSoundSettingDefaultBehavior) {
+
+	if (isSoundSettingDefaultBehavior)
+	{
 		// the default sound behavior is desired, so delete the toggle file
-		if (std::filesystem::exists(SOUND_PATH)) {
+		if (std::filesystem::exists(SOUND_PATH))
+		{
 			std::filesystem::remove(SOUND_PATH);
 		}
-	} else {
+	}
+	else
+	{
 		// the sound behavior is toggled, create the toggle file
 		std::ofstream soundFile(SOUND_PATH);
 		soundFile.flush();
@@ -579,23 +857,22 @@ void AppList::toggleAudio()
 void AppList::toggleKeyboard()
 {
 	reorient();
-	keyboard.hidden = !keyboard.hidden;
+	keyboard->hidden = !keyboard->hidden;
 
 	// if it's hidden now, make sure we release our highlight
-	if (keyboard.hidden)
+	if (keyboard->hidden)
 	{
 		sidebar->highlighted = -1;
 		highlighted = 0;
+	} else {
+		// not hidden, so bring it to the front
+		keyboard->moveToFront();
 	}
 
 	needsRedraw = true;
 }
 
-void AppList::launchSettings(bool isCredits)
+void AppList::launchSettings()
 {
-	// if (isCredits) {
-		RootDisplay::switchSubscreen(new AboutScreen(this->get));
-	// } else {
-	// 	RootDisplay::switchSubscreen(new FeedbackCenter(this));
-	// }
+	RootDisplay::pushScreen(std::make_unique<SettingsScreen>());
 }

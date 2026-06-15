@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main 
-      - test
+      - 2.4-newabi
   pull_request:
     branches:
       - main
@@ -21,14 +21,17 @@ jobs:
             ext: nro
           # - platform: 3ds
           #   ext: 3dsx
-          - platform: wii
-            ext: dol
+          # - platform: wii
+          #   ext: dol
     container:
       image: ghcr.io/fortheusers/sealeo:evo
     steps:
     - uses: actions/checkout@main
       with:
         submodules: recursive
+    - name: Generate pixel i18n fonts
+      run: |
+        python3 tools/generate_extended_font.py
     - if: matrix.platform == 'wii'
       name: Setup SDL2 Widescreen
       run: |

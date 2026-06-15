@@ -1,16 +1,17 @@
 #ifndef FEEDBACKCENTERSCREEN_H_
 #define FEEDBACKCENTERSCREEN_H_
 
-#include "../libs/chesto/src/Element.hpp"
-#include "AppList.hpp"
+#include "../libs/chesto/src/Screen.hpp"
 
-class FeedbackCenter : public Element
+using namespace Chesto;
+
+class FeedbackCenter : public Screen
 {
 public:
-	FeedbackCenter(AppList* appList);
+	FeedbackCenter();
+	void rebuildUI() override;
 
-	void render(Element* parent);
-	// bool process(InputEvents* event);
+	void render(Element* parent) override;
 };
 
 class FeedbackMessage : public Element
