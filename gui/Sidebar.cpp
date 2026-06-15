@@ -1,19 +1,12 @@
-#include "MainDisplay.hpp"
 #include "../libs/chesto/src/Constraint.hpp"
+#include "MainDisplay.hpp"
 
 #ifndef APP_VERSION
 #define APP_VERSION "0.0.0"
 #endif
 
 Sidebar::Sidebar()
-	: logo(LOGO_PATH)
-#if defined(DEBUG_BUILD) && !defined(WII_MOCK)
-	, title("hb-appstore Dev Build", 22)
-	, subtitle("v" APP_VERSION " (" __DATE__ ")", 18)
-#else
-	, title("Homebrew App Store", 22)
-	, subtitle("v" APP_VERSION " for " PLATFORM, 18)
-#endif
+	: ListElement()
 {
 	// a sidebar consists of:
 	//		a collection of category labels (TextElements),
@@ -21,103 +14,99 @@ Sidebar::Sidebar()
 
 	// it also can process input if the cursor goes over it, or a touch
 
-	// there's no back color to the sidebar, as the background is already the right color
-
 	// for every entry in cat names, create a text element
 	// elements 0 through TOTAL_CATS are the sidebar texts (for highlighting)
+
+	auto effectiveScale = getEffectiveScale();
 	for (int x = 0; x < TOTAL_CATS; x++)
 	{
-		category[x].icon = new ImageElement((std::string(RAMFS "res/") + cat_value[x] + ".png").c_str());
-		category[x].icon->resize(40/SCALER, 40/SCALER);
-		category[x].icon->position(30/SCALER, 150/SCALER + x * 70/SCALER - 5/SCALER);
-		super::append(category[x].icon);
+		category[x].icon = createNode<ImageElement>((std::string(RAMFS "res/") + cat_value[x] + ".png").c_str());
+		category[x].icon->resize(40 * effectiveScale, 40 * effectiveScale);
+		category[x].icon->position(30 * effectiveScale, 150 * effectiveScale + x * 70 * effectiveScale - 5 * effectiveScale);
 
-		category[x].name = new TextElement(i18n(cat_names[x]), 25);
-		category[x].name->position(105/SCALER, 150/SCALER + x * 70/SCALER);
-		super::append(category[x].name);
+		category[x].name = createNode<TextElement>(i18n(cat_names[x]), 25);
+		category[x].name->position(105 * effectiveScale, 150 * effectiveScale + x * 70 * effectiveScale);
 	}
 
 	// if we're a dev build, rotate the icon upside down
+	logo = createNode<ImageElement>(LOGO_PATH);
 #if defined(DEBUG_BUILD) && !defined(WII_MOCK)
-	logo.angle = 180;
+	logo->angle = 180;
 #endif
 
 	// create image in top left
-	logo.resize(45/SCALER, 45/SCALER);
-	logo.position(30/SCALER, 50/SCALER);
-	super::append(&logo);
+	logo->resize(45 * effectiveScale, 45 * effectiveScale);
+	logo->position(30 * effectiveScale, 50 * effectiveScale);
 
 	// create title for logo, top left
-	title.position(105/SCALER , 45/SCALER);
-	super::append(&title);
+#if defined(DEBUG_BUILD) && !defined(WII_MOCK)
+	title = createNode<TextElement>("hb-appstore Dev Build", 22);
+	subtitle = createNode<TextElement>("v" APP_VERSION " (" __DATE__ ")", 18);
+#else
+	title = createNode<TextElement>("Homebrew App Store", 22);
+	subtitle = createNode<TextElement>("v" APP_VERSION " for " PLATFORM, 18);
+#endif
 
-	subtitle.position(105/SCALER, 75/SCALER);
-	super::append(&subtitle);
+	title->position(105 * effectiveScale, 45 * effectiveScale);
+	subtitle->position(105 * effectiveScale, 75 * effectiveScale);
 
 #if defined(USE_OSC_BRANDING)
 	// make the icon larger
-	logo.setScaleMode(SCALE_PROPORTIONAL_NO_BG);
-	logo.resize(85, 85);
-	logo.position(10, 20);
+	logo->setScaleMode(SCALE_PROPORTIONAL_NO_BG);
+	logo->resize(85, 85);
+	logo->position(10, 20);
 
-	title.setText("HB App Store v" APP_VERSION);
-	title.update();
-	subtitle.setText("Pwrd by OSCWii.org");
-	subtitle.setSize(22);
-	subtitle.update();
+	title->setText("HB App Store v" APP_VERSION);
+	title->update();
+	subtitle->setText("Pwrd by OSCWii.org");
+	subtitle->setSize(22);
+	subtitle->update();
 
-	title.position(110, 35);
-	subtitle.position(110, 65);
+	title->position(110, 35);
+	subtitle->position(110, 65);
 #endif
 
 	// currentSelection in this class is used to keep track of which element is being pressed down on in touch mode
 	// TODO: currentSelection belongs to element and should really be renamed (it's for general purpose animations)
 	currentSelection = -1;
 
-	if (isEarthDay()) {
+	if (isEarthDay())
+	{
 		// easter egg for earth day https://www.earthday.org
-		title.setText(i18n("listing.earthday"));
-		title.update();
+		title->setText(i18n("listing.earthday"));
+		title->update();
 
 		// draw a an icon over the logo
-		logo.hide();
-		ImageElement* earth = new ImageElement(RAMFS "res/earth.png");
-		earth->resize(60/SCALER, 60/SCALER);
-		earth->position(23/SCALER, 40/SCALER);
-		super::append(earth);
+		logo->hide();
+		ImageElement* earth = createNode<ImageElement>(RAMFS "res/earth.png");
+		earth->resize(60 * effectiveScale, 60 * effectiveScale);
+		earth->position(23 * effectiveScale, 40 * effectiveScale);
 	}
 }
 
 Sidebar::~Sidebar()
 {
 	super::removeAll();
-	for (int x = 0; x < TOTAL_CATS; x++)
-	{
-		delete category[x].icon;
-		delete category[x].name;
-	}
-	if (hider)
-		delete hider;
-	if (hint)
-		delete hint;
 }
 
 void Sidebar::addHints()
 {
-	if (hider == nullptr) {
+	auto effectiveScale = getEffectiveScale();
+
+	if (hider == nullptr)
+	{
 		// small indicator to switch to advanced view using L
-		hider = new ImageElement(Button::getControllerButtonImageForPlatform(L_BUTTON, false, false));
-		hider->resize(20/SCALER, 20/SCALER);
-		super::append(hider);
+		hider = createNode<ImageElement>(Button::getControllerButtonImageForPlatform(L_BUTTON, false, false));
+		hider->resize(20 * effectiveScale, 20 * effectiveScale);
 	}
 
-	if (hint == nullptr) {
-		hint = new TextElement(i18n("sidebar.hide"), 15);
-		super::append(hint);
+	if (hint == nullptr)
+	{
+		hint = createNode<TextElement>(i18n("sidebar.hide"), 15);
 	}
 
 	hider->constrain(ALIGN_RIGHT | ALIGN_BOTTOM, 10);
-	hint->position(hider->x + hider->width + 5/SCALER, hider->y);
+	hint->position(hider->x + hider->width + 5 * effectiveScale, hider->y);
 	showCurrentCategory = true;
 }
 
@@ -163,22 +152,25 @@ bool Sidebar::process(InputEvents* event)
 		this->elasticCounter = -1;
 		this->currentSelection = -1;
 
+		float effectiveScale = getEffectiveScale();
+
 		// go through the categories and see if this touch down was in one of them, to show it highlighted
 		// TODO: uses similar code from below... really all this sidebar stuff shoould be refactored to use ListElement
 		// and every category itself should be a CategoryLabel just like an AppCard consists of images + text
 		for (int x = 0; x < TOTAL_CATS; x++)
 		{
 			int xc = 0,
-				yc = 150/SCALER + x * 70/SCALER - 15 / SCALER,
+				yc = (int)((150 + x * 70 - 15) * effectiveScale),
 				// width = getWidth(),
-				height = 60;
+				height = (int)(60 * effectiveScale);
 
 			if (event->touchIn(xc, yc, width, height))
 			{
 				// touch is over an element of the sidebar, set the currentSelection
 				currentSelection = x;
 
-				if (event->isTouchDrag()) {
+				if (event->isTouchDrag())
+				{
 					elasticCounter = THICK_HIGHLIGHT;
 				}
 
@@ -199,13 +191,15 @@ bool Sidebar::process(InputEvents* event)
 		int previouslySelected = currentSelection;
 		currentSelection = -1; // reset highlighted one
 
+		float effectiveScale = getEffectiveScale();
+
 		// check if it's one of the text elements
 		for (int x = 0; x < TOTAL_CATS; x++)
 		{
 			int xc = 0,
-				yc = 150/SCALER + x * 70/SCALER - 15 / SCALER,
+				yc = (int)((150 + x * 70 - 15) * effectiveScale),
 				// width = getWidth(),
-				height = 60; // TODO: extract formula into method (same as AppList x value)
+				height = (int)(60 * effectiveScale); // TODO: extract formula into method (same as AppList x value)
 			if ((event->touchIn(xc, yc, width, height) && event->isTouchUp()) || (event->held(A_BUTTON) && this->highlighted == x))
 			{
 				// if it's a touch up, let's make sure this is the same one we touched down on
@@ -227,7 +221,8 @@ bool Sidebar::process(InputEvents* event)
 		return true;
 	}
 
-	if (origHighlighted != highlighted) {
+	if (origHighlighted != highlighted)
+	{
 		mainDisplay->playSFX();
 		ret |= true;
 	}
@@ -238,16 +233,21 @@ bool Sidebar::process(InputEvents* event)
 void Sidebar::render(Element* parent)
 {
 #if defined(_3DS) || defined(_3DS_MOCK)
-  // no sidebar on 3ds
-  return;
+	// no sidebar on 3ds
+	return;
 #endif
+	auto effectiveScale = getEffectiveScale();
+
 	// draw the light gray bg behind the active category
-	CST_Rect dimens = { 0, 0, width, (int)(60/SCALER) }; // TODO: extract this to a method too
-	dimens.y = 150/SCALER + this->curCategory * 70/SCALER - 15 / SCALER;					   // TODO: extract formula into method
+	CST_Rect dimens = { 0, 0, width, (int)(60 * effectiveScale) };					 // TODO: extract this to a method too
+	dimens.y = 150 * effectiveScale + this->curCategory * 70 * effectiveScale - 15 * effectiveScale; // TODO: extract formula into method
 
 	auto c = RootDisplay::mainDisplay->backgroundColor;
-	CST_Color consoleColor = { (int)(c.r * 255) + 0x25, (int)(c.g * 255) + 0x25, (int)(c.b * 255) + 0x25, 0xff };
-	// consoleColor.r = fmax(consoleColor.r, 0xff);
+	// Add 0x25 to each component, clamping to 0xff max
+	Uint8 rVal = (Uint8)std::min(255, (int)(c.r * 255) + 0x25);
+	Uint8 gVal = (Uint8)std::min(255, (int)(c.g * 255) + 0x25);
+	Uint8 bVal = (Uint8)std::min(255, (int)(c.b * 255) + 0x25);
+	CST_Color consoleColor = { rVal, gVal, bVal, 0xff };
 	CST_SetDrawColor(RootDisplay::renderer, consoleColor);
 
 	if (this->showCurrentCategory)
@@ -256,7 +256,7 @@ void Sidebar::render(Element* parent)
 	if (appList && appList->touchMode && (this->currentSelection >= 0 && this->elasticCounter != THICK_HIGHLIGHT))
 	{
 		CST_Rect dimens2 = { 0, 0, 400, 60 };
-		dimens.y = 150/SCALER + this->currentSelection * 70/SCALER - 15 / SCALER;					   // TODO: extract formula into method
+		dimens.y = 150 * effectiveScale + this->currentSelection * 70 * effectiveScale - 15 * effectiveScale; // TODO: extract formula into method
 		CST_SetDrawBlend(RootDisplay::renderer, true);
 		CST_Color highlight = { 0x10, 0xD9, 0xD9, 0x40 };
 		CST_SetDrawColor(RootDisplay::renderer, highlight); // TODO: matches the DEEP_HIGHLIGHT color
@@ -269,15 +269,15 @@ void Sidebar::render(Element* parent)
 		// for drag events, we want to use the thick highlight
 		int highlightValue = (this->currentSelection >= 0 && this->elasticCounter == THICK_HIGHLIGHT) ? this->currentSelection : this->highlighted;
 
-		int y = 150/SCALER  + highlightValue * 70/SCALER - 15 / SCALER;
+		int y = 150 * effectiveScale + highlightValue * 70 * effectiveScale - 15 * effectiveScale;
 		//        rectangleRGBA(RootDisplay::renderer, 0, y, dimens.w, y + dimens.h, 0xff, 0x00, 0xff, 0xff);
 
-		for (int x=-2; x<3; x++) {
+		for (int x = -2; x < 3; x++)
+		{
 			CST_rectangleRGBA(MainDisplay::renderer,
 				dimens.x + x, y + x,
 				dimens.x + dimens.w - x, y + dimens.h - x,
-				0x10, 0xD9, 0xD9, 0xff
-			);
+				0x10, 0xD9, 0xD9, 0xff);
 		}
 	}
 
@@ -304,15 +304,24 @@ std::string Sidebar::currentCatValue()
 #if defined(USE_OSC_BRANDING)
 rgb getOSCCategoryColor(std::string category)
 {
-	if (category == "emulators") {
+	if (category == "emulators")
+	{
 		return fromRGB(0x34, 0xED, 0x90);
-	} else if (category == "games") {
+	}
+	else if (category == "games")
+	{
 		return fromRGB(0xED, 0x34, 0x9F);
-	} else if (category == "utilities") {
+	}
+	else if (category == "utilities")
+	{
 		return fromRGB(0x34, 0xBE, 0xED);
-	} else if (category == "media") {
+	}
+	else if (category == "media")
+	{
 		return fromRGB(0xff, 0xd3, 0x24);
-	} else {
+	}
+	else
+	{
 		return fromRGB(0xFF, 0xFF, 0xFF);
 	}
 }

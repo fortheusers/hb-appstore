@@ -14,6 +14,7 @@
 
 // number of apps on one page
 #define PAGE_SIZE 12
+#define PAGE_SIZE_LARGE_FONT 8
 
 class Menu
 {
@@ -26,11 +27,11 @@ public:
 	int position;					  // the position of the cursor along the current menu
 
 	Get* get = NULL;   // list of packages to draw
-
+	int getPageSize() const;
 private:
-	int offset; // the offset of "scroll" along the current menu page
-  void initGet();
-	const char* repoUrl;
+  	void initGet();
+	bool useLargeFont() const;
+	std::string repoUrl;
 
 	Console* console; // link to the console
 };

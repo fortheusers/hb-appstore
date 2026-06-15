@@ -32,6 +32,7 @@
 
 #include "ThemeManager.hpp"
 #include "../gui/MainDisplay.hpp"
+#include "../gui/SettingsScreen.hpp"
 
 #include "../console/Menu.hpp"
 
@@ -69,6 +70,10 @@ int main(int argc, char* argv[])
 #endif
 	init_networking();
 	setUserAgent("HBAS/" APP_VERSION " (" PLATFORM "; Chesto)");
+	
+	// load settings from disk before initializing theme manager and creating UI
+	SettingsScreen::loadSettingsStatic();
+	
 	HBAS::ThemeManager::themeManagerInit();
 
 	bool cliMode = false;
@@ -81,10 +86,10 @@ int main(int argc, char* argv[])
 			cliMode = true;
 
 	// initialize main title screen
-	MainDisplay* display = new MainDisplay();
+	auto display = std::make_unique<MainDisplay>();
 	display->canUseSelectToExit = true;
 
-	auto events = display->events;
+	auto events = display->events.get();
 
 	for (int x = 0; x < 10; x++)
 	{
@@ -103,7 +108,7 @@ int main(int argc, char* argv[])
 		// if NOGUI variable defined, use the console's main method
 		// TODO: process InputEvents outside of MainDisplay, which might have more requirements
 		int console_main(RootDisplay*, InputEvents*);
-		console_main(display, events);
+		console_main(display.get(), events);
 	}
 	else
 	{

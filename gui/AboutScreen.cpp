@@ -20,92 +20,84 @@ using namespace rapidjson;
 
 AboutScreen::AboutScreen(Get* get)
 	: get(get)
-	, cancel(i18n("credits.goback"), B_BUTTON, false, 29)
-	, feedback(i18n("credits.feedback"), A_BUTTON, false, 17)
-	, title(i18n("credits.title"), 35, &HBAS::ThemeManager::textPrimary)
-	, subtitle(i18n("credits.subtitle"), 25, &HBAS::ThemeManager::textPrimary)
-	, ftuLogo(AVATAR_URL "40721862", []
-		  { return new ImageElement(RAMFS "res/4TU.png"); })
-	, creds((i18n("credits.license") + "\n\n" + i18n("credits.cta")), 20, &HBAS::ThemeManager::textPrimary, false, 1240)
 {
+	rebuildUI();
+}
 
-	// TODO: show current app status somewhere
+void AboutScreen::rebuildUI()
+{
+	removeAll();
+	creditCount = 0;
 
-	// download/update/remove button (2)
+	// create a full-screen scrollable list to hold all credits content
+	// TODO: common way to have scrollable Screen's
+	auto scrollContainer = std::make_unique<ListElement>();
+	scrollContainer->width = SCREEN_WIDTH;
+	scrollContainer->height = SCREEN_HEIGHT;
+	scrollList = scrollContainer.get(); // Keep pointer for scrolling
 
-	cancel.position(30, 30);
-	cancel.action = std::bind(&AboutScreen::back, this);
-	super::append(&cancel);
+	auto cancel = std::make_unique<Button>(i18n("credits.goback"), B_BUTTON, false, 29);
+	cancel->position(30, 30);
+	cancel->action = std::bind(&AboutScreen::back, this);
+	scrollContainer->addNode(std::move(cancel));
 
 	int MARGIN = 550;
 
-	feedback.position(MARGIN + 500, 30);
-	feedback.action = std::bind(&AboutScreen::launchFeedback, this);
-	super::append(&feedback);
+	auto feedback = std::make_unique<Button>(i18n("credits.feedback"), A_BUTTON, false, 17);
+	feedback->position(MARGIN + 500, 30);
+	feedback->action = std::bind(&AboutScreen::launchFeedback, this);
+	scrollContainer->addNode(std::move(feedback));
 
-	title.position(MARGIN, 40);
-	super::append(&title);
+	auto title = std::make_unique<TextElement>(i18n("credits.title"), 35, &HBAS::ThemeManager::textPrimary);
+	title->position(MARGIN, 40);
+	scrollContainer->addNode(std::move(title));
 
-	subtitle.position(MARGIN, 80);
-	super::append(&subtitle);
+	auto subtitle = std::make_unique<TextElement>(i18n("credits.subtitle"), 25, &HBAS::ThemeManager::textPrimary);
+	subtitle->position(MARGIN, 80);
+	scrollContainer->addNode(std::move(subtitle));
 
-	ftuLogo.position(375, 15);
-	ftuLogo.resize(140, 140);
-	super::append(&ftuLogo);
+	auto ftuLogo = std::make_unique<NetImageElement>(AVATAR_URL "40721862", []
+		  { return new ImageElement(RAMFS "res/4TU.png"); });
+	ftuLogo->position(375, 15);
+	ftuLogo->resize(140, 140);
+	scrollContainer->addNode(std::move(ftuLogo));
 
-	creds.position(100, 170);
-	super::append(&creds);
+	auto creds = std::make_unique<TextElement>((i18n("credits.license") + "\n\n" + i18n("credits.cta")), 20, &HBAS::ThemeManager::textPrimary, false, 1240);
+	creds->position(100, 170);
+	scrollContainer->addNode(std::move(creds));
 
-	// credits are fetched dynamically from meta repo json
 	loadCreditsFromJSON();
+	
+	addNode(std::move(scrollContainer));
 }
 
-AboutScreen::~AboutScreen()
-{
-	super::removeAll();
-	for (auto& i : creditHeads)
-	{
-		delete i.text;
-		delete i.desc;
-	}
-	for (auto& i : credits)
-	{
-		delete i.userLogo;
-		delete i.name;
-		delete i.social[0].icon;
-		delete i.social[0].link;
-		delete i.social[1].icon;
-		delete i.social[1].link;
-	}
-}
 
 void AboutScreen::credHead(const std::string& header, const std::string& blurb)
 {
-	auto head = creditHeads.emplace(creditHeads.end());
-
 	creditCount += (4 - creditCount % 4) % 4;
-	head->text = new TextElement(header, 30, &HBAS::ThemeManager::textPrimary);
-	head->text->position(40, 250 + 60 + creditCount / 4 * 160);
-	super::append(head->text);
+	
+	auto text = std::make_unique<TextElement>(header, 30, &HBAS::ThemeManager::textPrimary);
+	text->position(40, 250 + 60 + creditCount / 4 * 160);
+	if (scrollList) scrollList->addNode(std::move(text));
 
-	head->desc = new TextElement(blurb, 23, &HBAS::ThemeManager::textSecondary, false, 1200);
-	head->desc->position(40, 250 + 105 + creditCount / 4 * 160);
-	super::append(head->desc);
+	auto desc = std::make_unique<TextElement>(blurb, 23, &HBAS::ThemeManager::textSecondary, false, 1200);
+	desc->position(40, 250 + 105 + creditCount / 4 * 160);
+	if (scrollList) scrollList->addNode(std::move(desc));
 
 	creditCount += 4;
 }
 
-void AboutScreen::credit(const char* username,
-	const char* githubId,
-	const char* bsky,
-	const char* github,
-	const char* gitlab,
-	const char* patreon,
-	const char* url,
-	const char* discord,
-	const char* directAvatarUrl,
-	const char* youtube,
-	const char* mastodon)
+void AboutScreen::credit(const std::string& username,
+	const std::string& githubId,
+	const std::string& bsky,
+	const std::string& github,
+	const std::string& gitlab,
+	const std::string& patreon,
+	const std::string& url,
+	const std::string& discord,
+	const std::string& directAvatarUrl,
+	const std::string& youtube,
+	const std::string& mastodon)
 {
 	int X = 40;
 	int Y = 310;
@@ -113,39 +105,43 @@ void AboutScreen::credit(const char* username,
 	int myX = creditCount % 4 * 300 + X;
 	int myY = creditCount / 4 * 160 + Y;
 
-	auto cred = credits.emplace(credits.end());
+	std::string avatarUrl = !directAvatarUrl.empty() ? directAvatarUrl
+	                                                  : (std::string(AVATAR_URL) + githubId + "?s=100");
+	auto userLogo = std::make_unique<NetImageElement>(avatarUrl.c_str());
+	userLogo->position(myX, myY);
+	userLogo->resize(100, 100);
+	if (scrollList) scrollList->addNode(std::move(userLogo));
 
-	auto avatar = directAvatarUrl ? directAvatarUrl : (std::string(AVATAR_URL) + githubId + "?s=100").c_str();
-	cred->userLogo = new NetImageElement(directAvatarUrl != NULL ? directAvatarUrl : ((std::string(AVATAR_URL) + githubId + "?s=100").c_str()));
-	cred->userLogo->position(myX, myY);
-	cred->userLogo->resize(100, 100);
-	super::append(cred->userLogo);
-
-	cred->name = new TextElement(username, 27, &HBAS::ThemeManager::textPrimary);
-	cred->name->position(myX + 110, myY);
-	super::append(cred->name);
+	auto name = std::make_unique<TextElement>(username, 27, &HBAS::ThemeManager::textPrimary);
+	name->position(myX + 110, myY);
+	if (scrollList) scrollList->addNode(std::move(name));
 
 	int socialCount = 0;
+	std::string handles[8] = { bsky, github, gitlab, patreon, url, discord, youtube, mastodon };
+	std::string icons[8] = { "bsky", "github", "gitlab", "patreon", "url", "discord", "youtube", "mastodon" };
 
-	const char* handles[8] = { bsky, github, gitlab, patreon, url, discord, youtube, mastodon };
-	const char* icons[8] = { "bsky", "github", "gitlab", "patreon", "url", "discord", "youtube", "mastodon" };
-
-	for (int x = 0; x < 8; x++)
+	for (int x = 0; x < 8 && socialCount < 2; x++)
 	{
-		if (handles[x] == NULL) continue;
+		if (handles[x].length() == 0) continue;
 
-		cred->social[socialCount].icon = new ImageElement(((std::string(RAMFS "res/") + icons[x]) + ".png").c_str());
-		cred->social[socialCount].icon->resize(20, 20);
-		cred->social[socialCount].icon->position(myX + 110, myY + 45 + socialCount * 25);
-		super::append(cred->social[socialCount].icon);
+		// if the text starts and ends with ( and ), don't show an icon (used for locale indication)
+		bool isLocaleIndicator = (handles[x].length() >= 2 && 
+		                          handles[x][0] == '(' && 
+		                          handles[x][handles[x].length() - 1] == ')');
+		
+		if (!isLocaleIndicator)
+		{
+			auto icon = std::make_unique<ImageElement>(((std::string(RAMFS "res/") + icons[x]) + ".png").c_str());
+			icon->resize(20, 20);
+			icon->position(myX + 110, myY + 45 + socialCount * 25);
+			if (scrollList) scrollList->addNode(std::move(icon));
+		}
 
-		cred->social[socialCount].link = new TextElement(handles[x], 14, &HBAS::ThemeManager::textSecondary);
-		cred->social[socialCount].link->position(myX + 140, myY + 45 + socialCount * 25);
-		super::append(cred->social[socialCount].link);
+		auto link = std::make_unique<TextElement>(handles[x], 14, &HBAS::ThemeManager::textSecondary);
+		link->position(myX + 140, myY + 45 + socialCount * 25);
+		if (scrollList) scrollList->addNode(std::move(link));
 
 		socialCount++;
-
-		if (socialCount >= 2) break;
 	}
 
 	creditCount++;
@@ -154,7 +150,7 @@ void AboutScreen::credit(const char* username,
 void AboutScreen::loadCreditsFromJSON()
 {
 	std::string jsonContent;
-	std::string creditsUrl = std::string(META_REPO) + "/credits.json";
+	std::string creditsUrl = std::string(META_REPO_1) + "/credits.json";
 	
 	bool success = downloadFileToMemory(creditsUrl, &jsonContent);
 	
@@ -241,10 +237,18 @@ void AboutScreen::parseCreditsJSON(const std::string& jsonContent)
 				if (name && (githubId || directAvatarUrl)) // username and (githubId or directAvatarUrl) required
 				{
 					credit(
-						name,
-						githubId, bsky, github, gitlab,
-						patreon, url, discord, directAvatarUrl,
-						youtube, mastodon);
+						name ? name : "",
+						githubId ? githubId : "",
+						bsky ? bsky : "",
+						github ? github : "",
+						gitlab ? gitlab : "",
+						patreon ? patreon : "",
+						url ? url : "",
+						discord ? discord : "",
+						directAvatarUrl ? directAvatarUrl : "",
+						youtube ? youtube : "",
+						mastodon ? mastodon : ""
+					);
 				}
 			}
 		}
@@ -267,14 +271,12 @@ void AboutScreen::render(Element* parent)
 
 bool AboutScreen::process(InputEvents* event)
 {
-	bool ret = false;
-	ret |= ListElement::processUpDown(event);
-	return ret || ListElement::process(event);
+	return Screen::process(event) || event->isTouchDrag();
 }
 
 void AboutScreen::back()
 {
-	RootDisplay::switchSubscreen(nullptr);
+	RootDisplay::popScreen(); // stow this subscreen
 }
 
 void AboutScreen::launchFeedback()
@@ -284,7 +286,7 @@ void AboutScreen::launchFeedback()
 	{
 		if (package->getPackageName() == APP_SHORTNAME)
 		{
-			RootDisplay::switchSubscreen(new Feedback(*package));
+			RootDisplay::pushScreen(std::make_unique<Feedback>(*package));
 			break;
 		}
 	}

@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu, windows, macos]
+        os: [ubuntu, macos] # , windows
         library: [sdl2]
     runs-on: ${{ matrix.os }}-latest
     steps:

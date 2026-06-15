@@ -1,8 +1,18 @@
-#include "AppList.hpp"
-#include "../libs/chesto/src/RootDisplay.hpp"
-#include "../libs/chesto/src/TextElement.hpp"
 #include "../libs/chesto/src/Button.hpp"
+#include "../libs/chesto/src/RootDisplay.hpp"
+#include "../libs/chesto/src/Screen.hpp"
+#include "../libs/chesto/src/TextElement.hpp"
+#include "AppList.hpp"
+#include <map>
+#include <memory>
+#include <string>
 #include <unordered_map>
+
+using namespace Chesto;
+
+#if defined(SDL2)
+#include <SDL2/SDL.h>
+#endif
 
 #if defined(MUSIC)
 #include <SDL2/SDL_mixer.h>
@@ -27,6 +37,8 @@
 #define LOGO_PATH RAMFS "res/icon.png"
 #endif
 
+#define isDark HBAS::ThemeManager::isDarkMode
+
 class MainDisplay : public RootDisplay
 {
 public:
@@ -43,17 +55,22 @@ public:
 
 	bool checkMetaRepoForUpdates(Get* get);
 	void updateSidebarColor();
+	bool isLowMemoryMode();
+	void rebuildUI();
 
-	Get* get = NULL;
+	void updateGetLocale();
+
+	std::unique_ptr<Get> get;
+	std::map<std::string, std::unique_ptr<Package>> localePackages; // if we're in a non-english locale, this contains a lightweight list of packages instance representing the overrides from the meta repo
 
 	bool error = false;
 	bool atLeastOneEnabled = false;
 
-	static int updateLoader(void* clientp, double dltotal, double dlnow, double ultotal, double ulnow);
+	static int updateLoader(void* clientp, double progress);
 
 	bool showingSplash = true;
 	bool renderedSplash = false;
-	ImageElement *spinner = nullptr;
+	ImageElement* spinner = nullptr;
 
 	void playSFX();
 
@@ -62,21 +79,19 @@ public:
 #endif
 
 private:
-	Sidebar sidebar;
-	AppList appList;
+	Sidebar* sidebar;
+	AppList* appList;
 };
 
-class ErrorScreen : public Element
+class ErrorScreen : public Screen
 {
 public:
 	ErrorScreen(std::string errorMessage, std::string troubleshootingText);
+	void rebuildUI() override;
 
 private:
-	ImageElement icon;
-	TextElement title;
-	TextElement errorMessage;
-	TextElement troubleshooting;
-	Button btnQuit;
+	std::string mainErrorText;
+	std::string troubleshootText;
 };
 
 bool isEarthDay();
