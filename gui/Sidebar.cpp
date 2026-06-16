@@ -256,7 +256,7 @@ void Sidebar::render(Element* parent)
 	if (appList && appList->touchMode && (this->currentSelection >= 0 && this->elasticCounter != THICK_HIGHLIGHT))
 	{
 		CST_Rect dimens2 = { 0, 0, 400, 60 };
-		dimens.y = 150 * effectiveScale + this->currentSelection * 70 * effectiveScale - 15 * effectiveScale; // TODO: extract formula into method
+		dimens2.y = 150 * effectiveScale + this->currentSelection * 70 * effectiveScale - 15 * effectiveScale; // TODO: extract formula into method
 		CST_SetDrawBlend(RootDisplay::renderer, true);
 		CST_Color highlight = { 0x10, 0xD9, 0xD9, 0x40 };
 		CST_SetDrawColor(RootDisplay::renderer, highlight); // TODO: matches the DEEP_HIGHLIGHT color
