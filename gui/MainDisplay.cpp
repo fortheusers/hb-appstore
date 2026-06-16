@@ -362,10 +362,12 @@ bool MainDisplay::process(InputEvents* event)
 		return true;
 	}
 
-	// if we need a redraw, also update the app list (for resizing events)
-	// TODO: have a more generalized way to have a view describe what needs redrawing
-	if (needsRedraw)
-		appList->update();
+	// HACK HACK HACK - The below call is causing issue #170. It may be dead code; removing it so immediate development may continue.
+	// However, needsRedraw should be fully investigated at some point.
+	// // if we need a redraw, also update the app list (for resizing events)
+	// // TODO: have a more generalized way to have a view describe what needs redrawing
+	// if (needsRedraw)
+	// 	appList->update();
 
 	return RootDisplay::process(event);
 }
