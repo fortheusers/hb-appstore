@@ -21,8 +21,8 @@ jobs:
             ext: nro
           # - platform: 3ds
           #   ext: 3dsx
-          # - platform: wii
-          #   ext: dol
+          - platform: wii
+            ext: dol
     container:
       image: ghcr.io/fortheusers/sealeo:evo
     steps:
@@ -32,15 +32,6 @@ jobs:
     - name: Generate pixel i18n fonts
       run: |
         python3 tools/generate_extended_font.py
-    - if: matrix.platform == 'wii'
-      name: Setup SDL2 Widescreen
-      run: |
-        git clone https://github.com/Fancy2209/SDL -b Widescreen
-        cd SDL
-        apt-get install ninja-build
-        cmake -D CMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Wii.cmake -B build -G Ninja
-        cmake --build build --parallel
-        cmake --install build
     - name: Build ${{ matrix.platform }}
       run: make ${{ matrix.platform }}
     - uses: actions/upload-artifact@v4
